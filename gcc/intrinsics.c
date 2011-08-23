@@ -1,4 +1,5 @@
 // intrinsics.c
+#include <sys/types.h>
 #include <intrinsics.h>
 
 /* pfs: 2010-06-13 none of the code below has ben tested
