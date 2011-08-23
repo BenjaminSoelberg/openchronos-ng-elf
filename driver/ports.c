@@ -129,7 +129,7 @@ void init_buttons(void)
 // *************************************************************************************************
 //pfs 
 #ifdef __GNUC__  
-#include <signal.h>
+#include <legacymsp430.h>
 interrupt (PORT2_VECTOR) PORT2_ISR(void)
 #else
 #pragma vector=PORT2_VECTOR

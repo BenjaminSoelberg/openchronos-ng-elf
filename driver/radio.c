@@ -170,7 +170,7 @@ void close_radio(void)
 // *************************************************************************************************
 //pfs 
 #ifdef __GNUC__
-#include <signal.h>
+#include <legacymsp430.h>
 interrupt (CC1101_VECTOR) radio_ISR(void)
 #else
 #pragma vector=CC1101_VECTOR

@@ -135,7 +135,7 @@
 #if (defined BSP_COMPILER_GCC)
 #include <intrinsics.h>
   //pfs #include <io.h>
-  #include <signal.h>
+  #include <legacymsp430.h>
   
   #define __bsp_ENABLE_INTERRUPTS__()       eint()
   #define __bsp_DISABLE_INTERRUPTS__()      dint()

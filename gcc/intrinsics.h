@@ -1,7 +1,7 @@
 #ifndef __INTRINSICS_H
 #define __INTRINSICS_H
 
-#include <signal.h>
+#include <legacymsp430.h>
 
 typedef unsigned short istate_t;
 
