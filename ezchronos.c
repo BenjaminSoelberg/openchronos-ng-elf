@@ -1,3 +1,20 @@
+/*
+    Copyright (C) 2011 Angelo Arrifano <miknix@gmail.com>
+	   - Improve message display API
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 // *************************************************************************************************
 //
 //	Copyright (C) 2009 Texas Instruments Incorporated - http://www.ti.com/ 
@@ -661,42 +678,31 @@ void display_update(void)
 		line = LINE2;
 		
 		// Select message to display
-		if (message.flag.type_locked)			memcpy(string, "  LOCT", 6);
+		if (message.flag.type_msg)
+			line = ( message.flag.msg_line1 ? LINE1 : LINE2 );
+		else if (message.flag.type_locked)			memcpy(string, "  LOCT", 6);
 		else if (message.flag.type_unlocked)	memcpy(string, "  OPEN", 6);
 		else if (message.flag.type_lobatt)		memcpy(string, "LOBATT", 6);
 		else if (message.flag.type_no_beep_on)  memcpy(string, " SILNT", 6);
 		else if (message.flag.type_no_beep_off) memcpy(string, "  BEEP", 6);
-		#ifdef CONFIG_ALARM 
-		else if (message.flag.type_alarm_off_chime_off)	
-		{
-			memcpy(string, " OFF", 4);
-			line = LINE1;
-		}
-		else if (message.flag.type_alarm_off_chime_on)	
-		{
-			memcpy(string, "OFFH", 4);
-			line = LINE1;
-		}
-		else if (message.flag.type_alarm_on_chime_off)
-		{
-			memcpy(string, "  ON", 4);
-			line = LINE1;
-		}
-		else if (message.flag.type_alarm_on_chime_on)
-		{
-			memcpy(string, " ONH", 4);
-			line = LINE1;
-		}
-		#endif
-        
-		
+
 		// Clear previous content
 		clear_line(line);
 		if(line == LINE2) 	fptr_lcd_function_line2(line, DISPLAY_LINE_CLEAR);
 		else				fptr_lcd_function_line1(line, DISPLAY_LINE_CLEAR);
 		
-		if (line == LINE2) 	display_chars(LCD_SEG_L2_5_0, string, SEG_ON);
-		else 				display_chars(LCD_SEG_L1_3_0, string, SEG_ON);
+		// modular applications should set prepare=1, type_msg=1 and chose the line with
+		// msg_line1 (1 for LINE1, 0 for LINE2) and then handle their display function
+		// with a DISPLAY_LINE_MESSAGE update.
+		if (message.flag.type_msg) {
+			if (message.flag.msg_line1)
+				fptr_lcd_function_line1(line, DISPLAY_LINE_MESSAGE);
+			else
+				fptr_lcd_function_line2(line, DISPLAY_LINE_MESSAGE);
+		} else {
+			if (line == LINE2) 	display_chars(LCD_SEG_L2_5_0, string, SEG_ON);
+			else 				display_chars(LCD_SEG_L1_3_0, string, SEG_ON);
+		}
 		
 		// Next second tick erases message and repaints original screen content (full_update)
 		message.all_flags = 0;

@@ -1,3 +1,21 @@
+/*
+    Copyright (C) 2011 Angelo Arrifano <miknix@gmail.com>
+	   - Updated to use the improved message display API
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 // *************************************************************************************************
 //
 //	Copyright (C) 2009 Texas Instruments Incorporated - http://www.ti.com/ 
@@ -141,34 +159,9 @@ void sx_alarm(u8 line)
 	// UP: Cycle through alarm modes
 	if(button.flag.up)
 	{
-		// Toggle alarm state
-		if (sAlarm.state == ALARM_DISABLED) {
-			if (sAlarm.hourly == ALARM_DISABLED) {
-				sAlarm.hourly = ALARM_ENABLED;
-				// Show "offh" message 
-				message.flag.prepare = 1;
-				message.flag.type_alarm_off_chime_on = 1;
-			} else if (sAlarm.hourly == ALARM_ENABLED) {
-				sAlarm.state = ALARM_ENABLED;
-				sAlarm.hourly = ALARM_DISABLED;
-				// Show " on" message 
-				message.flag.prepare = 1;
-				message.flag.type_alarm_on_chime_off = 1;
-			}
-		} else if (sAlarm.state == ALARM_ENABLED) {
-			if (sAlarm.hourly == ALARM_DISABLED) {
-				sAlarm.hourly = ALARM_ENABLED;
-				// Show " onh" message 
-				message.flag.prepare = 1;
-				message.flag.type_alarm_on_chime_on = 1;
-			} else if (sAlarm.hourly == ALARM_ENABLED) {
-				sAlarm.state = ALARM_DISABLED;
-				sAlarm.hourly = ALARM_DISABLED;
-				// Show " off" message 
-				message.flag.prepare = 1;
-				message.flag.type_alarm_off_chime_off = 1;
-			}
-		}
+		message.flag.prepare = 1;
+		message.flag.type_msg = 1;
+		message.flag.msg_line1 = 1;
 	}
 }
 
@@ -279,6 +272,33 @@ void display_alarm(u8 line, u8 update)
 	  {
 	    display_symbol(LCD_ICON_ALARM, SEG_ON_BLINK_OFF);
 	  }
+	}
+	else if (update == DISPLAY_LINE_MESSAGE)
+	{
+		if (sAlarm.state == ALARM_DISABLED) {
+			if (sAlarm.hourly == ALARM_DISABLED) {
+				sAlarm.hourly = ALARM_ENABLED;
+				// Show "offh" message
+				display_chars(LCD_SEG_L1_3_0, (u8 *)"OFFH", SEG_ON);
+			} else if (sAlarm.hourly == ALARM_ENABLED) {
+				sAlarm.state = ALARM_ENABLED;
+				sAlarm.hourly = ALARM_DISABLED;
+				// Show " on" message
+				display_chars(LCD_SEG_L1_3_0, (u8 *)"  ON", SEG_ON);
+			}
+		} else if (sAlarm.state == ALARM_ENABLED) {
+			if (sAlarm.hourly == ALARM_DISABLED) {
+				sAlarm.hourly = ALARM_ENABLED;
+				// Show " onh" message
+				display_chars(LCD_SEG_L1_3_0, (u8 *)" ONH", SEG_ON);
+			} else if (sAlarm.hourly == ALARM_ENABLED) {
+				sAlarm.state = ALARM_DISABLED;
+				sAlarm.hourly = ALARM_DISABLED;
+				// Show " off" message
+				display_chars(LCD_SEG_L1_3_0, (u8 *)" OFF", SEG_ON);
+			}
+		}
+
 	}
 }
 #endif /* CONFIG_ALARM */

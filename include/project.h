@@ -142,13 +142,11 @@ typedef union
     u16	prepare							: 1;	// 1 = Wait for clock tick, then set display.flag.show_message flag
     u16	show							: 1;	// 1 = Display message now
     u16 erase							: 1;	// 1 = Erase message
+    u16 type_msg							: 1;  // 1 = Call display handler
+    u16 msg_line1							: 1;  // 1 = message handler for line1, line2 otherwise
     u16	type_locked						: 1;	// 1 = Show "buttons are locked" in Line2
     u16 type_unlocked					: 1;	// 1 = Show "buttons are unlocked" in Line2
     u16 type_lobatt						: 1;	// 1 = Show "lobatt" text in Line2
-    u16 type_alarm_off_chime_off		: 1;	// 1 = Show " off" text in Line1
-    u16 type_alarm_off_chime_on			: 1;	// 1 = Show " offh" text in Line1
-    u16 type_alarm_on_chime_off			: 1;	// 1 = Show "  on" text in Line1
-    u16 type_alarm_on_chime_on			: 1;	// 1 = Show " onh" text in Line1
     u16 type_no_beep_on					: 1;	// 1 = Show " beep" text in Line2
     u16 type_no_beep_off				: 1;	// 1 = Show "nobeep" text in Line2
     u16 block_line1						: 1;	// 1 = block Line1 from updating until message erase
