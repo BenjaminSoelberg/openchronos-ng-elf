@@ -1,3 +1,20 @@
+/*
+    Copyright (C) 2011 Angelo Arrifano <miknix@gmail.com>
+	   - Improve message display API, with timeout feature
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 // *************************************************************************************************
 //
 //	Copyright (C) 2009 Texas Instruments Incorporated - http://www.ti.com/ 
@@ -511,6 +528,7 @@ __interrupt void TIMER0_A0_ISR(void)
 		if (sBatt.lobatt_display-- == 0) 
 		{
 			message.flag.prepare = 1;
+			message.flag.timeout = 7;
 			message.flag.type_lobatt = 1;
 			sBatt.lobatt_display = BATTERY_LOW_MESSAGE_CYCLE;
 		}
@@ -525,7 +543,14 @@ __interrupt void TIMER0_A0_ISR(void)
 			message.flag.prepare = 0;
 			message.flag.show    = 1;
 		}
-		else if (message.flag.erase) // message cycle is over, so erase it
+		// tick timeout
+		if (message.flag.timeout > 0)
+			message.flag.timeout--;
+		// timeout! erase the screen
+		if (message.flag.timeout == 0)
+			message.flag.erase = 1;
+		// message cycle is over, so erase it
+		if (message.flag.erase)
 		{
 			message.flag.erase       = 0;
 			message.flag.block_line1 = 0;
@@ -570,6 +595,7 @@ __interrupt void TIMER0_A0_ISR(void)
 	
 			// Show "beep / nobeep" message synchronously with next second tick
 			message.flag.prepare = 1;
+			message.flag.timeout = 1;
 			if (sys.flag.no_beep)	message.flag.type_no_beep_on   = 1;
 			else					message.flag.type_no_beep_off  = 1;
 			
@@ -585,6 +611,7 @@ __interrupt void TIMER0_A0_ISR(void)
 	
 			// Show "buttons are locked/unlocked" message synchronously with next second tick
 			message.flag.prepare = 1;
+			message.flag.timeout = 1;
 			if (sys.flag.lock_buttons)	message.flag.type_locked   = 1;
 			else						message.flag.type_unlocked = 1;
 			

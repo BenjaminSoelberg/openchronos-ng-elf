@@ -1,6 +1,6 @@
 /*
     Copyright (C) 2011 Angelo Arrifano <miknix@gmail.com>
-	   - Improve message display API
+	   - Improve message display API, with timeout feature
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -642,7 +642,6 @@ void process_requests(void)
 // *************************************************************************************************
 void display_update(void)
 {
-	u8 line;
 	u8 string[8];
 	
 	// ---------------------------------------------------------------------
@@ -675,40 +674,44 @@ void display_update(void)
 	// If message text should be displayed
 	if (message.flag.show)
 	{
-		line = LINE2;
-		
-		// Select message to display
-		if (message.flag.type_msg)
-			line = ( message.flag.msg_line1 ? LINE1 : LINE2 );
-		else if (message.flag.type_locked)			memcpy(string, "  LOCT", 6);
+		// Select message to display (system only)
+		if (message.flag.type_locked)			memcpy(string, "  LOCT", 6);
 		else if (message.flag.type_unlocked)	memcpy(string, "  OPEN", 6);
 		else if (message.flag.type_lobatt)		memcpy(string, "LOBATT", 6);
 		else if (message.flag.type_no_beep_on)  memcpy(string, " SILNT", 6);
 		else if (message.flag.type_no_beep_off) memcpy(string, "  BEEP", 6);
 
 		// Clear previous content
-		clear_line(line);
-		if(line == LINE2) 	fptr_lcd_function_line2(line, DISPLAY_LINE_CLEAR);
-		else				fptr_lcd_function_line1(line, DISPLAY_LINE_CLEAR);
-		
-		// modular applications should set prepare=1, type_msg=1 and chose the line with
-		// msg_line1 (1 for LINE1, 0 for LINE2) and then handle their display function
-		// with a DISPLAY_LINE_MESSAGE update.
-		if (message.flag.type_msg) {
-			if (message.flag.msg_line1)
-				fptr_lcd_function_line1(line, DISPLAY_LINE_MESSAGE);
-			else
-				fptr_lcd_function_line2(line, DISPLAY_LINE_MESSAGE);
+		if(message.flag.line1) {
+			clear_line(LINE1);
+			fptr_lcd_function_line1(LINE1, DISPLAY_LINE_CLEAR);
 		} else {
-			if (line == LINE2) 	display_chars(LCD_SEG_L2_5_0, string, SEG_ON);
-			else 				display_chars(LCD_SEG_L1_3_0, string, SEG_ON);
+			clear_line(LINE2);
+			fptr_lcd_function_line2(LINE2, DISPLAY_LINE_CLEAR);
 		}
 		
-		// Next second tick erases message and repaints original screen content (full_update)
+		// modular applications should set prepare=1, and user = 1 and chose the line with
+		// line1 (1 for LINE1, 0 for LINE2) and then handle their display function
+		// with a DISPLAY_LINE_MESSAGE update.
+		if (message.flag.user) {
+			if (message.flag.line1)
+				fptr_lcd_function_line1(LINE1, DISPLAY_LINE_MESSAGE);
+			else
+				fptr_lcd_function_line2(LINE2, DISPLAY_LINE_MESSAGE);
+		} else {
+			if (message.flag.line1)
+				display_chars(LCD_SEG_L1_3_0, string, SEG_ON);
+			else
+				display_chars(LCD_SEG_L2_5_0, string, SEG_ON);
+		}
+
+		u8 timeout = message.flag.timeout;
 		message.all_flags = 0;
-		if(line == LINE2) 	message.flag.block_line2 = 1;
-		else				message.flag.block_line1 = 1;
-		message.flag.erase = 1;
+		if(message.flag.line1)
+			message.flag.block_line1 = 1;
+		else
+			message.flag.block_line2 = 1;
+		message.flag.timeout = timeout;
 	}
 	
 	// ---------------------------------------------------------------------

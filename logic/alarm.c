@@ -159,9 +159,7 @@ void sx_alarm(u8 line)
 	// UP: Cycle through alarm modes
 	if(button.flag.up)
 	{
-		message.flag.prepare = 1;
-		message.flag.type_msg = 1;
-		message.flag.msg_line1 = 1;
+		show_message(1, 1);
 	}
 }
 
