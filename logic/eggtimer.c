@@ -1,3 +1,20 @@
+/*
+	 Copyright (C) 2011 Angelo Arrifano <miknix@gmail.com>
+	   - Updated to use new improved timer0 API
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 // *************************************************************************************************
 //
 //	Copyright (C) 2009 Texas Instruments Incorporated - http://www.ti.com/ 
@@ -120,6 +137,8 @@ void start_eggtimer(void)
 
 	// Set eggtimer icon (doesn't exist so I wont untill I'll use stopwatch for now)
 	display_symbol(LCD_ICON_RECORD, SEG_ON_BLINK_ON);
+
+	Timer0_A1_Register(eggtimer_tick);
 }
 
 
@@ -135,6 +154,8 @@ void stop_eggtimer(void)
 	// Clear eggtimer run flag
 	sEggtimer.state = EGGTIMER_STOP;
 	
+	Timer0_A1_Unregister(eggtimer_tick);
+
 	// Clear eggtimer icon (doesn't exist so I'll use stopwatch for now)
 	display_symbol(LCD_ICON_RECORD, SEG_ON_BLINK_OFF); // Assumes the eggtimer menu is active
 }
@@ -149,6 +170,9 @@ void stop_eggtimer(void)
 // *************************************************************************************************
 void stop_eggtimer_alarm(void)
 {
+	// We dont need the timer active anymore
+	Timer0_A1_Unregister(eggtimer_tick);
+
 	sEggtimer.state = EGGTIMER_STOP;
 	sEggtimer.duration = EGGTIMER_ALARM_DURATION;
 	if (eggtimer_visible()) {
@@ -262,33 +286,44 @@ extern void set_eggtimer(void){
 // *************************************************************************************************
 void eggtimer_tick(void) //gibbons: This function could benefit from an alarm queue...
 {
-    if (sEggtimer.state != EGGTIMER_RUN) return;
+	if (sEggtimer.state == EGGTIMER_RUN) { // no "else if" intentional
     
-    //sEggtimer.drawFlag == 1 --> seconds changed
-    //sEggtimer.drawFlag == 2 --> minutes also changed
-    //sEggtimer.drawFlag == 3 --> hours also changed
+		//sEggtimer.drawFlag == 1 --> seconds changed
+		//sEggtimer.drawFlag == 2 --> minutes also changed
+		//sEggtimer.drawFlag == 3 --> hours also changed
+
+		sEggtimer.drawFlag = 1;
+		display.flag.update_eggtimer = 1;
     
-    sEggtimer.drawFlag = 1;
-    display.flag.update_eggtimer = 1;
-    
-    // gibbons: Is it possible to merge the if and else if blocks into one?
-    if ((sEggtimer.hours == 0) && (sEggtimer.minutes == 0) && (sEggtimer.seconds == 1)) {
-	// Die Zeit ist um! Time's up!
-	sEggtimer.state = EGGTIMER_ALARM;
-	set_eggtimer_to_defaults(); // Set values to defaults, so user can see what time duration just timed out
-    }
-    else if (sEggtimer.seconds-- == 0) { // NOTE: intentionally sEggtimer.seconds--, and not --sEggtimer.seconds
-	sEggtimer.seconds = 59;
-	sEggtimer.drawFlag++;
-	// Subtract a minute from the remaining time
-	if (sEggtimer.minutes-- == 0) {
-	    sEggtimer.minutes = 59;
-	    sEggtimer.drawFlag++;
-	    // Subtract an hour from the remaining time
-	    sEggtimer.hours--;
+		// gibbons: Is it possible to merge the if and else if blocks into one?
+		if ((sEggtimer.hours == 0) && (sEggtimer.minutes == 0) && (sEggtimer.seconds == 1)) {
+			// Die Zeit ist um! Time's up!
+			sEggtimer.state = EGGTIMER_ALARM;
+			set_eggtimer_to_defaults(); // Set values to defaults, so user can see what time duration just timed out
+		}
+		else if (sEggtimer.seconds-- == 0) { // NOTE: intentionally sEggtimer.seconds--, and not --sEggtimer.seconds
+			sEggtimer.seconds = 59;
+			sEggtimer.drawFlag++;
+			// Subtract a minute from the remaining time
+			if (sEggtimer.minutes-- == 0) {
+				sEggtimer.minutes = 59;
+				sEggtimer.drawFlag++;
+				// Subtract an hour from the remaining time
+				sEggtimer.hours--;
+			}
+		}
 	}
-    }
-    
+ 	if (sEggtimer.state == EGGTIMER_ALARM) {
+		// Decrement alarm duration counter
+		if (sEggtimer.duration-- > 0)
+		{
+			request.flag.eggtimer_buzzer = 1;
+		}
+		else
+		{
+			stop_eggtimer_alarm(); // Set state to Stop and reset duration
+		}
+	}
 }
 
 

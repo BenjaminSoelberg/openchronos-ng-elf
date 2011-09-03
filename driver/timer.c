@@ -95,10 +95,6 @@
 
 #include "temperature.h"
 
-#ifdef CONFIG_EGGTIMER
-#include "eggtimer.h"
-#endif
-
 #ifdef CONFIG_SIDEREAL
 #include "sidereal.h"
 #endif
@@ -469,23 +465,6 @@ __interrupt void TIMER0_A0_ISR(void)
 	};
 
 
-#ifdef CONFIG_EGGTIMER
-	if (sEggtimer.state == EGGTIMER_RUN) {
-		eggtimer_tick(); // Subtract 1 second from eggtimer's count
-	}
-
-	if (sEggtimer.state == EGGTIMER_ALARM) { // no "else if" intentional
-		// Decrement alarm duration counter
-		if (sEggtimer.duration-- > 0)
-		{
-			request.flag.eggtimer_buzzer = 1;
-		}
-		else
-		{
-			stop_eggtimer_alarm(); // Set state to Stop and reset duration
-		}
-	}
-#endif
 	#ifdef CONFIG_ALARM
 	// Generate alarm signal
 	if (sAlarm.state == ALARM_ON) 
