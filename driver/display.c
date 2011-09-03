@@ -233,7 +233,7 @@ void write_lcd_mem(u8 * lcdmem, u8 bits, u8 bitmask, u8 state)
 
 
 // *************************************************************************************************
-// @fn          itoa
+// @fn          _itoa
 // @brief       Generic integer to array routine. Converts integer n to string.
 //				Default conversion result has leading zeros, e.g. "00123"
 //				Option to convert leading '0' into whitespace (blanks)
@@ -242,7 +242,7 @@ void write_lcd_mem(u8 * lcdmem, u8 bits, u8 bitmask, u8 state)
 //				u8 blanks		fill up result string with number of whitespaces instead of leading zeros  
 // @return      u8				string
 // *************************************************************************************************
-u8 * itoa(u32 n, u8 digits, u8 blanks)
+u8 * _itoa(u32 n, u8 digits, u8 blanks)
 {
 	u8 i;
 	u8 digits1 = digits;
@@ -305,7 +305,7 @@ void display_value1(u8 segments, u32 value, u8 digits, u8 blanks, u8 disp_mode)
 {
 	u8 * str;
 
-	str = itoa(value, digits, blanks);
+	str = _itoa(value, digits, blanks);
 
 	// Display string in blink mode
 	display_chars(segments, str, disp_mode);

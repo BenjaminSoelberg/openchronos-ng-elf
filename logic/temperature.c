@@ -337,7 +337,7 @@ void display_temperature(u8 line, u8 update)
 		if (temperature > 999 ) temperature = 999;
 
 		// Display result in xx.x format
-		str = itoa(temperature, 3, 1);
+		str = _itoa(temperature, 3, 1);
 		display_chars(LCD_SEG_L1_3_1, str, SEG_ON);
 	}
 	else if (update == DISPLAY_LINE_CLEAR)

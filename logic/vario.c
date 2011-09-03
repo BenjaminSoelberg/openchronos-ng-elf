@@ -303,7 +303,7 @@ _display_signed( s32 value, u8 is_fraction )
 	value *= -1;
      }
 
-   str = itoa( value, 6, (is_fraction) ? 3 : 5 );
+   str = _itoa( value, 6, (is_fraction) ? 3 : 5 );
 
    for ( i = 0; (is_neg && (str[i] == ' ')); i++ )
      {
@@ -511,9 +511,9 @@ display_vario( u8 line, u8 update )
 #endif
 #if VARIO_F_TIME
 	   case VARIO_VIEWMODE_F_TIME:
-	     display_chars(LCD_SEG_L2_5_0, itoa(G_vario.stats.f_time.hh,2,0), SEG_ON);
-	     display_chars(LCD_SEG_L2_3_0, itoa(G_vario.stats.f_time.mm,2,0), SEG_ON);
-	     display_chars(LCD_SEG_L2_1_0, itoa(G_vario.stats.f_time.ss,2,0), SEG_ON);
+	     display_chars(LCD_SEG_L2_5_0, _itoa(G_vario.stats.f_time.hh,2,0), SEG_ON);
+	     display_chars(LCD_SEG_L2_3_0, _itoa(G_vario.stats.f_time.mm,2,0), SEG_ON);
+	     display_chars(LCD_SEG_L2_1_0, _itoa(G_vario.stats.f_time.ss,2,0), SEG_ON);
 	     display_symbol(LCD_SEG_L2_COL1, SEG_ON);
 	     display_symbol(LCD_SEG_L2_COL0, SEG_ON);
 	     break;

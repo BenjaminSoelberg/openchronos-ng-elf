@@ -168,7 +168,7 @@ void display_battery_V(u8 line, u8 update)
 		sBatt.state = MENU_ITEM_VISIBLE; 
 		
 		// Display result in xx.x format
-		str = itoa(sBatt.voltage, 3, 0);
+		str = _itoa(sBatt.voltage, 3, 0);
 
 		display_chars(LCD_SEG_L2_2_0, str, SEG_ON);
 		display_symbol(LCD_SEG_L2_DP, SEG_ON);
@@ -176,7 +176,7 @@ void display_battery_V(u8 line, u8 update)
 	else if (update == DISPLAY_LINE_UPDATE_PARTIAL)
 	{
 		// Display result in xx.x format
-		str = itoa(sBatt.voltage, 3, 0);
+		str = _itoa(sBatt.voltage, 3, 0);
 
 		display_chars(LCD_SEG_L2_2_0, str, SEG_ON);
 			

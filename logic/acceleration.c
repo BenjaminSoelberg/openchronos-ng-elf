@@ -249,7 +249,7 @@ void display_acceleration(u8 line, u8 update)
 			sAccel.data = accel_data;	
 	
 			// Display acceleration in x.xx format
-			str = itoa(accel_data, 3, 0);
+			str = _itoa(accel_data, 3, 0);
 			display_chars(LCD_SEG_L1_2_0, str, SEG_ON);
 			
 			// Display sign

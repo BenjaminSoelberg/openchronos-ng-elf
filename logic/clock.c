@@ -323,14 +323,14 @@ void mx_time(u8 line)
     case 0:
 #endif
     case 1:		// Display HH:MM (LINE1) and .SS (LINE2)
-      str = itoa(hours, 2, 0);
+      str = _itoa(hours, 2, 0);
       display_chars(LCD_SEG_L1_3_2, str, SEG_ON);
       display_symbol(LCD_SEG_L1_COL, SEG_ON);
 
-      str = itoa(minutes, 2, 0);
+      str = _itoa(minutes, 2, 0);
       display_chars(LCD_SEG_L1_1_0, str, SEG_ON);
 
-      str = itoa(seconds, 2, 0);
+      str = _itoa(seconds, 2, 0);
       display_chars(LCD_SEG_L2_1_0, str, SEG_ON);
       display_symbol(LCD_SEG_L2_DP, SEG_ON);
 
@@ -393,13 +393,13 @@ void display_time(u8 line, u8 update)
 	      case 3:
 	        display_hours_12_or_24(switch_seg(line, LCD_SEG_L1_3_2, LCD_SEG_L2_3_2), sTime.hour, 2, 1, SEG_ON);
 	      case 2:
-	        display_chars(switch_seg(line, LCD_SEG_L1_1_0, LCD_SEG_L2_1_0), itoa(sTime.minute, 2, 0), SEG_ON);
+	        display_chars(switch_seg(line, LCD_SEG_L1_1_0, LCD_SEG_L2_1_0), _itoa(sTime.minute, 2, 0), SEG_ON);
 	      }
 	    }
 	    else
 	    {
 	      // Seconds are always updated
-	      display_chars(switch_seg(line, LCD_SEG_L1_1_0, LCD_SEG_L2_1_0), itoa(sTime.second, 2, 0), SEG_ON);
+	      display_chars(switch_seg(line, LCD_SEG_L1_1_0, LCD_SEG_L2_1_0), _itoa(sTime.second, 2, 0), SEG_ON);
 	    }
 	  }
 	}
@@ -411,13 +411,13 @@ void display_time(u8 line, u8 update)
 	    // Display hours
 	    display_hours_12_or_24(switch_seg(line, LCD_SEG_L1_3_2, LCD_SEG_L2_3_2), sTime.hour, 2, 1, SEG_ON);
 	    // Display minute
-	    display_chars(switch_seg(line, LCD_SEG_L1_1_0, LCD_SEG_L2_1_0), itoa(sTime.minute, 2, 0), SEG_ON);
+	    display_chars(switch_seg(line, LCD_SEG_L1_1_0, LCD_SEG_L2_1_0), _itoa(sTime.minute, 2, 0), SEG_ON);
 	    display_symbol(switch_seg(line, LCD_SEG_L1_COL, LCD_SEG_L2_COL0), SEG_ON_BLINK_ON);
 	  }
 	  else
 	  {
 	    // Display seconds
-	    display_chars(switch_seg(line, LCD_SEG_L1_1_0, LCD_SEG_L2_1_0), itoa(sTime.second, 2, 0), SEG_ON);
+	    display_chars(switch_seg(line, LCD_SEG_L1_1_0, LCD_SEG_L2_1_0), _itoa(sTime.second, 2, 0), SEG_ON);
 	    display_symbol(switch_seg(line, LCD_SEG_L1_DP1, LCD_SEG_L2_DP), SEG_ON);
 	  }
 	}

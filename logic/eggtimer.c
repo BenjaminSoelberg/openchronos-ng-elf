@@ -200,11 +200,11 @@ extern void set_eggtimer(void){
         seconds = sEggtimer.seconds;
         
         // Display HH:MM:SS (LINE2)
-	str = itoa(hours, 2, 0);
+	str = _itoa(hours, 2, 0);
 	display_chars(LCD_SEG_L2_5_4, str, SEG_ON);
-	str = itoa(minutes, 2, 0);
+	str = _itoa(minutes, 2, 0);
 	display_chars(LCD_SEG_L2_3_2, str, SEG_ON);
-	str = itoa(seconds, 2, 0);
+	str = _itoa(seconds, 2, 0);
 	display_chars(LCD_SEG_L2_1_0, str, SEG_ON);
 
         // Init value index
@@ -353,13 +353,13 @@ void display_eggtimer(u8 line, u8 update)
 		switch(sEggtimer.drawFlag) 
 		{
 		    case 3: // Hours changed
-			str = itoa(sEggtimer.hours, 2, 0);
+			str = _itoa(sEggtimer.hours, 2, 0);
 			display_chars(LCD_SEG_L2_5_4, str, SEG_ON);
 		    case 2: // Minutes changed
-			str = itoa(sEggtimer.minutes, 2, 0);
+			str = _itoa(sEggtimer.minutes, 2, 0);
 			display_chars(LCD_SEG_L2_3_2, str, SEG_ON);
 		    case 1: // Seconds changed
-			str = itoa(sEggtimer.seconds, 2, 0);
+			str = _itoa(sEggtimer.seconds, 2, 0);
 			display_chars(LCD_SEG_L2_1_0, str, SEG_ON);
 		}
 		sEggtimer.drawFlag = 0; // Clear draw flag
@@ -368,11 +368,11 @@ void display_eggtimer(u8 line, u8 update)
 	else if (update == DISPLAY_LINE_UPDATE_FULL)	
 	{
 		// Display HH:MM:SS		
-		str = itoa(sEggtimer.hours, 2, 0);
+		str = _itoa(sEggtimer.hours, 2, 0);
 		display_chars(LCD_SEG_L2_5_4, str, SEG_ON);
-		str = itoa(sEggtimer.minutes, 2, 0);
+		str = _itoa(sEggtimer.minutes, 2, 0);
 		display_chars(LCD_SEG_L2_3_2, str, SEG_ON);
-		str = itoa(sEggtimer.seconds, 2, 0);
+		str = _itoa(sEggtimer.seconds, 2, 0);
 		display_chars(LCD_SEG_L2_1_0, str, SEG_ON);
 		
 		display_symbol(LCD_SEG_L2_COL1, SEG_ON);

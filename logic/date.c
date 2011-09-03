@@ -207,10 +207,10 @@ void mx_date(line_t line)
 	// LINE1: YYYY (will be drawn by set_value)
 	// LINE2: MM  DD
 	
-	str = itoa(day, 2, 1);
+	str = _itoa(day, 2, 1);
 	display_chars(LCD_SEG_L2_1_0, str, SEG_ON);
 
-	str = itoa(month, 2, 1);
+	str = _itoa(month, 2, 1);
 	display_chars(LCD_SEG_L2_5_4, str, SEG_ON);
 
 	// Loop values until all are set or user breaks	set
@@ -300,7 +300,7 @@ void display_date(line_t line, update_t update)
 			case 0: //WWW.DD
 				// Convert day to string
 #ifdef CONFIG_DAY_OF_WEEK
-				str = itoa(sDate.day, 2, 1);
+				str = _itoa(sDate.day, 2, 1);
 				display_chars(switch_seg(line, LCD_SEG_L1_1_0, LCD_SEG_L2_1_0), str, SEG_ON);
 
 				//pfs BEGIN replace year display with day of week
@@ -353,26 +353,26 @@ void display_date(line_t line, update_t update)
 				// display date
 #ifndef CONFIG_METRIC_ONLY
 				if (!sys.flag.use_metric_units) {
-					str = itoa(sDate.day, 2, 0);
+					str = _itoa(sDate.day, 2, 0);
 					display_chars(switch_seg(line, LCD_SEG_L1_1_0, LCD_SEG_L2_1_0), str, SEG_ON);
 
 					// Convert month to string
-					str = itoa(sDate.month, 2, 1);
+					str = _itoa(sDate.month, 2, 1);
 					display_chars(switch_seg(line, LCD_SEG_L1_3_2, LCD_SEG_L2_3_2), str, SEG_ON);
 				} else {
 #else
 				if (1) {
 #endif
-					str = itoa(sDate.day, 2, 0);
+					str = _itoa(sDate.day, 2, 0);
 					display_chars(switch_seg(line, LCD_SEG_L1_3_2, LCD_SEG_L2_3_2), str, SEG_ON);
 					
-					str = itoa(sDate.month, 2, 0);
+					str = _itoa(sDate.month, 2, 0);
 					display_chars(switch_seg(line, LCD_SEG_L1_1_0, LCD_SEG_L2_1_0), str, SEG_ON);
 				}
 				break;
 			case 2: //YYYY
 				// Convert year to string
-				str = itoa(sDate.year, 4, 0);
+				str = _itoa(sDate.year, 4, 0);
 				display_chars(switch_seg(line, LCD_SEG_L1_3_0, LCD_SEG_L2_3_0), str, SEG_ON);
 				break;
 			default:

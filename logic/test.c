@@ -183,9 +183,9 @@ void test_mode(void)
 								{
 									Timer0_A4_Delay(CONV_MS_TO_TICKS(250));
 									as_get_data(sAccel.xyz);
-									str = itoa( sAccel.xyz[0], 3, 0);
+									str = _itoa( sAccel.xyz[0], 3, 0);
 									display_chars(LCD_SEG_L1_2_0, str, SEG_ON);
-									str = itoa( sAccel.xyz[2], 3, 0);
+									str = _itoa( sAccel.xyz[2], 3, 0);
 									display_chars(LCD_SEG_L2_2_0, str, SEG_ON);
 								}
 								as_stop();

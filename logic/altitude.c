@@ -449,9 +449,9 @@ void display_altitude(u8 line, u8 update)
 				if (sAlt.altitude >= 0)
 				{
 #ifdef CONFIG_ALTI_ACCUMULATOR
-					str = itoa(sAlt.altitude, 5, 4);
+					str = _itoa(sAlt.altitude, 5, 4);
 #else
-					str = itoa(sAlt.altitude, 4, 3);
+					str = _itoa(sAlt.altitude, 4, 3);
 #endif
 					display_symbol(LCD_SYMB_ARROW_UP, SEG_ON);
 					display_symbol(LCD_SYMB_ARROW_DOWN, SEG_OFF);
@@ -459,9 +459,9 @@ void display_altitude(u8 line, u8 update)
 				else
 				{
 #ifdef CONFIG_ALTI_ACCUMULATOR
-					str = itoa(sAlt.altitude*(-1), 4, 3);
+					str = _itoa(sAlt.altitude*(-1), 4, 3);
 #else
-					str = itoa(sAlt.altitude*(-1), 5, 4);
+					str = _itoa(sAlt.altitude*(-1), 5, 4);
 #endif
 					display_symbol(LCD_SYMB_ARROW_UP, SEG_OFF);
 					display_symbol(LCD_SYMB_ARROW_DOWN, SEG_ON);
@@ -480,9 +480,9 @@ void display_altitude(u8 line, u8 update)
 				if (ft >= 0)
 				{
 #ifdef CONFIG_ALTI_ACCUMULATOR
-					str = itoa(ft, 4, 3);
+					str = _itoa(ft, 4, 3);
 #else
-					str = itoa(ft, 5, 4);
+					str = _itoa(ft, 5, 4);
 #endif
 					display_symbol(LCD_SYMB_ARROW_UP, SEG_ON);
 					display_symbol(LCD_SYMB_ARROW_DOWN, SEG_OFF);
@@ -490,9 +490,9 @@ void display_altitude(u8 line, u8 update)
 				else
 				{
 #ifdef CONFIG_ALTI_ACCUMULATOR
-					str = itoa(ft*(-1), 4, 3);
+					str = _itoa(ft*(-1), 4, 3);
 #else
-					str = itoa(ft*(-1), 5, 4);
+					str = _itoa(ft*(-1), 5, 4);
 #endif
 					display_symbol(LCD_SYMB_ARROW_UP, SEG_OFF);
 					display_symbol(LCD_SYMB_ARROW_DOWN, SEG_ON);
@@ -773,13 +773,13 @@ void display_alt_accumulator (u8 line, u8 update)
 				display_char(LCD_SEG_L2_4, '-', SEG_ON);		// display - (negative sign) character at start of second line
 				temp = 0 - temp;					// make altitude a positive number again so we can display it
 				if (temp>9999) temp = 9999;				// we can only display 4 digits for a negative number
-				str = itoa(temp, 4, 3);					// 4 digits, up to 3 leading blank digits
+				str = _itoa(temp, 4, 3);					// 4 digits, up to 3 leading blank digits
 				display_chars(LCD_SEG_L2_3_0, str, SEG_ON);		// display altitude difference on bottom line (4 digits)
 				return;
 			}
 			else								// otherwise altitude difference is a positive number
 			{
-				str = itoa(temp, 5, 4);					// 5 digits, up to 4 leading blank digits
+				str = _itoa(temp, 5, 4);					// 5 digits, up to 4 leading blank digits
 				display_chars(LCD_SEG_L2_4_0, str, SEG_ON);		// display altitude difference on bottom line (5 digits)
 				return;
 			}
@@ -801,7 +801,7 @@ void display_alt_accumulator (u8 line, u8 update)
 				temp += sAlt.altitude - alt_accum_lastpeakdip;			// then add the vertical we've gained so far above that last dip / valley point
 
 			// display the result
-			str = itoa(temp, 5, 4);					// 5 digits, up to 4 leading blank digits
+			str = _itoa(temp, 5, 4);					// 5 digits, up to 4 leading blank digits
 			display_chars(LCD_SEG_L2_4_0, str, SEG_ON);		// display peak altitude on bottom line (5 digits)
 			return;
 		}
@@ -814,7 +814,7 @@ void display_alt_accumulator (u8 line, u8 update)
 
 			temp = alt_accum_max;					// local copy of peak altitude
 			if (temp < 0) temp = 0;					// I can't be bothered displaying a negative number! So make it zero if it is.
-			str = itoa(temp, 5, 4);					// 5 digits, up to 4 leading blank digits
+			str = _itoa(temp, 5, 4);					// 5 digits, up to 4 leading blank digits
 			display_chars(LCD_SEG_L2_4_0, str, SEG_ON);		// display peak altitude on bottom line (5 digits)
 			return;
 		}

@@ -379,7 +379,7 @@ void display_heartrate(u8 line, u8 update)
 	{
 		if (is_bluerobin())
 		{
-			str = itoa(sBlueRobin.heartrate, 3, 2);
+			str = _itoa(sBlueRobin.heartrate, 3, 2);
 			display_chars(LCD_SEG_L1_2_0, str, SEG_ON);
 		}
 		else
@@ -425,12 +425,12 @@ void display_speed(u8 line, u8 update)
 	{
 		if (sys.flag.use_metric_units)
 		{
-			str = itoa(sBlueRobin.speed, 3, 1);
+			str = _itoa(sBlueRobin.speed, 3, 1);
 		}
 		else
 		{
 			milesPerHour = (u16)(sBlueRobin.speed * 0.6214);
-			str = itoa(milesPerHour, 3, 1);
+			str = _itoa(milesPerHour, 3, 1);
 		}
 		display_chars(LCD_SEG_L1_2_0, str, SEG_ON);
 	}
@@ -485,11 +485,11 @@ void display_distance(u8 line, u8 update)
 				// Convert decimal distance in meters to format "xxxx.xx" km
 				// If distance is less than 1000m, force display to "   0.xx"
 				// If distance is less than 100m, force display to "   0.0x"
-				str = itoa(sBlueRobin.distance/10, 6, 3);
+				str = _itoa(sBlueRobin.distance/10, 6, 3);
 			}
 			else
 			{
-				str = itoa(199999, 6, 3);
+				str = _itoa(199999, 6, 3);
 			}	
 		}
 		else
@@ -502,12 +502,12 @@ void display_distance(u8 line, u8 update)
 			{
 				// If distance is less than 1 mile, force display to "   0.xx"
 				// If distance is less than 1/10 mile, force display to "   0.0x"
-				str = itoa(miles, 6, 3);
+				str = _itoa(miles, 6, 3);
 			}
 			else
 			{
 				// Display maximum value (1999.99 mi)
-				str = itoa(199999, 6, 3);
+				str = _itoa(199999, 6, 3);
 			}	
 		}
 		display_chars(LCD_SEG_L2_5_0, str, SEG_ON);
@@ -563,7 +563,7 @@ void display_calories(u8 line, u8 update)
 	if (update != DISPLAY_LINE_CLEAR)
 	{
 		// Convert decimal calories to string
-		str = itoa(sBlueRobin.calories / 1000, 6, 5);
+		str = _itoa(sBlueRobin.calories / 1000, 6, 5);
 		display_chars(LCD_SEG_L2_5_0, str, SEG_ON);
 	}
 	
