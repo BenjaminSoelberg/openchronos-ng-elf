@@ -65,6 +65,7 @@
 #include "display.h"
 #include "buzzer.h"
 #include "ports.h"
+#include "timer.h"
 
 // logic
 #include "alarm.h"
@@ -89,6 +90,43 @@ struct alarm sAlarm;
 // Extern section
 
 
+/*****************************************************************************
+ ** @fn     alarm_tick
+ ** @brief  this function is called every 1 second
+ ** @param  none
+ ** @return none
+ ****************************************************************************/
+void alarm_tick()
+{
+	// If the chime is enabled, we beep here
+	if (sTime.minute == 0) {
+		if (sAlarm.hourly == ALARM_ENABLED) {
+			request.flag.alarm_buzzer = 1;
+		}
+	}
+	// Check if alarm needs to be turned on
+	// Start with minutes - only 1/60 probability to match
+	if (sAlarm.state == ALARM_ENABLED
+	          && sTime.minute == sAlarm.minute && sTime.hour == sAlarm.hour) {
+		// Indicate that alarm is beeping
+		sAlarm.state = ALARM_ON;
+	}
+	// Generate alarm signal
+	if (sAlarm.state == ALARM_ON) 
+	{
+		// Decrement alarm duration counter
+		if (sAlarm.duration-- > 0)
+		{
+			request.flag.alarm_buzzer = 1;
+		}
+		else
+		{
+			sAlarm.duration = ALARM_ON_DURATION;
+			stop_alarm();
+		}
+	}
+}
+
 // *************************************************************************************************
 // @fn          clearalarmData
 // @brief       Resets alarmData to 06:30
@@ -105,32 +143,9 @@ void reset_alarm(void)
 	sAlarm.duration = ALARM_ON_DURATION;
 	sAlarm.state 	= ALARM_DISABLED;
 	sAlarm.hourly 	= ALARM_DISABLED;
+
+	Timer0_A1_Register(&alarm_tick);
 }
-
-
-// *************************************************************************************************
-// @fn          check_alarm
-// @brief       Check if current time matches alarm time
-// @param       none
-// @return      none
-// *************************************************************************************************
-void check_alarm(void) 
-{
-	// Return if alarm is not enabled
-	if (sAlarm.state != ALARM_ENABLED) return;
-	
-	// Compare current time and alarm time
-	// Start with minutes - only 1/60 probability to match
-	if (sTime.minute == sAlarm.minute)
-	{
-		if (sTime.hour == sAlarm.hour)
-		{
-			// Indicate that alarm is beeping
-			sAlarm.state = ALARM_ON;
-		}
-	}
-}	
-
 
 // *************************************************************************************************
 // @fn          stop_alarm

@@ -74,7 +74,6 @@
 #include "clock.h"
 #include "battery.h"
 #include "stopwatch.h"
-#include "alarm.h"
 #include "altitude.h"
 #include "display.h"
 #include "rfsimpliciti.h"
@@ -421,33 +420,23 @@ __interrupt void TIMER0_A0_ISR(void)
 		request.flag.voltage_measurement = 1;
 		#endif
 		
-		#ifdef CONFIG_ALARM
-		// If the chime is enabled, we beep here
-		if (sTime.minute == 0) {
-			if (sAlarm.hourly == ALARM_ENABLED) {
-				request.flag.alarm_buzzer = 1;
-			}
-            #if (CONFIG_DST > 0)
-            if ((sTime.hour == 1) &&
-                (dst_state == 0) &&
-                dst_isDateInDST(sDate.month, sDate.day))
-            {
-                // spring forward
-                sTime.hour++;
-                dst_state = 1;
-            }
-            if ((sTime.hour == 2) &&
-                (dst_state != 0) &&
-                (!dst_isDateInDST(sDate.month, sDate.day)))
-            {
-                // fall back
-                sTime.hour--;
-                dst_state = 0;
-            }
-            #endif
+		#if (CONFIG_DST > 0)
+      if ((sTime.hour == 1) &&
+      	(dst_state == 0) &&
+			dst_isDateInDST(sDate.month, sDate.day))
+		{
+      	// spring forward
+      	sTime.hour++;
+      	dst_state = 1;
 		}
-		// Check if alarm needs to be turned on
-		check_alarm();
+		if ((sTime.hour == 2) &&
+			(dst_state != 0) &&
+			(!dst_isDateInDST(sDate.month, sDate.day)))
+		{
+			// fall back
+			sTime.hour--;
+			dst_state = 0;
+		}
 		#endif
 		#ifdef CONFIG_ALTI_ACCUMULATOR
 		// Check if we need to do an altitude accumulation
@@ -465,23 +454,6 @@ __interrupt void TIMER0_A0_ISR(void)
 	};
 
 
-	#ifdef CONFIG_ALARM
-	// Generate alarm signal
-	if (sAlarm.state == ALARM_ON) 
-	{
-		// Decrement alarm duration counter
-		if (sAlarm.duration-- > 0)
-		{
-			request.flag.alarm_buzzer = 1;
-		}
-		else
-		{
-			sAlarm.duration = ALARM_ON_DURATION;
-			stop_alarm();
-		}
-	}
-	#endif
-	
 #ifdef CONFIG_STRENGTH
         // One more second gone by.
         if(is_strength())

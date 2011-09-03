@@ -43,8 +43,8 @@
 
 // internal functions
 extern void reset_alarm(void);
-extern void check_alarm(void);
 extern void stop_alarm(void);
+extern void alarm_tick(void);
 
 // menu functions
 extern void sx_alarm(u8 line);
