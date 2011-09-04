@@ -82,11 +82,6 @@
 #include "acceleration.h"
 #endif
 
-//prout
-#ifdef CONFIG_PROUT
-#include "prout.h"
-#endif
-
 //pfs
 #ifndef ELIMINATE_BLUEROBIN
 #include "bluerobin.h"
