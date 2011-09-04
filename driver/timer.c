@@ -103,10 +103,6 @@
 #include "date.h"
 #endif
 
-#ifdef CONFIG_STRENGTH
-#include "strength.h"
-#endif
-
 #include <stdlib.h>
 
 // *************************************************************************************************
@@ -452,15 +448,6 @@ __interrupt void TIMER0_A0_ISR(void)
 		p->fn();
 		p = p->next;
 	};
-
-
-#ifdef CONFIG_STRENGTH
-        // One more second gone by.
-        if(is_strength())
-	{
-		strength_tick();
-	}            
-#endif
 
 	// Do a temperature measurement each second while menu item is active
 	if (is_temp_measurement()) request.flag.temperature_measurement = 1;
