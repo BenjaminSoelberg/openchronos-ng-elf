@@ -1,6 +1,7 @@
 /*
     Copyright (C) 2011 Angelo Arrifano <miknix@gmail.com>
 	   - Updated to use the improved message display API
+	   - Simplified code, allow simultaneous chime and alarm
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -98,21 +99,25 @@ struct alarm sAlarm;
  ****************************************************************************/
 void alarm_tick()
 {
-	// If the chime is enabled, we beep here
-	if (sTime.minute == 0) {
-		if (sAlarm.hourly == ALARM_ENABLED) {
-			request.flag.alarm_buzzer = 1;
+	// Hack to prevent sAlarm.running to be set several times within 1sec,
+	// which otherwise would prevent us to stop the alarm noise..
+	if (sTime.drawFlag >= 2) {
+		// If the chime is enabled, we beep here
+		if (sTime.minute == 0) {
+			if (sAlarm.chime) {
+				request.flag.alarm_buzzer = 1;
+			}
+		}
+		// Check if alarm needs to be turned on
+		// Start with minutes - only 1/60 probability to match
+		if (sAlarm.alarm && sTime.minute == sAlarm.minute
+		                                     && sTime.hour == sAlarm.hour) {
+			// Indicate that alarm is beeping
+			sAlarm.running = 1;
 		}
 	}
-	// Check if alarm needs to be turned on
-	// Start with minutes - only 1/60 probability to match
-	if (sAlarm.state == ALARM_ENABLED
-	          && sTime.minute == sAlarm.minute && sTime.hour == sAlarm.hour) {
-		// Indicate that alarm is beeping
-		sAlarm.state = ALARM_ON;
-	}
 	// Generate alarm signal
-	if (sAlarm.state == ALARM_ON) 
+	if (sAlarm.running)
 	{
 		// Decrement alarm duration counter
 		if (sAlarm.duration-- > 0)
@@ -136,15 +141,14 @@ void alarm_tick()
 void reset_alarm(void) 
 {
 	// Default alarm time 06:30
-	sAlarm.hour   = 06;
+	sAlarm.hour   = 6;
 	sAlarm.minute = 30;
 
-	// Alarm is initially off	
+	// Alarm and chime are initially off
 	sAlarm.duration = ALARM_ON_DURATION;
-	sAlarm.state 	= ALARM_DISABLED;
-	sAlarm.hourly 	= ALARM_DISABLED;
-
-	Timer0_A1_Register(&alarm_tick);
+	sAlarm.alarm 	 = 0;
+	sAlarm.chime 	 = 0;
+	sAlarm.running  = 0;
 }
 
 // *************************************************************************************************
@@ -155,8 +159,8 @@ void reset_alarm(void)
 // *************************************************************************************************
 void stop_alarm(void) 
 {
-	// Indicate that alarm is enabled, but not active
-	sAlarm.state = ALARM_ENABLED;
+	// Alarm not running anymore
+	sAlarm.running = 0;
 	
 	// Stop buzzer
 	stop_buzzer();
@@ -174,7 +178,17 @@ void sx_alarm(u8 line)
 	// UP: Cycle through alarm modes
 	if(button.flag.up)
 	{
-		show_message(1, 1);
+		// this will cycle between all alarm/chime combinations and overflow
+		sAlarm.state++;
+
+		// redraw screen soon as possible
+		display.flag.line1_full_update = 1;
+
+		// Register timer only if we need it, saving CPU cycles..
+		if (sAlarm.state)
+			Timer0_A1_Register(&alarm_tick);
+		else
+			Timer0_A1_Unregister(&alarm_tick);
 	}
 }
 
@@ -187,31 +201,26 @@ void sx_alarm(u8 line)
 // *************************************************************************************************
 void mx_alarm(u8 line)
 {
-	u8 select;
-	s32 hours;
-	s32 minutes;
-	u8 * str;
-	
 	// Clear display
 	clear_display_all();
 
 	// Keep global values in case new values are discarded
-	hours 		= sAlarm.hour;
-	minutes 	= sAlarm.minute;
+	s32 hours    = sAlarm.hour;
+	s32 minutes  = sAlarm.minute;
 
 	// Display HH:MM (LINE1) 
-	str = _itoa(hours, 2, 0);
-	display_chars(LCD_SEG_L1_3_2, str, SEG_ON);
-	display_symbol(LCD_SEG_L1_COL, SEG_ON);
+	{
+		u8 *str = _itoa(hours, 2, 0);
+		display_chars(LCD_SEG_L1_3_2, str, SEG_ON);
+		display_symbol(LCD_SEG_L1_COL, SEG_ON);
+	}
+	{
+		u8 *str = _itoa(minutes, 2, 0);
+		display_chars(LCD_SEG_L1_1_0, str, SEG_ON);
+	}
 	
-	str = _itoa(minutes, 2, 0);
-	display_chars(LCD_SEG_L1_1_0, str, SEG_ON);
-	
-	// Display "ALARM" (LINE2)
-//	display_chars(LCD_SEG_L2_4_0, (u8 *)"ALARM", SEG_ON);
-		
 	// Init value index
-	select = 0;	
+	u8 select = 0;
 		
 	// Loop values until all are set or user breaks	set
 	while(1) 
@@ -230,18 +239,11 @@ void mx_alarm(u8 line)
 	    break;
 	  }
 
-	  switch (select)
-	  {
-	  case 0:		// Set hour
+	  if (select == 0)
 	    set_value(&hours, 2, 0, 0, 23, SETVALUE_ROLLOVER_VALUE + SETVALUE_DISPLAY_VALUE + SETVALUE_NEXT_VALUE, LCD_SEG_L1_3_2, display_hours_12_or_24);
-	    select = 1;
-	    break;
-
-	  case 1:		// Set minutes
+     else
 	    set_value(&minutes, 2, 0, 0, 59, SETVALUE_ROLLOVER_VALUE + SETVALUE_DISPLAY_VALUE + SETVALUE_NEXT_VALUE, LCD_SEG_L1_1_0, display_value1);
-	    select = 0;
-	    break;
-	  }
+	  select = !select;
 	}
 
 	// Clear button flag
@@ -261,57 +263,34 @@ void mx_alarm(u8 line)
 // *************************************************************************************************
 void display_alarm(u8 line, u8 update)
 {
-	
-	if (update == DISPLAY_LINE_UPDATE_FULL)			
-	{
-	  display_hours_12_or_24(switch_seg(line, LCD_SEG_L1_3_2, LCD_SEG_L2_3_2), sAlarm.hour, 2, 1, SEG_ON);
-	  display_chars(switch_seg(line, LCD_SEG_L1_1_0, LCD_SEG_L2_1_0), _itoa(sAlarm.minute, 2, 0), SEG_ON);
-	  display_symbol(switch_seg(line, LCD_SEG_L1_COL, LCD_SEG_L2_COL0), SEG_ON);
+	if (update == DISPLAY_LINE_UPDATE_FULL) {
+		display_hours_12_or_24(switch_seg(line, LCD_SEG_L1_3_2, LCD_SEG_L2_3_2), sAlarm.hour, 2, 1, SEG_ON);
+		display_chars(switch_seg(line, LCD_SEG_L1_1_0, LCD_SEG_L2_1_0), _itoa(sAlarm.minute, 2, 0), SEG_ON);
+		display_symbol(switch_seg(line, LCD_SEG_L1_COL, LCD_SEG_L2_COL0), SEG_ON);
+		// Clear / set alarm icon
+		if (sAlarm.alarm)
+			display_symbol(LCD_ICON_ALARM, SEG_ON);
+		else
+			display_symbol(LCD_ICON_ALARM, SEG_OFF);
 
-	  // Show blinking alarm icon
-	  display_symbol(LCD_ICON_ALARM, SEG_ON_BLINK_ON);
+		// Clear / set chime icon
+		if (sAlarm.chime) {
+			display_symbol(LCD_ICON_BEEPER2, SEG_ON);
+			display_symbol(LCD_ICON_BEEPER3, SEG_ON);
+		} else {
+			display_symbol(LCD_ICON_BEEPER2, SEG_OFF);
+			display_symbol(LCD_ICON_BEEPER3, SEG_OFF);
+		}
 	}
 	else if (update == DISPLAY_LINE_CLEAR)			
 	{
-	  // Clean up function-specific segments before leaving function
-	  display_symbol(LCD_SYMB_AM, SEG_OFF);
-
-	  // Clear / set alarm icon
-	  if (sAlarm.state == ALARM_DISABLED)
-	  {
-	    display_symbol(LCD_ICON_ALARM, SEG_OFF_BLINK_OFF);
-	  }
-	  else
-	  {
-	    display_symbol(LCD_ICON_ALARM, SEG_ON_BLINK_OFF);
-	  }
-	}
-	else if (update == DISPLAY_LINE_MESSAGE)
-	{
-		if (sAlarm.state == ALARM_DISABLED) {
-			if (sAlarm.hourly == ALARM_DISABLED) {
-				sAlarm.hourly = ALARM_ENABLED;
-				// Show "offh" message
-				display_chars(LCD_SEG_L1_3_0, (u8 *)"OFFH", SEG_ON);
-			} else if (sAlarm.hourly == ALARM_ENABLED) {
-				sAlarm.state = ALARM_ENABLED;
-				sAlarm.hourly = ALARM_DISABLED;
-				// Show " on" message
-				display_chars(LCD_SEG_L1_3_0, (u8 *)"  ON", SEG_ON);
-			}
-		} else if (sAlarm.state == ALARM_ENABLED) {
-			if (sAlarm.hourly == ALARM_DISABLED) {
-				sAlarm.hourly = ALARM_ENABLED;
-				// Show " onh" message
-				display_chars(LCD_SEG_L1_3_0, (u8 *)" ONH", SEG_ON);
-			} else if (sAlarm.hourly == ALARM_ENABLED) {
-				sAlarm.state = ALARM_DISABLED;
-				sAlarm.hourly = ALARM_DISABLED;
-				// Show " off" message
-				display_chars(LCD_SEG_L1_3_0, (u8 *)" OFF", SEG_ON);
-			}
-		}
-
+		// Clean up function-specific segments before leaving function
+		display_symbol(LCD_SYMB_AM, SEG_OFF);
+		display_symbol(LCD_ICON_BEEPER3, SEG_OFF);
+		// Dont leave the bell ON, it can be reused by other apps..
+		display_symbol(LCD_ICON_ALARM, SEG_OFF);
+		display_symbol(LCD_ICON_BEEPER2, SEG_OFF);
+		display_symbol(LCD_ICON_BEEPER3, SEG_OFF);
 	}
 }
 #endif /* CONFIG_ALARM */

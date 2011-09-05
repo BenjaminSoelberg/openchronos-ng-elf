@@ -318,7 +318,7 @@ __interrupt void PORT2_ISR(void)
 	{
 		// Any button event stops active alarm
 		#ifdef CONFIG_ALARM
-		if (sAlarm.state == ALARM_ON) 
+		if (sAlarm.running)
 		{
 			stop_alarm();
 			button.all_flags = 0;
