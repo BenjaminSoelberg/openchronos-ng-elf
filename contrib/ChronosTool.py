@@ -686,6 +686,7 @@ parser.add_option( "-v", "--verbose", action="store_true", dest="verbose", defau
 #Command must be given
 if len( args ) == 0:
     print >> sys.stderr, "ERROR: you must specify a command"
+    parser.print_help()
     sys.exit( 5 )
 
 #If no device option given, try to guess
