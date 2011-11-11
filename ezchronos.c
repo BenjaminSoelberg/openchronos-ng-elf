@@ -53,6 +53,7 @@
 #include "timer.h"
 #include "pmm.h"
 #include "rf1a.h"
+#include "rtca.h"
 
 // logic
 #include "menu.h"
@@ -281,6 +282,9 @@ void init_application(void)
 	// Re-enable all interrupts
 	__enable_interrupt();
 	
+	// Init the hardwre real time clock (RTC_A)
+	rtca_init();
+
 	// ---------------------------------------------------------------------
 	// Configure ports
 
