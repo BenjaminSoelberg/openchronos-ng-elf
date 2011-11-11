@@ -17,4 +17,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "project.h"
+
 void rtca_init();
+
+void rtca_set_date(u8 sec, u8 min, u8 hour, u8 dow, u8 day, u8 mon, u16 year);
