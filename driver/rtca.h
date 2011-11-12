@@ -21,4 +21,8 @@
 
 void rtca_init();
 
-void rtca_set_date(u8 sec, u8 min, u8 hour, u8 dow, u8 day, u8 mon, u16 year);
+void rtca_get_time(u8 *hour, u8 *min, u8 *sec);
+void rtca_set_time(u8 hour, u8 min, u8 sec);
+
+void rtca_get_date(u16 *year, u8 *mon, u8 *day, u8 *dow);
+void rtca_set_date(u16 year, u8 mon, u8 day, u8 dow);

@@ -46,6 +46,7 @@
 #include "ports.h"
 #include "display.h"
 #include "timer.h"
+#include "rtca.h"
 
 // logic
 #include "menu.h"
@@ -71,7 +72,6 @@
 // *************************************************************************************************
 // Prototypes section
 void reset_clock(void);
-void clock_tick(void);
 void mx_time(u8 line);
 void sx_time(u8 line);
 
@@ -104,14 +104,6 @@ const u8 selection_Timeformat[][4] =
 // *************************************************************************************************
 void reset_clock(void)
 {
-	// Set global system time to 0
-	sTime.system_time = 0;
-
-	// Set main 24H time to start value
-	sTime.hour   = 4;
-	sTime.minute = 30;
-	sTime.second = 0;
-
 	// Display style of both lines is default (HH:MM)
 	sTime.line1ViewStyle = DISPLAY_DEFAULT_VIEW;
 	sTime.line2ViewStyle = DISPLAY_DEFAULT_VIEW;
@@ -122,51 +114,9 @@ void reset_clock(void)
 	#ifdef CONFIG_SIDEREAL
 	sTime.UTCoffset				  =0;
 	#endif
-}
 
-
-// *************************************************************************************************
-// @fn          clock_tick
-// @brief       Add 1 second to system time and to display time
-// @param       none
-// @return      none
-// *************************************************************************************************
-void clock_tick(void)
-{
-	// Use sTime.drawFlag to minimize display updates
-	// sTime.drawFlag = 1: second
-	// sTime.drawFlag = 2: minute, second
-	// sTime.drawFlag = 3: hour, minute
-	sTime.drawFlag = 1;
-
-	// Increase global system time
-	sTime.system_time++;
-
-	// Add 1 second
-	sTime.second++;
-
-	// Add 1 minute
-	if (sTime.second == 60)
-	{
-		sTime.second = 0;
-		sTime.minute++;
-		sTime.drawFlag++;
-
-		// Add 1 hour
-		if (sTime.minute == 60)
-		{
-			sTime.minute = 0;
-			sTime.hour++;
-			sTime.drawFlag++;
-
-			// Add 1 day
-			if (sTime.hour == 24)
-			{
-				sTime.hour = 0;
-				add_day();
-			}
-		}
-	}
+	// use draw flag
+	sTime.drawFlag = 2;
 }
 
 
@@ -257,9 +207,9 @@ void mx_time(u8 line)
     timeformat 	= TIMEFORMAT_24H;
   }
   timeformat1	= timeformat;
-  hours 		= sTime.hour;
-  minutes 	= sTime.minute;
-  seconds 	= sTime.second;
+  //hours 		= sTime.hour;
+  //minutes 	= sTime.minute;
+  //seconds 	= sTime.second;
 
   // Init value index
   select = 0;
@@ -286,9 +236,9 @@ void mx_time(u8 line)
       Timer0_Stop();
 
       // Store local variables in global clock time
-      sTime.hour 	 = hours;
-      sTime.minute = minutes;
-      sTime.second = seconds;
+      //sTime.hour 	 = hours;
+      //sTime.minute = minutes;
+      //sTime.second = seconds;
 
       // Start clock timer
       Timer0_Start();
@@ -381,6 +331,10 @@ void sx_time(u8 line)
 // *************************************************************************************************
 void display_time(u8 line, u8 update)
 {
+	u8 hour, min, sec;
+
+	rtca_get_time(&hour, &min, &sec);
+
 	// Partial update
 	if (update == DISPLAY_LINE_UPDATE_PARTIAL)
 	{
@@ -391,15 +345,15 @@ void display_time(u8 line, u8 update)
 	      switch(sTime.drawFlag)
 	      {
 	      case 3:
-	        display_hours_12_or_24(switch_seg(line, LCD_SEG_L1_3_2, LCD_SEG_L2_3_2), sTime.hour, 2, 1, SEG_ON);
+	        display_hours_12_or_24(switch_seg(line, LCD_SEG_L1_3_2, LCD_SEG_L2_3_2), hour, 2, 1, SEG_ON);
 	      case 2:
-	        display_chars(switch_seg(line, LCD_SEG_L1_1_0, LCD_SEG_L2_1_0), _itoa(sTime.minute, 2, 0), SEG_ON);
+	        display_chars(switch_seg(line, LCD_SEG_L1_1_0, LCD_SEG_L2_1_0), _itoa(min, 2, 0), SEG_ON);
 	      }
 	    }
 	    else
 	    {
 	      // Seconds are always updated
-	      display_chars(switch_seg(line, LCD_SEG_L1_1_0, LCD_SEG_L2_1_0), _itoa(sTime.second, 2, 0), SEG_ON);
+	      display_chars(switch_seg(line, LCD_SEG_L1_1_0, LCD_SEG_L2_1_0), _itoa(sec, 2, 0), SEG_ON);
 	    }
 	  }
 	}
@@ -409,15 +363,15 @@ void display_time(u8 line, u8 update)
 	  if ( ( line == LINE1 && sTime.line1ViewStyle == DISPLAY_DEFAULT_VIEW ) || ( line == LINE2 && sTime.line2ViewStyle == DISPLAY_DEFAULT_VIEW ) )
 	  {
 	    // Display hours
-	    display_hours_12_or_24(switch_seg(line, LCD_SEG_L1_3_2, LCD_SEG_L2_3_2), sTime.hour, 2, 1, SEG_ON);
+	    display_hours_12_or_24(switch_seg(line, LCD_SEG_L1_3_2, LCD_SEG_L2_3_2), hour, 2, 1, SEG_ON);
 	    // Display minute
-	    display_chars(switch_seg(line, LCD_SEG_L1_1_0, LCD_SEG_L2_1_0), _itoa(sTime.minute, 2, 0), SEG_ON);
+	    display_chars(switch_seg(line, LCD_SEG_L1_1_0, LCD_SEG_L2_1_0), _itoa(min, 2, 0), SEG_ON);
 	    display_symbol(switch_seg(line, LCD_SEG_L1_COL, LCD_SEG_L2_COL0), SEG_ON_BLINK_ON);
 	  }
 	  else
 	  {
 	    // Display seconds
-	    display_chars(switch_seg(line, LCD_SEG_L1_1_0, LCD_SEG_L2_1_0), _itoa(sTime.second, 2, 0), SEG_ON);
+	    display_chars(switch_seg(line, LCD_SEG_L1_1_0, LCD_SEG_L2_1_0), _itoa(sec, 2, 0), SEG_ON);
 	    display_symbol(switch_seg(line, LCD_SEG_L1_DP1, LCD_SEG_L2_DP), SEG_ON);
 	  }
 	}

@@ -21,24 +21,39 @@
 
 void rtca_init()
 {
-	// TODO: for safety, check if ACLK is 12k
+	RTCCTL1 |= RTCHOLD;
 
-	// Enable calendar mode, disable BCD format
+	// Enable calendar mode (it resets date/time registers)
 	RTCCTL1 |= RTCMODE;
-	RTCCTL1 &= ~RTCBCD;
-
-	// Write sane date to the RTC 11:11:11 Fri(5) 11/11/2011
-	rtca_set_date(11, 11, 11, 5, 11, 11, 2011);
 
 	// Enable RTC
-	RTCCTL1 |= ~RTCHOLD;
+	RTCCTL1 &= ~RTCHOLD;
 }
 
-void rtca_set_date(u8 sec, u8 min, u8 hour, u8 dow, u8 day, u8 mon, u16 year)
+void rtca_get_time(u8 *hour, u8 *min, u8 *sec)
+{
+	*sec = RTCSEC;
+	*min = RTCMIN;
+	*hour = RTCHOUR;
+}
+
+void rtca_set_time(u8 hour, u8 min, u8 sec)
 {
 	RTCSEC = sec;
 	RTCMIN = min;
 	RTCHOUR = hour;
+}
+
+void rtca_get_date(u16 *year, u8 *mon, u8 *day, u8 *dow)
+{
+	*dow = RTCDOW;
+	*day = RTCDAY;
+	*mon = RTCMON;
+	*year = RTCYEARL | (RTCYEARH << 8);
+}
+
+void rtca_set_date(u16 year, u8 mon, u8 day, u8 dow)
+{
 	RTCDOW = dow;
 	RTCDAY = day;
 	RTCMON = mon;

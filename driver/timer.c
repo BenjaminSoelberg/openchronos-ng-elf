@@ -336,9 +336,6 @@ __interrupt void TIMER0_A0_ISR(void)
 	// Enable IE 
 	TA0CCTL0 |= CCIE;
 	
-	// Add 1 second to global time
-	clock_tick();
-	
 	// Set clock update flag
 	display.flag.update_time = 1;
 	
@@ -538,7 +535,7 @@ __interrupt void TIMER0_A0_ISR(void)
 	// Check idle timeout, set timeout flag
 	if (sys.flag.idle_timeout_enabled)
 	{
-		if (sTime.system_time - sTime.last_activity > INACTIVITY_TIME) sys.flag.idle_timeout = 1; //setFlag(sysFlag_g, SYS_TIMEOUT_IDLE);
+		//if (sTime.system_time - sTime.last_activity > INACTIVITY_TIME) sys.flag.idle_timeout = 1; //setFlag(sysFlag_g, SYS_TIMEOUT_IDLE);
 	}
 	
 	// -------------------------------------------------------------------
