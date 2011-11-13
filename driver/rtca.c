@@ -51,7 +51,11 @@ void rtca_set_tevent_fn(rtca_tevent_fn_t fn)
 
 void rtca_get_time(u8 *hour, u8 *min, u8 *sec)
 {
-	// TODO: Wait until read is ready flag
+	// wait until read is ready (avoid reading invalid time)
+	while (! (RTCCTL01 & RTCRDY)) {
+		__delay_cycles(2);
+	}
+	
 	*sec = RTCSEC;
 	*min = RTCMIN;
 	*hour = RTCHOUR;
@@ -66,7 +70,11 @@ void rtca_set_time(u8 hour, u8 min, u8 sec)
 
 void rtca_get_date(u16 *year, u8 *mon, u8 *day, u8 *dow)
 {
-	// TODO: Wait until read is ready flag
+	// wait until read is ready (avoid reading invalid time)
+	while (! (RTCCTL01 & RTCRDY)) {
+		__delay_cycles(2);
+	}
+
 	*dow = RTCDOW;
 	*day = RTCDAY;
 	*mon = RTCMON;
