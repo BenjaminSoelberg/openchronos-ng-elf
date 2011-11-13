@@ -19,17 +19,39 @@
 
 #include "rtca.h"
 
+// stores function to call when a time event occurrs
+static rtca_tevent_fn_t tevent_fn = NULL;
+
 void rtca_init()
 {
 	// Enable calendar mode (date/time registers are automatically reset)
+	// and enable read ready interrupts
 	RTCCTL01 |= RTCMODE;
 
 	// Enable the RTC
 	RTCCTL01 &= ~RTCHOLD;
 }
 
+// sets the tick function (function that is called at a time event)
+// set fn to NULL to clear
+void rtca_set_tevent_fn(rtca_tevent_fn_t fn)
+{
+	if (fn) {
+		// we have to set this BEFORE enabling the interrupt
+		tevent_fn = fn;
+		// enable interrupts
+		RTCCTL01 |= RTCTEVIE;
+	} else {
+		// disable interrupts
+		RTCCTL01 &= ~RTCTEVIE;
+		// we have to set this AFTER disabling the interrupt
+		tevent_fn = NULL;
+	}
+}
+
 void rtca_get_time(u8 *hour, u8 *min, u8 *sec)
 {
+	// TODO: Wait until read is ready flag
 	*sec = RTCSEC;
 	*min = RTCMIN;
 	*hour = RTCHOUR;
@@ -44,6 +66,7 @@ void rtca_set_time(u8 hour, u8 min, u8 sec)
 
 void rtca_get_date(u16 *year, u8 *mon, u8 *day, u8 *dow)
 {
+	// TODO: Wait until read is ready flag
 	*dow = RTCDOW;
 	*day = RTCDAY;
 	*mon = RTCMON;
@@ -57,5 +80,21 @@ void rtca_set_date(u16 year, u8 mon, u8 day, u8 dow)
 	RTCMON = mon;
 	RTCYEARL = year & 0xff;
 	RTCYEARH = year >> 8;
+}
+
+#ifdef __GNUC__
+#include <legacymsp430.h>
+interrupt (RTC_A_VECTOR) RTC_A_ISR(void)
+#else
+#pragma vector = RTC_A_VECTOR
+__interrupt void RTC_A_ISR(void)
+#endif
+{
+	// interrupt is serviced, clear interrupt
+	RTCCTL01 &= ~RTCTEVIFG;
+
+	// for now we only have one interrupt event enabled,
+	// so we don't need to check the interrupt source.
+	tevent_fn( (RTCCTL01 & (RTCTEV1 | RTCTEV0)) >> 8 );
 }
 

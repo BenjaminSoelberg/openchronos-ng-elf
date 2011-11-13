@@ -19,7 +19,16 @@
 
 #include "project.h"
 
+// the ev variable will hold the time event, that is:
+// 0x00 - Minute changed
+// 0x01 - Hour changed
+// 0x02 - Every day at midnight (00:00)
+// 0x03 - Every day at noon (12:00)
+typedef void (*rtca_tevent_fn_t)(u8 ev);
+
 void rtca_init();
+
+void rtca_set_tevent_fn(rtca_tevent_fn_t fn);
 
 void rtca_get_time(u8 *hour, u8 *min, u8 *sec);
 void rtca_set_time(u8 hour, u8 min, u8 sec);

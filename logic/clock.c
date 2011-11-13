@@ -72,6 +72,7 @@
 // *************************************************************************************************
 // Prototypes section
 void reset_clock(void);
+void clock_event(u8 ev);
 void mx_time(u8 line);
 void sx_time(u8 line);
 
@@ -115,8 +116,19 @@ void reset_clock(void)
 	sTime.UTCoffset				  =0;
 	#endif
 
-	// use draw flag
-	sTime.drawFlag = 2;
+	// The flag will be later updated by clock_event()
+	sTime.drawFlag = 0;
+
+	rtca_set_tevent_fn(&clock_event);
+}
+
+
+void clock_event(u8 ev)
+{
+	// Use sTime.drawFlag to minimize display updates
+	// sTime.drawFlag = 2: minute, second
+	// sTime.drawFlag = 3: hour, minute
+	sTime.drawFlag = (ev > 1 ? 0 : ev + 2);
 }
 
 
@@ -338,8 +350,6 @@ void display_time(u8 line, u8 update)
 	// Partial update
 	if (update == DISPLAY_LINE_UPDATE_PARTIAL)
 	{
-	  if(sTime.drawFlag != 0)
-	  {
 	    if (sTime.line1ViewStyle == DISPLAY_DEFAULT_VIEW)
 	    {
 	      switch(sTime.drawFlag)
@@ -355,7 +365,6 @@ void display_time(u8 line, u8 update)
 	      // Seconds are always updated
 	      display_chars(switch_seg(line, LCD_SEG_L1_1_0, LCD_SEG_L2_1_0), _itoa(sec, 2, 0), SEG_ON);
 	    }
-	  }
 	}
 	else if (update == DISPLAY_LINE_UPDATE_FULL)
 	{
