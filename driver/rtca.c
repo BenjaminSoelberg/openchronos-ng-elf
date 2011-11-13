@@ -21,13 +21,11 @@
 
 void rtca_init()
 {
-	RTCCTL1 |= RTCHOLD;
+	// Enable calendar mode (date/time registers are automatically reset)
+	RTCCTL01 |= RTCMODE;
 
-	// Enable calendar mode (it resets date/time registers)
-	RTCCTL1 |= RTCMODE;
-
-	// Enable RTC
-	RTCCTL1 &= ~RTCHOLD;
+	// Enable the RTC
+	RTCCTL01 &= ~RTCHOLD;
 }
 
 void rtca_get_time(u8 *hour, u8 *min, u8 *sec)
