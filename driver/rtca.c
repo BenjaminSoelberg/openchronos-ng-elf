@@ -19,8 +19,10 @@
 
 #include "rtca.h"
 
-// stores function to call when a time event occurrs
-static rtca_tevent_fn_t tevent_fn = NULL;
+#include <stdlib.h>
+
+// stores callback list of functions to call when a time event occurrs
+static rtca_cblist_t *cblist = NULL;
 
 void rtca_init()
 {
@@ -32,21 +34,44 @@ void rtca_init()
 	RTCCTL01 &= ~RTCHOLD;
 }
 
-// sets the tick function (function that is called at a time event)
-// set fn to NULL to clear
-void rtca_set_tevent_fn(rtca_tevent_fn_t fn)
+void rtca_tevent_fn_register(rtca_tevent_fn_t fn)
 {
-	if (fn) {
-		// we have to set this BEFORE enabling the interrupt
-		tevent_fn = fn;
-		// enable interrupts
-		RTCCTL01 |= RTCTEVIE;
-	} else {
-		// disable interrupts
-		RTCCTL01 &= ~RTCTEVIE;
-		// we have to set this AFTER disabling the interrupt
-		tevent_fn = NULL;
+	rtca_cblist_t **p = &cblist;
+
+	while (*p) {
+		p = &(*p)->next;
 	}
+
+	// disable interrupts for critical section
+	RTCCTL01 &= ~RTCTEVIE;
+
+	// add new node to list
+	*p = malloc(sizeof(rtca_cblist_t));
+	(*p)->next = NULL;
+	(*p)->fn = fn;
+
+	// re-enable interrupts
+	RTCCTL01 |= RTCTEVIE;
+}
+
+void rtca_tevent_fn_unregister(rtca_tevent_fn_t fn)
+{
+	rtca_cblist_t *p = cblist, *pp = NULL;
+
+	while (p) {
+		if (p->fn == fn) {
+			if (!pp)
+				cblist = p->next;
+			else
+				pp->next = p->next;
+			free(p);
+		}
+		pp = p;
+		p = p->next;
+	}
+
+	// disable interrupts if callback list is empty
+	RTCCTL01 &= ~RTCTEVIE;
 }
 
 void rtca_get_time(u8 *hour, u8 *min, u8 *sec)
@@ -101,8 +126,16 @@ __interrupt void RTC_A_ISR(void)
 	// interrupt is serviced, clear interrupt
 	RTCCTL01 &= ~RTCTEVIFG;
 
+	// just in case...
+	if (! cblist)
+		return;
+
 	// for now we only have one interrupt event enabled,
 	// so we don't need to check the interrupt source.
-	tevent_fn( (RTCCTL01 & (RTCTEV1 | RTCTEV0)) >> 8 );
+	rtca_cblist_t *p = cblist;
+	while (p) {
+		p->fn( (RTCCTL01 & (RTCTEV1 | RTCTEV0)) >> 8 );
+		p = p->next;
+	};
 }
 

@@ -119,7 +119,7 @@ void reset_clock(void)
 	// The flag will be later updated by clock_event()
 	sTime.drawFlag = 0;
 
-	rtca_set_tevent_fn(&clock_event);
+	rtca_tevent_fn_register(&clock_event);
 }
 
 

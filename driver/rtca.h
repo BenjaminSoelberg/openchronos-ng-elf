@@ -26,9 +26,15 @@
 // 0x03 - Every day at noon (12:00)
 typedef void (*rtca_tevent_fn_t)(u8 ev);
 
-void rtca_init();
+// list of time event callback functions
+typedef struct rtca_cblist {
+	rtca_tevent_fn_t fn;
+	struct rtca_cblist *next;
+} rtca_cblist_t;
 
-void rtca_set_tevent_fn(rtca_tevent_fn_t fn);
+void rtca_init();
+void rtca_tevent_fn_register(rtca_tevent_fn_t fn);
+void rtca_tevent_fn_unregister(rtca_tevent_fn_t fn);
 
 void rtca_get_time(u8 *hour, u8 *min, u8 *sec);
 void rtca_set_time(u8 hour, u8 min, u8 sec);
