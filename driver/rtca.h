@@ -32,9 +32,11 @@ typedef struct rtca_cblist {
 	struct rtca_cblist *next;
 } rtca_cblist_t;
 
-void rtca_init();
+void rtca_init(void);
 void rtca_tevent_fn_register(rtca_tevent_fn_t fn);
 void rtca_tevent_fn_unregister(rtca_tevent_fn_t fn);
+
+u32 rtca_get_systime(void);
 
 void rtca_get_time(u8 *hour, u8 *min, u8 *sec);
 void rtca_set_time(u8 hour, u8 min, u8 sec);

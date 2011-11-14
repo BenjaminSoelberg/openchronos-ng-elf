@@ -51,6 +51,7 @@
 #include "vti_as.h"
 #endif
 #include "display.h"
+#include "rtca.h"
 
 // logic
 #include "clock.h"
@@ -535,7 +536,7 @@ __interrupt void TIMER0_A0_ISR(void)
 	// Check idle timeout, set timeout flag
 	if (sys.flag.idle_timeout_enabled)
 	{
-		//if (sTime.system_time - sTime.last_activity > INACTIVITY_TIME) sys.flag.idle_timeout = 1; //setFlag(sysFlag_g, SYS_TIMEOUT_IDLE);
+		if (rtca_get_systime() - sTime.last_activity > INACTIVITY_TIME) sys.flag.idle_timeout = 1; //setFlag(sysFlag_g, SYS_TIMEOUT_IDLE);
 	}
 	
 	// -------------------------------------------------------------------

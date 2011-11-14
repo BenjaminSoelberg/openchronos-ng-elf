@@ -51,6 +51,7 @@
 #include "vti_ps.h"
 #include "timer.h"
 #include "display.h"
+#include "rtca.h"
 
 // logic
 #include "clock.h"
@@ -203,7 +204,7 @@ __interrupt void PORT2_ISR(void)
 			Timer0_A4_Delay(CONV_MS_TO_TICKS(BUTTONS_DEBOUNCE_TIME_IN));
 	
 			// Reset inactivity detection
-			//sTime.last_activity = sTime.system_time;
+			sTime.last_activity = rtca_get_systime();
 		}
 
 		// ---------------------------------------------------
@@ -475,7 +476,7 @@ void button_repeat_function(void)
 		sButton.repeats++;
 
 		// Reset inactivity detection counter
-		//sTime.last_activity = sTime.system_time;
+		sTime.last_activity = rtca_get_systime();
 		
 		// Disable blinking
 		stop_blink();

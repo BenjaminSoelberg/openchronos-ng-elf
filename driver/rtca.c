@@ -24,11 +24,25 @@
 // stores callback list of functions to call when a time event occurrs
 static rtca_cblist_t *cblist = NULL;
 
-void rtca_init()
+// stores system time = number of seconds since power on
+// and a cache of RTC registers
+// TODO: pack this stuff to save memory
+static struct {
+	u32 sys;
+	u16 year;
+	u8 mon;
+	u8 day;
+	u8 dow;
+	u8 hour;
+	u8 min;
+	u8 sec;
+} rtca_time = { 0, 0, 1, 1, 0, 0, 0, 0 };
+
+void rtca_init(void)
 {
 	// Enable calendar mode (date/time registers are automatically reset)
 	// and enable read ready interrupts
-	RTCCTL01 |= RTCMODE;
+	RTCCTL01 |= RTCMODE | RTCRDYIE;
 
 	// Enable the RTC
 	RTCCTL01 &= ~RTCHOLD;
@@ -74,16 +88,16 @@ void rtca_tevent_fn_unregister(rtca_tevent_fn_t fn)
 	RTCCTL01 &= ~RTCTEVIE;
 }
 
+u32 rtca_get_systime(void)
+{
+	return rtca_time.sys;
+}
+
 void rtca_get_time(u8 *hour, u8 *min, u8 *sec)
 {
-	// wait until read is ready (avoid reading invalid time)
-	while (! (RTCCTL01 & RTCRDY)) {
-		__delay_cycles(2);
-	}
-	
-	*sec = RTCSEC;
-	*min = RTCMIN;
-	*hour = RTCHOUR;
+	*sec = rtca_time.sec;
+	*min = rtca_time.min;
+	*hour = rtca_time.hour;
 }
 
 void rtca_set_time(u8 hour, u8 min, u8 sec)
@@ -95,15 +109,10 @@ void rtca_set_time(u8 hour, u8 min, u8 sec)
 
 void rtca_get_date(u16 *year, u8 *mon, u8 *day, u8 *dow)
 {
-	// wait until read is ready (avoid reading invalid time)
-	while (! (RTCCTL01 & RTCRDY)) {
-		__delay_cycles(2);
-	}
-
-	*dow = RTCDOW;
-	*day = RTCDAY;
-	*mon = RTCMON;
-	*year = RTCYEARL | (RTCYEARH << 8);
+	*dow = rtca_time.dow;
+	*day = rtca_time.day;
+	*mon = rtca_time.mon;
+	*year = rtca_time.year;
 }
 
 void rtca_set_date(u16 year, u8 mon, u8 day, u8 dow)
@@ -123,19 +132,37 @@ interrupt (RTC_A_VECTOR) RTC_A_ISR(void)
 __interrupt void RTC_A_ISR(void)
 #endif
 {
-	// interrupt is serviced, clear interrupt
-	RTCCTL01 &= ~RTCTEVIFG;
+	if (RTCIV & RTCIV_RTCRDYIFG) {
+		// read ready interrupt is serviced, clear flag
+		RTCCTL01 &= ~RTCRDYIFG;
 
-	// just in case...
-	if (! cblist)
-		return;
+		// copy register values
+		rtca_time.sec = RTCSEC;
+		rtca_time.min = RTCMIN;
+		rtca_time.hour = RTCHOUR;
+		rtca_time.dow = RTCDOW;
+		rtca_time.day = RTCDAY;
+		rtca_time.mon = RTCMON;
+		rtca_time.year = RTCYEARL | (RTCYEARH << 8);
+	
+		// increment system time
+		rtca_time.sys++;
+	}
+	if (RTCIV & RTCIV_RTCTEVIFG) {
+		// time event interrupt is serviced, clear flag
+		RTCCTL01 &= ~RTCTEVIFG;
 
-	// for now we only have one interrupt event enabled,
-	// so we don't need to check the interrupt source.
-	rtca_cblist_t *p = cblist;
-	while (p) {
-		p->fn( (RTCCTL01 & (RTCTEV1 | RTCTEV0)) >> 8 );
-		p = p->next;
-	};
+		// just in case...
+		if (! cblist)
+			return;
+
+		// for now we only have one interrupt event enabled,
+		// so we don't need to check the interrupt source.
+		rtca_cblist_t *p = cblist;
+		while (p) {
+			p->fn( (RTCCTL01 & (RTCTEV1 | RTCTEV0)) >> 8 );
+			p = p->next;
+		};
+	}
 }
 
