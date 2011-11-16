@@ -85,7 +85,8 @@ void rtca_tevent_fn_unregister(rtca_tevent_fn_t fn)
 	}
 
 	// disable interrupts if callback list is empty
-	RTCCTL01 &= ~RTCTEVIE;
+	if (! cblist)
+		RTCCTL01 &= ~RTCTEVIE;
 }
 
 u32 rtca_get_systime(void)
