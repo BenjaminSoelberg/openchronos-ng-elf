@@ -51,6 +51,7 @@
 #include "ports.h"
 #include "timer.h"
 #include "radio.h"
+#include "rtca.h"
 
 // logic
 #ifdef FEATURE_PROVIDE_ACCEL
@@ -700,12 +701,15 @@ void simpliciti_sync_decode_ap_cmd_callback(void)
 
 		case SYNC_AP_CMD_SET_WATCH:		// Set watch parameters
 										sys.flag.use_metric_units = (simpliciti_data[1] >> 7) & 0x01;
-										sTime.hour 			= simpliciti_data[1] & 0x7F;
-										sTime.minute 		= simpliciti_data[2];
-										sTime.second 		= simpliciti_data[3];
-										sDate.year 			= (simpliciti_data[4]<<8) + simpliciti_data[5];
-										sDate.month 		= simpliciti_data[6];
-										sDate.day 			= simpliciti_data[7];
+										rtca_set_time(simpliciti_data[1] & 0x7F,
+										              simpliciti_data[2],
+														  simpliciti_data[3]);
+										// TODO: Missing transmitting day of week
+										rtca_set_date((simpliciti_data[4]<<8)
+										                           + simpliciti_data[5],
+														  simpliciti_data[6],
+														  simpliciti_data[7],
+														  0);
 										#ifdef CONFIG_ALARM
 										sAlarm.hour			= simpliciti_data[8];
 										sAlarm.minute		= simpliciti_data[9];
@@ -784,13 +788,24 @@ void simpliciti_sync_get_data_callback(unsigned int index)
 	switch (simpliciti_data[0])
 	{
 		case SYNC_ED_TYPE_STATUS:		// Assemble status packet
-										simpliciti_data[1]  = (sys.flag.use_metric_units << 7) | (sTime.hour & 0x7F);
-										simpliciti_data[2]  = sTime.minute;
-										simpliciti_data[3]  = sTime.second;
-										simpliciti_data[4]  = sDate.year >> 8;
-										simpliciti_data[5]  = sDate.year & 0xFF;
-										simpliciti_data[6]  = sDate.month;
-										simpliciti_data[7]  = sDate.day;
+										{
+											u8 hour, min, sec;
+											rtca_get_time(&hour, &min, &sec);
+
+											simpliciti_data[1]  = (sys.flag.use_metric_units << 7) | (hour & 0x7F);
+											simpliciti_data[2]  = min;
+											simpliciti_data[3]  = sec;
+										}
+										{
+											u16 year; u8 mon, day, dow;
+											rtca_get_date(&year, &mon, &day, &dow);
+
+											simpliciti_data[4]  = year >> 8;
+											simpliciti_data[5]  = year & 0xFF;
+											simpliciti_data[6]  = mon;
+											simpliciti_data[7]  = day;
+											// TODO: Missing transmitting day of week
+										}
 										#ifdef CONFIG_ALARM
 										simpliciti_data[8]  = sAlarm.hour;
 										simpliciti_data[9]  = sAlarm.minute;

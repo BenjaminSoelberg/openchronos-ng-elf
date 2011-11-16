@@ -193,9 +193,9 @@ void mx_time(u8 line)
   u8 select;
   s32 timeformat;
   s16 timeformat1;
-  s32 hours;
-  s32 minutes;
-  s32 seconds;
+  u8 hours;
+  u8 minutes;
+  u8 seconds;
   u8 * str;
 
   // Clear display
@@ -219,9 +219,7 @@ void mx_time(u8 line)
     timeformat 	= TIMEFORMAT_24H;
   }
   timeformat1	= timeformat;
-  //hours 		= sTime.hour;
-  //minutes 	= sTime.minute;
-  //seconds 	= sTime.second;
+  rtca_get_time(&hours, &minutes, &seconds);
 
   // Init value index
   select = 0;
@@ -244,16 +242,8 @@ void mx_time(u8 line)
     // Button STAR (short): save, then exit
     if (button.flag.star)
     {
-      // Stop clock timer
-      Timer0_Stop();
-
-      // Store local variables in global clock time
-      //sTime.hour 	 = hours;
-      //sTime.minute = minutes;
-      //sTime.second = seconds;
-
-      // Start clock timer
-      Timer0_Start();
+      // Store time in RTC
+		rtca_set_time(hours, minutes, seconds);
 
       // Full display update is done when returning from function
       display_symbol(LCD_SYMB_AM, SEG_OFF);
@@ -266,6 +256,7 @@ void mx_time(u8 line)
       break;
     }
 
+    s32 val;
     switch (select)
     {
 #if (OPTION_TIME_DISPLAY == CLOCK_DISPLAY_SELECT)
@@ -297,17 +288,23 @@ void mx_time(u8 line)
       display_symbol(LCD_SEG_L2_DP, SEG_ON);
 
       // Set hours
-      set_value(&hours, 2, 0, 0, 23, SETVALUE_ROLLOVER_VALUE + SETVALUE_DISPLAY_VALUE + SETVALUE_NEXT_VALUE, LCD_SEG_L1_3_2, display_hours_12_or_24);
+		val = hours;
+      set_value(&val, 2, 0, 0, 23, SETVALUE_ROLLOVER_VALUE + SETVALUE_DISPLAY_VALUE + SETVALUE_NEXT_VALUE, LCD_SEG_L1_3_2, display_hours_12_or_24);
+		hours = val;
       select = 2;
       break;
 
     case 2:		// Set minutes
-      set_value(&minutes, 2, 0, 0, 59, SETVALUE_ROLLOVER_VALUE + SETVALUE_DISPLAY_VALUE + SETVALUE_NEXT_VALUE, LCD_SEG_L1_1_0, display_value1);
+      val = minutes;
+      set_value(&val, 2, 0, 0, 59, SETVALUE_ROLLOVER_VALUE + SETVALUE_DISPLAY_VALUE + SETVALUE_NEXT_VALUE, LCD_SEG_L1_1_0, display_value1);
+		minutes = val;
       select = 3;
       break;
 
     case 3:		// Set seconds
-      set_value(&seconds, 2, 0, 0, 59, SETVALUE_ROLLOVER_VALUE + SETVALUE_DISPLAY_VALUE + SETVALUE_NEXT_VALUE, LCD_SEG_L2_1_0, display_value1);
+      val = seconds;
+      set_value(&val, 2, 0, 0, 59, SETVALUE_ROLLOVER_VALUE + SETVALUE_DISPLAY_VALUE + SETVALUE_NEXT_VALUE, LCD_SEG_L2_1_0, display_value1);
+		seconds = val;
       select = 0;
       break;
     }

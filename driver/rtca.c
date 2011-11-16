@@ -103,9 +103,16 @@ void rtca_get_time(u8 *hour, u8 *min, u8 *sec)
 
 void rtca_set_time(u8 hour, u8 min, u8 sec)
 {
-	RTCSEC = sec;
-	RTCMIN = min;
-	RTCHOUR = hour;
+	// Stop RTC timekeeping for a while
+	RTCCTL01 |= RTCHOLD;
+
+	// update RTC registers
+	RTCSEC = (rtca_time.sec = sec);
+	RTCMIN = (rtca_time.min = min);
+	RTCHOUR = (rtca_time.hour = hour);
+
+	// Resume RTC time keeping
+	RTCCTL01 &= ~RTCHOLD;
 }
 
 void rtca_get_date(u16 *year, u8 *mon, u8 *day, u8 *dow)
@@ -118,11 +125,19 @@ void rtca_get_date(u16 *year, u8 *mon, u8 *day, u8 *dow)
 
 void rtca_set_date(u16 year, u8 mon, u8 day, u8 dow)
 {
-	RTCDOW = dow;
-	RTCDAY = day;
-	RTCMON = mon;
+	// Stop RTC timekeeping for a while
+	RTCCTL01 |= RTCHOLD;
+
+	// update RTC registers and local cache
+	RTCDOW = (rtca_time.dow = dow);
+	RTCDAY = (rtca_time.day = day);
+	RTCMON = (rtca_time.mon = mon);
+	rtca_time.year = year;
 	RTCYEARL = year & 0xff;
 	RTCYEARH = year >> 8;
+
+	// Resume RTC time keeping
+	RTCCTL01 &= ~RTCHOLD;
 }
 
 #ifdef __GNUC__

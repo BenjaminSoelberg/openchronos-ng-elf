@@ -67,10 +67,6 @@ struct time
 	u8		line1ViewStyle;
 	u8		line2ViewStyle;
 	
-	u8 hour;
-	u8 minute;
-	u8 second;
-
 	// Inactivity detection (exits set_value() function)
 	u32 	last_activity;
 	#ifdef CONFIG_SIDEREAL
