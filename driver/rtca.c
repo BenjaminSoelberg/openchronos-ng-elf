@@ -133,10 +133,10 @@ interrupt (RTC_A_VECTOR) RTC_A_ISR(void)
 __interrupt void RTC_A_ISR(void)
 #endif
 {
-	if (RTCIV & RTCIV_RTCRDYIFG) {
-		// read ready interrupt is serviced, clear flag
-		RTCCTL01 &= ~RTCRDYIFG;
+	// this register read will clear the latest pending interrupt flag
+	u8 IRS = (RTCIV & 0xff);
 
+	if (IRS == RTCIV_RTCRDYIFG) {
 		// copy register values
 		rtca_time.sec = RTCSEC;
 		rtca_time.min = RTCMIN;
@@ -148,11 +148,7 @@ __interrupt void RTC_A_ISR(void)
 	
 		// increment system time
 		rtca_time.sys++;
-	}
-	if (RTCIV & RTCIV_RTCTEVIFG) {
-		// time event interrupt is serviced, clear flag
-		RTCCTL01 &= ~RTCTEVIFG;
-
+	} else if (IRS == RTCIV_RTCTEVIFG) {
 		// just in case...
 		if (! cblist)
 			return;
