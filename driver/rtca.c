@@ -167,7 +167,8 @@ __interrupt void RTC_A_ISR(void)
 
 		// increment system time
 		rtca_time.sys++;
-	} else if (IRS == RTCIV_RTCTEVIFG) {	//Minute changed!
+	}
+	else if (IRS == RTCIV_RTCTEVIFG) {	//Minute changed!
 		u8 ev = 0;
 
 		// Possible values:
@@ -177,13 +178,13 @@ __interrupt void RTC_A_ISR(void)
 		// 3 - month changed
 		// 4 - year changed
 		// TODO: Fix this code! Day and mon are broken
-		if (RTCMIN) {					//  Hour changed
+		if (RTCMIN == 0) {				//  Hour changed
 			ev++;
 
-			if (RTCHOUR) {				// Day changed
+			if (RTCHOUR == 0) {	    		// Day changed
 				ev++;
 
-				if (RTCDAY == 1) {			// Month changed - day zero doesn't exist
+				if (RTCDAY == 1) {	    	// Month changed - day zero doesn't exist
 					ev++;
 
 					if (RTCMON == 1) {	// Year changed - month zero doesn't exist
