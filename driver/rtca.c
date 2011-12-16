@@ -152,24 +152,15 @@ interrupt(RTC_A_VECTOR) RTC_A_ISR(void)
 __interrupt void RTC_A_ISR(void)
 {
 #endif
-	// this register read will clear the latest pending interrupt flag
-	u8 IRS = (RTCIV & 0xff);
+	// copy register values
+	rtca_time.sec = RTCSEC;
 
-	if (IRS == RTCIV_RTCRDYIFG) {
-		// copy register values
-		rtca_time.sec = RTCSEC;
-		rtca_time.min = RTCMIN;
-		rtca_time.hour = RTCHOUR;
-		rtca_time.dow = RTCDOW;
-		rtca_time.day = RTCDAY;
-		rtca_time.mon = RTCMON;
-		rtca_time.year = RTCYEARL | (RTCYEARH << 8);
+	// increment system time
+	rtca_time.sys++;
 
-		// increment system time
-		rtca_time.sys++;
-	}
-	else if (IRS == RTCIV_RTCTEVIFG) {	//Minute changed!
+	if (RTCIV == RTCIV_RTCTEVIFG) {	//Minute changed!
 		u8 ev = 0;
+		rtca_time.min = RTCMIN;
 
 		// Possible values:
 		// 0 - minute changed
@@ -177,18 +168,19 @@ __interrupt void RTC_A_ISR(void)
 		// 2 - day changed
 		// 3 - month changed
 		// 4 - year changed
-		// TODO: Fix this code! Day and mon are broken
-		if (RTCMIN == 0) {				//  Hour changed
+		if (rtca_time.min == 0) {				//  Hour changed
 			ev++;
-
-			if (RTCHOUR == 0) {	    		// Day changed
+			rtca_time.hour = RTCHOUR;
+			if (rtca_time.hour == 0) {	    		// Day changed
 				ev++;
-
-				if (RTCDAY == 1) {	    	// Month changed - day zero doesn't exist
+				rtca_time.day = RTCDAY;
+				rtca_time.dow = RTCDOW;
+				if (rtca_time.day == 1) {	    	// Month changed - day zero doesn't exist
 					ev++;
-
-					if (RTCMON == 1) {	// Year changed - month zero doesn't exist
+					rtca_time.mon = RTCMON;
+					if (rtca_time.mon == 1) {	// Year changed - month zero doesn't exist
 						ev++;
+						rtca_time.year = RTCYEARL | (RTCYEARH << 8);
 					}
 				}
 			}

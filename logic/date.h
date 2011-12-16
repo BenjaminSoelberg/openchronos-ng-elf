@@ -44,10 +44,10 @@
 // *************************************************************************************************
 // Prototypes section
 extern void reset_date(void);
-extern void add_day(void);
 extern void mx_date(u8 line);
 extern void sx_date(u8 line);
 extern void display_date(u8 line, u8 update);
+extern void date_event(u8 ex);
 
 
 // *************************************************************************************************
@@ -59,9 +59,6 @@ extern void display_date(u8 line, u8 update);
 struct date
 {
 	u8  view;
-	u8  day;
-	u8  month;
-	u16 year;
 };
 extern struct date sDate;
 
