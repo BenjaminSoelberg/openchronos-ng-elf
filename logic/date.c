@@ -114,17 +114,18 @@ void mx_date(line_t line)
 	return;
 #else
 	u8 select;
-	s32 day;
-	s32 month;
-	s32 year;
+	u8 day;
+	u8 month;
+	u16 year;
 	u8 dow;
 	u8 *str;
+	s32 val;
 
 	// Clear display
 	clear_display_all();
 
 	// Convert global to local variables
-	rtca_get_date((u16 *) &year,(u8 *) &month,(u8 *) &day, &dow);
+	rtca_get_date( &year, &month, &day, &dow);
 
 	// Init value index
 	select = 0;
@@ -164,17 +165,23 @@ void mx_date(line_t line)
 
 		switch (select) {
 			case 0:		// Set year
-				set_value(&year, 4, 0, 2008, 2100, SETVALUE_DISPLAY_VALUE + SETVALUE_NEXT_VALUE, LCD_SEG_L1_3_0, display_value1);
+				val = year;
+				set_value(&val, 4, 0, 2008, 2100, SETVALUE_DISPLAY_VALUE + SETVALUE_NEXT_VALUE, LCD_SEG_L1_3_0, display_value1);
+				year = val;
 				select = 1;
 				break;
 
 			case 1:		// Set month
-				set_value(&month, 2, 1, 1, 12, SETVALUE_ROLLOVER_VALUE + SETVALUE_DISPLAY_VALUE + SETVALUE_NEXT_VALUE, LCD_SEG_L2_5_4, display_value1);
+				val = month;
+				set_value(&val, 2, 1, 1, 12, SETVALUE_ROLLOVER_VALUE + SETVALUE_DISPLAY_VALUE + SETVALUE_NEXT_VALUE, LCD_SEG_L2_5_4, display_value1);
+				month = val;
 				select = 2;
 				break;
 
 			case 2:		// Set day
-				set_value(&day, 2, 1, 1, 31, SETVALUE_ROLLOVER_VALUE + SETVALUE_DISPLAY_VALUE + SETVALUE_NEXT_VALUE, LCD_SEG_L2_1_0, display_value1);
+				val = day;
+				set_value(&val, 2, 1, 1, 31, SETVALUE_ROLLOVER_VALUE + SETVALUE_DISPLAY_VALUE + SETVALUE_NEXT_VALUE, LCD_SEG_L2_1_0, display_value1);
+				day = val;
 				select = 0;
 				break;
 		}

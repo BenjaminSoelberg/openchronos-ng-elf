@@ -262,6 +262,7 @@ void mx_time(u8 line)
 
 		switch (select) {
 #if (OPTION_TIME_DISPLAY == CLOCK_DISPLAY_SELECT)
+
 			case 0:		// Clear LINE1 and LINE2 and AM icon - required when coming back from set_value(seconds)
 				clear_display();
 				display_symbol(LCD_SYMB_AM, SEG_OFF);
@@ -278,6 +279,7 @@ void mx_time(u8 line)
 				select = 1;
 				break;
 #else
+
 			case 0:
 #endif
 			case 1:		// Display HH:MM (LINE1) and .SS (LINE2)
@@ -357,6 +359,7 @@ void display_time(u8 line, u8 update)
 			switch (sTime.drawFlag) {
 				case 3:
 					display_hours_12_or_24(switch_seg(line, LCD_SEG_L1_3_2, LCD_SEG_L2_3_2), hour, 2, 1, SEG_ON);
+
 				case 2:
 					display_chars(switch_seg(line, LCD_SEG_L1_1_0, LCD_SEG_L2_1_0), _itoa(min, 2, 0), SEG_ON);
 			}
