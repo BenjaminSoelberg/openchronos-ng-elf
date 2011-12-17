@@ -92,6 +92,46 @@ void rtca_tevent_fn_unregister(rtca_tevent_fn_t fn)
 		RTCCTL01 &= ~RTCTEVIE;
 }
 
+// *************************************************************************************************
+// @fn          rtca_get_max_days
+// @brief       Return number of days for a given month
+// @param       month		month as char
+//		year		year as int
+// @return      day count for given month
+// *************************************************************************************************
+u8 rtca_get_max_days(u8 month, u16 year)
+{
+	switch (month) {
+		case 1:
+		case 3:
+		case 5:
+		case 7:
+		case 8:
+		case 10:
+		case 12:
+			return (31);
+
+		case 4:
+		case 6:
+		case 9:
+		case 11:
+			return (30);
+
+			// 1. A year that is divisible by 4 is a leap year. (Y % 4) == 0
+			// 2. Exception to rule 1: a year that is divisible by 100 is not a leap year. (Y % 100) != 0
+			// 3. Exception to rule 2: a year that is divisible by 400 is a leap year. (Y % 400) == 0
+
+		case 2:
+			if ((year % 4 == 0) && ((year % 100 != 0) || (year % 400 == 0)))
+				return (29);
+			else
+				return (28);
+
+		default:
+			return (0);
+	}
+}
+
 u32 rtca_get_systime(void)
 {
 	return rtca_time.sys;
@@ -126,14 +166,61 @@ void rtca_get_date(u16 *year, u8 *mon, u8 *day, u8 *dow)
 	*year = rtca_time.year;
 }
 
-void rtca_set_date(u16 year, u8 mon, u8 day, u8 dow)
+void rtca_set_date(u16 year, u8 mon, u8 day)
 {
+	u8 dow;
 	// Stop RTC timekeeping for a while
 	RTCCTL01 |= RTCHOLD;
 
+
+#define BASE_YEAR 2001 // not a leap year, so no need to add 1
+
+	dow = (year - BASE_YEAR) + (year - BASE_YEAR) / 4; // compute number of leap years since BASE_YEAR
+
+	if ((29 == rtca_get_max_days(2, year)) && (mon < 3))
+		dow--; // if this is a leap year but before February 29
+
+	dow += day; // add day of current month
+
+	//add this month's dow value
+	switch (mon) {
+		case 5:
+			dow += 1;
+			break;
+
+		case 8:
+			dow += 2;
+			break;
+
+		case 2:
+		case 3:
+		case 11:
+			dow += 3;
+			break;
+
+		case 6:
+			dow += 4;
+			break;
+
+		case 9:
+		case 12:
+			dow += 5;
+			break;
+
+		case 4:
+		case 7:
+			dow += 6;
+			break;
+
+		default:  //January and October
+			break;
+	}
+
+	dow = dow % 7;
+
 	// update RTC registers and local cache
-	RTCDOW = (rtca_time.dow = dow);
 	RTCDAY = (rtca_time.day = day);
+	RTCDOW = (rtca_time.dow = dow);
 	RTCMON = (rtca_time.mon = mon);
 	rtca_time.year = year;
 	RTCYEARL = year & 0xff;
@@ -171,13 +258,16 @@ __interrupt void RTC_A_ISR(void)
 		if (rtca_time.min == 0) {				//  Hour changed
 			ev++;
 			rtca_time.hour = RTCHOUR;
+
 			if (rtca_time.hour == 0) {	    		// Day changed
 				ev++;
 				rtca_time.day = RTCDAY;
 				rtca_time.dow = RTCDOW;
+
 				if (rtca_time.day == 1) {	    	// Month changed - day zero doesn't exist
 					ev++;
 					rtca_time.mon = RTCMON;
+
 					if (rtca_time.mon == 1) {	// Year changed - month zero doesn't exist
 						ev++;
 						rtca_time.year = RTCYEARL | (RTCYEARH << 8);

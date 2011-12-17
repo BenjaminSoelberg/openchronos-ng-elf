@@ -113,13 +113,15 @@ void mx_date(line_t line)
 #ifdef CONFIG_USE_SYNC_TOSET_TIME
 	return;
 #else
-	u8 select;
 	u8 day;
+	u8 dow;
 	u8 month;
 	u16 year;
-	u8 dow;
+
+	u8 select;
 	u8 *str;
 	s32 val;
+	u8 max_days;
 
 	// Clear display
 	clear_display_all();
@@ -148,7 +150,7 @@ void mx_date(line_t line)
 		// Button STAR (short): save, then exit
 		if (button.flag.star) {
 			// Copy local variables to global variables
-		    rtca_set_date(year, month, day, dow);
+		    rtca_set_date(year, month, day);
 #ifdef CONFIG_SIDEREAL
 
 			if (sSidereal_time.sync > 0)
@@ -185,8 +187,9 @@ void mx_date(line_t line)
 				select = 0;
 				break;
 		}
-
-		//TODO implement a boundary check for month increment!
+		// Check if day is still valid, if not clamp to last day of current month
+		max_days = rtca_get_max_days(month, year);
+		if (day > max_days) day = max_days;
 	}
 
 	// Clear button flag

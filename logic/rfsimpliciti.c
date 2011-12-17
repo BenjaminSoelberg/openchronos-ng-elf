@@ -586,6 +586,7 @@ int simpliciti_get_rvc_callback(u8 len)
 
 	switch (simpliciti_data[0]) {
 #ifdef CONFIG_PHASE_CLOCK
+
 		case SIMPLICITI_PHASE_CLOCK_START_RESPONSE:	// Send watch parameters
 			sPhase.session = simpliciti_data[1];
 			sRFsmpl.mode = SIMPLICITI_PHASE_CLOCK;
@@ -707,8 +708,7 @@ void simpliciti_sync_decode_ap_cmd_callback(void)
 			rtca_set_date((simpliciti_data[4] << 8)
 				      + simpliciti_data[5],
 				      simpliciti_data[6],
-				      simpliciti_data[7],
-				      0);
+				      simpliciti_data[7]);
 #ifdef CONFIG_ALARM
 			sAlarm.hour			= simpliciti_data[8];
 			sAlarm.minute		= simpliciti_data[9];
@@ -796,6 +796,7 @@ void simpliciti_sync_get_data_callback(unsigned int index)
 				simpliciti_data[2]  = min;
 				simpliciti_data[3]  = sec;
 			}
+
 			{
 				u16 year;
 				u8 mon, day, dow;
@@ -807,6 +808,7 @@ void simpliciti_sync_get_data_callback(unsigned int index)
 				simpliciti_data[7]  = day;
 				// TODO: Missing transmitting day of week
 			}
+
 #ifdef CONFIG_ALARM
 			simpliciti_data[8]  = sAlarm.hour;
 			simpliciti_data[9]  = sAlarm.minute;

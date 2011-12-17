@@ -36,10 +36,11 @@ void rtca_init(void);
 void rtca_tevent_fn_register(rtca_tevent_fn_t fn);
 void rtca_tevent_fn_unregister(rtca_tevent_fn_t fn);
 
+u8 rtca_get_max_days(u8 month, u16 year);
 u32 rtca_get_systime(void);
 
 void rtca_get_time(u8 *hour, u8 *min, u8 *sec);
 void rtca_set_time(u8 hour, u8 min, u8 sec);
 
 void rtca_get_date(u16 *year, u8 *mon, u8 *day, u8 *dow);
-void rtca_set_date(u16 year, u8 mon, u8 day, u8 dow);
+void rtca_set_date(u16 year, u8 mon, u8 day);
