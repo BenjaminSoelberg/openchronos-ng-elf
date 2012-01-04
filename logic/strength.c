@@ -16,6 +16,7 @@
 
 // driver
 #include "display.h"
+#include "timer.h"
 
 // logic
 #include "menu.h"
@@ -156,6 +157,8 @@ void strength_sx(u8 line)
 	{
 		// stop running, but display the result
 		strength_data.flags.running = 0;
+		// unregister from the timer
+		Timer0_A1_Unregister(&strength_tick);
 	}
 	else 
 	{
@@ -168,6 +171,7 @@ void strength_sx(u8 line)
 		else
 		{	
 			strength_data.flags.running = 1;
+			Timer0_A1_Register(&strength_tick);
 		}
 	}
 	strength_data.flags.redisplay_requested = 1;

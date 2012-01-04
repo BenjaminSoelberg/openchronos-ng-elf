@@ -43,8 +43,8 @@
 
 // internal functions
 extern void reset_alarm(void);
-extern void check_alarm(void);
 extern void stop_alarm(void);
+extern void alarm_tick(void);
 
 // menu functions
 extern void sx_alarm(u8 line);
@@ -55,10 +55,6 @@ extern void display_alarm(u8 line, u8 update);
 // *************************************************************************************************
 // Defines section
 
-// Alarm states
-#define ALARM_DISABLED 		(0u)
-#define ALARM_ENABLED       (1u)
-#define ALARM_ON            (2u)
 
 // Keep alarm for 10 on-off cycles
 #define ALARM_ON_DURATION	(10u)
@@ -68,16 +64,23 @@ extern void display_alarm(u8 line, u8 update);
 // Global Variable section
 struct alarm
 {
-	// ALARM_DISABLED, ALARM_ENABLED, ALARM_ON
-	u8 state;
-	// hourly chime (ALARM_DISABLED, ALARM_ENABLED)
-	u8 hourly;
-	// Alarm duration
-	u8 duration;
+	union {
+		struct {
+			// one shot alarm
+			u8 alarm:1;
+			// hourly chime
+			u8 chime:1;
+		};
+		u8 state:2;
+	};
+	// is alarm running?
+	u8 running:1;
 	// Alarm hour
-	u8 hour;
+	u8 hour:5;
 	// Alarm minute
 	u8 minute;
+	// Alarm duration
+	u8 duration;
 };
 extern struct alarm sAlarm;
 

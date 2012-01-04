@@ -1,5 +1,7 @@
 /*
     Vario function for ez430 chronos watch.
+	 Copyright (C) 2011 Angelo Arrifano <miknix@gmail.com>
+	   - Updated to use new improved timer0 API
     Copyright (C) 2010 Marc Poulhiès <dkm@kataplop.net>
 
     This program is free software: you can redistribute it and/or modify
@@ -108,6 +110,8 @@ void start_prout()
   /* TA0CCTL2 |= CCIE;  */
 	
   display_symbol(LCD_ICON_RECORD, SEG_ON);
+
+  Timer0_A1_Register(&prout_tick);
 }
 
 void stop_prout()
@@ -116,7 +120,9 @@ void stop_prout()
   /* TA0CCTL2 &= ~CCIE;  */
 
   sprouttimer.state = PROUT_STOP;
-	
+
+  Timer0_A1_Unregister(&prout_tick);
+
   display_symbol(LCD_ICON_RECORD, SEG_OFF);
 
   // Call draw routine immediately
