@@ -120,7 +120,6 @@ u8 rtca_get_max_days(u8 month, u16 year)
 			// 1. A year that is divisible by 4 is a leap year. (Y % 4) == 0
 			// 2. Exception to rule 1: a year that is divisible by 100 is not a leap year. (Y % 100) != 0
 			// 3. Exception to rule 2: a year that is divisible by 400 is a leap year. (Y % 400) == 0
-
 		case 2:
 			if ((year % 4 == 0) && ((year % 100 != 0) || (year % 400 == 0)))
 				return (29);
@@ -173,7 +172,7 @@ void rtca_set_date(u16 year, u8 mon, u8 day)
 	RTCCTL01 |= RTCHOLD;
 
 
-#define BASE_YEAR 2001 // not a leap year, so no need to add 1
+#define BASE_YEAR 1984 // not a leap year, so no need to add 1
 
 	dow = (year - BASE_YEAR) + (year - BASE_YEAR) / 4; // compute number of leap years since BASE_YEAR
 
