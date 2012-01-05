@@ -36,6 +36,8 @@
 #ifndef CLOCKTIMER_H_
 #define CLOCKTIMER_H_
 
+#include "rtca.h"
+
 // *************************************************************************************************
 // Defines section
 
@@ -50,6 +52,7 @@ extern void sx_time(u8 line);
 extern void mx_time(u8 line);
 extern void display_selection_Timeformat1(u8 segments, u32 index, u8 digits, u8 blanks, u8 dummy);
 extern void display_time(u8 line, u8 update);
+extern void clock_event(rtca_tevent_ev_t ev);
 
 // English units support
 extern u8 convert_hour_to_12H_format(u8 hour);

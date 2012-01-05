@@ -17,14 +17,22 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifndef __RTCA_H__
+#define __RTCA_H__
+
 #include "project.h"
 
-// the ev variable will hold the time event, that is:
-// 0x00 - Minute changed
-// 0x01 - Hour changed
-// 0x02 - Every day at midnight (00:00)
-// 0x03 - Every day at noon (12:00)
-typedef void (*rtca_tevent_fn_t)(u8 ev);
+typedef enum {
+	RTCA_EV_MINUTE,
+	RTCA_EV_HOUR,
+	RTCA_EV_DAY,
+	RTCA_EV_MONTH,
+	RTCA_EV_YEAR
+} rtca_tevent_ev_t;
+
+// the ev variable holds the time event, see rtca_tevent_ev_t for more info.
+// please add -fshort-enums to CFLAGS to store rtca_tevent_ev_t as only a byte
+typedef void (*rtca_tevent_fn_t)(rtca_tevent_ev_t ev);
 
 // list of time event callback functions
 typedef struct rtca_cblist {
@@ -44,3 +52,5 @@ void rtca_set_time(u8 hour, u8 min, u8 sec);
 
 void rtca_get_date(u16 *year, u8 *mon, u8 *day, u8 *dow);
 void rtca_set_date(u16 year, u8 mon, u8 day);
+
+#endif // __RTCA_H__

@@ -50,7 +50,6 @@
 #include "date.h"
 #include "user.h"
 #include "clock.h"
-#include "rtca.h"
 
 #ifdef CONFIG_SIDEREAL
 #include "sidereal.h"
@@ -93,9 +92,9 @@ void reset_date(void)
 	rtca_tevent_fn_register(&date_event);
 }
 
-void date_event(u8 ev)
+void date_event(rtca_tevent_ev_t ev)
 {
-	if (ev > 1) { // Day changed
+	if (ev >= RTCA_EV_DAY) { // Day changed
 		// Indicate to display function that new value is available
 		display.flag.update_date = 1;
 	}

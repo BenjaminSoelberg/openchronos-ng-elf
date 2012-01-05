@@ -46,7 +46,6 @@
 #include "ports.h"
 #include "display.h"
 #include "timer.h"
-#include "rtca.h"
 
 // logic
 #include "menu.h"
@@ -72,7 +71,6 @@
 // *************************************************************************************************
 // Prototypes section
 void reset_clock(void);
-void clock_event(u8 ev);
 void mx_time(u8 line);
 void sx_time(u8 line);
 
@@ -122,13 +120,13 @@ void reset_clock(void)
 }
 
 
-void clock_event(u8 ev)
+void clock_event(rtca_tevent_ev_t ev)
 {
 	// Use sTime.drawFlag to minimize display updates
 	// sTime.drawFlag = 2: minute, second
 	// sTime.drawFlag = 3: hour, minute
 
-	sTime.drawFlag = (ev > 1 ? 3 : ev + 2);
+	sTime.drawFlag = (ev > RTCA_EV_HOUR ? 3 : ev + 2);
 }
 
 

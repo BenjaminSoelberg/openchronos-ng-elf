@@ -39,7 +39,7 @@
 
 // *************************************************************************************************
 // Include section
-
+#include "rtca.h"
 
 // *************************************************************************************************
 // Prototypes section
@@ -47,8 +47,7 @@ extern void reset_date(void);
 extern void mx_date(u8 line);
 extern void sx_date(u8 line);
 extern void display_date(u8 line, u8 update);
-extern void date_event(u8 ex);
-
+extern void date_event(rtca_tevent_ev_t ev);
 
 // *************************************************************************************************
 // Defines section
