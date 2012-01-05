@@ -36,7 +36,7 @@
 
 // *************************************************************************************************
 // Include section
-
+#include "rtca.h"
 
 // *************************************************************************************************
 // Prototypes section
@@ -51,6 +51,7 @@ extern void sx_alarm(u8 line);
 extern void mx_alarm(u8 line);
 extern void display_alarm(u8 line, u8 update);
 
+extern void alarm_event(rtca_tevent_ev_t ev);
 
 // *************************************************************************************************
 // Defines section
@@ -82,6 +83,8 @@ struct alarm
 	// Alarm duration
 	u8 duration;
 };
+//TODO: Try to kill all external references to this struct. Then make it
+// private scope!
 extern struct alarm sAlarm;
 
 

@@ -2,6 +2,7 @@
     Copyright (C) 2011 Angelo Arrifano <miknix@gmail.com>
 	   - Updated to use the improved message display API
 	   - Simplified code, allow simultaneous chime and alarm
+	   - Updated to use RTC_A, the realtime clock driver
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -91,6 +92,14 @@ struct alarm sAlarm;
 // Extern section
 
 
+void alarm_event(rtca_tevent_ev_t ev)
+{
+	// Make a beep if in a hour event
+	if (ev == RTCA_EV_HOUR) {
+		request.flag.alarm_buzzer = 1;
+	}
+}
+
 /*****************************************************************************
  ** @fn     alarm_tick
  ** @brief  this function is called every 1 second
@@ -101,13 +110,7 @@ void alarm_tick()
 {
 	// Hack to prevent sAlarm.running to be set several times within 1sec,
 	// which otherwise would prevent us to stop the alarm noise..
-	if (sTime.drawFlag >= 2) {
-		// If the chime is enabled, we beep here
-		if (sTime.minute == 0) {
-			if (sAlarm.chime) {
-				request.flag.alarm_buzzer = 1;
-			}
-		}
+/*	if (sTime.drawFlag >= 2) {
 		// Check if alarm needs to be turned on
 		// Start with minutes - only 1/60 probability to match
 		if (sAlarm.alarm && sTime.minute == sAlarm.minute
@@ -129,7 +132,7 @@ void alarm_tick()
 			sAlarm.duration = ALARM_ON_DURATION;
 			stop_alarm();
 		}
-	}
+	}*/
 }
 
 // *************************************************************************************************
@@ -189,6 +192,11 @@ void sx_alarm(u8 line)
 			Timer0_A1_Register(&alarm_tick);
 		else
 			Timer0_A1_Unregister(&alarm_tick);
+
+		if (sAlarm.chime)
+			rtca_tevent_fn_register(alarm_event);
+		else
+			rtca_tevent_fn_unregister(alarm_event);
 	}
 }
 
