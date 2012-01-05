@@ -76,12 +76,8 @@ struct alarm
 	};
 	// is alarm running?
 	u8 running:1;
-	// Alarm hour
-	u8 hour:5;
-	// Alarm minute
-	u8 minute;
 	// Alarm duration
-	u8 duration;
+	u8 duration:7;
 };
 //TODO: Try to kill all external references to this struct. Then make it
 // private scope!

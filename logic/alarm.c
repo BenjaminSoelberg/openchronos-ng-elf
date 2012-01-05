@@ -91,48 +91,32 @@ struct alarm sAlarm;
 // *************************************************************************************************
 // Extern section
 
+void alarm_buzzer(void)
+{
+	// Decrement alarm duration counter
+	if (sAlarm.duration-- > 0)
+		request.flag.alarm_buzzer = 1;
+	else {
+		// we dont need the timer anymore
+		Timer0_A1_Unregister(&alarm_buzzer);
+		stop_alarm();
+		sAlarm.duration = ALARM_ON_DURATION;
+
+	}
+}
 
 void alarm_event(rtca_tevent_ev_t ev)
 {
 	// Make a beep if in a hour event
 	if (ev == RTCA_EV_HOUR) {
 		request.flag.alarm_buzzer = 1;
-	}
-}
+	} else if (ev == RTCA_EV_ALARM) {
+		request.flag.alarm_buzzer = 1;
 
-/*****************************************************************************
- ** @fn     alarm_tick
- ** @brief  this function is called every 1 second
- ** @param  none
- ** @return none
- ****************************************************************************/
-void alarm_tick()
-{
-	// Hack to prevent sAlarm.running to be set several times within 1sec,
-	// which otherwise would prevent us to stop the alarm noise..
-/*	if (sTime.drawFlag >= 2) {
-		// Check if alarm needs to be turned on
-		// Start with minutes - only 1/60 probability to match
-		if (sAlarm.alarm && sTime.minute == sAlarm.minute
-		                                     && sTime.hour == sAlarm.hour) {
-			// Indicate that alarm is beeping
-			sAlarm.running = 1;
-		}
+		// keep the buzzer running for a while using the timer..
+		sAlarm.running = 1;
+		Timer0_A1_Register(&alarm_buzzer);
 	}
-	// Generate alarm signal
-	if (sAlarm.running)
-	{
-		// Decrement alarm duration counter
-		if (sAlarm.duration-- > 0)
-		{
-			request.flag.alarm_buzzer = 1;
-		}
-		else
-		{
-			sAlarm.duration = ALARM_ON_DURATION;
-			stop_alarm();
-		}
-	}*/
 }
 
 // *************************************************************************************************
@@ -144,8 +128,7 @@ void alarm_tick()
 void reset_alarm(void) 
 {
 	// Default alarm time 06:30
-	sAlarm.hour   = 6;
-	sAlarm.minute = 30;
+	rtca_set_alarm(6, 30);
 
 	// Alarm and chime are initially off
 	sAlarm.duration = ALARM_ON_DURATION;
@@ -187,16 +170,16 @@ void sx_alarm(u8 line)
 		// redraw screen soon as possible
 		display.flag.line1_full_update = 1;
 
-		// Register timer only if we need it, saving CPU cycles..
-		if (sAlarm.state)
-			Timer0_A1_Register(&alarm_tick);
-		else
-			Timer0_A1_Unregister(&alarm_tick);
-
-		if (sAlarm.chime)
+		// Register RTC only if needed, saving CPU cycles..
+		if (sAlarm.state) {
 			rtca_tevent_fn_register(alarm_event);
-		else
+		} else
 			rtca_tevent_fn_unregister(alarm_event);
+
+		if (sAlarm.alarm)
+			rtca_enable_alarm();
+		else
+			rtca_disable_alarm();
 	}
 }
 
@@ -213,17 +196,19 @@ void mx_alarm(u8 line)
 	clear_display_all();
 
 	// Keep global values in case new values are discarded
-	s32 hours    = sAlarm.hour;
-	s32 minutes  = sAlarm.minute;
+	u8 hour;
+	u8 min;
+
+	rtca_get_alarm(&hour, &min);
 
 	// Display HH:MM (LINE1) 
 	{
-		u8 *str = _itoa(hours, 2, 0);
+		u8 *str = _itoa(hour, 2, 0);
 		display_chars(LCD_SEG_L1_3_2, str, SEG_ON);
 		display_symbol(LCD_SEG_L1_COL, SEG_ON);
 	}
 	{
-		u8 *str = _itoa(minutes, 2, 0);
+		u8 *str = _itoa(min, 2, 0);
 		display_chars(LCD_SEG_L1_1_0, str, SEG_ON);
 	}
 	
@@ -240,17 +225,28 @@ void mx_alarm(u8 line)
 	  if (button.flag.star)
 	  {
 	    // Store local variables in global alarm time
-	    sAlarm.hour = hours;
-	    sAlarm.minute = minutes;
+	    rtca_set_alarm(hour, min);
 	    // Set display update flag
 	    display.flag.line1_full_update = 1;
 	    break;
 	  }
 
-	  if (select == 0)
-	    set_value(&hours, 2, 0, 0, 23, SETVALUE_ROLLOVER_VALUE + SETVALUE_DISPLAY_VALUE + SETVALUE_NEXT_VALUE, LCD_SEG_L1_3_2, display_hours_12_or_24);
-     else
-	    set_value(&minutes, 2, 0, 0, 59, SETVALUE_ROLLOVER_VALUE + SETVALUE_DISPLAY_VALUE + SETVALUE_NEXT_VALUE, LCD_SEG_L1_1_0, display_value1);
+	  if (select == 0) {
+	    s32 _hour = hour;
+	    set_value(&_hour, 2, 0, 0, 23, SETVALUE_ROLLOVER_VALUE
+	                                 + SETVALUE_DISPLAY_VALUE
+					 + SETVALUE_NEXT_VALUE,
+					 LCD_SEG_L1_3_2,
+					 display_hours_12_or_24);
+	    hour = _hour;
+	  } else {
+	    s32 _min = min;
+	    set_value(&_min, 2, 0, 0, 59, SETVALUE_ROLLOVER_VALUE
+	                                 + SETVALUE_DISPLAY_VALUE
+					 + SETVALUE_NEXT_VALUE,
+					 LCD_SEG_L1_1_0, display_value1);
+	    min = _min;
+	  }
 	  select = !select;
 	}
 
@@ -272,9 +268,19 @@ void mx_alarm(u8 line)
 void display_alarm(u8 line, u8 update)
 {
 	if (update == DISPLAY_LINE_UPDATE_FULL) {
-		display_hours_12_or_24(switch_seg(line, LCD_SEG_L1_3_2, LCD_SEG_L2_3_2), sAlarm.hour, 2, 1, SEG_ON);
-		display_chars(switch_seg(line, LCD_SEG_L1_1_0, LCD_SEG_L2_1_0), _itoa(sAlarm.minute, 2, 0), SEG_ON);
-		display_symbol(switch_seg(line, LCD_SEG_L1_COL, LCD_SEG_L2_COL0), SEG_ON);
+		u8 hour, min;
+
+		rtca_get_alarm(&hour, &min);
+
+		display_hours_12_or_24(
+		            switch_seg(line, LCD_SEG_L1_3_2, LCD_SEG_L2_3_2),
+			    hour, 2, 1, SEG_ON);
+		display_chars(
+		            switch_seg(line, LCD_SEG_L1_1_0, LCD_SEG_L2_1_0),
+			    _itoa(min, 2, 0), SEG_ON);
+		display_symbol(
+		            switch_seg(line, LCD_SEG_L1_COL, LCD_SEG_L2_COL0),
+			    SEG_ON);
 		// Clear / set alarm icon
 		if (sAlarm.alarm)
 			display_symbol(LCD_ICON_ALARM, SEG_ON);

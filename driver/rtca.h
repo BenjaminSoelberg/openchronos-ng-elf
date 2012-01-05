@@ -23,6 +23,7 @@
 #include "project.h"
 
 typedef enum {
+	RTCA_EV_ALARM,
 	RTCA_EV_MINUTE,
 	RTCA_EV_HOUR,
 	RTCA_EV_DAY,
@@ -52,5 +53,8 @@ void rtca_set_time(u8 hour, u8 min, u8 sec);
 
 void rtca_get_date(u16 *year, u8 *mon, u8 *day, u8 *dow);
 void rtca_set_date(u16 year, u8 mon, u8 day);
+
+void rtca_get_alarm(u8 *hour, u8 *min);
+void rtca_set_alarm(u8 hour, u8 min);
 
 #endif // __RTCA_H__

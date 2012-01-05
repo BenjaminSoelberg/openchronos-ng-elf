@@ -1,7 +1,7 @@
 /*
     rtca.c: TI CC430 Hardware Realtime Clock (RTC_A)
 
-    Copyright (C) 2011 Angelo Arrifano <miknix@gmail.com>
+    Copyright (C) 2011-2012 Angelo Arrifano <miknix@gmail.com>
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -16,6 +16,9 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+/* TODO: The RTC supports chronologic alarms, that is, one can program the
+         alarm to bell every hour, or in a specific time and day. For now only
+	 basic alarm is implemented (bell at 08:30). */
 
 #include "rtca.h"
 
@@ -43,7 +46,8 @@ void rtca_init(void)
 	// Enable calendar mode (date/time registers are automatically reset)
 	// and enable read ready interrupts
 	// and set time event interrupts each minute (when enabled)
-	RTCCTL01 |= RTCMODE | RTCRDYIE;
+	// also enable alarm interrupts
+	RTCCTL01 |= RTCMODE | RTCRDYIE | RTCAIE;
 
 	// Enable the RTC
 	RTCCTL01 &= ~RTCHOLD;
@@ -157,6 +161,30 @@ void rtca_set_time(u8 hour, u8 min, u8 sec)
 	RTCCTL01 &= ~RTCHOLD;
 }
 
+void rtca_get_alarm(u8 *hour, u8 *min)
+{
+	*hour = RTCAHOUR & 0x7F;
+	*min  = RTCAMIN  & 0x7F;
+}
+
+void rtca_set_alarm(u8 hour, u8 min)
+{
+	RTCAHOUR = hour & 0x7F;
+	RTCAMIN  = min  & 0x7F;
+}
+
+void rtca_enable_alarm()
+{
+	RTCAHOUR |= 0x80;
+	RTCAMIN  |= 0x80;
+}
+
+void rtca_disable_alarm()
+{
+	RTCAHOUR &= 0x7F;
+	RTCAMIN  &= 0x7F;
+}
+
 void rtca_get_date(u16 *year, u8 *mon, u8 *day, u8 *dow)
 {
 	*dow = rtca_time.dow;
@@ -238,14 +266,22 @@ interrupt(RTC_A_VECTOR) RTC_A_ISR(void)
 __interrupt void RTC_A_ISR(void)
 {
 #endif
+	uint16_t iv = RTCIV;
+
 	// copy register values
 	rtca_time.sec = RTCSEC;
 
 	// increment system time
 	rtca_time.sys++;
 
-	if (RTCIV == RTCIV_RTCTEVIFG) {	//Minute changed!
-		u8 ev = 0;
+	// only continue on time event or alarm event
+	if (iv != RTCIV_RTCTEVIFG && iv != RTCIV_RTCAIFG)
+		return;
+
+	rtca_tevent_ev_t ev = RTCA_EV_ALARM;
+
+	if (iv == RTCIV_RTCTEVIFG) {	//Minute changed!
+		ev = RTCA_EV_MINUTE;
 		rtca_time.min = RTCMIN;
 
 		// Possible values:
@@ -274,13 +310,14 @@ __interrupt void RTC_A_ISR(void)
 				}
 			}
 		}
+	}
 
-		rtca_cblist_t *p = cblist;
+	// call event handlers
+	rtca_cblist_t *p = cblist;
 
-		while (p) {
-			p->fn(ev);
-			p = p->next;
-		}
+	while (p) {
+		p->fn(ev);
+		p = p->next;
 	}
 }
 
