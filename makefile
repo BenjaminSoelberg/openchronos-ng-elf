@@ -107,6 +107,9 @@ clean:
 build:
 	mkdir -p build
 
+upload: main
+	$(PYTHON) contrib/ChronosTool.py rfbsl build/eZChronos.txt
+
 config.h:
 	$(PYTHON) tools/config.py
 	git update-index --assume-unchanged config.h 2> /dev/null || true
