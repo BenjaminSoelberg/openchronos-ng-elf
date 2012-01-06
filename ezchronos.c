@@ -41,6 +41,7 @@
 // system
 #include "project.h"
 #include <string.h>
+#include <in430.h>
 
 // driver
 #include "clock.h"
