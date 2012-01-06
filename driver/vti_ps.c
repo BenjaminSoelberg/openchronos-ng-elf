@@ -95,7 +95,7 @@ u8 ps_ok;
 // *************************************************************************************************
 void ps_init(void)
 {
-	volatile u8 success, status, eeprom, timeout;
+	volatile u8 success, status, eeprom;
 	
 	PS_INT_DIR &= ~PS_INT_PIN;            	// DRDY is input
 	PS_INT_IES &= ~PS_INT_PIN;				// Interrupt on DRDY rising edge
