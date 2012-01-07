@@ -126,7 +126,7 @@ void clock_event(rtca_tevent_ev_t ev)
 	// sTime.drawFlag = 2: minute, second
 	// sTime.drawFlag = 3: hour, minute
 
-	sTime.drawFlag = (ev > RTCA_EV_HOUR ? 3 : ev + 2);
+	sTime.drawFlag = (ev >= RTCA_EV_HOUR ? 3 : ev + 2);
 }
 
 
