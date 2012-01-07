@@ -709,8 +709,8 @@ void simpliciti_sync_decode_ap_cmd_callback(void)
 				      simpliciti_data[6],
 				      simpliciti_data[7]);
 #ifdef CONFIG_ALARM
-			sAlarm.hour			= simpliciti_data[8];
-			sAlarm.minute		= simpliciti_data[9];
+			rtca_set_alarm(simpliciti_data[8],
+			               simpliciti_data[9]);
 #endif
 
 #if (CONFIG_DST > 0)
@@ -809,8 +809,8 @@ void simpliciti_sync_get_data_callback(unsigned int index)
 			}
 
 #ifdef CONFIG_ALARM
-			simpliciti_data[8]  = sAlarm.hour;
-			simpliciti_data[9]  = sAlarm.minute;
+			rtca_get_alarm(&simpliciti_data[8],
+			               &simpliciti_data[9]);
 #else
 			simpliciti_data[8]  = 4;
 			simpliciti_data[9]  = 30;

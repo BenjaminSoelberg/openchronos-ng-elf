@@ -1,7 +1,7 @@
 /*
     rtca.h: TI CC430 Hardware Realtime Clock (RTC_A)
 
-    Copyright (C) 2011 Angelo Arrifano <miknix@gmail.com>
+    Copyright (C) 2011-2012 Angelo Arrifano <miknix@gmail.com>
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,16 +17,25 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifndef __RTCA_H__
+#define __RTCA_H__
+
 #include "project.h"
 
-// the ev variable will hold the time event, that is:
-// 0x00 - Minute changed
-// 0x01 - Hour changed
-// 0x02 - Every day at midnight (00:00)
-// 0x03 - Every day at noon (12:00)
-typedef void (*rtca_tevent_fn_t)(u8 ev);
+typedef enum {
+	RTCA_EV_ALARM,
+	RTCA_EV_MINUTE,
+	RTCA_EV_HOUR,
+	RTCA_EV_DAY,
+	RTCA_EV_MONTH,
+	RTCA_EV_YEAR
+} rtca_tevent_ev_t;
 
-// list of time event callback functions
+/* the ev variable holds the time event, see rtca_tevent_ev_t for more info.
+please add -fshort-enums to CFLAGS to store rtca_tevent_ev_t as only a byte */
+typedef void (*rtca_tevent_fn_t)(rtca_tevent_ev_t ev);
+
+/* list of time event callback functions */
 typedef struct rtca_cblist {
 	rtca_tevent_fn_t fn;
 	struct rtca_cblist *next;
@@ -44,3 +53,11 @@ void rtca_set_time(u8 hour, u8 min, u8 sec);
 
 void rtca_get_date(u16 *year, u8 *mon, u8 *day, u8 *dow);
 void rtca_set_date(u16 year, u8 mon, u8 day);
+
+void rtca_get_alarm(u8 *hour, u8 *min);
+void rtca_set_alarm(u8 hour, u8 min);
+
+void rtca_enable_alarm();
+void rtca_disable_alarm();
+
+#endif /* __RTCA_H__ */

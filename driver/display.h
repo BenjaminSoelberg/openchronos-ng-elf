@@ -114,6 +114,7 @@ extern volatile s_display_flags display;
 #define DISPLAY_LINE_UPDATE_FULL		(BIT0)
 #define DISPLAY_LINE_UPDATE_PARTIAL		(BIT1)
 #define DISPLAY_LINE_CLEAR				(BIT2)
+#define DISPLAY_LINE_MESSAGE			(BIT3)
 
 // Definitions for line view style
 #define DISPLAY_DEFAULT_VIEW			(0u)

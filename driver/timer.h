@@ -1,3 +1,20 @@
+/*
+    Copyright (C) 2011 Angelo Arrifano <miknix@gmail.com>
+		- Improved timer0 API, add register and unregister functions
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 // *************************************************************************************************
 //
 //	Copyright (C) 2009 Texas Instruments Incorporated - http://www.ti.com/ 
@@ -47,6 +64,8 @@ extern void Timer0_Start(void);
 extern void Timer0_Stop(void);
 extern void Timer0_A1_Start(u16 ticks);
 extern void Timer0_A1_Stop(void);
+extern void Timer0_A1_Register(void (*callback)(void));
+extern void Timer0_A1_Unregister(void (*callback)(void));
 extern void Timer0_A3_Start(u16 ticks);
 extern void Timer0_A3_Stop(void);
 extern void Timer0_A4_Delay(u16 ticks);
@@ -58,12 +77,18 @@ extern void (*fptr_Timer0_A1_function)(void);
 
 // *************************************************************************************************
 // Defines section
+struct cbList {
+	void (*fn)(void);
+	struct cbList *next;
+};
 struct timer
 {
 	// Timer0_A1 periodic delay
 	u16		timer0_A1_ticks;
 		// Timer0_A3 periodic delay
 	u16		timer0_A3_ticks;
+	// callback queue
+	struct cbList *queue;
 };
 extern struct timer sTimer;
 

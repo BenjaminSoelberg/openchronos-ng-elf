@@ -1,3 +1,20 @@
+/*
+    Copyright (C) 2011 Angelo Arrifano <miknix@gmail.com>
+	   - Improve message display API, with timeout feature
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 // *************************************************************************************************
 //
 //	Copyright (C) 2009 Texas Instruments Incorporated - http://www.ti.com/ 
@@ -139,16 +156,15 @@ typedef union
 {
   struct
   {
-    u16	prepare							: 1;	// 1 = Wait for clock tick, then set display.flag.show_message flag
+    u16	prepare							: 1;	// 1 = Wait for clock tick, then set display.flag.show flag
     u16	show							: 1;	// 1 = Display message now
     u16 erase							: 1;	// 1 = Erase message
+    u16 timeout						: 4;  // [1..7] message timeout (1-7 seconds)
+    u16 line1							: 1;  // 1 = call message handler with line1, line2 otherwise
+	 u16 user							: 1;  // 1 = is user message, system message otherwise
     u16	type_locked						: 1;	// 1 = Show "buttons are locked" in Line2
     u16 type_unlocked					: 1;	// 1 = Show "buttons are unlocked" in Line2
     u16 type_lobatt						: 1;	// 1 = Show "lobatt" text in Line2
-    u16 type_alarm_off_chime_off		: 1;	// 1 = Show " off" text in Line1
-    u16 type_alarm_off_chime_on			: 1;	// 1 = Show " offh" text in Line1
-    u16 type_alarm_on_chime_off			: 1;	// 1 = Show "  on" text in Line1
-    u16 type_alarm_on_chime_on			: 1;	// 1 = Show " onh" text in Line1
     u16 type_no_beep_on					: 1;	// 1 = Show " beep" text in Line2
     u16 type_no_beep_off				: 1;	// 1 = Show "nobeep" text in Line2
     u16 block_line1						: 1;	// 1 = block Line1 from updating until message erase
@@ -157,6 +173,12 @@ typedef union
   u16 all_flags;            // Shortcut to all message flags (for reset)
 } s_message_flags;
 extern volatile s_message_flags message;
+
+#define show_message(LINE1, TIMEOUT) \
+	message.flag.prepare = 1; \
+	message.flag.timeout = (TIMEOUT); \
+	message.flag.line1 = (LINE1); \
+	message.flag.user = 1;
 
 
 // *************************************************************************************************
