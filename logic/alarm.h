@@ -79,8 +79,9 @@ struct alarm
 	// is alarm running?
 	u8 running:1;
 	// Alarm duration
-	u8 duration:7;
-};
+	u8 duration;
+} __attribute__((packed));
+
 //TODO: Try to kill all external references to this struct. Then make it
 // private scope!
 extern struct alarm sAlarm;
