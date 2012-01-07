@@ -110,9 +110,6 @@ void alarm_event(rtca_tevent_ev_t ev)
 		sAlarm.hold = 0;
 		if (sAlarm.alarm)
 			rtca_enable_alarm();
-	} else if (sAlarm.chime && ev == RTCA_EV_HOUR) {
-		// Make a beep if in a hour event
-		request.flag.alarm_buzzer = 1;
 	} else if (ev == RTCA_EV_ALARM) {
 		request.flag.alarm_buzzer = 1;
 
@@ -124,6 +121,9 @@ void alarm_event(rtca_tevent_ev_t ev)
 		// keep the buzzer running for a while using the timer..
 		sAlarm.running = 1;
 		Timer0_A1_Register(&alarm_buzzer);
+	} else if (sAlarm.chime && ev == RTCA_EV_HOUR) {
+		// Make a beep if in a hour event
+		request.flag.alarm_buzzer = 1;
 	}
 }
 
