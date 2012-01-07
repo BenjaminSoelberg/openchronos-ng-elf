@@ -74,6 +74,8 @@ struct alarm
 		};
 		u8 state:2;
 	};
+	// set after alarm fires off until the minute changes value
+	u8 hold:1;
 	// is alarm running?
 	u8 running:1;
 	// Alarm duration

@@ -1,5 +1,5 @@
 /*
-    Copyright (C) 2011 Angelo Arrifano <miknix@gmail.com>
+    Copyright (C) 2011-2012 Angelo Arrifano <miknix@gmail.com>
 	   - Updated to use the improved message display API
 	   - Simplified code, allow simultaneous chime and alarm
 	   - Updated to use RTC_A, the realtime clock driver
@@ -97,21 +97,29 @@ void alarm_buzzer(void)
 	if (sAlarm.duration-- > 0)
 		request.flag.alarm_buzzer = 1;
 	else {
-		// we dont need the timer anymore
-		Timer0_A1_Unregister(&alarm_buzzer);
 		stop_alarm();
-		sAlarm.duration = ALARM_ON_DURATION;
-
 	}
 }
 
 void alarm_event(rtca_tevent_ev_t ev)
 {
-	// Make a beep if in a hour event
-	if (ev == RTCA_EV_HOUR) {
+	if (sAlarm.hold && ev == RTCA_EV_MINUTE) {
+		// the alarm condition is not true anymore so we can
+		// re-enable the alarm again.
+		// (the RTCA hardware disables alarm after firing off)
+		sAlarm.hold = 0;
+		if (sAlarm.alarm)
+			rtca_enable_alarm();
+	} else if (sAlarm.chime && ev == RTCA_EV_HOUR) {
+		// Make a beep if in a hour event
 		request.flag.alarm_buzzer = 1;
 	} else if (ev == RTCA_EV_ALARM) {
 		request.flag.alarm_buzzer = 1;
+
+		// enable hold mode
+		// (this has the side effect of not allowing alarms set
+		// for the next minute but no sane person will need that)
+		sAlarm.hold = 1;
 
 		// keep the buzzer running for a while using the timer..
 		sAlarm.running = 1;
@@ -145,11 +153,15 @@ void reset_alarm(void)
 // *************************************************************************************************
 void stop_alarm(void) 
 {
-	// Alarm not running anymore
-	sAlarm.running = 0;
-	
 	// Stop buzzer
 	stop_buzzer();
+
+	// we dont need the timer anymore
+	Timer0_A1_Unregister(&alarm_buzzer);
+
+	// Alarm not running anymore
+	sAlarm.duration = ALARM_ON_DURATION;
+	sAlarm.running = 0;
 }	
 
 

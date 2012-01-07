@@ -175,6 +175,7 @@ void rtca_set_alarm(u8 hour, u8 min)
 
 void rtca_enable_alarm()
 {
+	RTCCTL01 |= RTCAIE;
 	RTCAHOUR |= 0x80;
 	RTCAMIN  |= 0x80;
 }
@@ -183,6 +184,7 @@ void rtca_disable_alarm()
 {
 	RTCAHOUR &= 0x7F;
 	RTCAMIN  &= 0x7F;
+	RTCCTL01 &= ~ RTCAIE;
 }
 
 void rtca_get_date(u16 *year, u8 *mon, u8 *day, u8 *dow)
