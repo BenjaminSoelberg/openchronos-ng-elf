@@ -1,7 +1,7 @@
 /*
     rtca.h: TI CC430 Hardware Realtime Clock (RTC_A)
 
-    Copyright (C) 2011 Angelo Arrifano <miknix@gmail.com>
+    Copyright (C) 2011-2012 Angelo Arrifano <miknix@gmail.com>
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -31,11 +31,11 @@ typedef enum {
 	RTCA_EV_YEAR
 } rtca_tevent_ev_t;
 
-// the ev variable holds the time event, see rtca_tevent_ev_t for more info.
-// please add -fshort-enums to CFLAGS to store rtca_tevent_ev_t as only a byte
+/* the ev variable holds the time event, see rtca_tevent_ev_t for more info.
+please add -fshort-enums to CFLAGS to store rtca_tevent_ev_t as only a byte */
 typedef void (*rtca_tevent_fn_t)(rtca_tevent_ev_t ev);
 
-// list of time event callback functions
+/* list of time event callback functions */
 typedef struct rtca_cblist {
 	rtca_tevent_fn_t fn;
 	struct rtca_cblist *next;
@@ -60,4 +60,4 @@ void rtca_set_alarm(u8 hour, u8 min);
 void rtca_enable_alarm();
 void rtca_disable_alarm();
 
-#endif // __RTCA_H__
+#endif /* __RTCA_H__ */
