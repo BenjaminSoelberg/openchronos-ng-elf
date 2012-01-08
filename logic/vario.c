@@ -65,6 +65,8 @@
 #include "altitude.h"
 #include "vario.h"
 
+#include <string.h>
+
 //
 // Module internal definitions.
 //
@@ -146,22 +148,23 @@ enum
 static inline void
 _clear_stats( void )
 {
-#if 0000 // We save 10 bytes by using memset() if VZ, ALTMAX and F_TIME are enabled. 
-#if VARIO_VZ
+// We save 10 bytes by using memset() if VZ, ALTMAX and F_TIME are enabled. 
+#if defined(VARIO_VZ) && defined(VARIO_ALTMAX) && defined(VARIO_F_TIME)
+   memset( &G_vario.stats, 0, sizeof( G_vario.stats ) );
+#else
+# if VARIO_VZ
    G_vario.stats.vzmin = 0;
    G_vario.stats.vzmax = 0;
-#endif
-#if VARIO_ALTMAX
+# endif
+# if VARIO_ALTMAX
    G_vario.stats.altmax = 0;
-#endif
-#if VARIO_F_TIME
+# endif
+# if VARIO_F_TIME
    G_vario.stats.f_time.hh = 0;
    G_vario.stats.f_time.mm = 0;
    G_vario.stats.f_time.ss = 0;
+# endif
 #endif
-#else  // initialise individual fields or use memset ?
-   memset( &G_vario.stats, 0, sizeof( G_vario.stats ) );
-#endif // using memset.
 }
 
 // "v" button press changes display mode
