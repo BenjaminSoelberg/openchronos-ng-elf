@@ -108,6 +108,9 @@
 #ifdef CONFIG_STRENGTH
 #include "strength.h"
 #endif
+#if (CONFIG_DST > 0)
+#include "dst.h"
+#endif
 
 #include "mrfi.h"
 #include "nwk_types.h"
@@ -301,7 +304,10 @@ void init_application(void)
 	
 	// Init the hardwre real time clock (RTC_A)
 	rtca_init();
-
+#if (CONFIG_DST > 0)
+	/* Initialize the DST. IMPORTANT: DST DEPENDS ON RTCA! */
+	dst_init();
+#endif
 	// ---------------------------------------------------------------------
 	// Configure ports
 

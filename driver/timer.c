@@ -409,24 +409,6 @@ __interrupt void TIMER0_A0_ISR(void)
 		request.flag.voltage_measurement = 1;
 		#endif
 		
-		#if (CONFIG_DST > 0)
-      if ((sTime.hour == 1) &&
-      	(dst_state == 0) &&
-			dst_isDateInDST(sDate.month, sDate.day))
-		{
-      	// spring forward
-      	sTime.hour++;
-      	dst_state = 1;
-		}
-		if ((sTime.hour == 2) &&
-			(dst_state != 0) &&
-			(!dst_isDateInDST(sDate.month, sDate.day)))
-		{
-			// fall back
-			sTime.hour--;
-			dst_state = 0;
-		}
-		#endif
 		#ifdef CONFIG_ALTI_ACCUMULATOR
 		// Check if we need to do an altitude accumulation
 		if (alt_accum_enable)

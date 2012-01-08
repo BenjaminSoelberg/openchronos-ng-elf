@@ -22,6 +22,10 @@
 
 #include "rtca.h"
 
+#if (CONFIG_DST > 0)
+#include "dst.h"
+#endif
+
 #include <stdlib.h>
 
 /* 1. A year that is divisible by 4 is a leap year.
@@ -242,6 +246,9 @@ void rtca_set_date(u16 year, u8 mon, u8 day)
 
 	/* Resume RTC time keeping */
 	RTCCTL01 &= ~RTCHOLD;
+#if (CONFIG_DST > 0)
+	dst_calculate_dates(year, mon, day);	/* calculate new DST switch dates */
+#endif
 }
 
 #ifdef __GNUC__

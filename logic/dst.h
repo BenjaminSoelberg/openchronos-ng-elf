@@ -19,6 +19,9 @@
 #ifndef DST_H_
 #define DST_H_
 
+#define DST_STATE_ST 0
+#define DST_STATE_DST 1
+
 struct dst_date_struct
 {
     u8 month;
@@ -26,10 +29,9 @@ struct dst_date_struct
 };
 
 extern struct dst_date_struct dst_dates[];
-extern u8 dst_state; // 0=ST, 1=DST
+extern u8 dst_state;
 
 void dst_init(void);
-void dst_calculate_dates(void);
-u8 dst_isDateInDST(u8 month, u8 day);
+void dst_calculate_dates(u16 year, u8 month, u8 day);
 
 #endif

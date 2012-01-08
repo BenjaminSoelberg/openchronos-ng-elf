@@ -86,9 +86,6 @@ void reset_date(void)
 	// Show default display
 	sDate.view = 0;
 
-#if (CONFIG_DST > 0)
-	dst_calculate_dates();
-#endif
 	rtca_tevent_fn_register(&date_event);
 }
 
@@ -155,9 +152,6 @@ void mx_date(line_t line)
 			if (sSidereal_time.sync > 0)
 				sync_sidereal();
 
-#endif
-#if (CONFIG_DST > 0)
-			dst_calculate_dates();
 #endif
 
 			// Full display update is done when returning from function

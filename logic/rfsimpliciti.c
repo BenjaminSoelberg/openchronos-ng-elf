@@ -78,10 +78,6 @@
 #include "sidereal.h"
 #endif
 
-#if (CONFIG_DST > 0)
-#include "dst.h"
-#endif
-
 // *************************************************************************************************
 // Defines section
 
@@ -713,9 +709,6 @@ void simpliciti_sync_decode_ap_cmd_callback(void)
 			               simpliciti_data[9]);
 #endif
 
-#if (CONFIG_DST > 0)
-			dst_calculate_dates();
-#endif
 			// Set temperature and temperature offset
 			t1 = (s16)((simpliciti_data[10] << 8) + simpliciti_data[11]);
 			offset = t1 - (sTemp.degrees - sTemp.offset);
