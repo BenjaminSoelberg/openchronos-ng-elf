@@ -240,7 +240,7 @@ void stopwatch_tick(void)
 	if(!(sStopwatch.state & STOPWATCH_SPLIT))
 	{
 		// Always set display update flag
-		display.flag.update_stopwatch = 1;
+		sStopwatch.update_display = 1;
 	}
 }
 
@@ -455,8 +455,9 @@ void display_stopwatch(u8 line, u8 update)
 	// Partial line update only
 	if (update == DISPLAY_LINE_UPDATE_PARTIAL)
 	{	
-		if (display.flag.update_stopwatch && !(sStopwatch.state & STOPWATCH_SPLIT))
+		if (sStopwatch.update_display && !(sStopwatch.state & STOPWATCH_SPLIT))
 		{
+			sStopwatch.update_display = 0;
 			if (sStopwatch.viewStyle == DISPLAY_DEFAULT_VIEW)
 			{
 				// Display MM:SS:hh

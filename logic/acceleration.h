@@ -60,6 +60,7 @@
 
 // *************************************************************************************************
 // Global Variable section
+/* TODO: We should pack this stuff!!! */
 struct accel
 {
 	// ACC_MODE_OFF, ACC_MODE_ON
@@ -75,7 +76,10 @@ struct accel
 	u8 			view_style;
 
 	// Timeout
-	u16			timeout;	
+	u16			timeout;
+
+	/* should we update the display? */
+	u8 update_display;
 };
 extern struct accel sAccel;
 

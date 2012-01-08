@@ -61,10 +61,13 @@ extern u8 is_hour_am(u8 hour);
 
 // *************************************************************************************************
 // Global Variable section
+/* TODO: pack this stuff!!!! */
 struct time
 {
 	// Flag to minimize display updates
 	u8 		drawFlag;
+
+	u8 update_display;
 
 	// Viewing style
 	u8		line1ViewStyle;

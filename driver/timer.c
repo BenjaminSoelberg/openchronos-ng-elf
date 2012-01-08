@@ -374,9 +374,6 @@ __interrupt void TIMER0_A0_ISR(void)
 	// Enable IE 
 	TA0CCTL0 |= CCIE;
 	
-	// Set clock update flag
-	display.flag.update_time = 1;
-	
 	// While SimpliciTI stack operates or BlueRobin searches, freeze system state
 	//pfs
 	#ifdef ELIMINATE_BLUEROBIN

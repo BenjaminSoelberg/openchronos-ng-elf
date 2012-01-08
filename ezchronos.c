@@ -655,7 +655,7 @@ void display_update(void)
 		clear_line(LINE1);	
 		fptr_lcd_function_line1(LINE1, DISPLAY_LINE_UPDATE_FULL);
 	}
-	else if (ptrMenu_L1->display_update() &&!message.flag.block_line1)
+	else if (!message.flag.block_line1)
 	{
 		// Update line1 only when new data is available
 		fptr_lcd_function_line1(LINE1, DISPLAY_LINE_UPDATE_PARTIAL);
@@ -668,7 +668,7 @@ void display_update(void)
 		clear_line(LINE2);
 		fptr_lcd_function_line2(LINE2, DISPLAY_LINE_UPDATE_FULL);
 	}
-	else if (ptrMenu_L2->display_update() && !message.flag.block_line2)
+	else if (!message.flag.block_line2)
 	{
 		// Update line2 only when new data is available
 		fptr_lcd_function_line2(LINE2, DISPLAY_LINE_UPDATE_PARTIAL);

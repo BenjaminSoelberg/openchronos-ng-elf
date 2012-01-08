@@ -51,6 +51,7 @@
 /**
  * The entire global state of the Strength Timer.
  */
+/* TODO: pack this struct! */
 typedef struct
 {
 	struct 

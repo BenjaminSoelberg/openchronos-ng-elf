@@ -141,7 +141,7 @@ void battery_measurement(void)
 	display.flag.line2_full_update = 1;
 	
 	// Indicate to display function that new value is available
-	display.flag.update_battery_voltage = 1;
+	sBatt.update_display = 1;
 }
 
 
@@ -173,14 +173,14 @@ void display_battery_V(u8 line, u8 update)
 		display_chars(LCD_SEG_L2_2_0, str, SEG_ON);
 		display_symbol(LCD_SEG_L2_DP, SEG_ON);
 	}
-	else if (update == DISPLAY_LINE_UPDATE_PARTIAL)
+	else if (update == DISPLAY_LINE_UPDATE_PARTIAL && sBatt.update_display)
 	{
 		// Display result in xx.x format
 		str = _itoa(sBatt.voltage, 3, 0);
 
 		display_chars(LCD_SEG_L2_2_0, str, SEG_ON);
 			
-		display.flag.update_battery_voltage = 0;
+		sBatt.update_display = 0;
 	}
 	else if (update == DISPLAY_LINE_CLEAR)
 	{

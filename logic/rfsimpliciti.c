@@ -564,9 +564,10 @@ void simpliciti_get_ed_data_callback(void)
 	}
 
 	// Update clock every 1/1 second
-	if (display.flag.update_time) {
+	/* TODO: WTF is this?? now we override main display routine? BAD BAD */
+	if (sTime.update_display) {
 		display_time(LINE1, DISPLAY_LINE_UPDATE_PARTIAL);
-		display.flag.update_time = 0;
+		sTime.update_display = 0;
 
 		// Service watchdog
 		WDTCTL = WDTPW + WDTIS__512K + WDTSSEL__ACLK + WDTCNTCL;

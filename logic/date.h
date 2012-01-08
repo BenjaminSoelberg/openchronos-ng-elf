@@ -55,9 +55,12 @@ extern void date_event(rtca_tevent_ev_t ev);
 
 // *************************************************************************************************
 // Global Variable section
+/* TODO: pack this stuff!!! */
 struct date
 {
 	u8  view;
+	/* does the display need an update? */
+	u8 update_display;
 };
 extern struct date sDate;
 

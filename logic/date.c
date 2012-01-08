@@ -96,7 +96,7 @@ void date_event(rtca_tevent_ev_t ev)
 {
 	if (ev >= RTCA_EV_DAY) { // Day changed
 		// Indicate to display function that new value is available
-		display.flag.update_date = 1;
+		sDate.update_display = 1;
 	}
 }
 
@@ -224,6 +224,17 @@ void display_date(line_t line, update_t update)
 #ifdef CONFIG_DAY_OF_WEEK
 	const u8 weekDayStr[7][3] = {"SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"};
 #endif
+	/* nothing to clear */
+	if (update == DISPLAY_LINE_CLEAR)
+		return;
+
+	/* if in partial update mode, only update if needed or if in view==3 */
+	if (update == DISPLAY_LINE_UPDATE_PARTIAL
+			&& ((!sDate.update_display) && (sDate.view != 3)))
+		return;
+
+	sDate.update_display = 0;
+
 	u8 *str;
 	u8 day;
 	u8 month;
@@ -232,66 +243,58 @@ void display_date(line_t line, update_t update)
 
 	rtca_get_date(&year, &month, &day, &dow);
 
-	if (update == DISPLAY_LINE_UPDATE_FULL) {
-		switch (sDate.view) {
-			case 0: //WWW.DD
-				// Convert day to string
+	switch (sDate.view) {
+	case 0: /* WWW.DD */
 #ifdef CONFIG_DAY_OF_WEEK
-				str = _itoa(day, 2, 1);
-				display_chars(switch_seg(line, LCD_SEG_L1_1_0, LCD_SEG_L2_1_0), str, SEG_ON);
+		str = _itoa(day, 2, 1);
+		display_chars(switch_seg(line, LCD_SEG_L1_1_0, LCD_SEG_L2_1_0),
+								str, SEG_ON);
+		/* TODO:Get time from RTC */
+		str = (u8 *)weekDayStr[dow];
+		display_chars(switch_seg(line, LCD_SEG_L1_3_2, LCD_SEG_L2_4_2),
+								str, SEG_ON);
 
-				str = (u8 *)weekDayStr[dow];	    //TODO:Get time from RTC
-				display_chars(switch_seg(line, LCD_SEG_L1_3_2, LCD_SEG_L2_4_2), str, SEG_ON);
-				display_symbol(switch_seg(line, LCD_SEG_L1_DP1, LCD_SEG_L2_DP), SEG_ON);
-				break;
-#else
-				// skip this view
-				sDate.view++;
+		display_symbol(switch_seg(line, LCD_SEG_L1_DP1, LCD_SEG_L2_DP),
+								SEG_ON);
+		break;
 #endif
 
-			case 1: //MM  DD
-				// Convert day to string
-				display_symbol(switch_seg(line, LCD_SEG_L1_DP1, LCD_SEG_L2_DP), SEG_ON);
-				// display date
+	case 1: /* MM  DD */
+		display_symbol(switch_seg(line, LCD_SEG_L1_DP1, LCD_SEG_L2_DP),
+								SEG_ON);
 #ifndef CONFIG_METRIC_ONLY
 
-				if (!sys.flag.use_metric_units) {
-					str = _itoa(day, 2, 0);
-					display_chars(switch_seg(line, LCD_SEG_L1_1_0, LCD_SEG_L2_1_0), str, SEG_ON);
+		if (!sys.flag.use_metric_units) {
+			str = _itoa(day, 2, 0);
+			display_chars(switch_seg(line, LCD_SEG_L1_1_0,
+						LCD_SEG_L2_1_0), str, SEG_ON);
 
-					// Convert month to string
-					str = _itoa(month, 2, 1);
-					display_chars(switch_seg(line, LCD_SEG_L1_3_2, LCD_SEG_L2_3_2), str, SEG_ON);
-				} else {
-#else
-
-				if (1) {
+			str = _itoa(month, 2, 1);
+			display_chars(switch_seg(line, LCD_SEG_L1_3_2,
+						LCD_SEG_L2_3_2), str, SEG_ON);
+		} else
 #endif
-					str = _itoa(day, 2, 0);
-					display_chars(switch_seg(line, LCD_SEG_L1_3_2, LCD_SEG_L2_3_2), str, SEG_ON);
+		{
+			str = _itoa(day, 2, 0);
+			display_chars(switch_seg(line, LCD_SEG_L1_3_2,
+						LCD_SEG_L2_3_2), str, SEG_ON);
 
-					str = _itoa(month, 2, 0);
-					display_chars(switch_seg(line, LCD_SEG_L1_1_0, LCD_SEG_L2_1_0), str, SEG_ON);
-				}
-
-				break;
-
-			case 2: //YYYY
-				// Convert year to string
-				str = _itoa(year, 4, 0);
-				display_chars(switch_seg(line, LCD_SEG_L1_3_0, LCD_SEG_L2_3_0), str, SEG_ON);
-				break;
-
-			default:
-				display_time(line, update);
-				break;
+			str = _itoa(month, 2, 0);
+			display_chars(switch_seg(line, LCD_SEG_L1_1_0,
+						LCD_SEG_L2_1_0), str, SEG_ON);
 		}
-	}
-	else if	(update == DISPLAY_LINE_UPDATE_PARTIAL) {
-		if ((sDate.view == 3) || (display.flag.update_date))
-			display_date(line, DISPLAY_LINE_UPDATE_FULL);
-	} else if (update == DISPLAY_LINE_CLEAR) {
-		// Do some display cleanup (or just do nothing if everything is OK)
-		// This is NOT ONLY called on switch to next menu item
+
+		break;
+
+	case 2: /* YYYY */
+		str = _itoa(year, 4, 0);
+		display_chars(switch_seg(line, LCD_SEG_L1_3_0, LCD_SEG_L2_3_0),
+								str, SEG_ON);
+		break;
+
+	default: /* TIME */
+		/* TODO: this doesnt belong here and should be moved
+		   to clock.c */
+		display_time(line, update);
 	}
 }

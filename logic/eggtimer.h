@@ -65,11 +65,13 @@ extern u8 eggtimer_visible(void);
 
 // *************************************************************************************************
 // Global Variable section
+/* TODO: pack this stuff!! */
 struct eggtimer
 {
         //NOTE: u8 means unsigned char
 	u8	state;
 	u8	drawFlag;
+	u8 update_display;
 	
 	// Values that are decremented each second
 	u8	hours;

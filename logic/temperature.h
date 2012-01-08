@@ -59,6 +59,7 @@ extern void display_temperature(u8 line, u8 update);
 
 // *************************************************************************************************
 // Global Variable section
+/* TODO: pack this stuff!!!! */
 struct temp
 {
 	// MENU_ITEM_NOT_VISIBLE, MENU_ITEM_VISIBLE
@@ -67,6 +68,9 @@ struct temp
 	s16		degrees;
 	// User set calibration value (°C) in 2.1 format
 	s16		offset;
+
+	/* do we need to update the display? */
+	u8 update_display;
 };
 extern struct temp sTemp;
 

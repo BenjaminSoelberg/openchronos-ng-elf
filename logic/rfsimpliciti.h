@@ -98,6 +98,7 @@ typedef enum
 
 // *************************************************************************************************
 // Global Variable section
+/* TODO: pack this stufff!!!! */
 struct RFsmpl
 {
 	// SIMPLICITI_OFF, SIMPLICITI_ACCELERATION, SIMPLICITI_BUTTONS
@@ -105,6 +106,7 @@ struct RFsmpl
 	
 	// Timeout until SimpliciTI transmission is automatically stopped
 	u16					timeout;
+
 };
 extern struct RFsmpl sRFsmpl;
 

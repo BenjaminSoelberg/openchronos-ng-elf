@@ -74,6 +74,7 @@ extern void display_stopwatch(u8 line, u8 update);
 
 // *************************************************************************************************
 // Global Variable section
+/* TODO: pack this stufffff!!!! */
 struct stopwatch
 {
 	u8 		state;
@@ -81,6 +82,7 @@ struct stopwatch
 	u8		swtIs1Hz;
 	u8		swtIs10Hz;
 	
+	/* TODO: WTF is this?? */
 	//	time[0] 	hour H
 	//	time[1] 	hour L
 	//	time[2] 	minute H
@@ -95,6 +97,9 @@ struct stopwatch
 	// Display style
 	u8 	viewStyle;
 	u8 	viewStyle_split;
+
+	/* does the display need an update? */
+	u8 update_display;
 };
 extern struct stopwatch sStopwatch;
 

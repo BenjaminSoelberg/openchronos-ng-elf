@@ -57,8 +57,6 @@ struct menu
 	void (*nx_function)(u8 line);	
 	// Pointer to display function
 	void (*display_function)(u8 line, u8 mode);		 
-	// Display update trigger 
-	u8 (*display_update)(void); 	 
 };
 
 

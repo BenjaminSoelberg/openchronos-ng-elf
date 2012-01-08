@@ -293,7 +293,7 @@ void eggtimer_tick(void) //gibbons: This function could benefit from an alarm qu
 		//sEggtimer.drawFlag == 3 --> hours also changed
 
 		sEggtimer.drawFlag = 1;
-		display.flag.update_eggtimer = 1;
+		sEggtimer.update_display = 1;
     
 		// gibbons: Is it possible to merge the if and else if blocks into one?
 		if ((sEggtimer.hours == 0) && (sEggtimer.minutes == 0) && (sEggtimer.seconds == 1)) {
@@ -382,8 +382,9 @@ void display_eggtimer(u8 line, u8 update)
 	u8 * str;
 	
 	// Partial line update only
-	if (update == DISPLAY_LINE_UPDATE_PARTIAL)
+	if (update == DISPLAY_LINE_UPDATE_PARTIAL && sEggtimer.update_display)
 	{
+		sEggtimer.update_display = 0;
 		// Check draw flag to minimize workload
 		switch(sEggtimer.drawFlag) 
 		{

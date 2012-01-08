@@ -67,6 +67,7 @@ extern void display_battery_V(u8 line, u8 update);
 
 // *************************************************************************************************
 // Global Variable section
+/* TODO: pack this stuff!!!! */
 struct batt
 {
 	// MENU_ITEM_NOT_VISIBLE, MENU_ITEM_VISIBLE
@@ -80,6 +81,9 @@ struct batt
 	
 	// Battery voltage offset
 	s16			offset;
+
+	/* does the display need an update? */
+	u8 update_display;
 };
 extern struct batt sBatt;
 

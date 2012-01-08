@@ -396,6 +396,8 @@ display_vario( u8 line, u8 update )
    // Be careful to only update the time when a time update is active,
    // ie, not because this refresh is due to a DOWN button press.
    //
+   /* TODO this needs migration to a 1Hz timer or RTC. It is stupid to
+	do it like this. */
    if ( display.flag.update_time )
      {
 	G_vario.stats.f_time.ss++;

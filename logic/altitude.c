@@ -684,7 +684,8 @@ void altitude_accumulator_start (void)
 //				u8 blanks			Not used
 // @return      none
 // *************************************************************************************************
-void display_selection_altaccum (u8 segments, u32 index, u8 digits, u8 blanks)
+void display_selection_altaccum (u8 segments, u32 index, u8 digits,
+						u8 blanks, u8 display_mode)
 {
 	if (index) {
 		clear_line(LINE2);
@@ -853,7 +854,7 @@ void mx_alt_accumulator(u8 line)
 	// Allow the user to turn the altitude accumulator function ON or OFF. This is stored in global variable
 	// alt_accum_enable where 0 = off, 1 = on. Display "on" or "off" on the bottom line as appropriate.
 	temp_enable = alt_accum_enable;			// local copy, to allow user to modify it
-	set_value(&temp_enable, 1, 0, 0, 1, SETVALUE_ROLLOVER_VALUE + SETVALUE_DISPLAY_SELECTION, LCD_SEG_L2_4_0, display_selection_altaccum);	// allow user to turn on / off
+	set_value(&temp_enable, 1, 0, 0, 1, SETVALUE_ROLLOVER_VALUE + SETVALUE_DISPLAY_SELECTION, LCD_SEG_L2_4_0, &display_selection_altaccum);	// allow user to turn on / off
 
 	// If the altitude accumulator has just been enabled, call its initialisation routine
 	if ( (temp_enable==1) && (alt_accum_enable==0) )

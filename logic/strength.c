@@ -43,6 +43,13 @@ void display_strength_time(u8 line, u8 update)
 {
 	u8 secs = strength_data.seconds_since_start;
 	
+	if (update == DISPLAY_LINE_CLEAR)
+		return;
+
+	if (update == DISPLAY_LINE_UPDATE_PARTIAL
+			&& strength_data.flags.redisplay_requested == 0)
+		return;
+
 	// if there is anything to display, display that
 	if(strength_data.flags.running 
 	   || strength_data.seconds_since_start != 0) 
@@ -177,14 +184,5 @@ void strength_sx(u8 line)
 	strength_data.flags.redisplay_requested = 1;
 }
 
-// *************************************************************************************************
-// @fn          strength_display_needs_updating
-// @brief       Has the Strength module the desire to redisplay?
-// @return      true iff the Strength data has something new to be displayed
-// *************************************************************************************************
-u8 strength_display_needs_updating(void)
-{
-	return strength_data.flags.redisplay_requested;
-}
 
 #endif // ifdef CONFIG_STRENGTH

@@ -264,9 +264,6 @@ void mx_alarm(u8 line)
 
 	// Clear button flag
 	button.all_flags = 0;
-
-	// Indicate to display function that new value is available
-	display.flag.update_alarm = 1;
 }
 
 

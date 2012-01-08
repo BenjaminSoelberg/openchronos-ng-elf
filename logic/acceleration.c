@@ -101,6 +101,9 @@ void sx_acceleration(u8 line)
 	
 	// Get data from sensor
 	as_get_data(sAccel.xyz);
+
+	// Set display update flag
+	sAccel.update_display = 1;
 }
 
 
@@ -164,13 +167,14 @@ u8 is_acceleration_measurement(void)
 // @param       none
 // @return      none
 // *************************************************************************************************
+/* TODO: put this inside a timer or something */
 void do_acceleration_measurement(void)
 {
 	// Get data from sensor
 	as_get_data(sAccel.xyz);
 	
 	// Set display update flag
-	display.flag.update_acceleration = 1;
+	sAccel.update_display = 1;
 }
 
 
@@ -223,6 +227,12 @@ void display_acceleration(u8 line, u8 update)
 		}
 		else if (update == DISPLAY_LINE_UPDATE_PARTIAL)
 		{
+			/* Check if we have something new to display */
+			if (! sAccel.update_display)
+				return;
+
+			sAccel.update_display = 0;
+
 			// Convert X/Y/Z values to mg
 			switch (sAccel.view_style)
 			{

@@ -128,7 +128,7 @@ void temperature_measurement(u8 filter)
 	}
 
 	// New data is available --> do display update
-	display.flag.update_temperature = 1;
+	sTemp.update_display = 1;
 }
 
 
@@ -301,8 +301,9 @@ void display_temperature(u8 line, u8 update)
 		// Display temperature
 		display_temperature(LINE1, DISPLAY_LINE_UPDATE_PARTIAL);
 	}
-	else if (update == DISPLAY_LINE_UPDATE_PARTIAL)
+	else if (update == DISPLAY_LINE_UPDATE_PARTIAL && sTemp.update_display)
 	{
+		sTemp.update_display = 0;
 		// When using English units, convert °C to °F (temp*1.8+32)
 #ifdef CONFIG_METRIC_ONLY
 		temperature = sTemp.degrees;

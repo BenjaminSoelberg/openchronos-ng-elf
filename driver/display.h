@@ -86,22 +86,8 @@ typedef union
     u16 line1_full_update     	: 1;    // 1 = Redraw Line1 content
     u16 line2_full_update     	: 1;    // 1 = Redraw Line2 content
 
-	// Logic module data update flags
-    u16 update_time      		: 1;    // 1 = Time was updated 
-#ifdef CONFIG_SIDEREAL
-	u16 update_sidereal_time	: 1;	// 1 = Sidereal Time was updated
-#endif
-    u16 update_stopwatch     	: 1;    // 1 = Stopwatch was updated
-#ifdef CONFIG_EGGTIMER
-    u16 update_eggtimer : 1;
-#endif
-    u16 update_temperature   	: 1;    // 1 = Temperature was updated
-    u16 update_battery_voltage 	: 1;    // 1 = Battery voltage was updated
-    u16 update_date      		: 1;    // 1 = Date was updated
-    u16 update_alarm      		: 1;    // 1 = Alarm time was updated
-    u16 update_acceleration		: 1; 	// 1 = Acceleration data was updated
   } flag;
-  u16 all_flags;            // Shortcut to all display flags (for reset)
+  u8 all_flags;            // Shortcut to all display flags (for reset)
 } s_display_flags;
 
 extern volatile s_display_flags display;

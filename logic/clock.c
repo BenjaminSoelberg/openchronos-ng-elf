@@ -127,6 +127,7 @@ void clock_event(rtca_tevent_ev_t ev)
 	// sTime.drawFlag = 3: hour, minute
 
 	sTime.drawFlag = (ev >= RTCA_EV_HOUR ? 3 : ev + 2);
+	sTime.update_display = 1;
 }
 
 
@@ -352,7 +353,8 @@ void display_time(u8 line, u8 update)
 	rtca_get_time(&hour, &min, &sec);
 
 	// Partial update
-	if (update == DISPLAY_LINE_UPDATE_PARTIAL) {
+	if (update == DISPLAY_LINE_UPDATE_PARTIAL && sTime.update_display) {
+		sTime.update_display = 0;
 		if (sTime.line1ViewStyle == DISPLAY_DEFAULT_VIEW) {
 			switch (sTime.drawFlag) {
 				case 3:
