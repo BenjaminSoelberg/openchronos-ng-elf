@@ -1,12 +1,12 @@
-
 # MSP430		(Texas Instruments)
-CPU	= MSP430
-CC  = msp430-gcc
-LD  = msp430-ld
+.PHONY : main debug clean upload sync help config
+CPU		= MSP430
+CC		= msp430-gcc
+LD		= msp430-ld
 PYTHON := $(shell which python2 || which python)
 
 PROJ_DIR	=.
-BUILD_DIR = build
+BUILD_DIR	= build
 CFLAGS_PRODUCTION = -Os -Wall#-Wl,--gc-sections # -ffunction-sections # -fdata-sections  -fno-inline-functions# -O optimizes
 # more optimizion flags
 CFLAGS_PRODUCTION +=  -fomit-frame-pointer -fno-force-addr -finline-limit=1 -fno-schedule-insns -fshort-enums
@@ -63,31 +63,22 @@ main: build config.h even_in_range $(ALL_O) $(EXTRA_O) build
 	@echo "Convert to TI Hex file"
 	$(PYTHON) tools/memory.py -i build/eZChronos.elf -o build/eZChronos.txt
 
-#debug:	foo
-#	@echo USE_CFLAGS = $(CFLAGS_DEBUG)
-#	call call_debug
-
-#$(ALL_O): config.h project/project.h $(addsuffix .o,$(basename $@))
-#	$(CC) $(CC_COPT) $(USE_CFLAGS) -c $(basename $@).c -o $@
-
 $(ALL_O): %.o: %.c config.h include/project.h
 	$(CC) $(CC_COPT) $(USE_CFLAGS) $(CONFIG_FLAGS) -c $< -o $@
-#             $(CC) -c $(CFLAGS) $< -o $@
 
 
 $(ALL_S): %.s: %.o config.h include/project.h
 	msp430-objdump -D $< > $@
-#             $(CC) -c $(CFLAGS) $< -o $@
 
+config.h:
+	$(PYTHON) tools/config.py
+	git update-index --assume-unchanged config.h 2> /dev/null || true
 
 debug:	build even_in_range $(ALL_O)
 	@echo "Compiling $@ for $(CPU) in debug"
 	$(CC) $(CC_CMACH) $(CFLAGS_DEBUG) -o $(BUILD_DIR)/eZChronos.dbg.elf $(ALL_O) $(EXTRA_O)
 	@echo "Convert to TI Hex file"
 	$(PYTHON) tools/memory.py -i build/eZChronos.dbg.elf -o build/eZChronos.txt
-
-debug_asm: $(ALL_S)
-	@echo "Compiling $@ for $(CPU) in debug"
 
 source_index: $(ALL_S)
 	for i in $(ALL_S); do echo analyze $$i && m4s init < $$i; done
@@ -110,9 +101,8 @@ build:
 upload: main
 	$(PYTHON) contrib/ChronosTool.py rfbsl build/eZChronos.txt
 
-config.h:
-	$(PYTHON) tools/config.py
-	git update-index --assume-unchanged config.h 2> /dev/null || true
+sync:
+	$(PYTHON) contrib/ChronosTool.py sync
 
 config:
 	$(PYTHON) tools/config.py
@@ -121,9 +111,12 @@ config:
 help:
 	@echo "Valid targets are"
 	@echo "    main"
+	@echo "    config"
 	@echo "    debug"
 	@echo "    clean"
 	@echo "    debug_asm"
+	@echo "    sync"
+	@echo "    upload"
 #rm *.o $(BUILD_DIR)*
 
 
