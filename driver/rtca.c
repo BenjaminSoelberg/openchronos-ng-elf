@@ -250,16 +250,14 @@ void rtca_set_date(u16 year, u8 mon, u8 day)
 	dst_calculate_dates(year, mon, day);	/* calculate new DST switch dates */
 #endif
 }
-
 #ifdef __GNUC__
-#include <legacymsp430.h>
-interrupt(RTC_A_VECTOR) RTC_A_ISR(void)
-{
+__attribute__( (interrupt (RTC_A_VECTOR)) )
 #else
 #pragma vector = RTC_A_VECTOR
-__interrupt void RTC_A_ISR(void)
-{
+__interrupt
 #endif
+void RTC_A_ISR(void)
+{
 	/* the IV is cleared after a read, so we store it */
 	uint16_t iv = RTCIV;
 

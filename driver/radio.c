@@ -170,12 +170,12 @@ void close_radio(void)
 // *************************************************************************************************
 //pfs 
 #ifdef __GNUC__
-#include <legacymsp430.h>
-interrupt (CC1101_VECTOR) radio_ISR(void)
+__attribute__( (interrupt (CC1101_VECTOR) ) )
 #else
-#pragma vector=CC1101_VECTOR
-__interrupt void radio_ISR(void)
+#pragma vector = CC1101_VECTOR
+__interrupt
 #endif
+void radio_ISR(void)
 {
 	u8 rf1aivec = RF1AIV;
 	

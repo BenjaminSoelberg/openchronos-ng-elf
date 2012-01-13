@@ -354,13 +354,13 @@ void Timer0_A4_Delay(u16 ticks)
 // @return      none
 // *************************************************************************************************
 //pfs 
-#ifdef __GNUC__  
-#include <legacymsp430.h>
-interrupt (TIMER0_A0_VECTOR) TIMER0_A0_ISR(void)
+#ifdef __GNUC__
+__attribute__( (interrupt (TIMER0_A0_VECTOR) ) )
 #else
 #pragma vector = TIMER0_A0_VECTOR
-__interrupt void TIMER0_A0_ISR(void)
+__interrupt
 #endif
+void TIMER0_A0_ISR(void)
 {
 	static u8 button_lock_counter = 0;
 	static u8 button_beep_counter = 0;
@@ -625,12 +625,12 @@ __interrupt void TIMER0_A0_ISR(void)
 // *************************************************************************************************
 //pfs 
 #ifdef __GNUC__
-#include <legacymsp430.h>
-interrupt (TIMER0_A1_VECTOR) TIMER0_A1_5_ISR(void)
+__attribute__( (interrupt (TIMER0_A1_VECTOR) ) )
 #else
 #pragma vector = TIMER0_A1_VECTOR
-__interrupt void TIMER0_A1_5_ISR(void)
+__interrupt
 #endif
+void TIMER0_A1_5_ISR(void)
 {
 	u16 value;
 		

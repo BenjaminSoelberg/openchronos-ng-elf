@@ -129,13 +129,13 @@ void init_buttons(void)
 // @return      none
 // *************************************************************************************************
 //pfs 
-#ifdef __GNUC__  
-#include <legacymsp430.h>
-interrupt (PORT2_VECTOR) PORT2_ISR(void)
+#ifdef __GNUC__
+__attribute__( (interrupt (PORT2_VECTOR) ) )
 #else
-#pragma vector=PORT2_VECTOR
-__interrupt void PORT2_ISR(void)
+#pragma vector = PORT2_VECTOR
+__interrupt
 #endif
+void PORT2_ISR(void)
 {
 	u8 int_flag, int_enable;
 	u8 buzzer = 0;
