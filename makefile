@@ -1,5 +1,5 @@
 # MSP430		(Texas Instruments)
-.PHONY : main debug clean upload sync help config
+.PHONY : main debug clean upload sync help config ctags etags
 CPU		= MSP430
 CC		= msp430-gcc
 LD		= msp430-ld
@@ -72,7 +72,6 @@ $(ALL_S): %.s: %.o config.h include/project.h
 
 config.h:
 	$(PYTHON) tools/config.py
-	git update-index --assume-unchanged config.h 2> /dev/null || true
 
 debug:	build even_in_range $(ALL_O)
 	@echo "Compiling $@ for $(CPU) in debug"
@@ -85,6 +84,8 @@ source_index: $(ALL_S)
 
 etags: $(ALL_C) 
 	etags $^
+ctags: $(ALL_C)
+	ctags --c++-kinds=+p --fields=+iaS --extra=+q $^
 
 even_in_range:
 	@echo "Assembling $@ in one step for $(CPU)..."
@@ -106,7 +107,6 @@ sync:
 
 config:
 	$(PYTHON) tools/config.py
-	git update-index --assume-unchanged config.h 2> /dev/null || true
 
 help:
 	@echo "Valid targets are"
