@@ -24,8 +24,8 @@
 // *************************************************************************************************
 int16_t mult_scale16(int16_t a, int16_t b)
 {
-	#define HALF ((int32_t)0x8000)
-	return (int16_t)(((int32_t)a*b + HALF) >> 16);
+#define HALF ((int32_t)0x8000)
+	return (int16_t)(((int32_t)a * b + HALF) >> 16);
 }
 
 // *************************************************************************************************
@@ -37,9 +37,9 @@ int16_t mult_scale16(int16_t a, int16_t b)
 // *************************************************************************************************
 int16_t mult_scale15(int16_t a, int16_t b)
 {
-	#define HALF ((int32_t)0x8000)
+#define HALF ((int32_t)0x8000)
 	int32_t ff;
-	ff = ((int32_t)a*b);
+	ff = ((int32_t)a * b);
 	// Note 1: The sequence of a separate << 1 and >>16 operation produces
 	//         far more efficient compiled code than >> 15.
 	// Note 2: Combining the shift(s) with previous statement is not accepted by the compiler.

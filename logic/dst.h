@@ -22,10 +22,9 @@
 #define DST_STATE_ST 0
 #define DST_STATE_DST 1
 
-struct dst_date_struct
-{
-    uint8_t month;
-    uint8_t day;
+struct dst_date_struct {
+	uint8_t month;
+	uint8_t day;
 };
 
 extern struct dst_date_struct dst_dates[];

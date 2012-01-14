@@ -27,11 +27,6 @@
 #include "user.h"
 #include "gps.h"
 
-//pfs
-#ifndef ELIMINATE_BLUEROBIN
-#include "bluerobin.h"
-#endif
-
 #ifdef CONFIG_SIDEREAL
 #include "sidereal.h"
 #endif
@@ -50,7 +45,7 @@ extern void idle_loop(void);
 uint8_t doorlock_sequence(uint8_t sequence[DOORLOCK_SEQUENCE_MAX_LENGTH]);
 void doorlock_sequence_timer(void);
 void doorlock_sequence_pause_timer(void);
-uint8_t sequence_compare(uint8_t* sequence_a, uint8_t* sequence_b);
+uint8_t sequence_compare(uint8_t *sequence_a, uint8_t *sequence_b);
 
 
 // *************************************************************************************************
@@ -92,36 +87,32 @@ uint8_t doorlock_sequence(uint8_t sequence[DOORLOCK_SEQUENCE_MAX_LENGTH])
 	//Timer0_A1_Start();
 
 
-	for(;;)
-	{
+	for (;;) {
 
-		    // Reset IRQ flags
+		// Reset IRQ flags
 		BUTTONS_IFG &= ~ALL_BUTTONS;
 
-			// Enable button interrupts
+		// Enable button interrupts
 		BUTTONS_IE &= ~ALL_BUTTONS;
 
 		idle_loop();
 
 
 
-		if (!doorlock_sequence_timeout)
-		{
+		if (!doorlock_sequence_timeout) {
 			as_stop();
 			// Reset IRQ flags
-				BUTTONS_IFG &= ~ALL_BUTTONS;
+			BUTTONS_IFG &= ~ALL_BUTTONS;
 
-				// Enable button interrupts
-				BUTTONS_IE |= ALL_BUTTONS;
+			// Enable button interrupts
+			BUTTONS_IE |= ALL_BUTTONS;
 			return DOORLOCK_ERROR_TIMEOUT;
 		}
 
 		// were we interrupted because pause is too long?
-		if (doorlock_sequence_pause <= DOORLOCK_SEQUENCE_PAUSE_MAX_LENGTH)
-		{
+		if (doorlock_sequence_pause <= DOORLOCK_SEQUENCE_PAUSE_MAX_LENGTH) {
 			// look for accelerometer data ready event
-			if (!request.flag.acceleration_measurement)
-			{
+			if (!request.flag.acceleration_measurement) {
 				continue;
 			}
 
@@ -136,16 +127,14 @@ uint8_t doorlock_sequence(uint8_t sequence[DOORLOCK_SEQUENCE_MAX_LENGTH])
 
 			// proceed if the acceleration is big enough
 			if (ddelta < DOORLOCK_SEQUENCE_TAP_THRESHOLD &&
-				ddelta > -DOORLOCK_SEQUENCE_TAP_THRESHOLD)
-			{
+			    ddelta > -DOORLOCK_SEQUENCE_TAP_THRESHOLD) {
 				continue;
 			}
 
 			Timer0_A1_Stop();
 
 			// first tap?
-			if (length == 0)
-			{
+			if (length == 0) {
 				// reset timer
 				doorlock_sequence_timeout = 1; // no more timeout
 
@@ -167,12 +156,11 @@ uint8_t doorlock_sequence(uint8_t sequence[DOORLOCK_SEQUENCE_MAX_LENGTH])
 			}
 
 			// is pause long enough to qualify?
-			if (doorlock_sequence_pause > DOORLOCK_SEQUENCE_PAUSE_MIN_LENGTH)
-			{
+			if (doorlock_sequence_pause > DOORLOCK_SEQUENCE_PAUSE_MIN_LENGTH) {
 				sequence[length - 1] = doorlock_sequence_pause;
 				++ length;
-				if (doorlock_sequence_pause > max)
-				{
+
+				if (doorlock_sequence_pause > max) {
 					// also get the biggest pause
 					max = doorlock_sequence_pause;
 				}
@@ -188,8 +176,7 @@ uint8_t doorlock_sequence(uint8_t sequence[DOORLOCK_SEQUENCE_MAX_LENGTH])
 			doorlock_sequence_pause = 0;
 
 			// is the sequence full?
-			if (length <= DOORLOCK_SEQUENCE_MAX_LENGTH)
-			{
+			if (length <= DOORLOCK_SEQUENCE_MAX_LENGTH) {
 				// start pause timer
 				fptr_Timer0_A1_function = doorlock_sequence_pause_timer;
 				Timer0_A1_Start(DOORLOCK_SEQUENCE_PAUSE_RESOLUTION);
@@ -198,39 +185,37 @@ uint8_t doorlock_sequence(uint8_t sequence[DOORLOCK_SEQUENCE_MAX_LENGTH])
 
 			// if sequnce is full, we stop
 			as_stop();
-		}
-		else
-		{
+		} else {
 			// if pause timeout we stop
 			as_stop();
 
 			doorlock_sequence_pause = 0;
 
 			// is sequence too short?
-			if (length <= DOORLOCK_SEQUENCE_MIN_LENGTH)
-			{
+			if (length <= DOORLOCK_SEQUENCE_MIN_LENGTH) {
 				// reset data when exiting this state
 				memset(sequence, 0, sizeof(uint8_t) * DOORLOCK_SEQUENCE_MAX_LENGTH);
 				// Reset IRQ flags
-					BUTTONS_IFG &= ~ALL_BUTTONS;
+				BUTTONS_IFG &= ~ALL_BUTTONS;
 
-					// Enable button interrupts
-					BUTTONS_IE |= ALL_BUTTONS;
+				// Enable button interrupts
+				BUTTONS_IE |= ALL_BUTTONS;
 				return DOORLOCK_ERROR_FAILURE;
 			}
 		}
 
 		// normalize all pauses
 		ratio = 255.0f / (float)max;
-		for (i = 0; i < DOORLOCK_SEQUENCE_MAX_LENGTH; i++)
-		{
+
+		for (i = 0; i < DOORLOCK_SEQUENCE_MAX_LENGTH; i++) {
 			sequence[i] *= ratio;
 		}
-		// Reset IRQ flags
-			BUTTONS_IFG &= ~ALL_BUTTONS;
 
-			// Enable button interrupts
-			BUTTONS_IE |= ALL_BUTTONS;
+		// Reset IRQ flags
+		BUTTONS_IFG &= ~ALL_BUTTONS;
+
+		// Enable button interrupts
+		BUTTONS_IE |= ALL_BUTTONS;
 		return DOORLOCK_ERROR_SUCCESS;
 	}
 
@@ -246,12 +231,9 @@ uint8_t doorlock_sequence(uint8_t sequence[DOORLOCK_SEQUENCE_MAX_LENGTH])
 // *************************************************************************************************
 void doorlock_sequence_timer(void)
 {
-	if (doorlock_sequence_timeout > 0)
-	{
+	if (doorlock_sequence_timeout > 0) {
 		-- doorlock_sequence_timeout;
-	}
-	else
-	{
+	} else {
 		Timer0_A1_Stop();
 	}
 }
@@ -264,48 +246,39 @@ void doorlock_sequence_timer(void)
 // *************************************************************************************************
 void doorlock_sequence_pause_timer(void)
 {
-	if (doorlock_sequence_pause > DOORLOCK_SEQUENCE_PAUSE_MAX_LENGTH)
-    {
-            // stop timer
-            Timer0_A1_Stop();
-    }
-    else
-    {
-            // Increment pause length
-            ++ doorlock_sequence_pause;
-    }
+	if (doorlock_sequence_pause > DOORLOCK_SEQUENCE_PAUSE_MAX_LENGTH) {
+		// stop timer
+		Timer0_A1_Stop();
+	} else {
+		// Increment pause length
+		++ doorlock_sequence_pause;
+	}
 }
 
-uint8_t sequence_compare(uint8_t* sequence_a, uint8_t* sequence_b)
+uint8_t sequence_compare(uint8_t *sequence_a, uint8_t *sequence_b)
 {
 	uint8_t i = 0;
 
-	for (i = 0; i < DOORLOCK_SEQUENCE_MAX_LENGTH; i++)
-    {
-		if (sequence_a[i] > sequence_b[i])
-		{
-			if (sequence_a[i] - sequence_b[i] > DOORLOCK_SEQUENCE_SIMILARITY)
-			{
+	for (i = 0; i < DOORLOCK_SEQUENCE_MAX_LENGTH; i++) {
+		if (sequence_a[i] > sequence_b[i]) {
+			if (sequence_a[i] - sequence_b[i] > DOORLOCK_SEQUENCE_SIMILARITY) {
+				break;
+			}
+		} else {
+			if (sequence_b[i] - sequence_a[i] > DOORLOCK_SEQUENCE_SIMILARITY) {
 				break;
 			}
 		}
-		else
-		{
-			if (sequence_b[i] - sequence_a[i] > DOORLOCK_SEQUENCE_SIMILARITY)
-			{
-				break;
-			}
-		}
-    }
+	}
 
-	if (i == DOORLOCK_SEQUENCE_MAX_LENGTH)
-	{
+	if (i == DOORLOCK_SEQUENCE_MAX_LENGTH) {
 		//request.flag.lock_unlock = 1;
 		//auth_signal_success();
 		return DOORLOCK_ERROR_SUCCESS;
 	}
+
 	//auth_signal_failure();
-		return DOORLOCK_ERROR_FAILURE;
+	return DOORLOCK_ERROR_FAILURE;
 
 }
 

@@ -1,35 +1,35 @@
 // *************************************************************************************************
 //
-//	Copyright (C) 2009 Texas Instruments Incorporated - http://www.ti.com/ 
+//	Copyright (C) 2009 Texas Instruments Incorporated - http://www.ti.com/
 //	Copyright (C) 2010 Daniel Poelzleithner
-//	 
-//	 
-//	  Redistribution and use in source and binary forms, with or without 
-//	  modification, are permitted provided that the following conditions 
+//
+//
+//	  Redistribution and use in source and binary forms, with or without
+//	  modification, are permitted provided that the following conditions
 //	  are met:
-//	
-//	    Redistributions of source code must retain the above copyright 
+//
+//	    Redistributions of source code must retain the above copyright
 //	    notice, this list of conditions and the following disclaimer.
-//	 
+//
 //	    Redistributions in binary form must reproduce the above copyright
-//	    notice, this list of conditions and the following disclaimer in the 
-//	    documentation and/or other materials provided with the   
+//	    notice, this list of conditions and the following disclaimer in the
+//	    documentation and/or other materials provided with the
 //	    distribution.
-//	 
+//
 //	    Neither the name of Texas Instruments Incorporated nor the names of
 //	    its contributors may be used to endorse or promote products derived
 //	    from this software without specific prior written permission.
-//	
-//	  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
-//	  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
+//
+//	  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+//	  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 //	  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-//	  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT 
-//	  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
-//	  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT 
+//	  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+//	  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+//	  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
 //	  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
 //	  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-//	  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT 
-//	  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
+//	  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+//	  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 //	  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 // *************************************************************************************************
@@ -56,7 +56,6 @@
 // logic
 #include "acceleration.h"
 #include "rfsimpliciti.h"
-//#include "bluerobin.h"
 #include "simpliciti.h"
 #include "phase_clock.h"
 #include "date.h"
@@ -89,7 +88,7 @@ struct SPhase sPhase;
 // flag contains status information, trigger to send data and trigger to exit SimpliciTI
 unsigned char phase_clock_flag;
 
-// 4 data bytes to send 
+// 4 data bytes to send
 unsigned char phase_clock_data[SIMPLICITI_MAX_PAYLOAD_LENGTH];
 
 // 4 byte device address overrides SimpliciTI end device address set in "smpl_config.dat"
@@ -127,20 +126,17 @@ void sx_phase(uint8_t line)
 	// Exit if battery voltage is too low for radio operation
 	if (sys.flag.low_battery) return;
 
-    sPhase.session = 0;
-    sPhase.out_nr = 0;
-    sPhase.data_nr = 0;
+	sPhase.session = 0;
+	sPhase.out_nr = 0;
+	sPhase.data_nr = 0;
 
-	// Exit if BlueRobin stack is active
-#ifndef ELIMINATE_BLUEROBIN
-	if (is_bluerobin()) return;
-#endif
-  	// Start SimpliciTI in tx only mode
-    if(sPhase.bug)
-        start_simpliciti_tx_only(SIMPLICITI_PHASE_CLOCK);
-    else
-        start_simpliciti_tx_only(SIMPLICITI_PHASE_CLOCK_START);
-    //start_simpliciti_tx_only(SIMPLICITI_PHASE_CLOCK);
+	// Start SimpliciTI in tx only mode
+	if (sPhase.bug)
+		start_simpliciti_tx_only(SIMPLICITI_PHASE_CLOCK);
+	else
+		start_simpliciti_tx_only(SIMPLICITI_PHASE_CLOCK_START);
+
+	//start_simpliciti_tx_only(SIMPLICITI_PHASE_CLOCK);
 }
 
 // *************************************************************************************************
@@ -149,47 +145,49 @@ void sx_phase(uint8_t line)
 // @param       uint8_t line		LINE2
 // @return      none
 // *************************************************************************************************
-void mx_phase(uint8_t line){
-		int32_t prog, bug;
-        uint8_t mode = 0;
-		prog = (int32_t)sPhase.program;
-        bug = (int32_t)sPhase.bug;
-		// Loop values until all are set or user breaks	set
-		while(1) 
-		{
-			// Idle timeout: exit without saving 
-			if (sys.flag.idle_timeout) break;
-		
-			// M2 (short): save, then exit 
-			if (button.flag.num) 
-			{
-				// Store local variables in global Eggtimer default
-				//sAlarm.hour = hours;
-				//sAlarm.minute = minutes;
-				sPhase.program = (uint8_t)prog;
-                sPhase.bug = (uint8_t)bug;
-				display.flag.line2_full_update = 1;
-				break;
-			}
-			if (button.flag.star) 
-                mode = (mode+1)%2;
+void mx_phase(uint8_t line)
+{
+	int32_t prog, bug;
+	uint8_t mode = 0;
+	prog = (int32_t)sPhase.program;
+	bug = (int32_t)sPhase.bug;
 
-            switch (mode) {
-                case 0:
-                    //set_value(&prog, 2, 0, 0, 99, SETVALUE_ROLLOVER_VALUE + SETVALUE_DISPLAY_VALUE + SETVALUE_NEXT_VALUE, LCD_SEG_L2_1_0, display_value1);
-                    display_chars(LCD_SEG_L2_5_0, (uint8_t *)" PR ", SEG_ON);
-                    set_value(&prog, 2, 0, 0, 99, SETVALUE_ROLLOVER_VALUE + SETVALUE_DISPLAY_VALUE + SETVALUE_NEXT_VALUE, LCD_SEG_L2_1_0, display_value1);
-                    break;
-                case 1:
-                    display_chars(LCD_SEG_L2_5_0, (uint8_t *)" BUG", SEG_ON);
-                    set_value(&bug, 2, 0, 0, 1, SETVALUE_ROLLOVER_VALUE + SETVALUE_DISPLAY_VALUE + SETVALUE_NEXT_VALUE, LCD_SEG_L2_1_0, display_value1);
-                    break;
-            }
+	// Loop values until all are set or user breaks	set
+	while (1) {
+		// Idle timeout: exit without saving
+		if (sys.flag.idle_timeout) break;
+
+		// M2 (short): save, then exit
+		if (button.flag.num) {
+			// Store local variables in global Eggtimer default
+			//sAlarm.hour = hours;
+			//sAlarm.minute = minutes;
+			sPhase.program = (uint8_t)prog;
+			sPhase.bug = (uint8_t)bug;
+			display.flag.line2_full_update = 1;
+			break;
 		}
-	
-		// Clear button flag
-		button.all_flags = 0;
-		display_phase_clock(line, DISPLAY_LINE_UPDATE_FULL);
+
+		if (button.flag.star)
+			mode = (mode + 1) % 2;
+
+		switch (mode) {
+		case 0:
+			//set_value(&prog, 2, 0, 0, 99, SETVALUE_ROLLOVER_VALUE + SETVALUE_DISPLAY_VALUE + SETVALUE_NEXT_VALUE, LCD_SEG_L2_1_0, display_value1);
+			display_chars(LCD_SEG_L2_5_0, (uint8_t *)" PR ", SEG_ON);
+			set_value(&prog, 2, 0, 0, 99, SETVALUE_ROLLOVER_VALUE + SETVALUE_DISPLAY_VALUE + SETVALUE_NEXT_VALUE, LCD_SEG_L2_1_0, display_value1);
+			break;
+
+		case 1:
+			display_chars(LCD_SEG_L2_5_0, (uint8_t *)" BUG", SEG_ON);
+			set_value(&bug, 2, 0, 0, 1, SETVALUE_ROLLOVER_VALUE + SETVALUE_DISPLAY_VALUE + SETVALUE_NEXT_VALUE, LCD_SEG_L2_1_0, display_value1);
+			break;
+		}
+	}
+
+	// Clear button flag
+	button.all_flags = 0;
+	display_phase_clock(line, DISPLAY_LINE_UPDATE_FULL);
 }
 
 
@@ -200,14 +198,18 @@ void mx_phase(uint8_t line){
 // @param       none
 // @return      none
 // *************************************************************************************************
-static uint8_t diff(uint8_t x1, uint8_t x2) {
-    uint8_t b1 = x1 - x2;
-    if(b1 > 127)
-        b1 = x2 - x1;
-    // high pass filter
-    if (b1 < 2)
-        return 0;
-    return b1;
+static uint8_t diff(uint8_t x1, uint8_t x2)
+{
+	uint8_t b1 = x1 - x2;
+
+	if (b1 > 127)
+		b1 = x2 - x1;
+
+	// high pass filter
+	if (b1 < 2)
+		return 0;
+
+	return b1;
 }
 
 // *************************************************************************************************
@@ -216,16 +218,19 @@ static uint8_t diff(uint8_t x1, uint8_t x2) {
 // @param       none
 // @return      none
 // *************************************************************************************************
-void phase_clock_calcpoint() {
-	uint16_t x,y,z,res;
+void phase_clock_calcpoint()
+{
+	uint16_t x, y, z, res;
 	x = y = z = res = 0;
 
 	uint8_t i = 0;
-	for(i=1;i<SLEEP_DATA_BUFFER;i++) {
-		x += diff(sPhase.data[i-1][0], sPhase.data[i][0]);
-		y += diff(sPhase.data[i-1][1], sPhase.data[i][1]);
-		z += diff(sPhase.data[i-1][2], sPhase.data[i][2]);
+
+	for (i = 1; i < SLEEP_DATA_BUFFER; i++) {
+		x += diff(sPhase.data[i - 1][0], sPhase.data[i][0]);
+		y += diff(sPhase.data[i - 1][1], sPhase.data[i][1]);
+		z += diff(sPhase.data[i - 1][2], sPhase.data[i][2]);
 	}
+
 	// can't overflow when SLEEP_BUFFER is not larger then 171
 	res = x + y + z;
 
@@ -240,15 +245,14 @@ void phase_clock_calcpoint() {
 
 // *************************************************************************************************
 // @fn          display_phase_clock
-// @brief       SimpliciTI display routine. 
+// @brief       SimpliciTI display routine.
 // @param       uint8_t line			LINE2
 //				uint8_t update		DISPLAY_LINE_UPDATE_FULL
 // @return      none
 // *************************************************************************************************
 void display_phase_clock(uint8_t line, uint8_t update)
 {
-	if (update == DISPLAY_LINE_UPDATE_FULL)	
-	{
+	if (update == DISPLAY_LINE_UPDATE_FULL) {
 		display_chars(LCD_SEG_L2_5_0, (uint8_t *)" SLEEP", SEG_ON);
 	}
 }

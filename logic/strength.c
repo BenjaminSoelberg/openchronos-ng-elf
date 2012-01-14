@@ -2,11 +2,11 @@
  * A timer for strength training (particularly for those strength training facilities
  * where exercises are performed for a given amount of time instead of a given
  * number of repetitions, e.g. Kieser Training(TM))
- * 
- * This watch function contributes a menu entry in the first row. 
+ *
+ * This watch function contributes a menu entry in the first row.
  * It has three states: initial, running and stopped. In initial state,
  * the display reads 'STRE'. If the user presses UP in initial state,
- * the watch goes into the running state. 
+ * the watch goes into the running state.
  */
 // *************************************************************************************************
 // Include section
@@ -39,21 +39,19 @@ strength_data_t strength_data = { } ;
 // @param       update whether a full update is requested (but we do a full update anyway)
 // @return      none
 // *************************************************************************************************
-void display_strength_time(uint8_t line, uint8_t update) 
+void display_strength_time(uint8_t line, uint8_t update)
 {
 	uint8_t secs = strength_data.seconds_since_start;
-	
+
 	// if there is anything to display, display that
-	if(strength_data.flags.running 
-	   || strength_data.seconds_since_start != 0) 
-	{
+	if (strength_data.flags.running
+	    || strength_data.seconds_since_start != 0) {
 		display_chars(LCD_SEG_L1_2_0, strength_data.time, SEG_ON);
-	}
-	else 
-	{
+	} else {
 		// yeah, we're the Strength mode.
 		display_chars(LCD_SEG_L1_3_0, "STRE", SEG_ON);
 	}
+
 	strength_data.flags.redisplay_requested = 0;
 }
 
@@ -73,45 +71,39 @@ void strength_tick(void)
 	// the state and the ASCII representation of the current time.
 	// dividing is expensive.
 
-	if(secs < STRENGTH_COUNTDOWN_SECS) 
-	{
+	if (secs < STRENGTH_COUNTDOWN_SECS) {
 		uint8_t presecs = STRENGTH_COUNTDOWN_SECS - secs;
 		strength_data.time[1] = '-';
-		strength_data.time[2] = '0'+presecs;
-	} 
-	else if (secs == STRENGTH_COUNTDOWN_SECS)
-	{
+		strength_data.time[2] = '0' + presecs;
+	} else if (secs == STRENGTH_COUNTDOWN_SECS) {
 		strength_data.num_beeps = 1;
 		strength_data.time[1] = ' ';
 		strength_data.time[2] = '0';
-	}
-	else 
-	{
+	} else {
 		// beep at important times
-		switch(secs) 
-		{
-		case STRENGTH_THRESHOLD_1: 
+		switch (secs) {
+		case STRENGTH_THRESHOLD_1:
 			strength_data.num_beeps = 2;
 			break;
-		case STRENGTH_THRESHOLD_2: 
+
+		case STRENGTH_THRESHOLD_2:
 			strength_data.num_beeps = 3;
 			break;
-		case STRENGTH_THRESHOLD_END: 
+
+		case STRENGTH_THRESHOLD_END:
 			strength_data.num_beeps = 4;
 			strength_data.flags.running = 0;
 			break;
 		}
 
-		if(++strength_data.time[2] > '9') 
-		{
+		if (++strength_data.time[2] > '9') {
 			strength_data.time[2] = '0';
-			
-                        // space becomes zero, digit stays digit:
-			strength_data.time[1] |= '0'; 
 
-			if(++strength_data.time[1] > '9') 
-			{
-				strength_data.time[0] |= '0'; 
+			// space becomes zero, digit stays digit:
+			strength_data.time[1] |= '0';
+
+			if (++strength_data.time[1] > '9') {
+				strength_data.time[0] |= '0';
 				++strength_data.time[0];
 				strength_data.time[1] = '0';
 			}
@@ -120,13 +112,12 @@ void strength_tick(void)
 
 	// strength_data.num_beeps describes the beeping pattern,
 	// but since beeping is done in the process_requests phase,
-	// we have to set a request flag so that process_requests 
+	// we have to set a request flag so that process_requests
 	// is called at all.
-	if (strength_data.num_beeps != 0) 
-	{
+	if (strength_data.num_beeps != 0) {
 		request.flag.strength_buzzer = 1;
 	}
-	
+
 }
 
 // *************************************************************************************************
@@ -134,7 +125,8 @@ void strength_tick(void)
 // @brief       Reset strength state.
 // @return      none
 // *************************************************************************************************
-void strength_reset(){
+void strength_reset()
+{
 	strength_data.num_beeps = 0;
 	strength_data.flags.running = 0;
 	strength_data.flags.redisplay_requested = 1;
@@ -153,27 +145,22 @@ void strength_reset(){
 // *************************************************************************************************
 void strength_sx(uint8_t line)
 {
-	if(strength_data.flags.running) 
-	{
+	if (strength_data.flags.running) {
 		// stop running, but display the result
 		strength_data.flags.running = 0;
 		// unregister from the timer
 		Timer0_A1_Unregister(&strength_tick);
-	}
-	else 
-	{
+	} else {
 		// not running. If a result is being displayed,
 		// clear it. Otherwise start running.
-		if(strength_data.seconds_since_start != 0) 
-		{
+		if (strength_data.seconds_since_start != 0) {
 			strength_reset();
-		}
-		else
-		{	
+		} else {
 			strength_data.flags.running = 1;
 			Timer0_A1_Register(&strength_tick);
 		}
 	}
+
 	strength_data.flags.redisplay_requested = 1;
 }
 

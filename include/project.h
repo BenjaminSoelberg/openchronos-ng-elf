@@ -58,9 +58,6 @@
 #include <msp430.h>
 #include <stdint.h>
 #include <intrinsics.h>
-#ifndef ELIMINATE_BLUEROBIN
-#include "../bluerobin/bm.h"
-#endif
 
 #include "config.h"
 

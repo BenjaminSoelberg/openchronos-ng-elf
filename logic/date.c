@@ -123,7 +123,7 @@ void mx_date(line_t line)
 	clear_display_all();
 
 	// Convert global to local variables
-	rtca_get_date( &year, &month, &day, &dow);
+	rtca_get_date(&year, &month, &day, &dow);
 
 	// Init value index
 	select = 0;
@@ -146,7 +146,7 @@ void mx_date(line_t line)
 		// Button STAR (short): save, then exit
 		if (button.flag.star) {
 			// Copy local variables to global variables
-		    rtca_set_date(year, month, day);
+			rtca_set_date(year, month, day);
 #ifdef CONFIG_SIDEREAL
 
 			if (sSidereal_time.sync > 0)
@@ -159,29 +159,31 @@ void mx_date(line_t line)
 		}
 
 		switch (select) {
-			case 0:		// Set year
-				val = year;
-				set_value(&val, 4, 0, 2008, 2100, SETVALUE_DISPLAY_VALUE + SETVALUE_NEXT_VALUE, LCD_SEG_L1_3_0, display_value1);
-				year = val;
-				select = 1;
-				break;
+		case 0:		// Set year
+			val = year;
+			set_value(&val, 4, 0, 2008, 2100, SETVALUE_DISPLAY_VALUE + SETVALUE_NEXT_VALUE, LCD_SEG_L1_3_0, display_value1);
+			year = val;
+			select = 1;
+			break;
 
-			case 1:		// Set month
-				val = month;
-				set_value(&val, 2, 1, 1, 12, SETVALUE_ROLLOVER_VALUE + SETVALUE_DISPLAY_VALUE + SETVALUE_NEXT_VALUE, LCD_SEG_L2_5_4, display_value1);
-				month = val;
-				select = 2;
-				break;
+		case 1:		// Set month
+			val = month;
+			set_value(&val, 2, 1, 1, 12, SETVALUE_ROLLOVER_VALUE + SETVALUE_DISPLAY_VALUE + SETVALUE_NEXT_VALUE, LCD_SEG_L2_5_4, display_value1);
+			month = val;
+			select = 2;
+			break;
 
-			case 2:		// Set day
-				val = day;
-				set_value(&val, 2, 1, 1, 31, SETVALUE_ROLLOVER_VALUE + SETVALUE_DISPLAY_VALUE + SETVALUE_NEXT_VALUE, LCD_SEG_L2_1_0, display_value1);
-				day = val;
-				select = 0;
-				break;
+		case 2:		// Set day
+			val = day;
+			set_value(&val, 2, 1, 1, 31, SETVALUE_ROLLOVER_VALUE + SETVALUE_DISPLAY_VALUE + SETVALUE_NEXT_VALUE, LCD_SEG_L2_1_0, display_value1);
+			day = val;
+			select = 0;
+			break;
 		}
+
 		// Check if day is still valid, if not clamp to last day of current month
 		max_days = rtca_get_max_days(month, year);
+
 		if (day > max_days) day = max_days;
 	}
 
@@ -228,57 +230,57 @@ void display_date(line_t line, update_t update)
 
 	if (update == DISPLAY_LINE_UPDATE_FULL) {
 		switch (sDate.view) {
-			case 0: //WWW.DD
-				// Convert day to string
+		case 0: //WWW.DD
+			// Convert day to string
 #ifdef CONFIG_DAY_OF_WEEK
-				str = _itoa(day, 2, 1);
-				display_chars(switch_seg(line, LCD_SEG_L1_1_0, LCD_SEG_L2_1_0), str, SEG_ON);
+			str = _itoa(day, 2, 1);
+			display_chars(switch_seg(line, LCD_SEG_L1_1_0, LCD_SEG_L2_1_0), str, SEG_ON);
 
-				str = (uint8_t *)weekDayStr[dow];	    //TODO:Get time from RTC
-				display_chars(switch_seg(line, LCD_SEG_L1_3_2, LCD_SEG_L2_4_2), str, SEG_ON);
-				display_symbol(switch_seg(line, LCD_SEG_L1_DP1, LCD_SEG_L2_DP), SEG_ON);
-				break;
+			str = (uint8_t *)weekDayStr[dow];	    //TODO:Get time from RTC
+			display_chars(switch_seg(line, LCD_SEG_L1_3_2, LCD_SEG_L2_4_2), str, SEG_ON);
+			display_symbol(switch_seg(line, LCD_SEG_L1_DP1, LCD_SEG_L2_DP), SEG_ON);
+			break;
 #else
-				// skip this view
-				sDate.view++;
+			// skip this view
+			sDate.view++;
 #endif
 
-			case 1: //MM  DD
-				// Convert day to string
-				display_symbol(switch_seg(line, LCD_SEG_L1_DP1, LCD_SEG_L2_DP), SEG_ON);
-				// display date
+		case 1: //MM  DD
+			// Convert day to string
+			display_symbol(switch_seg(line, LCD_SEG_L1_DP1, LCD_SEG_L2_DP), SEG_ON);
+			// display date
 #ifndef CONFIG_METRIC_ONLY
 
-				if (!sys.flag.use_metric_units) {
-					str = _itoa(day, 2, 0);
-					display_chars(switch_seg(line, LCD_SEG_L1_1_0, LCD_SEG_L2_1_0), str, SEG_ON);
+			if (!sys.flag.use_metric_units) {
+				str = _itoa(day, 2, 0);
+				display_chars(switch_seg(line, LCD_SEG_L1_1_0, LCD_SEG_L2_1_0), str, SEG_ON);
 
-					// Convert month to string
-					str = _itoa(month, 2, 1);
-					display_chars(switch_seg(line, LCD_SEG_L1_3_2, LCD_SEG_L2_3_2), str, SEG_ON);
-				} else {
+				// Convert month to string
+				str = _itoa(month, 2, 1);
+				display_chars(switch_seg(line, LCD_SEG_L1_3_2, LCD_SEG_L2_3_2), str, SEG_ON);
+			} else {
 #else
 
-				if (1) {
+			if (1) {
 #endif
-					str = _itoa(day, 2, 0);
-					display_chars(switch_seg(line, LCD_SEG_L1_3_2, LCD_SEG_L2_3_2), str, SEG_ON);
+				str = _itoa(day, 2, 0);
+				display_chars(switch_seg(line, LCD_SEG_L1_3_2, LCD_SEG_L2_3_2), str, SEG_ON);
 
-					str = _itoa(month, 2, 0);
-					display_chars(switch_seg(line, LCD_SEG_L1_1_0, LCD_SEG_L2_1_0), str, SEG_ON);
-				}
+				str = _itoa(month, 2, 0);
+				display_chars(switch_seg(line, LCD_SEG_L1_1_0, LCD_SEG_L2_1_0), str, SEG_ON);
+			}
 
-				break;
+			break;
 
-			case 2: //YYYY
-				// Convert year to string
-				str = _itoa(year, 4, 0);
-				display_chars(switch_seg(line, LCD_SEG_L1_3_0, LCD_SEG_L2_3_0), str, SEG_ON);
-				break;
+		case 2: //YYYY
+			// Convert year to string
+			str = _itoa(year, 4, 0);
+			display_chars(switch_seg(line, LCD_SEG_L1_3_0, LCD_SEG_L2_3_0), str, SEG_ON);
+			break;
 
-			default:
-				display_time(line, update);
-				break;
+		default:
+			display_time(line, update);
+			break;
 		}
 	}
 	else if	(update == DISPLAY_LINE_UPDATE_PARTIAL) {

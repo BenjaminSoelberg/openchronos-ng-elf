@@ -117,17 +117,20 @@ uint8_t rtca_get_max_days(uint8_t month, uint16_t year)
 	case 10:
 	case 12:
 		return 31;
+
 	case 4:
 	case 6:
 	case 9:
 	case 11:
 		return 30;
+
 	case 2:
 		if (IS_LEAP_YEAR(year))
 			return 29;
 		else
 			return 28;
 	}
+
 	return 0;
 }
 
@@ -212,17 +215,21 @@ void rtca_set_date(uint16_t year, uint8_t mon, uint8_t day)
 	case 5:
 		dow += 1;
 		break;
+
 	case 8:
 		dow += 2;
 		break;
+
 	case 2:
 	case 3:
 	case 11:
 		dow += 3;
 		break;
+
 	case 6:
 		dow += 4;
 		break;
+
 	case 9:
 	case 12:
 		dow += 5;
@@ -251,7 +258,7 @@ void rtca_set_date(uint16_t year, uint8_t mon, uint8_t day)
 #endif
 }
 #ifdef __GNUC__
-__attribute__( (interrupt (RTC_A_VECTOR)) )
+__attribute__((interrupt(RTC_A_VECTOR)))
 #else
 #pragma vector = RTC_A_VECTOR
 __interrupt

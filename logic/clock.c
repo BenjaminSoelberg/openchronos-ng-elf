@@ -52,11 +52,6 @@
 #include "clock.h"
 #include "user.h"
 
-//pfs
-#ifndef ELIMINATE_BLUEROBIN
-#include "bluerobin.h"
-#endif
-
 #ifdef CONFIG_SIDEREAL
 #include "sidereal.h"
 #endif
@@ -261,57 +256,57 @@ void mx_time(uint8_t line)
 		switch (select) {
 #if (OPTION_TIME_DISPLAY == CLOCK_DISPLAY_SELECT)
 
-			case 0:		// Clear LINE1 and LINE2 and AM icon - required when coming back from set_value(seconds)
-				clear_display();
-				display_symbol(LCD_SYMB_AM, SEG_OFF);
+		case 0:		// Clear LINE1 and LINE2 and AM icon - required when coming back from set_value(seconds)
+			clear_display();
+			display_symbol(LCD_SYMB_AM, SEG_OFF);
 
-				// Set 24H / 12H time format
-				set_value(&timeformat, 1, 0, 0, 1, SETVALUE_ROLLOVER_VALUE + SETVALUE_DISPLAY_SELECTION + SETVALUE_NEXT_VALUE, LCD_SEG_L1_3_1, display_selection_Timeformat1);
+			// Set 24H / 12H time format
+			set_value(&timeformat, 1, 0, 0, 1, SETVALUE_ROLLOVER_VALUE + SETVALUE_DISPLAY_SELECTION + SETVALUE_NEXT_VALUE, LCD_SEG_L1_3_1, display_selection_Timeformat1);
 
-				// Modify global time format variable immediately to update AM/PM icon correctly
-				if (timeformat == TIMEFORMAT_12H)
-					sys.flag.am_pm_time = 1;
-				else
-					sys.flag.am_pm_time = 0;
+			// Modify global time format variable immediately to update AM/PM icon correctly
+			if (timeformat == TIMEFORMAT_12H)
+				sys.flag.am_pm_time = 1;
+			else
+				sys.flag.am_pm_time = 0;
 
-				select = 1;
-				break;
+			select = 1;
+			break;
 #else
 
-			case 0:
+		case 0:
 #endif
-			case 1:		// Display HH:MM (LINE1) and .SS (LINE2)
-				str = _itoa(hours, 2, 0);
-				display_chars(LCD_SEG_L1_3_2, str, SEG_ON);
-				display_symbol(LCD_SEG_L1_COL, SEG_ON);
+		case 1:		// Display HH:MM (LINE1) and .SS (LINE2)
+			str = _itoa(hours, 2, 0);
+			display_chars(LCD_SEG_L1_3_2, str, SEG_ON);
+			display_symbol(LCD_SEG_L1_COL, SEG_ON);
 
-				str = _itoa(minutes, 2, 0);
-				display_chars(LCD_SEG_L1_1_0, str, SEG_ON);
+			str = _itoa(minutes, 2, 0);
+			display_chars(LCD_SEG_L1_1_0, str, SEG_ON);
 
-				str = _itoa(seconds, 2, 0);
-				display_chars(LCD_SEG_L2_1_0, str, SEG_ON);
-				display_symbol(LCD_SEG_L2_DP, SEG_ON);
+			str = _itoa(seconds, 2, 0);
+			display_chars(LCD_SEG_L2_1_0, str, SEG_ON);
+			display_symbol(LCD_SEG_L2_DP, SEG_ON);
 
-				// Set hours
-				val = hours;
-				set_value(&val, 2, 0, 0, 23, SETVALUE_ROLLOVER_VALUE + SETVALUE_DISPLAY_VALUE + SETVALUE_NEXT_VALUE, LCD_SEG_L1_3_2, display_hours_12_or_24);
-				hours = val;
-				select = 2;
-				break;
+			// Set hours
+			val = hours;
+			set_value(&val, 2, 0, 0, 23, SETVALUE_ROLLOVER_VALUE + SETVALUE_DISPLAY_VALUE + SETVALUE_NEXT_VALUE, LCD_SEG_L1_3_2, display_hours_12_or_24);
+			hours = val;
+			select = 2;
+			break;
 
-			case 2:		// Set minutes
-				val = minutes;
-				set_value(&val, 2, 0, 0, 59, SETVALUE_ROLLOVER_VALUE + SETVALUE_DISPLAY_VALUE + SETVALUE_NEXT_VALUE, LCD_SEG_L1_1_0, display_value1);
-				minutes = val;
-				select = 3;
-				break;
+		case 2:		// Set minutes
+			val = minutes;
+			set_value(&val, 2, 0, 0, 59, SETVALUE_ROLLOVER_VALUE + SETVALUE_DISPLAY_VALUE + SETVALUE_NEXT_VALUE, LCD_SEG_L1_1_0, display_value1);
+			minutes = val;
+			select = 3;
+			break;
 
-			case 3:		// Set seconds
-				val = seconds;
-				set_value(&val, 2, 0, 0, 59, SETVALUE_ROLLOVER_VALUE + SETVALUE_DISPLAY_VALUE + SETVALUE_NEXT_VALUE, LCD_SEG_L2_1_0, display_value1);
-				seconds = val;
-				select = 0;
-				break;
+		case 3:		// Set seconds
+			val = seconds;
+			set_value(&val, 2, 0, 0, 59, SETVALUE_ROLLOVER_VALUE + SETVALUE_DISPLAY_VALUE + SETVALUE_NEXT_VALUE, LCD_SEG_L2_1_0, display_value1);
+			seconds = val;
+			select = 0;
+			break;
 		}
 	}
 
@@ -355,11 +350,11 @@ void display_time(uint8_t line, uint8_t update)
 	if (update == DISPLAY_LINE_UPDATE_PARTIAL) {
 		if (sTime.line1ViewStyle == DISPLAY_DEFAULT_VIEW) {
 			switch (sTime.drawFlag) {
-				case 3:
-					display_hours_12_or_24(switch_seg(line, LCD_SEG_L1_3_2, LCD_SEG_L2_3_2), hour, 2, 1, SEG_ON);
+			case 3:
+				display_hours_12_or_24(switch_seg(line, LCD_SEG_L1_3_2, LCD_SEG_L2_3_2), hour, 2, 1, SEG_ON);
 
-				case 2:
-					display_chars(switch_seg(line, LCD_SEG_L1_1_0, LCD_SEG_L2_1_0), _itoa(min, 2, 0), SEG_ON);
+			case 2:
+				display_chars(switch_seg(line, LCD_SEG_L1_1_0, LCD_SEG_L2_1_0), _itoa(min, 2, 0), SEG_ON);
 			}
 		} else {
 			// Seconds are always updated

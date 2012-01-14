@@ -46,7 +46,7 @@
 // Prototypes section
 
 extern uint8_t doorlock_sequence(uint8_t sequence[DOORLOCK_SEQUENCE_MAX_LENGTH]);
-extern uint8_t sequence_compare(uint8_t* sequence_a, uint8_t* sequence_b);
+extern uint8_t sequence_compare(uint8_t *sequence_a, uint8_t *sequence_b);
 
 
 //***************************************************************************************************

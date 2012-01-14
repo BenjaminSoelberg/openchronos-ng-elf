@@ -58,10 +58,6 @@
 #include "acceleration.h"
 #endif
 #include "rfsimpliciti.h"
-//pfs
-#ifndef ELIMINATE_BLUEROBIN
-#include "bluerobin.h"
-#endif
 #include "simpliciti.h"
 #include "clock.h"
 #include "date.h"
@@ -157,13 +153,6 @@ void sx_rf(uint8_t line)
 	// Exit if battery voltage is too low for radio operation
 	if (sys.flag.low_battery) return;
 
-	// Exit if BlueRobin stack is active
-	//pfs
-#ifndef ELIMINATE_BLUEROBIN
-
-	if (is_bluerobin()) return;
-
-#endif
 #ifdef CONFIG_ACCEL
 	// Start SimpliciTI in tx only mode
 	start_simpliciti_tx_only(SIMPLICITI_ACCELERATION);
@@ -183,13 +172,6 @@ void sx_ppt(uint8_t line)
 	// Exit if battery voltage is too low for radio operation
 	if (sys.flag.low_battery) return;
 
-	// Exit if BlueRobin stack is active
-	//pfs
-#ifndef ELIMINATE_BLUEROBIN
-
-	if (is_bluerobin()) return;
-
-#endif
 
 	// Start SimpliciTI in tx only mode
 	start_simpliciti_tx_only(SIMPLICITI_BUTTONS);
@@ -208,13 +190,6 @@ void sx_sync(uint8_t line)
 	// Exit if battery voltage is too low for radio operation
 	if (sys.flag.low_battery) return;
 
-	// Exit if BlueRobin stack is active
-	//pfs
-#ifndef ELIMINATE_BLUEROBIN
-
-	if (is_bluerobin()) return;
-
-#endif
 	// Start SimpliciTI in sync mode
 	start_simpliciti_sync();
 }
@@ -582,14 +557,14 @@ int simpliciti_get_rvc_callback(uint8_t len)
 	switch (simpliciti_data[0]) {
 #ifdef CONFIG_PHASE_CLOCK
 
-		case SIMPLICITI_PHASE_CLOCK_START_RESPONSE:	// Send watch parameters
-			sPhase.session = simpliciti_data[1];
-			sRFsmpl.mode = SIMPLICITI_PHASE_CLOCK;
-			simpliciti_data[0] = 0x00;
-			simpliciti_data[1] = 0x00;
-			simpliciti_data[2] = 0x00;
-			as_start();
-			return 1;
+	case SIMPLICITI_PHASE_CLOCK_START_RESPONSE:	// Send watch parameters
+		sPhase.session = simpliciti_data[1];
+		sRFsmpl.mode = SIMPLICITI_PHASE_CLOCK;
+		simpliciti_data[0] = 0x00;
+		simpliciti_data[1] = 0x00;
+		simpliciti_data[2] = 0x00;
+		as_start();
+		return 1;
 #endif
 	}
 
@@ -685,84 +660,84 @@ void simpliciti_sync_decode_ap_cmd_callback(void)
 	simpliciti_reply_count = 0;
 
 	switch (simpliciti_data[0]) {
-		case SYNC_AP_CMD_NOP:
-			break;
+	case SYNC_AP_CMD_NOP:
+		break;
 
-		case SYNC_AP_CMD_GET_STATUS:	// Send watch parameters
-			simpliciti_data[0]  = SYNC_ED_TYPE_STATUS;
-			// Send single reply packet
-			simpliciti_reply_count = 1;
-			break;
+	case SYNC_AP_CMD_GET_STATUS:	// Send watch parameters
+		simpliciti_data[0]  = SYNC_ED_TYPE_STATUS;
+		// Send single reply packet
+		simpliciti_reply_count = 1;
+		break;
 
-		case SYNC_AP_CMD_SET_WATCH:		// Set watch parameters
-			sys.flag.use_metric_units = (simpliciti_data[1] >> 7) & 0x01;
-			rtca_set_time(simpliciti_data[1] & 0x7F,
-				      simpliciti_data[2],
-				      simpliciti_data[3]);
-			// TODO: Missing transmitting day of week
-			rtca_set_date((simpliciti_data[4] << 8)
-				      + simpliciti_data[5],
-				      simpliciti_data[6],
-				      simpliciti_data[7]);
+	case SYNC_AP_CMD_SET_WATCH:		// Set watch parameters
+		sys.flag.use_metric_units = (simpliciti_data[1] >> 7) & 0x01;
+		rtca_set_time(simpliciti_data[1] & 0x7F,
+			      simpliciti_data[2],
+			      simpliciti_data[3]);
+		// TODO: Missing transmitting day of week
+		rtca_set_date((simpliciti_data[4] << 8)
+			      + simpliciti_data[5],
+			      simpliciti_data[6],
+			      simpliciti_data[7]);
 #ifdef CONFIG_ALARM
-			rtca_set_alarm(simpliciti_data[8],
-			               simpliciti_data[9]);
+		rtca_set_alarm(simpliciti_data[8],
+			       simpliciti_data[9]);
 #endif
 
-			// Set temperature and temperature offset
-			t1 = (int16_t)((simpliciti_data[10] << 8) + simpliciti_data[11]);
-			offset = t1 - (sTemp.degrees - sTemp.offset);
-			sTemp.offset  = offset;
-			sTemp.degrees = t1;
-			// Set altitude
+		// Set temperature and temperature offset
+		t1 = (int16_t)((simpliciti_data[10] << 8) + simpliciti_data[11]);
+		offset = t1 - (sTemp.degrees - sTemp.offset);
+		sTemp.offset  = offset;
+		sTemp.degrees = t1;
+		// Set altitude
 #ifdef CONFIG_ALTITUDE
-			sAlt.altitude = (int16_t)((simpliciti_data[12] << 8) + simpliciti_data[13]);
-			update_pressure_table(sAlt.altitude, sAlt.pressure, sAlt.temperature);
+		sAlt.altitude = (int16_t)((simpliciti_data[12] << 8) + simpliciti_data[13]);
+		update_pressure_table(sAlt.altitude, sAlt.pressure, sAlt.temperature);
 #endif
 #ifdef CONFIG_SIDEREAL
 
-			if (sSidereal_time.sync > 0)
-				sync_sidereal();
+		if (sSidereal_time.sync > 0)
+			sync_sidereal();
 
 #endif
 #ifdef CONFIG_USE_SYNC_TOSET_TIME
-			simpliciti_flag |= SIMPLICITI_TRIGGER_STOP;
+		simpliciti_flag |= SIMPLICITI_TRIGGER_STOP;
 #endif
-			break;
+		break;
 
-		case SYNC_AP_CMD_GET_MEMORY_BLOCKS_MODE_1:
-			// Send sequential packets out in a burst
-			simpliciti_data[0]  = SYNC_ED_TYPE_MEMORY;
-			// Get burst start and end packet
-			burst_start = (simpliciti_data[1] << 8) + simpliciti_data[2];
-			burst_end   = (simpliciti_data[3] << 8) + simpliciti_data[4];
-			// Set burst mode
-			burst_mode = 1;
-			// Number of packets to send
-			simpliciti_reply_count = burst_end - burst_start;
-			break;
+	case SYNC_AP_CMD_GET_MEMORY_BLOCKS_MODE_1:
+		// Send sequential packets out in a burst
+		simpliciti_data[0]  = SYNC_ED_TYPE_MEMORY;
+		// Get burst start and end packet
+		burst_start = (simpliciti_data[1] << 8) + simpliciti_data[2];
+		burst_end   = (simpliciti_data[3] << 8) + simpliciti_data[4];
+		// Set burst mode
+		burst_mode = 1;
+		// Number of packets to send
+		simpliciti_reply_count = burst_end - burst_start;
+		break;
 
-		case SYNC_AP_CMD_GET_MEMORY_BLOCKS_MODE_2:
-			// Send specified packets out in a burst
-			simpliciti_data[0]  = SYNC_ED_TYPE_MEMORY;
+	case SYNC_AP_CMD_GET_MEMORY_BLOCKS_MODE_2:
+		// Send specified packets out in a burst
+		simpliciti_data[0]  = SYNC_ED_TYPE_MEMORY;
 
-			// Store the requested packets
-			for (i = 0; i < BM_SYNC_BURST_PACKETS_IN_DATA; i++) {
-				burst_packet[i] = (simpliciti_data[i * 2 + 1] << 8) + simpliciti_data[i * 2 + 2];
-			}
+		// Store the requested packets
+		for (i = 0; i < BM_SYNC_BURST_PACKETS_IN_DATA; i++) {
+			burst_packet[i] = (simpliciti_data[i * 2 + 1] << 8) + simpliciti_data[i * 2 + 2];
+		}
 
-			// Set burst mode
-			burst_mode = 2;
-			// Number of packets to send
-			simpliciti_reply_count = BM_SYNC_BURST_PACKETS_IN_DATA;
-			break;
+		// Set burst mode
+		burst_mode = 2;
+		// Number of packets to send
+		simpliciti_reply_count = BM_SYNC_BURST_PACKETS_IN_DATA;
+		break;
 
-		case SYNC_AP_CMD_ERASE_MEMORY:	// Erase data logger memory
-			break;
+	case SYNC_AP_CMD_ERASE_MEMORY:	// Erase data logger memory
+		break;
 
-		case SYNC_AP_CMD_EXIT:			// Exit sync mode
-			simpliciti_flag |= SIMPLICITI_TRIGGER_STOP;
-			break;
+	case SYNC_AP_CMD_EXIT:			// Exit sync mode
+		simpliciti_flag |= SIMPLICITI_TRIGGER_STOP;
+		break;
 	}
 
 }
@@ -780,60 +755,60 @@ void simpliciti_sync_get_data_callback(unsigned int index)
 
 	// simpliciti_data[0] contains data type and needs to be returned to AP
 	switch (simpliciti_data[0]) {
-		case SYNC_ED_TYPE_STATUS: {	// Assemble status packet
-				uint8_t hour, min, sec;
-				rtca_get_time(&hour, &min, &sec);
+	case SYNC_ED_TYPE_STATUS: {	// Assemble status packet
+			uint8_t hour, min, sec;
+			rtca_get_time(&hour, &min, &sec);
 
-				simpliciti_data[1]  = (sys.flag.use_metric_units << 7) | (hour & 0x7F);
-				simpliciti_data[2]  = min;
-				simpliciti_data[3]  = sec;
-			}
+			simpliciti_data[1]  = (sys.flag.use_metric_units << 7) | (hour & 0x7F);
+			simpliciti_data[2]  = min;
+			simpliciti_data[3]  = sec;
+		}
 
-			{
-				uint16_t year;
-				uint8_t mon, day, dow;
-				rtca_get_date(&year, &mon, &day, &dow);
+		{
+			uint16_t year;
+			uint8_t mon, day, dow;
+			rtca_get_date(&year, &mon, &day, &dow);
 
-				simpliciti_data[4]  = year >> 8;
-				simpliciti_data[5]  = year & 0xFF;
-				simpliciti_data[6]  = mon;
-				simpliciti_data[7]  = day;
-				// TODO: Missing transmitting day of week
-			}
+			simpliciti_data[4]  = year >> 8;
+			simpliciti_data[5]  = year & 0xFF;
+			simpliciti_data[6]  = mon;
+			simpliciti_data[7]  = day;
+			// TODO: Missing transmitting day of week
+		}
 
 #ifdef CONFIG_ALARM
-			rtca_get_alarm(&simpliciti_data[8],
-			               &simpliciti_data[9]);
+		rtca_get_alarm(&simpliciti_data[8],
+			       &simpliciti_data[9]);
 #else
-			simpliciti_data[8]  = 4;
-			simpliciti_data[9]  = 30;
+		simpliciti_data[8]  = 4;
+		simpliciti_data[9]  = 30;
 #endif
-			simpliciti_data[10] = sTemp.degrees >> 8;
-			simpliciti_data[11] = sTemp.degrees & 0xFF;
+		simpliciti_data[10] = sTemp.degrees >> 8;
+		simpliciti_data[11] = sTemp.degrees & 0xFF;
 #ifdef CONFIG_ALTITUDE
-			simpliciti_data[12] = sAlt.altitude >> 8;
-			simpliciti_data[13] = sAlt.altitude & 0xFF;
+		simpliciti_data[12] = sAlt.altitude >> 8;
+		simpliciti_data[13] = sAlt.altitude & 0xFF;
 #endif
-			break;
+		break;
 
-		case SYNC_ED_TYPE_MEMORY:
+	case SYNC_ED_TYPE_MEMORY:
 
-			if (burst_mode == 1) {
-				// Set burst packet address
-				simpliciti_data[1] = ((burst_start + index) >> 8) & 0xFF;
-				simpliciti_data[2] = (burst_start + index) & 0xFF;
+		if (burst_mode == 1) {
+			// Set burst packet address
+			simpliciti_data[1] = ((burst_start + index) >> 8) & 0xFF;
+			simpliciti_data[2] = (burst_start + index) & 0xFF;
 
-				// Assemble payload
-				for (i = 3; i < BM_SYNC_DATA_LENGTH; i++) simpliciti_data[i] = index;
-			} else if (burst_mode == 2) {
-				// Set burst packet address
-				simpliciti_data[1] = (burst_packet[index] >> 8) & 0xFF;
-				simpliciti_data[2] = burst_packet[index] & 0xFF;
+			// Assemble payload
+			for (i = 3; i < BM_SYNC_DATA_LENGTH; i++) simpliciti_data[i] = index;
+		} else if (burst_mode == 2) {
+			// Set burst packet address
+			simpliciti_data[1] = (burst_packet[index] >> 8) & 0xFF;
+			simpliciti_data[2] = burst_packet[index] & 0xFF;
 
-				// Assemble payload
-				for (i = 3; i < BM_SYNC_DATA_LENGTH; i++) simpliciti_data[i] = index;
-			}
+			// Assemble payload
+			for (i = 3; i < BM_SYNC_DATA_LENGTH; i++) simpliciti_data[i] = index;
+		}
 
-			break;
+		break;
 	}
 }

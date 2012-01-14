@@ -19,12 +19,12 @@
 #define STRENGTH_COUNTDOWN_SECS 5
 
 /**
- * Beep 
+ * Beep
  * this many seconds after the start button was pressed.
  */
 #define STRENGTH_THRESHOLD_1 (60+STRENGTH_COUNTDOWN_SECS)
 
-/** 
+/**
  * Beep again
  * this many seconds after the start button was pressed.
  */
@@ -37,13 +37,13 @@
 #define STRENGTH_THRESHOLD_END (200+STRENGTH_COUNTDOWN_SECS)
 
 /**
- * How long to switch on the buzzer 
+ * How long to switch on the buzzer
  * (suitable for 2nd param of start_buzzer)
  */
 #define STRENGTH_BUZZER_ON_TICKS (CONV_MS_TO_TICKS(100))
 
 /**
- * How long to pause between beeps of the buzzer 
+ * How long to pause between beeps of the buzzer
  * (suitable for 3rd param of start_buzzer)
  */
 #define STRENGTH_BUZZER_OFF_TICKS (CONV_MS_TO_TICKS(100))
@@ -51,14 +51,12 @@
 /**
  * The entire global state of the Strength Timer.
  */
-typedef struct
-{
-	struct 
-	{
+typedef struct {
+	struct {
 		/**
 		 * 1 if in running state, 0 if in stopped or initial.
 		 */
-		unsigned running : 1; 
+		unsigned running : 1;
 
 		/**
 		 * 1 if the logic has recomputed the display contents
@@ -94,7 +92,10 @@ typedef struct
 
 extern strength_data_t strength_data;
 
-static inline uint8_t is_strength() { return strength_data.flags.running ; }
+static inline uint8_t is_strength()
+{
+	return strength_data.flags.running ;
+}
 
 void strength_tick();
 

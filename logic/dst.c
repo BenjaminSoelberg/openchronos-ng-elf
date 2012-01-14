@@ -48,14 +48,14 @@ uint8_t dst_day_of_week(uint16_t year, uint8_t month, uint8_t day);
 /****************************************************************************/
 void dst_init(void)
 {
-    uint8_t day, month, dow;
-    uint16_t year;
+	uint8_t day, month, dow;
+	uint16_t year;
 
-    rtca_get_date(&year, &month, &day, &dow);
-    /* Calculate when to switch dates */
-    dst_calculate_dates(year, month, day);
-    /* Register callback */
-    rtca_tevent_fn_register(&dst_event);
+	rtca_get_date(&year, &month, &day, &dow);
+	/* Calculate when to switch dates */
+	dst_calculate_dates(year, month, day);
+	/* Register callback */
+	rtca_tevent_fn_register(&dst_event);
 }
 
 /******************************************************************************/
@@ -65,33 +65,33 @@ void dst_init(void)
 /******************************************************************************/
 void dst_event(rtca_tevent_ev_t ev)
 {
-    if (ev < RTCA_EV_HOUR) // needs only 1/hour servicing
-	return;
+	if (ev < RTCA_EV_HOUR) // needs only 1/hour servicing
+		return;
 
-    uint8_t hour,minute,second;
-    uint8_t day, month, dow;
-    uint16_t year;
+	uint8_t hour, minute, second;
+	uint8_t day, month, dow;
+	uint16_t year;
 
-    rtca_get_time(&hour, &minute, &second);
-    rtca_get_date(&year, &month, &day, &dow);
+	rtca_get_time(&hour, &minute, &second);
+	rtca_get_date(&year, &month, &day, &dow);
 
-    /* check if we have to re-calculate DST switch days. */
-    if (ev == RTCA_EV_YEAR)
-	dst_calculate_dates(year, month, day);
+	/* check if we have to re-calculate DST switch days. */
+	if (ev == RTCA_EV_YEAR)
+		dst_calculate_dates(year, month, day);
 
-    if ((hour == 1) && dst_isDateInDST(month, day) && (dst_state == DST_STATE_ST))
-    {
-        /* spring forward */
-	hour++;
-	dst_state = DST_STATE_DST;
-    }
-    if ((hour == 2) && (!dst_isDateInDST(month, day)) && (dst_state != DST_STATE_ST))
-    {
-        /* fall back */
-	hour--;
-	dst_state = DST_STATE_ST;
-    }
-    rtca_set_time(hour,minute,second);
+	if ((hour == 1) && dst_isDateInDST(month, day) && (dst_state == DST_STATE_ST)) {
+		/* spring forward */
+		hour++;
+		dst_state = DST_STATE_DST;
+	}
+
+	if ((hour == 2) && (!dst_isDateInDST(month, day)) && (dst_state != DST_STATE_ST)) {
+		/* fall back */
+		hour--;
+		dst_state = DST_STATE_ST;
+	}
+
+	rtca_set_time(hour, minute, second);
 }
 
 /********************************************************************************/
@@ -102,116 +102,125 @@ void dst_event(rtca_tevent_ev_t ev)
 /********************************************************************************/
 void dst_calculate_dates(uint16_t year, uint8_t month, uint8_t day)
 {
-    #if (CONFIG_DST == 1)
-    // DST in US/Canada: 2nd Sun in Mar to 1st Sun in Nov.
-        dst_dates[0].month = 3;
-        dst_dates[0].day = N_SUN_OF_MON(2, 3, year);
-        dst_dates[1].month = 11;
-        dst_dates[1].day = N_SUN_OF_MON(1, 11, year);
-    #endif
-    #if (CONFIG_DST == 2)
-    // DST in Mexico: first Sun in Apr to last Sun in Oct.
-        dst_dates[0].month = 4;
-        dst_dates[0].day = N_SUN_OF_MON(1, 4, year);
-        dst_dates[1].month = 10;
-        dst_dates[1].day = LAST_SUN_OF_MON(10, 31, year);
-    #endif
-    #if (CONFIG_DST == 3)
-    // DST in Brazil: third Sun in Oct to third Sun in Feb.
-        dst_dates[0].month = 10;
-        dst_dates[0].day = N_SUN_OF_MON(3, 10, year);
-        dst_dates[1].month = 2;
-        dst_dates[1].day = N_SUN_OF_MON(3, 2, year);
-    #endif
-    #if (CONFIG_DST == 4)
-        // DST in EU/UK: last Sun in Mar to last Sun in Oct.
-        dst_dates[0].month = 3;
-        dst_dates[0].day = LAST_SUN_OF_MON(3, 31, year);
-        dst_dates[1].month = 10;
-        dst_dates[1].day = LAST_SUN_OF_MON(10, 31, year);
-    #endif
-    #if (CONFIG_DST == 5)
-        // DST in Australia: first Sun in Oct to first Sun in Apr.
-        dst_dates[0].month = 10;
-        dst_dates[0].day = N_SUN_OF_MON(1, 10, year);
-        dst_dates[1].month = 4;
-        dst_dates[1].day = N_SUN_OF_MON(1, 4, year);
-    #endif
-    #if (CONFIG_DST == 6)
-        // DST in New Zealand: last Sun in Sep to first Sun in Apr.
-        dst_dates[0].month = 9;
-        dst_dates[0].day = LAST_SUN_OF_MON(9, 30, year);
-        dst_dates[1].month = 4;
-        dst_dates[1].day = N_SUN_OF_MON(1, 4, year);
-    #endif
+#if (CONFIG_DST == 1)
+	// DST in US/Canada: 2nd Sun in Mar to 1st Sun in Nov.
+	dst_dates[0].month = 3;
+	dst_dates[0].day = N_SUN_OF_MON(2, 3, year);
+	dst_dates[1].month = 11;
+	dst_dates[1].day = N_SUN_OF_MON(1, 11, year);
+#endif
+#if (CONFIG_DST == 2)
+	// DST in Mexico: first Sun in Apr to last Sun in Oct.
+	dst_dates[0].month = 4;
+	dst_dates[0].day = N_SUN_OF_MON(1, 4, year);
+	dst_dates[1].month = 10;
+	dst_dates[1].day = LAST_SUN_OF_MON(10, 31, year);
+#endif
+#if (CONFIG_DST == 3)
+	// DST in Brazil: third Sun in Oct to third Sun in Feb.
+	dst_dates[0].month = 10;
+	dst_dates[0].day = N_SUN_OF_MON(3, 10, year);
+	dst_dates[1].month = 2;
+	dst_dates[1].day = N_SUN_OF_MON(3, 2, year);
+#endif
+#if (CONFIG_DST == 4)
+	// DST in EU/UK: last Sun in Mar to last Sun in Oct.
+	dst_dates[0].month = 3;
+	dst_dates[0].day = LAST_SUN_OF_MON(3, 31, year);
+	dst_dates[1].month = 10;
+	dst_dates[1].day = LAST_SUN_OF_MON(10, 31, year);
+#endif
+#if (CONFIG_DST == 5)
+	// DST in Australia: first Sun in Oct to first Sun in Apr.
+	dst_dates[0].month = 10;
+	dst_dates[0].day = N_SUN_OF_MON(1, 10, year);
+	dst_dates[1].month = 4;
+	dst_dates[1].day = N_SUN_OF_MON(1, 4, year);
+#endif
+#if (CONFIG_DST == 6)
+	// DST in New Zealand: last Sun in Sep to first Sun in Apr.
+	dst_dates[0].month = 9;
+	dst_dates[0].day = LAST_SUN_OF_MON(9, 30, year);
+	dst_dates[1].month = 4;
+	dst_dates[1].day = N_SUN_OF_MON(1, 4, year);
+#endif
 
-    // This test may be wrong if you set your watch
-    // on the time-change day.
-    dst_state = (dst_isDateInDST(month, day)) ? DST_STATE_DST : DST_STATE_ST;
+	// This test may be wrong if you set your watch
+	// on the time-change day.
+	dst_state = (dst_isDateInDST(month, day)) ? DST_STATE_DST : DST_STATE_ST;
 }
 
 /* I don't have a very good idea on what this does.. */
 uint8_t dst_isDateInDST(uint8_t month, uint8_t day)
 {
-    if (dst_dates[0].month < dst_dates[1].month)
-    {
-        /* Northern hemisphere */
-        return
-            ((DSTNUM(month, day)>=DSTNUM(dst_dates[0].month, dst_dates[0].day)) &&
-             (DSTNUM(month, day)<DSTNUM(dst_dates[1].month, dst_dates[1].day)));
-    }
-    else
-    {
-        /* Southern hemisphere */
-        return (!(
-            ((DSTNUM(month, day)>=DSTNUM(dst_dates[1].month, dst_dates[1].day)) &&
-             (DSTNUM(month, day)<DSTNUM(dst_dates[0].month, dst_dates[0].day)))));
-    }
+	if (dst_dates[0].month < dst_dates[1].month) {
+		/* Northern hemisphere */
+		return
+			((DSTNUM(month, day) >= DSTNUM(dst_dates[0].month, dst_dates[0].day)) &&
+			 (DSTNUM(month, day) < DSTNUM(dst_dates[1].month, dst_dates[1].day)));
+	} else {
+		/* Southern hemisphere */
+		return (!(
+				((DSTNUM(month, day) >= DSTNUM(dst_dates[1].month, dst_dates[1].day)) &&
+				 (DSTNUM(month, day) < DSTNUM(dst_dates[0].month, dst_dates[0].day)))));
+	}
 }
 
 uint8_t dst_day_of_week(uint16_t year, uint8_t month, uint8_t day)
 {
-    /* Calculate days since 2000-01-01 */
-    uint32_t tmp = (year % 200) * 365;
-    tmp += ((year % 200) / 4); // leap days
-    switch (month) // using lots of drop-through!
-    {
-        case 12:
-            tmp += 30; /* for nov */
-        case 11:
-            tmp += 31; /* for oct */
-        case 10:
-            tmp += 30; /* for sep */
-        case 9:
-            tmp += 31; /* for aug */
-        case 8:
-            tmp += 31; /* for jul */
-        case 7:
-            tmp += 30; /* for jun */
-        case 6:
-            tmp += 31; /* for may */
-        case 5:
-            tmp += 30; /* for apr */
-        case 4:
-            tmp += 31; /* for mar */
-        case 3:
-            tmp += 28; /* for feb */
-            if ((year % 4) == 0)
-            {
-                tmp++;
-            }
-        case 2:
-            tmp += 31; /* for jan */
-        case 1:
-        default:
-            /* do nothing */
-            break;
-    }
-    tmp += day;
-    tmp--; /* because day-of-month is 1-based (2000-01-01 is the ZERO day). */
+	/* Calculate days since 2000-01-01 */
+	uint32_t tmp = (year % 200) * 365;
+	tmp += ((year % 200) / 4); // leap days
 
-    /* day zero (2000-01-01) was a Saturday. */
-    return (uint8_t)((tmp + 6) % 7);
+	switch (month) { // using lots of drop-through!
+	case 12:
+		tmp += 30; /* for nov */
+
+	case 11:
+		tmp += 31; /* for oct */
+
+	case 10:
+		tmp += 30; /* for sep */
+
+	case 9:
+		tmp += 31; /* for aug */
+
+	case 8:
+		tmp += 31; /* for jul */
+
+	case 7:
+		tmp += 30; /* for jun */
+
+	case 6:
+		tmp += 31; /* for may */
+
+	case 5:
+		tmp += 30; /* for apr */
+
+	case 4:
+		tmp += 31; /* for mar */
+
+	case 3:
+		tmp += 28; /* for feb */
+
+		if ((year % 4) == 0) {
+			tmp++;
+		}
+
+	case 2:
+		tmp += 31; /* for jan */
+
+	case 1:
+	default:
+		/* do nothing */
+		break;
+	}
+
+	tmp += day;
+	tmp--; /* because day-of-month is 1-based (2000-01-01 is the ZERO day). */
+
+	/* day zero (2000-01-01) was a Saturday. */
+	return (uint8_t)((tmp + 6) % 7);
 }
 
 #endif /* (CONFIG_DST > 0) */

@@ -33,7 +33,7 @@ void __delay_cycles(uint16_t cycles);
 uint8_t __even_in_range(uint16_t vector, uint8_t unknown);
 
 // used in radio.c
-void MRFI_RadioIsr(void); 
+void MRFI_RadioIsr(void);
 
 //used in rf1a.c
 uint16_t __get_interrupt_state(void);
@@ -49,7 +49,7 @@ void simpliciti_main_tx_only(void);
 // functions
 void __delay_cycles(uint16_t cycles) {}
 uint8_t __even_in_range(uint16_t vector, uint8_t unknown) {}
-void MRFI_RadioIsr(void){}
+void MRFI_RadioIsr(void) {}
 uint16_t __get_interrupt_state(void) {}
 void __disable_interrupt(void) {}
 void __set_interrupt_state(uint16_t int_state) {}

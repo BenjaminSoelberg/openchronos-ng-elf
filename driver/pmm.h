@@ -2,10 +2,10 @@
 //    File: PMM.h
 //
 //    This file is used in conjunction with PMM.c to set the core
-//    voltage level of a device. To set a core voltage level, call 
-//    SetVCore(level). See RF project(s) for example usage. 
-// 
-//    Version 1.0 first 
+//    voltage level of a device. To set a core voltage level, call
+//    SetVCore(level). See RF project(s) for example usage.
+//
+//    Version 1.0 first
 //    07/14/07
 //
 //====================================================================
@@ -21,7 +21,7 @@
   *
   * \param level       PMM level ID
   */
-void SetVCore (unsigned char level);
+void SetVCore(unsigned char level);
 
 //====================================================================
 /**
@@ -29,7 +29,7 @@ void SetVCore (unsigned char level);
   *
   * \param level       PMM level ID
   */
-void SetVCoreUp (unsigned char level);
+void SetVCoreUp(unsigned char level);
 
 //====================================================================
 /**
@@ -37,6 +37,6 @@ void SetVCoreUp (unsigned char level);
   *
   * \param level       PMM level ID
   */
-void SetVCoreDown (unsigned char level);
+void SetVCoreDown(unsigned char level);
 
 #endif /* __PMM */

@@ -1,34 +1,34 @@
 // *************************************************************************************************
 //
-//	Copyright (C) 2009 Texas Instruments Incorporated - http://www.ti.com/ 
-//	 
-//	 
-//	  Redistribution and use in source and binary forms, with or without 
-//	  modification, are permitted provided that the following conditions 
+//	Copyright (C) 2009 Texas Instruments Incorporated - http://www.ti.com/
+//
+//
+//	  Redistribution and use in source and binary forms, with or without
+//	  modification, are permitted provided that the following conditions
 //	  are met:
-//	
-//	    Redistributions of source code must retain the above copyright 
+//
+//	    Redistributions of source code must retain the above copyright
 //	    notice, this list of conditions and the following disclaimer.
-//	 
+//
 //	    Redistributions in binary form must reproduce the above copyright
-//	    notice, this list of conditions and the following disclaimer in the 
-//	    documentation and/or other materials provided with the   
+//	    notice, this list of conditions and the following disclaimer in the
+//	    documentation and/or other materials provided with the
 //	    distribution.
-//	 
+//
 //	    Neither the name of Texas Instruments Incorporated nor the names of
 //	    its contributors may be used to endorse or promote products derived
 //	    from this software without specific prior written permission.
-//	
-//	  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
-//	  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
+//
+//	  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+//	  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 //	  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-//	  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT 
-//	  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
-//	  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT 
+//	  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+//	  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+//	  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
 //	  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
 //	  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-//	  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT 
-//	  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
+//	  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+//	  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 //	  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 // *************************************************************************************************
@@ -77,7 +77,7 @@ void reset_acceleration(void)
 {
 	// Start with Y-axis display
 	sAccel.view_style 	= DISPLAY_ACCEL_Y;
-	
+
 	// Clear timeout counter
 	sAccel.timeout		= 0;
 
@@ -95,10 +95,10 @@ void reset_acceleration(void)
 void sx_acceleration(uint8_t line)
 {
 	if (++sAccel.view_style > 2) sAccel.view_style = 0;
-	
+
 	// Reset current acceleration value
 	sAccel.data = 0;
-	
+
 	// Get data from sensor
 	as_get_data(sAccel.xyz);
 }
@@ -119,27 +119,26 @@ uint8_t acceleration_value_is_positive(uint8_t value)
 // *************************************************************************************************
 // @fn          convert_acceleration_value_to_mgrav
 // @brief       Converts measured value to mgrav units
-// @param       uint8_t value	g data from sensor 
+// @param       uint8_t value	g data from sensor
 // @return      uint16_t			Acceleration (mgrav)
 // *************************************************************************************************
 uint16_t convert_acceleration_value_to_mgrav(uint8_t value)
 {
 	uint16_t result;
 	uint8_t i;
-	
-	if (!acceleration_value_is_positive(value))
-	{
+
+	if (!acceleration_value_is_positive(value)) {
 		// Convert 2's complement negative number to positive number
 		value = ~value;
 		value += 1;
 	}
-	
+
 	result = 0;
-	for (i=0; i<7; i++)
-	{
-		result += ((value>>i) & 0x1) * mgrav_per_bit[i];
+
+	for (i = 0; i < 7; i++) {
+		result += ((value >> i) & 0x1) * mgrav_per_bit[i];
 	}
-	
+
 	return (result);
 }
 
@@ -168,7 +167,7 @@ void do_acceleration_measurement(void)
 {
 	// Get data from sensor
 	as_get_data(sAccel.xyz);
-	
+
 	// Set display update flag
 	display.flag.update_acceleration = 1;
 }
@@ -183,99 +182,92 @@ void do_acceleration_measurement(void)
 // *************************************************************************************************
 void display_acceleration(uint8_t line, uint8_t update)
 {
-	uint8_t * str;
+	uint8_t *str;
 	uint8_t raw_data;
 	uint16_t accel_data;
 
 	// Show warning if acceleration sensor was not initialised properly
-	if (!as_ok)
-	{
-		display_chars(LCD_SEG_L1_2_0, (uint8_t*)"ERR", SEG_ON);
-	}
-	else
-	{
+	if (!as_ok) {
+		display_chars(LCD_SEG_L1_2_0, (uint8_t *)"ERR", SEG_ON);
+	} else {
 		// Redraw whole screen
-		if (update == DISPLAY_LINE_UPDATE_FULL)	
-		{
+		if (update == DISPLAY_LINE_UPDATE_FULL) {
 			{
 				// Start acceleration sensor
-				if (!is_acceleration_measurement()) 
-				{
+				if (!is_acceleration_measurement()) {
 					// Clear previous acceleration value
 					sAccel.data = 0;
-					
+
 					// Start sensor
 					as_start();
-					
+
 					// Set timeout counter
 					sAccel.timeout = ACCEL_MEASUREMENT_TIMEOUT;
-					
+
 					// Set mode
 					sAccel.mode = ACCEL_MODE_ON;
-					
+
 					// Start with Y-axis values
 					sAccel.view_style = DISPLAY_ACCEL_Y;
 				}
-				
+
 				// Display decimal point
 				display_symbol(LCD_SEG_L1_DP1, SEG_ON);
 			}
-		}
-		else if (update == DISPLAY_LINE_UPDATE_PARTIAL)
-		{
+		} else if (update == DISPLAY_LINE_UPDATE_PARTIAL) {
 			// Convert X/Y/Z values to mg
-			switch (sAccel.view_style)
-			{
-				case DISPLAY_ACCEL_X: 	raw_data = sAccel.xyz[0];
-										display_char(LCD_SEG_L1_3, 'X', SEG_ON);
-										break;
-				case DISPLAY_ACCEL_Y: 	raw_data = sAccel.xyz[1];
-										display_char(LCD_SEG_L1_3, 'Y', SEG_ON);
-										break;
-				default: 				raw_data = sAccel.xyz[2];
-										display_char(LCD_SEG_L1_3, 'Z', SEG_ON);
-										break;
+			switch (sAccel.view_style) {
+			case DISPLAY_ACCEL_X:
+				raw_data = sAccel.xyz[0];
+				display_char(LCD_SEG_L1_3, 'X', SEG_ON);
+				break;
+
+			case DISPLAY_ACCEL_Y:
+				raw_data = sAccel.xyz[1];
+				display_char(LCD_SEG_L1_3, 'Y', SEG_ON);
+				break;
+
+			default:
+				raw_data = sAccel.xyz[2];
+				display_char(LCD_SEG_L1_3, 'Z', SEG_ON);
+				break;
 			}
+
 			accel_data = convert_acceleration_value_to_mgrav(raw_data) / 10;
-			
+
 			// Filter acceleration
 #ifdef FIXEDPOINT
-			accel_data = (uint16_t)(((accel_data * 2) + (sAccel.data * 8))/10);
+			accel_data = (uint16_t)(((accel_data * 2) + (sAccel.data * 8)) / 10);
 #else
 			accel_data = (uint16_t)((accel_data * 0.2) + (sAccel.data * 0.8));
 #endif
-			
+
 			// Store average acceleration
-			sAccel.data = accel_data;	
-	
+			sAccel.data = accel_data;
+
 			// Display acceleration in x.xx format
 			str = _itoa(accel_data, 3, 0);
 			display_chars(LCD_SEG_L1_2_0, str, SEG_ON);
-			
+
 			// Display sign
-			if (acceleration_value_is_positive(raw_data)) 
-			{
+			if (acceleration_value_is_positive(raw_data)) {
 				display_symbol(LCD_SYMB_ARROW_UP, SEG_ON);
 				display_symbol(LCD_SYMB_ARROW_DOWN, SEG_OFF);
-			}
-			else 
-			{
+			} else {
 				display_symbol(LCD_SYMB_ARROW_UP, SEG_OFF);
 				display_symbol(LCD_SYMB_ARROW_DOWN, SEG_ON);
 			}
-		}
-		else if (update == DISPLAY_LINE_CLEAR)
-		{
+		} else if (update == DISPLAY_LINE_CLEAR) {
 			// Stop acceleration sensor
 			as_stop();
-	
+
 			// Clear mode
 			sAccel.mode = ACCEL_MODE_OFF;
-			
+
 			// Clean up display
 			display_symbol(LCD_SEG_L1_DP1, SEG_OFF);
 			display_symbol(LCD_SYMB_ARROW_UP, SEG_OFF);
-			display_symbol(LCD_SYMB_ARROW_DOWN, SEG_OFF);	
+			display_symbol(LCD_SYMB_ARROW_DOWN, SEG_OFF);
 		}
 	}
 }
