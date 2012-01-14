@@ -2,6 +2,7 @@
 *.pyc
 *.*~
 *.s
+config.h
 .pida-metadata
 build
 TAGS
