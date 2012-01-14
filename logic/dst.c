@@ -21,7 +21,7 @@
 /* "private" defines */
 #define N_SUN_OF_MON(n,mon,year) (((n)*7)-dst_day_of_week((year),(mon),((n)*7)))
 #define LAST_SUN_OF_MON(mon,days,year) ((days)-dst_day_of_week((year),(mon),(days)))
-#define DSTNUM(x,y) (((u16)(x)*100)+(u16)(y))
+#define DSTNUM(x,y) (((uint16_t)(x)*100)+(uint16_t)(y))
 
 /* driver */
 #include "rtca.h"
@@ -31,16 +31,16 @@
 
 /* "private" functions */
 void dst_event(rtca_tevent_ev_t ev);
-u8 dst_isDateInDST(u8 month, u8 day);
+uint8_t dst_isDateInDST(uint8_t month, uint8_t day);
 
 
 
 
 
 struct dst_date_struct dst_dates[2];
-u8 dst_state;
+uint8_t dst_state;
 
-u8 dst_day_of_week(u16 year, u8 month, u8 day);
+uint8_t dst_day_of_week(uint16_t year, uint8_t month, uint8_t day);
 
 
 /****************************************************************************/
@@ -48,8 +48,8 @@ u8 dst_day_of_week(u16 year, u8 month, u8 day);
 /****************************************************************************/
 void dst_init(void)
 {
-    u8 day, month, dow;
-    u16 year;
+    uint8_t day, month, dow;
+    uint16_t year;
 
     rtca_get_date(&year, &month, &day, &dow);
     /* Calculate when to switch dates */
@@ -68,9 +68,9 @@ void dst_event(rtca_tevent_ev_t ev)
     if (ev < RTCA_EV_HOUR) // needs only 1/hour servicing
 	return;
 
-    u8 hour,minute,second;
-    u8 day, month, dow;
-    u16 year;
+    uint8_t hour,minute,second;
+    uint8_t day, month, dow;
+    uint16_t year;
 
     rtca_get_time(&hour, &minute, &second);
     rtca_get_date(&year, &month, &day, &dow);
@@ -97,10 +97,10 @@ void dst_event(rtca_tevent_ev_t ev)
 /********************************************************************************/
 /* This function calculates the new date for DST switching. It should be called */
 /* once a year.                                                                 */
-/* @param u8 month The current month.                                           */
-/* @param u8 day The current day.                                               */
+/* @param uint8_t month The current month.                                           */
+/* @param uint8_t day The current day.                                               */
 /********************************************************************************/
-void dst_calculate_dates(u16 year, u8 month, u8 day)
+void dst_calculate_dates(uint16_t year, uint8_t month, uint8_t day)
 {
     #if (CONFIG_DST == 1)
     // DST in US/Canada: 2nd Sun in Mar to 1st Sun in Nov.
@@ -151,7 +151,7 @@ void dst_calculate_dates(u16 year, u8 month, u8 day)
 }
 
 /* I don't have a very good idea on what this does.. */
-u8 dst_isDateInDST(u8 month, u8 day)
+uint8_t dst_isDateInDST(uint8_t month, uint8_t day)
 {
     if (dst_dates[0].month < dst_dates[1].month)
     {
@@ -169,10 +169,10 @@ u8 dst_isDateInDST(u8 month, u8 day)
     }
 }
 
-u8 dst_day_of_week(u16 year, u8 month, u8 day)
+uint8_t dst_day_of_week(uint16_t year, uint8_t month, uint8_t day)
 {
     /* Calculate days since 2000-01-01 */
-    u32 tmp = (year % 200) * 365;
+    uint32_t tmp = (year % 200) * 365;
     tmp += ((year % 200) / 4); // leap days
     switch (month) // using lots of drop-through!
     {
@@ -211,7 +211,7 @@ u8 dst_day_of_week(u16 year, u8 month, u8 day)
     tmp--; /* because day-of-month is 1-based (2000-01-01 is the ZERO day). */
 
     /* day zero (2000-01-01) was a Saturday. */
-    return (u8)((tmp + 6) % 7);
+    return (uint8_t)((tmp + 6) % 7);
 }
 
 #endif /* (CONFIG_DST > 0) */

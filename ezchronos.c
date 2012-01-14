@@ -151,21 +151,21 @@ volatile s_message_flags message;
 
 // Global radio frequency offset taken from calibration memory
 // Compensates crystal deviation from 26MHz nominal value
-u8 rf_frequoffset;
+uint8_t rf_frequoffset;
 
 // Function pointers for LINE1 and LINE2 display function 
-void (*fptr_lcd_function_line1)(u8 line, u8 update);
-void (*fptr_lcd_function_line2)(u8 line, u8 update);
+void (*fptr_lcd_function_line1)(uint8_t line, uint8_t update);
+void (*fptr_lcd_function_line2)(uint8_t line, uint8_t update);
 
 // *************************************************************************************************
 // Extern section
 #ifdef CONFIG_ALTI_ACCUMULATOR
-extern u8 alt_accum_enable;	// used by altitude accumulator function
+extern uint8_t alt_accum_enable;	// used by altitude accumulator function
 #endif
 extern void start_simpliciti_sync(void);
 
-extern u16 ps_read_register(u8 address, u8 mode);
-extern u8 ps_write_register(u8 address, u8 data);
+extern uint16_t ps_read_register(uint8_t address, uint8_t mode);
+extern uint8_t ps_write_register(uint8_t address, uint8_t data);
 
 // rf hardware address
 static const addr_t   sMyROMAddress = {THIS_DEVICE_ADDRESS};
@@ -652,7 +652,7 @@ void process_requests(void)
 // *************************************************************************************************
 void display_update(void)
 {
-	u8 string[8];
+	uint8_t string[8];
 	
 	// ---------------------------------------------------------------------
 	// Call Line1 display function
@@ -715,7 +715,7 @@ void display_update(void)
 				display_chars(LCD_SEG_L2_5_0, string, SEG_ON);
 		}
 
-		u8 timeout = message.flag.timeout;
+		uint8_t timeout = message.flag.timeout;
 		message.all_flags = 0;
 		if(message.flag.line1)
 			message.flag.block_line1 = 1;
@@ -779,9 +779,9 @@ void idle_loop(void)
 
 	static int morse=0;       // should send morse == 1
 	static int morsepos=0; // position in morse time (10 hour =1, hour=2, etc.)
-	static u8 morsehr; // cached hour for morse code
-	static u8 morsemin;  // cached minute for morse code
-	static u8 morsesec;
+	static uint8_t morsehr; // cached hour for morse code
+	static uint8_t morsemin;  // cached minute for morse code
+	static uint8_t morsesec;
 	static int morsedig=-1; // current digit
 	static int morseel; // current element in digit (always 5 elements max)
 	static unsigned int morseinitdelay; // start up delay
@@ -881,12 +881,12 @@ void idle_loop(void)
 // *************************************************************************************************
 void read_calibration_values(void)
 {
-	u8 cal_data[CALIBRATION_DATA_LENGTH];		// Temporary storage for constants
-	u8 i;
-	u8 * flash_mem;         					// Memory pointer
+	uint8_t cal_data[CALIBRATION_DATA_LENGTH];		// Temporary storage for constants
+	uint8_t i;
+	uint8_t * flash_mem;         					// Memory pointer
 	
 	// Read calibration data from Info D memory
-	flash_mem = (u8 *)0x1800;
+	flash_mem = (uint8_t *)0x1800;
 	for (i=0; i<CALIBRATION_DATA_LENGTH; i++)
 	{
 		cal_data[i] = *flash_mem++;
@@ -917,9 +917,9 @@ void read_calibration_values(void)
 		{
 			rf_frequoffset = 0;
 		} 
-		sTemp.offset 	= (s16)((cal_data[2] << 8) + cal_data[3]);
+		sTemp.offset 	= (int16_t)((cal_data[2] << 8) + cal_data[3]);
 		#ifdef CONFIG_BATTERY
-		sBatt.offset 	= (s16)((cal_data[4] << 8) + cal_data[5]);
+		sBatt.offset 	= (int16_t)((cal_data[4] << 8) + cal_data[5]);
 		#endif
 		simpliciti_ed_address[0] = cal_data[6];
 		simpliciti_ed_address[1] = cal_data[7];
@@ -929,7 +929,7 @@ void read_calibration_values(void)
 #ifdef CONFIG_ALTITUDE
 		if (cal_data[12] != 0xFF)
 		{
-			sAlt.altitude_offset = (s16)((cal_data[10] << 8) + cal_data[11]);;
+			sAlt.altitude_offset = (int16_t)((cal_data[10] << 8) + cal_data[11]);;
 		}
 		else
 		{

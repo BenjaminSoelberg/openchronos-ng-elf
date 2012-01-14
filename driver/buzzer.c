@@ -68,7 +68,7 @@ struct buzzer sBuzzer;
 
 // *************************************************************************************************
 // Extern section
-//extern u16 timer0_A3_ticks_g;
+//extern uint16_t timer0_A3_ticks_g;
 
 
 
@@ -89,12 +89,12 @@ void reset_buzzer(void)
 // *************************************************************************************************
 // @fn          start_buzzer
 // @brief       Start buzzer output for a number of cylces
-// @param       u8 cycles		Keep buzzer output for number of cycles
-//				u16 on_time	Output buzzer for "on_time" ACLK ticks
-//				u16 off_time	Do not output buzzer for "off_time" ACLK ticks
+// @param       uint8_t cycles		Keep buzzer output for number of cycles
+//				uint16_t on_time	Output buzzer for "on_time" ACLK ticks
+//				uint16_t off_time	Do not output buzzer for "off_time" ACLK ticks
 // @return      none
 // *************************************************************************************************
-void start_buzzer(u8 cycles, u16 on_time, u16 off_time)
+void start_buzzer(uint8_t cycles, uint16_t on_time, uint16_t off_time)
 {
 	// Store new buzzer duration while buzzer is off
 	if (sBuzzer.time == 0) 
@@ -129,7 +129,7 @@ void start_buzzer(u8 cycles, u16 on_time, u16 off_time)
 	}
 }
 
-void start_buzzer_steps(u8 cycles, u16 on_time, u16 off_time, u8 steps )
+void start_buzzer_steps(uint8_t cycles, uint16_t on_time, uint16_t off_time, uint8_t steps )
 {
    sBuzzer.steps = steps;
    start_buzzer( cycles, on_time, off_time );
@@ -215,9 +215,9 @@ void stop_buzzer(void)
 // @fn          is_buzzer
 // @brief       Check if buzzer is operating
 // @param       none
-// @return      u8		1 = Buzzer is operating, 0 = Buzzer is off
+// @return      uint8_t		1 = Buzzer is operating, 0 = Buzzer is off
 // *************************************************************************************************
-u8 is_buzzer(void)
+uint8_t is_buzzer(void)
 {
 	return (sBuzzer.state != BUZZER_OFF);
 }

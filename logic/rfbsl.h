@@ -38,12 +38,12 @@
 
 // *************************************************************************************************
 // Prototypes section
-extern void sx_rfbsl(u8 line);
-extern void mx_rfbsl(u8 line);
-extern void nx_rfbsl(u8 line);
-extern void display_rfbsl(u8 line, u8 update);
+extern void sx_rfbsl(uint8_t line);
+extern void mx_rfbsl(uint8_t line);
+extern void nx_rfbsl(uint8_t line);
+extern void display_rfbsl(uint8_t line, uint8_t update);
 #if defined(CONFIG_USE_DISCRET_RFBSL) && defined(CONFIG_BATTERY)
-extern void display_discret_rfbsl(u8 line, u8 update);
+extern void display_discret_rfbsl(uint8_t line, uint8_t update);
 #endif
 
 

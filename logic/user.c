@@ -75,10 +75,10 @@ extern void idle_loop(void);
 // *************************************************************************************************
 // @fn          dummy
 // @brief       Dummy direct function.
-// @param       u8 line	LINE1, LINE2
+// @param       uint8_t line	LINE1, LINE2
 // @return      none
 // *************************************************************************************************
-void dummy(u8 line)
+void dummy(uint8_t line)
 {
 }
 
@@ -86,20 +86,20 @@ void dummy(u8 line)
 // *************************************************************************************************
 // @fn          set_value
 // @brief       Generic value setting routine
-// @param       s32 * value						Pointer to value to set
-//				u8digits						Number of digits
-//				u8 blanks						Number of whitespaces before first valid digit
-//				s32 limitLow					Lower limit of value
-//				s32 limitHigh					Upper limit of value
-//				u16 mode		
-//				u8 segments					Segments where value should be drawn
+// @param       int32_t * value						Pointer to value to set
+//				uint8_tdigits						Number of digits
+//				uint8_t blanks						Number of whitespaces before first valid digit
+//				int32_t limitLow					Lower limit of value
+//				int32_t limitHigh					Upper limit of value
+//				uint16_t mode		
+//				uint8_t segments					Segments where value should be drawn
 //				fptr_setValue_display_function1		Value-specific display routine
 // @return      none
 // *************************************************************************************************
-void set_value(s32 * value, u8 digits, u8 blanks, s32 limitLow, s32 limitHigh, u16 mode, u8 segments, void (*fptr_setValue_display_function1)(u8 segments, u32 value, u8 digits, u8 blanks, u8 disp_mode))
+void set_value(int32_t * value, uint8_t digits, uint8_t blanks, int32_t limitLow, int32_t limitHigh, uint16_t mode, uint8_t segments, void (*fptr_setValue_display_function1)(uint8_t segments, uint32_t value, uint8_t digits, uint8_t blanks, uint8_t disp_mode))
 {
-	u8 update;
-	s16 stepValue;
+	uint8_t update;
+	int16_t stepValue;
 	if((mode & SETVALUE_STEP_FIFE ) == SETVALUE_STEP_FIFE)
 	{
 		stepValue=5;
@@ -108,12 +108,12 @@ void set_value(s32 * value, u8 digits, u8 blanks, s32 limitLow, s32 limitHigh, u
 	{
 		stepValue=1;
 	}
-	u8 doRound = 0;
+	uint8_t doRound = 0;
 	#ifdef CONFIG_STOP_WATCH
-	u8 stopwatch_state;
+	uint8_t stopwatch_state;
 	#endif
-	u32 val;
-	s32 orig_val=*value;
+	uint32_t val;
+	int32_t orig_val=*value;
 	
 	// Clear button flags
 	button.all_flags = 0;

@@ -64,10 +64,10 @@
 // Extern section
 
 // Constants defined in library
-extern const u8 lcd_font[];
-extern const u8 * segments_lcdmem[];
-extern const u8 segments_bitmask[];
-extern const u8 itoa_conversion_table[][3];
+extern const uint8_t lcd_font[];
+extern const uint8_t * segments_lcdmem[];
+extern const uint8_t segments_bitmask[];
+extern const uint8_t itoa_conversion_table[][3];
 
 
 // *************************************************************************************************
@@ -79,29 +79,29 @@ typedef union
   struct
   {
   	// Line1 + Line2 + Icons
-    u16 full_update      		: 1;    // 1 = Redraw all content
-    u16 partial_update      	: 1;    // 1 = Update changes
+    uint16_t full_update      		: 1;    // 1 = Redraw all content
+    uint16_t partial_update      	: 1;    // 1 = Update changes
   	
   	// Line only
-    u16 line1_full_update     	: 1;    // 1 = Redraw Line1 content
-    u16 line2_full_update     	: 1;    // 1 = Redraw Line2 content
+    uint16_t line1_full_update     	: 1;    // 1 = Redraw Line1 content
+    uint16_t line2_full_update     	: 1;    // 1 = Redraw Line2 content
 
 	// Logic module data update flags
-    u16 update_time      		: 1;    // 1 = Time was updated 
+    uint16_t update_time      		: 1;    // 1 = Time was updated 
 #ifdef CONFIG_SIDEREAL
-	u16 update_sidereal_time	: 1;	// 1 = Sidereal Time was updated
+	uint16_t update_sidereal_time	: 1;	// 1 = Sidereal Time was updated
 #endif
-    u16 update_stopwatch     	: 1;    // 1 = Stopwatch was updated
+    uint16_t update_stopwatch     	: 1;    // 1 = Stopwatch was updated
 #ifdef CONFIG_EGGTIMER
-    u16 update_eggtimer : 1;
+    uint16_t update_eggtimer : 1;
 #endif
-    u16 update_temperature   	: 1;    // 1 = Temperature was updated
-    u16 update_battery_voltage 	: 1;    // 1 = Battery voltage was updated
-    u16 update_date      		: 1;    // 1 = Date was updated
-    u16 update_alarm      		: 1;    // 1 = Alarm time was updated
-    u16 update_acceleration		: 1; 	// 1 = Acceleration data was updated
+    uint16_t update_temperature   	: 1;    // 1 = Temperature was updated
+    uint16_t update_battery_voltage 	: 1;    // 1 = Battery voltage was updated
+    uint16_t update_date      		: 1;    // 1 = Date was updated
+    uint16_t update_alarm      		: 1;    // 1 = Alarm time was updated
+    uint16_t update_acceleration		: 1; 	// 1 = Acceleration data was updated
   } flag;
-  u16 all_flags;            // Shortcut to all display flags (for reset)
+  uint16_t all_flags;            // Shortcut to all display flags (for reset)
 } s_display_flags;
 
 extern volatile s_display_flags display;
@@ -229,18 +229,18 @@ extern volatile s_display_flags display;
 
 
 // LCD controller memory map
-#define LCD_MEM_1          			((u8*)0x0A20)
-#define LCD_MEM_2          			((u8*)0x0A21)
-#define LCD_MEM_3          			((u8*)0x0A22)
-#define LCD_MEM_4          			((u8*)0x0A23)
-#define LCD_MEM_5          			((u8*)0x0A24)
-#define LCD_MEM_6          			((u8*)0x0A25)
-#define LCD_MEM_7          			((u8*)0x0A26)
-#define LCD_MEM_8          	 		((u8*)0x0A27)
-#define LCD_MEM_9          			((u8*)0x0A28)
-#define LCD_MEM_10         			((u8*)0x0A29)
-#define LCD_MEM_11         			((u8*)0x0A2A)
-#define LCD_MEM_12         			((u8*)0x0A2B)
+#define LCD_MEM_1          			((uint8_t*)0x0A20)
+#define LCD_MEM_2          			((uint8_t*)0x0A21)
+#define LCD_MEM_3          			((uint8_t*)0x0A22)
+#define LCD_MEM_4          			((uint8_t*)0x0A23)
+#define LCD_MEM_5          			((uint8_t*)0x0A24)
+#define LCD_MEM_6          			((uint8_t*)0x0A25)
+#define LCD_MEM_7          			((uint8_t*)0x0A26)
+#define LCD_MEM_8          	 		((uint8_t*)0x0A27)
+#define LCD_MEM_9          			((uint8_t*)0x0A28)
+#define LCD_MEM_10         			((uint8_t*)0x0A29)
+#define LCD_MEM_11         			((uint8_t*)0x0A2A)
+#define LCD_MEM_12         			((uint8_t*)0x0A2B)
 
 
 // Memory assignment
@@ -337,38 +337,38 @@ extern volatile s_display_flags display;
 // API section
 
 // Physical LCD memory write
-extern void write_lcd_mem(u8 * lcdmem, u8 bits, u8 bitmask, u8 state);
+extern void write_lcd_mem(uint8_t * lcdmem, uint8_t bits, uint8_t bitmask, uint8_t state);
 
 // Display init / clear
 extern void lcd_init(void);
 extern void clear_display(void);
 extern void clear_display_all(void);
-extern void clear_line(u8 line);
+extern void clear_line(uint8_t line);
 
 // Blinking function
 extern void start_blink(void);
 extern void stop_blink(void);
 extern void clear_blink_mem(void);
-extern void set_blink_rate(u8 bits);
+extern void set_blink_rate(uint8_t bits);
 
 // Character / symbol draw functions
-extern void display_char(u8 segment, u8 chr, u8 mode);
-extern void display_chars(u8 segments, u8 * str, u8 mode);
-extern void display_symbol(u8 symbol, u8 mode);
+extern void display_char(uint8_t segment, uint8_t chr, uint8_t mode);
+extern void display_chars(uint8_t segments, uint8_t * str, uint8_t mode);
+extern void display_symbol(uint8_t symbol, uint8_t mode);
 
 // Time display function
-extern void DisplayTime(u8 updateMode);
-extern void display_am_pm_symbol(u8 timeAM);
+extern void DisplayTime(uint8_t updateMode);
+extern void display_am_pm_symbol(uint8_t timeAM);
 
 // Set_value display functions
-extern void display_value1(u8 segments, u32 value, u8 digits, u8 blanks, u8 disp_mode);
-extern void display_hours_12_or_24(u8 segments, u32 value, u8 digits, u8 blanks, u8 disp_mode);
+extern void display_value1(uint8_t segments, uint32_t value, uint8_t digits, uint8_t blanks, uint8_t disp_mode);
+extern void display_hours_12_or_24(uint8_t segments, uint32_t value, uint8_t digits, uint8_t blanks, uint8_t disp_mode);
 
 // Integer to string conversion 
-extern u8 * _itoa(u32 n, u8 digits, u8 blanks);
+extern uint8_t * _itoa(uint32_t n, uint8_t digits, uint8_t blanks);
 
 // Segment index helper function
-extern u8 switch_seg(u8 line, u8 index1, u8 index2);
+extern uint8_t switch_seg(uint8_t line, uint8_t index1, uint8_t index2);
 
 void display_all_off(void);
 

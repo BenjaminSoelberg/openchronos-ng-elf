@@ -62,7 +62,7 @@
 extern uint8_t sInit_done;
 
 // SimpliciTI has no low power delay function, so we have to use ours
-extern void Timer0_A4_Delay(u16 ticks);
+extern void Timer0_A4_Delay(uint16_t ticks);
 
 extern unsigned char simpliciti_payload_length;
 //extern txOpt_t  simpliciti_options;

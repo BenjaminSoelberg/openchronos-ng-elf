@@ -58,8 +58,8 @@
 
 // *************************************************************************************************
 // Prototypes section
-void display_calories(u8 line, u8 update);
-void display_distance(u8 line, u8 update);
+void display_calories(uint8_t line, uint8_t update);
+void display_distance(uint8_t line, uint8_t update);
 
 
 // *************************************************************************************************
@@ -75,7 +75,7 @@ void display_distance(u8 line, u8 update);
 struct br sBlueRobin;
 
 // Display values for user sex selection
-const u8 selection_User_Sex[][4] = { "MALE", "FEMA" };
+const uint8_t selection_User_Sex[][4] = { "MALE", "FEMA" };
 
 
 // *************************************************************************************************
@@ -85,7 +85,7 @@ const u8 selection_User_Sex[][4] = { "MALE", "FEMA" };
 extern void BRRX__StopTimer_v(void);
 
 // Calibration value for FSCTRL0 register (corrects deviation of 26MHz crystal)
-extern u8 rf_frequoffset;
+extern uint8_t rf_frequoffset;
 
 
 // *************************************************************************************************
@@ -122,18 +122,18 @@ void reset_bluerobin(void)
 // *************************************************************************************************
 // @fn          mx_rfblue
 // @brief       BlueRobin sub menu. Button STAR resets chest strap ID to 0 and searches for next chest strap in range.
-// @param       u8 line	LINE2
+// @param       uint8_t line	LINE2
 // @return      none
 // *************************************************************************************************
-void mx_bluerobin(u8 line)
+void mx_bluerobin(uint8_t line)
 {
 #if REMEMBER_TX_ID == TRUE
-  u8 i;
+  uint8_t i;
 
 	// Reset chest strap ID
 	sBlueRobin.cs_id = 0;
 
-  display_chars(LCD_SEG_L1_2_0, (u8*)"CLR", SEG_ON);
+  display_chars(LCD_SEG_L1_2_0, (uint8_t*)"CLR", SEG_ON);
   for (i=0; i<4; i++) Timer0_A4_Delay(CONV_MS_TO_TICKS(500));
 #endif
 
@@ -146,12 +146,12 @@ void mx_bluerobin(u8 line)
 // *************************************************************************************************
 // @fn          sx_bluerobin
 // @brief       BlueRobin direct function. Button UP connects/disconnects with sender unit.
-// @param       u8 line		LINE1
+// @param       uint8_t line		LINE1
 // @return      none
 // *************************************************************************************************
-void sx_bluerobin(u8 line)
+void sx_bluerobin(uint8_t line)
 {
-	u8 stop = 0;
+	uint8_t stop = 0;
 	
 	// Exit if battery voltage is too low for radio operation
 	if (sys.flag.low_battery) return;
@@ -220,7 +220,7 @@ void sx_bluerobin(u8 line)
 				// When in learn mode, copy chest strap ID
 				if (sBlueRobin.cs_id == 0) 
 				{
-					sBlueRobin.cs_id = BRRX_GetID_u32(HR_CHANNEL);
+					sBlueRobin.cs_id = BRRX_GetID_uint32_t(HR_CHANNEL);
 				}
 
 				// Show steady RF icon to indicate established connection
@@ -257,24 +257,24 @@ void sx_bluerobin(u8 line)
 //				
 // @return      none
 // *************************************************************************************************
-void display_selection_User_Sex1(u8 segments, u32 index, u8 digits, u8 blanks, u8 dummy)
+void display_selection_User_Sex1(uint8_t segments, uint32_t index, uint8_t digits, uint8_t blanks, uint8_t dummy)
 {
-	if (index < 2) display_chars(segments, (u8 *)selection_User_Sex[index], SEG_ON_BLINK_ON);
+	if (index < 2) display_chars(segments, (uint8_t *)selection_User_Sex[index], SEG_ON_BLINK_ON);
 }
 
 
 // *************************************************************************************************
 // @fn          mx_caldist
 // @brief       Calories/Distance sub menu. Mx enables setting of total calories, user sex and weight.
-// @param       u8 line		LINE2
+// @param       uint8_t line		LINE2
 // @return      none
 // *************************************************************************************************
-void mx_caldist(u8 line)
+void mx_caldist(uint8_t line)
 {
-	u8 select;
-	s32 kcalories;
-	s32 weight;
-	s32 sex;
+	uint8_t select;
+	int32_t kcalories;
+	int32_t weight;
+	int32_t sex;
 
 	// Clear display
 	clear_display_all();
@@ -283,7 +283,7 @@ void mx_caldist(u8 line)
 	sex 		= sBlueRobin.user_sex;
 	kcalories 	= sBlueRobin.calories/1000;
 	if (sys.flag.use_metric_units)	weight = sBlueRobin.user_weight;
-	else							weight = ((s32)sBlueRobin.user_weight * 2205) / 1000; // Convert kg to lb
+	else							weight = ((int32_t)sBlueRobin.user_weight * 2205) / 1000; // Convert kg to lb
 
 	// Init value index
 	select = 0;	
@@ -325,12 +325,12 @@ void mx_caldist(u8 line)
 			case 2:		// Set user weight
 						if (sys.flag.use_metric_units)
 						{
-							display_chars(LCD_SEG_L2_1_0, (u8 *)"KG", SEG_ON);
+							display_chars(LCD_SEG_L2_1_0, (uint8_t *)"KG", SEG_ON);
 							set_value(&weight, 3, 2, USER_WEIGHT_MIN_KG, USER_WEIGHT_MAX_KG, SETVALUE_DISPLAY_VALUE + SETVALUE_NEXT_VALUE, LCD_SEG_L2_4_2, display_value1);
 						}
 						else
 						{
-							display_chars(LCD_SEG_L2_1_0, (u8 *)"LB", SEG_ON);
+							display_chars(LCD_SEG_L2_1_0, (uint8_t *)"LB", SEG_ON);
 							set_value(&weight, 3, 2, USER_WEIGHT_MIN_LB, USER_WEIGHT_MAX_LB, SETVALUE_DISPLAY_VALUE + SETVALUE_NEXT_VALUE, LCD_SEG_L2_4_2, display_value1);
 						}
 						select = 0;
@@ -347,10 +347,10 @@ void mx_caldist(u8 line)
 // *************************************************************************************************
 // @fn          sx_caldist
 // @brief       Button DOWN toggles between calories and distance display.
-// @param       u8 line		LINE2
+// @param       uint8_t line		LINE2
 // @return      none
 // *************************************************************************************************
-void sx_caldist(u8 line)
+void sx_caldist(uint8_t line)
 {
 	// Clean up line
 	display_caldist(line, DISPLAY_LINE_CLEAR);
@@ -367,13 +367,13 @@ void sx_caldist(u8 line)
 // *************************************************************************************************
 // @fn          display_heartrate
 // @brief       Heart rate display routine. 
-// @param       u8 line	LINE1
-//				u8 update	DISPLAY_LINE_UPDATE_FULL, DISPLAY_LINE_UPDATE_PARTIAL, DISPLAY_LINE_CLEAR
+// @param       uint8_t line	LINE1
+//				uint8_t update	DISPLAY_LINE_UPDATE_FULL, DISPLAY_LINE_UPDATE_PARTIAL, DISPLAY_LINE_CLEAR
 // @return      none
 // *************************************************************************************************
-void display_heartrate(u8 line, u8 update)
+void display_heartrate(uint8_t line, uint8_t update)
 {
-	u8 * str;
+	uint8_t * str;
 	
 	if (update != DISPLAY_LINE_CLEAR)
 	{
@@ -384,7 +384,7 @@ void display_heartrate(u8 line, u8 update)
 		}
 		else
 		{
-			display_chars(LCD_SEG_L1_2_0, (u8 *)"---", SEG_ON);
+			display_chars(LCD_SEG_L1_2_0, (uint8_t *)"---", SEG_ON);
 		}
 	}
 	
@@ -407,14 +407,14 @@ void display_heartrate(u8 line, u8 update)
 // *************************************************************************************************
 // @fn          display_speed_kmh
 // @brief       Speed display routine. Supports kmh and mph.
-// @param       u8 line	LINE1
-//				u8 update	DISPLAY_LINE_UPDATE_PARTIAL, DISPLAY_LINE_UPDATE_FULL, DISPLAY_LINE_CLEAR
+// @param       uint8_t line	LINE1
+//				uint8_t update	DISPLAY_LINE_UPDATE_PARTIAL, DISPLAY_LINE_UPDATE_FULL, DISPLAY_LINE_CLEAR
 // @return      none
 // *************************************************************************************************
-void display_speed(u8 line, u8 update)
+void display_speed(uint8_t line, uint8_t update)
 {
-	u8 milesPerHour;
-	u8 * str;
+	uint8_t milesPerHour;
+	uint8_t * str;
 
 	// Speed resolution is 0.1 km/h 
 	// Valid range is 0.0 .. 25.0 km/h 
@@ -429,7 +429,7 @@ void display_speed(u8 line, u8 update)
 		}
 		else
 		{
-			milesPerHour = (u16)(sBlueRobin.speed * 0.6214);
+			milesPerHour = (uint16_t)(sBlueRobin.speed * 0.6214);
 			str = _itoa(milesPerHour, 3, 1);
 		}
 		display_chars(LCD_SEG_L1_2_0, str, SEG_ON);
@@ -466,14 +466,14 @@ void display_speed(u8 line, u8 update)
 // *************************************************************************************************
 // @fn          display_distance
 // @brief       Distance display routine. Supports km and mi.
-// @param       u8 line		LINE2
-//				u8 update	DISPLAY_LINE_UPDATE_PARTIAL, DISPLAY_LINE_UPDATE_FULL, DISPLAY_LINE_CLEAR
+// @param       uint8_t line		LINE2
+//				uint8_t update	DISPLAY_LINE_UPDATE_PARTIAL, DISPLAY_LINE_UPDATE_FULL, DISPLAY_LINE_CLEAR
 // @return      none
 // *************************************************************************************************
-void display_distance(u8 line, u8 update)
+void display_distance(uint8_t line, uint8_t update)
 {
-	u8 * str;
-	u32 miles;
+	uint8_t * str;
+	uint32_t miles;
 
 	if (update != DISPLAY_LINE_CLEAR)
 	{
@@ -495,7 +495,7 @@ void display_distance(u8 line, u8 update)
 		else
 		{
 			// Convert km to miles, take care for "0.xx mi" display
-			miles = (u32)(sBlueRobin.distance * 0.06214);
+			miles = (uint32_t)(sBlueRobin.distance * 0.06214);
 		
 			// Display distance in x.xx mi format (resolution is 1/100mi) up to 2000.00 mi
 			if (miles < 2000000) 
@@ -538,11 +538,11 @@ void display_distance(u8 line, u8 update)
 // *************************************************************************************************
 // @fn          display_caldist
 // @brief       Shared calories/distance display routine. 
-// @param       u8 line	LINE2
-//				u8 update	DISPLAY_LINE_UPDATE_PARTIAL, DISPLAY_LINE_UPDATE_FULL, DISPLAY_LINE_CLEAR
+// @param       uint8_t line	LINE2
+//				uint8_t update	DISPLAY_LINE_UPDATE_PARTIAL, DISPLAY_LINE_UPDATE_FULL, DISPLAY_LINE_CLEAR
 // @return      none
 // *************************************************************************************************
-void display_caldist(u8 line, u8 update)
+void display_caldist(uint8_t line, uint8_t update)
 {
 	if (sBlueRobin.caldist_view == 0) 	display_calories(line, update);
 	else								display_distance(line, update);
@@ -552,13 +552,13 @@ void display_caldist(u8 line, u8 update)
 // *************************************************************************************************
 // @fn          display_calories
 // @brief       Calories display routine. 
-// @param       u8 line	LINE2
-//				u8 update	DISPLAY_LINE_UPDATE_PARTIAL, DISPLAY_LINE_UPDATE_FULL, DISPLAY_LINE_CLEAR
+// @param       uint8_t line	LINE2
+//				uint8_t update	DISPLAY_LINE_UPDATE_PARTIAL, DISPLAY_LINE_UPDATE_FULL, DISPLAY_LINE_CLEAR
 // @return      none
 // *************************************************************************************************
-void display_calories(u8 line, u8 update)
+void display_calories(uint8_t line, uint8_t update)
 {
-	u8 * str;
+	uint8_t * str;
 		
 	if (update != DISPLAY_LINE_CLEAR)
 	{
@@ -584,9 +584,9 @@ void display_calories(u8 line, u8 update)
 // @fn          is_bluerobin
 // @brief       Returns TRUE if BlueRobin transmitter is connected. 
 // @param       none
-// @return      u8
+// @return      uint8_t
 // *************************************************************************************************
-u8 is_bluerobin(void)
+uint8_t is_bluerobin(void)
 {
 	return (sBlueRobin.state == BLUEROBIN_CONNECTED);
 }
@@ -596,9 +596,9 @@ u8 is_bluerobin(void)
 // @fn          is_bluerobin_searching
 // @brief       Returns TRUE if BlueRobin is searching for a transmitter. 
 // @param       none
-// @return      u8
+// @return      uint8_t
 // *************************************************************************************************
-u8 is_bluerobin_searching(void)
+uint8_t is_bluerobin_searching(void)
 {
 	return (sBlueRobin.state == BLUEROBIN_SEARCHING);
 }
@@ -612,7 +612,7 @@ u8 is_bluerobin_searching(void)
 // *************************************************************************************************
 void get_bluerobin_data(void)
 {
-	u16 calories;
+	uint16_t calories;
 	brtx_state_t bChannelState;
 	
 	// Check connection status
@@ -621,13 +621,13 @@ void get_bluerobin_data(void)
 	switch (bChannelState)
 	{
 		case TX_ACTIVE: 	// Read heart rate data from BlueRobin API
-							sBlueRobin.heartrate = BRRX_GetHeartRate_u8();
+							sBlueRobin.heartrate = BRRX_GetHeartRate_uint8_t();
 							
 							// Read speed from BlueRobin API (only valid if sender is USB dongle)
-							sBlueRobin.speed 	  = BRRX_GetSpeed_u8();
+							sBlueRobin.speed 	  = BRRX_GetSpeed_uint8_t();
 							
 							// Read distance from BlueRobin API (only valid if sender is USB dongle)
-							sBlueRobin.distance  = BRRX_GetDistance_u16();
+							sBlueRobin.distance  = BRRX_GetDistance_uint16_t();
 							if (sBlueRobin.distance > 2000000) sBlueRobin.distance = 0;
 							
 							// Heart rate high enough for calorie measurement?

@@ -55,24 +55,24 @@
 #define PROUT_H_
 
 // menu functions
-extern void sx_prout(u8 line);
-extern void mx_prout(u8 line);
-extern void display_prout(u8 line, u8 update);
+extern void sx_prout(uint8_t line);
+extern void mx_prout(uint8_t line);
+extern void display_prout(uint8_t line, uint8_t update);
 
 extern void reset_prout(void);
 extern void prout_tick(void);
 extern void update_prout_timer(void);
-extern u8 is_prout(void);
+extern uint8_t is_prout(void);
 
 #define PROUT_STOP	(0u)
 #define PROUT_RUN	(1u)
 
 struct prouttimer
 {
-  u8 state;
-  u8 pos;
-  u8 ticks;
-  u8 time[8];
+  uint8_t state;
+  uint8_t pos;
+  uint8_t ticks;
+  uint8_t time[8];
 };
 
 extern struct prouttimer sprouttimer;

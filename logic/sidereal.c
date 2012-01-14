@@ -70,8 +70,8 @@
 // Prototypes section
 void reset_sidereal_clock(void);
 void clock_sidereal_tick(void);
-void mx_time(u8 line);
-void sx_time(u8 line);
+void mx_time(uint8_t line);
+void sx_time(uint8_t line);
 
 
 // *************************************************************************************************
@@ -82,12 +82,12 @@ void sx_time(u8 line);
 
 //fixed starting point: 1. Jan 2000 12:00:00 UTC :: sid_seconds=18.697374558*60*60=67310.5484088
 //						1. Jan 2000 12:00:00 UTC +165s = 1.1.2000 12:02:45 UTC :: sid_seconds=67476.00016
-const u8 fix_sec=45;
-const u8 fix_min=2;
-const u8 fix_hour=12;
-const u8 fix_day=1;
-const u8 fix_month=1;
-const u16 fix_year=2000;
+const uint8_t fix_sec=45;
+const uint8_t fix_min=2;
+const uint8_t fix_hour=12;
+const uint8_t fix_day=1;
+const uint8_t fix_month=1;
+const uint16_t fix_year=2000;
 
 const unsigned long fix_sidsec=67476;
 
@@ -129,7 +129,7 @@ struct sidereal_time sSidereal_time;
 // @param       components of time/date
 // @return      seconds since fixed time (in solar seconds)
 // *************************************************************************************************
-unsigned long secs_since_fix(u8 sec, u8 min, u8 hour, u8 day, u8 month, u16 year)
+unsigned long secs_since_fix(uint8_t sec, uint8_t min, uint8_t hour, uint8_t day, uint8_t month, uint16_t year)
 {
 	const int days_till_month[12] = {0,31,59,90,120,151,181,212,243,273,304,334};
 	
@@ -247,13 +247,13 @@ void reset_sidereal_clock(void)
 	
 	
 	#ifdef CONFIG_INFOMEM
-	s16 read_size=infomem_app_amount(SIDEREAL_INFOMEM_ID);
+	int16_t read_size=infomem_app_amount(SIDEREAL_INFOMEM_ID);
 	if(read_size>=sizeof(struct longitude)/2 +1)
 	{
-		u16 buf[SIDEREAL_NUM_LON*sizeof(struct longitude)/2+1];
+		uint16_t buf[SIDEREAL_NUM_LON*sizeof(struct longitude)/2+1];
 		read_size=infomem_app_read(SIDEREAL_INFOMEM_ID,buf,SIDEREAL_NUM_LON*sizeof(struct longitude)/2+1,0);
-		sTime.UTCoffset=((u8*)buf)[0];
-		sSidereal_time.lon_selection=((u8*)buf)[1];
+		sTime.UTCoffset=((uint8_t*)buf)[0];
+		sSidereal_time.lon_selection=((uint8_t*)buf)[1];
 		
 		read_size=(read_size-1)*2;
 		if(read_size>SIDEREAL_NUM_LON*sizeof(struct longitude))
@@ -318,24 +318,24 @@ void sidereal_clock_tick(void)
 // @fn          mx_sidereal
 // @brief       Sidereal Clock set routine.
 //              has three layers of different configuration sets
-// @param       u8 line		LINE1, LINE2
+// @param       uint8_t line		LINE1, LINE2
 // @return      none
 // *************************************************************************************************
-void mx_sidereal(u8 line)
+void mx_sidereal(uint8_t line)
 {
-	u8 select;
-	s32 hours;
-	s32 minutes;
-	s32 seconds;
-	s32 lon_degrees[SIDEREAL_NUM_LON];
-	s32 lon_minutes[SIDEREAL_NUM_LON];
-	s32 lon_seconds[SIDEREAL_NUM_LON];
-	s32 sync;
-	s32 heart;
-	u8 level;
-	s32 direction[SIDEREAL_NUM_LON];
-	s32 UTCoffset;
-	u8 * str;
+	uint8_t select;
+	int32_t hours;
+	int32_t minutes;
+	int32_t seconds;
+	int32_t lon_degrees[SIDEREAL_NUM_LON];
+	int32_t lon_minutes[SIDEREAL_NUM_LON];
+	int32_t lon_seconds[SIDEREAL_NUM_LON];
+	int32_t sync;
+	int32_t heart;
+	uint8_t level;
+	int32_t direction[SIDEREAL_NUM_LON];
+	int32_t UTCoffset;
+	uint8_t * str;
 	int i;
 	
 	// Clear display
@@ -493,9 +493,9 @@ void mx_sidereal(u8 line)
 			
 			#ifdef CONFIG_INFOMEM
 			//store new longitude and time zone in information memory
-			u16 buf[SIDEREAL_NUM_LON*sizeof(struct longitude)/2+1];
-			((u8*)buf)[0]=sTime.UTCoffset;
-			((u8*)buf)[1]=sSidereal_time.lon_selection;
+			uint16_t buf[SIDEREAL_NUM_LON*sizeof(struct longitude)/2+1];
+			((uint8_t*)buf)[0]=sTime.UTCoffset;
+			((uint8_t*)buf)[1]=sSidereal_time.lon_selection;
 			memcpy(buf+1, &(sSidereal_time.lon),SIDEREAL_NUM_LON*sizeof(struct longitude));
 			infomem_app_replace(SIDEREAL_INFOMEM_ID,buf,SIDEREAL_NUM_LON*sizeof(struct longitude)/2+1);
 			#endif
@@ -661,7 +661,7 @@ void mx_sidereal(u8 line)
 // @param       line		LINE1
 // @return      none
 // *************************************************************************************************
-void sx_sidereal(u8 line)
+void sx_sidereal(uint8_t line)
 {
 	// Toggle display view style
 	if (sSidereal_time.line1ViewStyle == DISPLAY_DEFAULT_VIEW) 	sSidereal_time.line1ViewStyle = DISPLAY_ALTERNATIVE_VIEW;
@@ -672,11 +672,11 @@ void sx_sidereal(u8 line)
 // @fn          display_sidereal
 // @brief       Sidereal Clock display routine. Supports 24H and 12H time format,
 //              through the helper display_hours_with_12_24.
-// @param       u8 line			LINE1
-//				u8 update		DISPLAY_LINE_UPDATE_FULL, DISPLAY_LINE_UPDATE_PARTIAL
+// @param       uint8_t line			LINE1
+//				uint8_t update		DISPLAY_LINE_UPDATE_FULL, DISPLAY_LINE_UPDATE_PARTIAL
 // @return      none
 // *************************************************************************************************
-void display_sidereal(u8 line, u8 update)
+void display_sidereal(uint8_t line, uint8_t update)
 {
 	// Partial update
 	if (update == DISPLAY_LINE_UPDATE_PARTIAL)

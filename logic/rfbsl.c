@@ -58,7 +58,7 @@
 
 // *************************************************************************************************
 // Global Variable section
-u8 locked = 1;
+uint8_t locked = 1;
 
 
 // *************************************************************************************************
@@ -72,7 +72,7 @@ extern void menu_skip_next(line_t line); //ezchronos.c
 // @param       line		LINE1, LINE2
 // @return      none
 // *************************************************************************************************
-void mx_rfbsl(u8 line)
+void mx_rfbsl(uint8_t line)
 {
 	if (sys.flag.low_battery) return;
 
@@ -97,7 +97,7 @@ void mx_rfbsl(u8 line)
 	clear_line(LINE1);
 	
 	// Write RAM to indicate we will be downloading the RAM Updater first
-	display_chars(LCD_SEG_L1_3_0, (u8 *)" RAM", SEG_ON);
+	display_chars(LCD_SEG_L1_3_0, (uint8_t *)" RAM", SEG_ON);
 	
 	// Call RFBSL
 	CALL_RFSBL();
@@ -112,7 +112,7 @@ void mx_rfbsl(u8 line)
 // @param       line		LINE1, LINE2
 // @return      none
 // *************************************************************************************************
-void sx_rfbsl(u8 line)
+void sx_rfbsl(uint8_t line)
 {
 #if defined(CONFIG_USE_DISCRET_RFBSL) && defined(CONFIG_BATTERY)
 	if (locked) { // Was in battery mode, toggle to rfbsl mode
@@ -148,7 +148,7 @@ void sx_rfbsl(u8 line)
 // @param       line		LINE1, LINE2
 // @return      none
 // *************************************************************************************************
-void nx_rfbsl(u8 line)
+void nx_rfbsl(uint8_t line)
 {
 	locked = 1;
 	menu_skip_next(line);
@@ -158,15 +158,15 @@ void nx_rfbsl(u8 line)
 // *************************************************************************************************
 // @fn          display_rfbsl
 // @brief       RFBSL display routine. 
-// @param       u8 line			LINE2
-//				u8 update		DISPLAY_LINE_UPDATE_FULL
+// @param       uint8_t line			LINE2
+//				uint8_t update		DISPLAY_LINE_UPDATE_FULL
 // @return      none
 // *************************************************************************************************
-void display_rfbsl(u8 line, u8 update)
+void display_rfbsl(uint8_t line, uint8_t update)
 {
 	if (update == DISPLAY_LINE_UPDATE_FULL)	
 	{
-		display_chars(LCD_SEG_L2_5_0, (u8 *)" RFBSL", SEG_ON);
+		display_chars(LCD_SEG_L2_5_0, (uint8_t *)" RFBSL", SEG_ON);
 	}
 }
 
@@ -174,12 +174,12 @@ void display_rfbsl(u8 line, u8 update)
 // *************************************************************************************************
 // @fn          display_discret_rfbsl
 // @brief       Discrete RFBSL display routine: auto selects battery or rfbsl, based on current menu
-// @param       u8 line			LINE2
-//		u8 update		DISPLAY_LINE_UPDATE_FULL
+// @param       uint8_t line			LINE2
+//		uint8_t update		DISPLAY_LINE_UPDATE_FULL
 // @return      none
 // *************************************************************************************************
 #if defined(CONFIG_USE_DISCRET_RFBSL) && defined(CONFIG_BATTERY)
-void display_discret_rfbsl(u8 line, u8 update)
+void display_discret_rfbsl(uint8_t line, uint8_t update)
 {
 	if (locked) { // battery mode
 		display_battery_V(line, update);

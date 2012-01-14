@@ -109,15 +109,15 @@ void mx_date(line_t line)
 #ifdef CONFIG_USE_SYNC_TOSET_TIME
 	return;
 #else
-	u8 day;
-	u8 dow;
-	u8 month;
-	u16 year;
+	uint8_t day;
+	uint8_t dow;
+	uint8_t month;
+	uint16_t year;
 
-	u8 select;
-	u8 *str;
-	s32 val;
-	u8 max_days;
+	uint8_t select;
+	uint8_t *str;
+	int32_t val;
+	uint8_t max_days;
 
 	// Clear display
 	clear_display_all();
@@ -216,13 +216,13 @@ void sx_date(line_t line)
 void display_date(line_t line, update_t update)
 {
 #ifdef CONFIG_DAY_OF_WEEK
-	const u8 weekDayStr[7][3] = {"SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"};
+	const uint8_t weekDayStr[7][3] = {"SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"};
 #endif
-	u8 *str;
-	u8 day;
-	u8 month;
-	u16 year;
-	u8 dow;
+	uint8_t *str;
+	uint8_t day;
+	uint8_t month;
+	uint16_t year;
+	uint8_t dow;
 
 	rtca_get_date(&year, &month, &day, &dow);
 
@@ -234,7 +234,7 @@ void display_date(line_t line, update_t update)
 				str = _itoa(day, 2, 1);
 				display_chars(switch_seg(line, LCD_SEG_L1_1_0, LCD_SEG_L2_1_0), str, SEG_ON);
 
-				str = (u8 *)weekDayStr[dow];	    //TODO:Get time from RTC
+				str = (uint8_t *)weekDayStr[dow];	    //TODO:Get time from RTC
 				display_chars(switch_seg(line, LCD_SEG_L1_3_2, LCD_SEG_L2_4_2), str, SEG_ON);
 				display_symbol(switch_seg(line, LCD_SEG_L1_DP1, LCD_SEG_L2_DP), SEG_ON);
 				break;

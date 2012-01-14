@@ -43,14 +43,14 @@
 // *************************************************************************************************
 // Prototypes section
 extern void reset_rf(void);
-extern void sx_rf(u8 line);
-extern void sx_ppt(u8 line);
-extern void sx_sync(u8 line);
-extern void display_rf(u8 line, u8 update);
-extern void display_ppt(u8 line, u8 update);
-extern void display_sync(u8 line, u8 update);
-extern void send_smpl_data(u16 data);
-extern u8 is_rf(void);
+extern void sx_rf(uint8_t line);
+extern void sx_ppt(uint8_t line);
+extern void sx_sync(uint8_t line);
+extern void display_rf(uint8_t line, uint8_t update);
+extern void display_ppt(uint8_t line, uint8_t update);
+extern void display_sync(uint8_t line, uint8_t update);
+extern void send_smpl_data(uint16_t data);
+extern uint8_t is_rf(void);
 
 // *************************************************************************************************
 // Defines section
@@ -104,7 +104,7 @@ struct RFsmpl
 	simpliciti_mode_t 	mode;
 	
 	// Timeout until SimpliciTI transmission is automatically stopped
-	u16					timeout;
+	uint16_t					timeout;
 };
 extern struct RFsmpl sRFsmpl;
 
@@ -116,7 +116,7 @@ extern unsigned char simpliciti_flag;
 extern void start_simpliciti_tx_only(simpliciti_mode_t mode);
 #endif
 
-extern int simpliciti_get_rvc_callback(u8 len) __attribute__((noinline));
+extern int simpliciti_get_rvc_callback(uint8_t len) __attribute__((noinline));
 
 
 #endif /*RFSIMPLICITI_H_*/

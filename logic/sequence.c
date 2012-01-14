@@ -47,17 +47,17 @@
 
 extern void idle_loop(void);
 
-u8 doorlock_sequence(u8 sequence[DOORLOCK_SEQUENCE_MAX_LENGTH]);
+uint8_t doorlock_sequence(uint8_t sequence[DOORLOCK_SEQUENCE_MAX_LENGTH]);
 void doorlock_sequence_timer(void);
 void doorlock_sequence_pause_timer(void);
-u8 sequence_compare(u8* sequence_a, u8* sequence_b);
+uint8_t sequence_compare(uint8_t* sequence_a, uint8_t* sequence_b);
 
 
 // *************************************************************************************************
 // Global variable section
 
-volatile u8 doorlock_sequence_pause = 0;
-volatile u8 doorlock_sequence_timeout = 0;
+volatile uint8_t doorlock_sequence_pause = 0;
+volatile uint8_t doorlock_sequence_timeout = 0;
 
 // *************************************************************************************************
 // @fn          doorlock_sequence
@@ -65,19 +65,19 @@ volatile u8 doorlock_sequence_timeout = 0;
 // @param       normalized code sequence (output)
 // @return      doorlock error code
 // *************************************************************************************************
-u8 doorlock_sequence(u8 sequence[DOORLOCK_SEQUENCE_MAX_LENGTH])
+uint8_t doorlock_sequence(uint8_t sequence[DOORLOCK_SEQUENCE_MAX_LENGTH])
 {
-	s16 previous_delta = 0;
-	s16 delta = 0, ddelta = 0;
-	u8 previous_raw = 0;
-	u8 length = 0;
-	u8 max = 0;
-	u8 raw = 0;
-	u8 i = 0;
+	int16_t previous_delta = 0;
+	int16_t delta = 0, ddelta = 0;
+	uint8_t previous_raw = 0;
+	uint8_t length = 0;
+	uint8_t max = 0;
+	uint8_t raw = 0;
+	uint8_t i = 0;
 	float ratio = 0.0f;
 
 	// initialize
-	memset(sequence, 0, sizeof(u8) * DOORLOCK_SEQUENCE_MAX_LENGTH);
+	memset(sequence, 0, sizeof(uint8_t) * DOORLOCK_SEQUENCE_MAX_LENGTH);
 	doorlock_sequence_pause = 0;
 
 	// setup timeout
@@ -210,7 +210,7 @@ u8 doorlock_sequence(u8 sequence[DOORLOCK_SEQUENCE_MAX_LENGTH])
 			if (length <= DOORLOCK_SEQUENCE_MIN_LENGTH)
 			{
 				// reset data when exiting this state
-				memset(sequence, 0, sizeof(u8) * DOORLOCK_SEQUENCE_MAX_LENGTH);
+				memset(sequence, 0, sizeof(uint8_t) * DOORLOCK_SEQUENCE_MAX_LENGTH);
 				// Reset IRQ flags
 					BUTTONS_IFG &= ~ALL_BUTTONS;
 
@@ -276,9 +276,9 @@ void doorlock_sequence_pause_timer(void)
     }
 }
 
-u8 sequence_compare(u8* sequence_a, u8* sequence_b)
+uint8_t sequence_compare(uint8_t* sequence_a, uint8_t* sequence_b)
 {
-	u8 i = 0;
+	uint8_t i = 0;
 
 	for (i = 0; i < DOORLOCK_SEQUENCE_MAX_LENGTH; i++)
     {

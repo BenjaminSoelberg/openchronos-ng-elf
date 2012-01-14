@@ -168,10 +168,10 @@ void stop_alarm(void)
 // *************************************************************************************************
 // @fn          sx_alarm
 // @brief       Sx button turns alarm on/off.
-// @param       u8 line		LINE1
+// @param       uint8_t line		LINE1
 // @return      none
 // *************************************************************************************************
-void sx_alarm(u8 line)
+void sx_alarm(uint8_t line)
 {
 	// UP: Cycle through alarm modes
 	if(button.flag.up)
@@ -199,33 +199,33 @@ void sx_alarm(u8 line)
 // *************************************************************************************************
 // @fn          mx_alarm
 // @brief       Set alarm time.
-// @param       u8 line		LINE1
+// @param       uint8_t line		LINE1
 // @return      none
 // *************************************************************************************************
-void mx_alarm(u8 line)
+void mx_alarm(uint8_t line)
 {
 	// Clear display
 	clear_display_all();
 
 	// Keep global values in case new values are discarded
-	u8 hour;
-	u8 min;
+	uint8_t hour;
+	uint8_t min;
 
 	rtca_get_alarm(&hour, &min);
 
 	// Display HH:MM (LINE1) 
 	{
-		u8 *str = _itoa(hour, 2, 0);
+		uint8_t *str = _itoa(hour, 2, 0);
 		display_chars(LCD_SEG_L1_3_2, str, SEG_ON);
 		display_symbol(LCD_SEG_L1_COL, SEG_ON);
 	}
 	{
-		u8 *str = _itoa(min, 2, 0);
+		uint8_t *str = _itoa(min, 2, 0);
 		display_chars(LCD_SEG_L1_1_0, str, SEG_ON);
 	}
 	
 	// Init value index
-	u8 select = 0;
+	uint8_t select = 0;
 		
 	// Loop values until all are set or user breaks	set
 	while(1) 
@@ -244,7 +244,7 @@ void mx_alarm(u8 line)
 	  }
 
 	  if (select == 0) {
-	    s32 _hour = hour;
+	    int32_t _hour = hour;
 	    set_value(&_hour, 2, 0, 0, 23, SETVALUE_ROLLOVER_VALUE
 	                                 + SETVALUE_DISPLAY_VALUE
 					 + SETVALUE_NEXT_VALUE,
@@ -252,7 +252,7 @@ void mx_alarm(u8 line)
 					 display_hours_12_or_24);
 	    hour = _hour;
 	  } else {
-	    s32 _min = min;
+	    int32_t _min = min;
 	    set_value(&_min, 2, 0, 0, 59, SETVALUE_ROLLOVER_VALUE
 	                                 + SETVALUE_DISPLAY_VALUE
 					 + SETVALUE_NEXT_VALUE,
@@ -273,14 +273,14 @@ void mx_alarm(u8 line)
 // *************************************************************************************************
 // @fn          display_alarm
 // @brief       Display alarm time. 24H / 12H time format.
-// @param       u8 line	LINE1, LINE2
-//		u8 update	DISPLAY_LINE_UPDATE_FULL, DISPLAY_LINE_CLEAR
+// @param       uint8_t line	LINE1, LINE2
+//		uint8_t update	DISPLAY_LINE_UPDATE_FULL, DISPLAY_LINE_CLEAR
 // @return      none
 // *************************************************************************************************
-void display_alarm(u8 line, u8 update)
+void display_alarm(uint8_t line, uint8_t update)
 {
 	if (update == DISPLAY_LINE_UPDATE_FULL) {
-		u8 hour, min;
+		uint8_t hour, min;
 
 		rtca_get_alarm(&hour, &min);
 

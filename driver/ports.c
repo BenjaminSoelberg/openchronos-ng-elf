@@ -68,7 +68,7 @@
 
 // *************************************************************************************************
 // Prototypes section
-void button_repeat_on(u16 msec);
+void button_repeat_on(uint16_t msec);
 void button_repeat_off(void);
 void button_repeat_function(void);
 
@@ -137,10 +137,10 @@ __interrupt
 #endif
 void PORT2_ISR(void)
 {
-	u8 int_flag, int_enable;
-	u8 buzzer = 0;
-	u8 simpliciti_button_event = 0;
-	static u8 simpliciti_button_repeat = 0;
+	uint8_t int_flag, int_enable;
+	uint8_t buzzer = 0;
+	uint8_t simpliciti_button_event = 0;
+	static uint8_t simpliciti_button_repeat = 0;
 
 	// Clear button flags
 	button.all_flags = 0;
@@ -391,7 +391,7 @@ void PORT2_ISR(void)
 // @param       none
 // @return      none
 // *************************************************************************************************
-void button_repeat_on(u16 msec)
+void button_repeat_on(uint16_t msec)
 {
 	// Set button repeat flag
 	sys.flag.up_down_repeat_enabled = 1;
@@ -429,8 +429,8 @@ void button_repeat_off(void)
 // *************************************************************************************************
 void button_repeat_function(void)
 {
-	static u8 start_delay = 10;	// Wait for 2 seconds before starting auto up/down
-	u8 repeat = 0;
+	static uint8_t start_delay = 10;	// Wait for 2 seconds before starting auto up/down
+	uint8_t repeat = 0;
 	
 	// If buttons UP or DOWN are continuously high, repeatedly set button flag
 	if (BUTTON_UP_IS_PRESSED)

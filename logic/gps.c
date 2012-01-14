@@ -48,9 +48,9 @@
 #include "simpliciti.h"
 
 
-void sx_gps(u8 line);
-void mx_gps(u8 line);
-void display_gps(u8 line, u8 update);
+void sx_gps(uint8_t line);
+void mx_gps(uint8_t line);
+void display_gps(uint8_t line, uint8_t update);
 
 
 void doorlock_signal_success();
@@ -58,10 +58,10 @@ void doorlock_signal_failure();
 void doorlock_signal_timeout();
 void doorlock_signal_invalid();
 
-u8 verify_code();
+uint8_t verify_code();
 
-u8 sequence_saved[DOORLOCK_SEQUENCE_MAX_LENGTH] = {0};
-u8 sequence[DOORLOCK_SEQUENCE_MAX_LENGTH] = {0};
+uint8_t sequence_saved[DOORLOCK_SEQUENCE_MAX_LENGTH] = {0};
+uint8_t sequence[DOORLOCK_SEQUENCE_MAX_LENGTH] = {0};
 
 // *************************************************************************************************
 // @fn          sx_gps
@@ -69,13 +69,13 @@ u8 sequence[DOORLOCK_SEQUENCE_MAX_LENGTH] = {0};
 // @param       line		LINE1
 // @return      none
 // *************************************************************************************************
-void sx_gps(u8 line)
+void sx_gps(uint8_t line)
 {
 
-	u8 sequence_again[DOORLOCK_SEQUENCE_MAX_LENGTH] = {0};
-	u8 error = DOORLOCK_ERROR_SUCCESS;
-	u8 i = 0;
-	u16 avg = 0;
+	uint8_t sequence_again[DOORLOCK_SEQUENCE_MAX_LENGTH] = {0};
+	uint8_t error = DOORLOCK_ERROR_SUCCESS;
+	uint8_t i = 0;
+	uint16_t avg = 0;
 
 	// Enable idle timeout
 	sys.flag.idle_timeout_enabled = 1;
@@ -106,22 +106,22 @@ void sx_gps(u8 line)
 			// Clear display
 			clear_display_all();
 
-			 display_chars(LCD_SEG_L1_3_0, (u8*)"CODE", SEG_ON);
-			 display_chars(LCD_SEG_L2_4_0, (u8*)"PLEAS", SEG_ON);
+			 display_chars(LCD_SEG_L1_3_0, (uint8_t*)"CODE", SEG_ON);
+			 display_chars(LCD_SEG_L2_4_0, (uint8_t*)"PLEAS", SEG_ON);
 
 			error = verify_code();
 			if (error==DOORLOCK_ERROR_SUCCESS){
 				if (sys.flag.low_battery) break;
 				 // display_sync(LINE2, DISPLAY_LINE_UPDATE_FULL);
 				clear_display_all();
-				display_chars(LCD_SEG_L1_3_0, (u8*)"LINK", SEG_ON_BLINK_ON);
-				//display_chars(LCD_SEG_L2_4_0, (u8*)"   ", SEG_ON);
+				display_chars(LCD_SEG_L1_3_0, (uint8_t*)"LINK", SEG_ON_BLINK_ON);
+				//display_chars(LCD_SEG_L2_4_0, (uint8_t*)"   ", SEG_ON);
 				  start_simpliciti_sync();
-				 display_chars(LCD_SEG_L1_3_0, (u8*)"LINK", SEG_ON_BLINK_OFF);
+				 display_chars(LCD_SEG_L1_3_0, (uint8_t*)"LINK", SEG_ON_BLINK_OFF);
 				  if(simpliciti_flag == SIMPLICITI_STATUS_ERROR);
 				  {
-					  display_chars(LCD_SEG_L1_3_0, (u8*)"OUT ", SEG_ON);
-					  display_chars(LCD_SEG_L2_4_0, (u8*)"RANGE", SEG_ON);
+					  display_chars(LCD_SEG_L1_3_0, (uint8_t*)"OUT ", SEG_ON);
+					  display_chars(LCD_SEG_L2_4_0, (uint8_t*)"RANGE", SEG_ON);
 					  doorlock_signal_timeout();
 				  }
 			}
@@ -145,20 +145,20 @@ void sx_gps(u8 line)
 // *************************************************************************************************
 // @fn          mx_gps
 // @brief       Submenu GPS Function
-// @param       u8 line		LINE1, LINE2
+// @param       uint8_t line		LINE1, LINE2
 // @return      none
 // *************************************************************************************************
-void mx_gps(u8 line)
+void mx_gps(uint8_t line)
 {
-	u8 error = DOORLOCK_ERROR_SUCCESS;
+	uint8_t error = DOORLOCK_ERROR_SUCCESS;
 
 	if (sequence_saved[0] != 0)
 				{
 					// Clear display
 					 clear_display_all();
 
-					 display_chars(LCD_SEG_L1_3_0, (u8*)" OLD", SEG_ON);
-					 display_chars(LCD_SEG_L2_4_0, (u8*)"CODE", SEG_ON);
+					 display_chars(LCD_SEG_L1_3_0, (uint8_t*)" OLD", SEG_ON);
+					 display_chars(LCD_SEG_L2_4_0, (uint8_t*)"CODE", SEG_ON);
 
 					 error = verify_code();
 					 if (error != DOORLOCK_ERROR_SUCCESS ) return;
@@ -166,21 +166,21 @@ void mx_gps(u8 line)
 					// Clear display
 					clear_display_all();
 
-					 display_chars(LCD_SEG_L1_3_0, (u8*)" NEW", SEG_ON);
-					 display_chars(LCD_SEG_L2_4_0, (u8*)"CODE", SEG_ON);
+					 display_chars(LCD_SEG_L1_3_0, (uint8_t*)" NEW", SEG_ON);
+					 display_chars(LCD_SEG_L2_4_0, (uint8_t*)"CODE", SEG_ON);
 					sequence_saved[0] = 0;
 					error = verify_code();
 					if (error == DOORLOCK_ERROR_SUCCESS ) {
 						memcpy(sequence_saved,sequence,DOORLOCK_SEQUENCE_MAX_LENGTH);
 
 
-						display_chars(LCD_SEG_L1_3_0, (u8*)"CODE", SEG_ON);
-						display_chars(LCD_SEG_L2_4_0, (u8*)"AGAIN", SEG_ON);
+						display_chars(LCD_SEG_L1_3_0, (uint8_t*)"CODE", SEG_ON);
+						display_chars(LCD_SEG_L2_4_0, (uint8_t*)"AGAIN", SEG_ON);
 						error = verify_code();
 						if (error == DOORLOCK_ERROR_SUCCESS ) memcpy(sequence_saved,sequence,DOORLOCK_SEQUENCE_MAX_LENGTH);
 						else {
-							display_chars(LCD_SEG_L1_3_0, (u8*)"CODE", SEG_ON);
-							display_chars(LCD_SEG_L2_4_0, (u8*)"FAIL", SEG_ON);
+							display_chars(LCD_SEG_L1_3_0, (uint8_t*)"CODE", SEG_ON);
+							display_chars(LCD_SEG_L2_4_0, (uint8_t*)"FAIL", SEG_ON);
 							doorlock_signal_failure();
 							sequence_saved[0] = 0;
 							}
@@ -191,15 +191,15 @@ void mx_gps(u8 line)
 // *************************************************************************************************
 // @fn          display_gps
 // @brief       Display GPS function
-// @param       u8 line			LINE1
-//				u8 update		DISPLAY_LINE_UPDATE_FULL, DISPLAY_LINE_UPDATE_PARTIAL
+// @param       uint8_t line			LINE1
+//				uint8_t update		DISPLAY_LINE_UPDATE_FULL, DISPLAY_LINE_UPDATE_PARTIAL
 // @return      none
 // *************************************************************************************************
-void display_gps(u8 line, u8 update)
+void display_gps(uint8_t line, uint8_t update)
 {
 	if (update == DISPLAY_LINE_UPDATE_FULL)
 		{
-			display_chars(LCD_SEG_L2_5_0, (u8 *)"   GPS", SEG_ON);
+			display_chars(LCD_SEG_L2_5_0, (uint8_t *)"   GPS", SEG_ON);
 		}
 }
 
@@ -262,9 +262,9 @@ void doorlock_signal_invalid()
     stop_buzzer();
 }
 
-u8 verify_code()
+uint8_t verify_code()
 {
-	u8 error=DOORLOCK_ERROR_FAILURE;
+	uint8_t error=DOORLOCK_ERROR_FAILURE;
 
 
 		  error = doorlock_sequence(sequence);
@@ -272,8 +272,8 @@ u8 verify_code()
 
 		  if (error == DOORLOCK_ERROR_SUCCESS)
 			{
-				//display_chars(LCD_SEG_L1_3_0, (u8*)"CODE", SEG_ON);
-				//display_chars(LCD_SEG_L2_4_0, (u8*)"  OK", SEG_ON);
+				//display_chars(LCD_SEG_L1_3_0, (uint8_t*)"CODE", SEG_ON);
+				//display_chars(LCD_SEG_L2_4_0, (uint8_t*)"  OK", SEG_ON);
 				//doorlock_signal_success();
 
 				if (sequence_saved[0] != 0){
@@ -284,14 +284,14 @@ u8 verify_code()
 				}
 
 				if (error == DOORLOCK_ERROR_SUCCESS){
-					display_chars(LCD_SEG_L1_3_0, (u8*)"CODE", SEG_ON);
-					display_chars(LCD_SEG_L2_4_0, (u8*)"CHECK", SEG_ON);
+					display_chars(LCD_SEG_L1_3_0, (uint8_t*)"CODE", SEG_ON);
+					display_chars(LCD_SEG_L2_4_0, (uint8_t*)"CHECK", SEG_ON);
 					doorlock_signal_success();
 					return DOORLOCK_ERROR_SUCCESS;
 				}
 				else{
-					 display_chars(LCD_SEG_L1_3_0, (u8*)"MIS-", SEG_ON);
-					 display_chars(LCD_SEG_L2_4_0, (u8*)"MATCH", SEG_ON);
+					 display_chars(LCD_SEG_L1_3_0, (uint8_t*)"MIS-", SEG_ON);
+					 display_chars(LCD_SEG_L2_4_0, (uint8_t*)"MATCH", SEG_ON);
 					 doorlock_signal_failure();
 				}
 
@@ -299,8 +299,8 @@ u8 verify_code()
 			}
 			else
 			{
-				  display_chars(LCD_SEG_L1_3_0, (u8*)"CODE", SEG_ON);
-				  display_chars(LCD_SEG_L2_4_0, (u8*)"FAIL", SEG_ON);
+				  display_chars(LCD_SEG_L1_3_0, (uint8_t*)"CODE", SEG_ON);
+				  display_chars(LCD_SEG_L2_4_0, (uint8_t*)"FAIL", SEG_ON);
 				  doorlock_signal_failure();
 			}
 	return DOORLOCK_ERROR_FAILURE;

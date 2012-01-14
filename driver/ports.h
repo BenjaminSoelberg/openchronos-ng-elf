@@ -93,31 +93,31 @@ typedef union
   struct
   {
   	// Manual button events
-    u16 star    	: 1;    // Short STAR button press
-    u16 num     	: 1;    // Short NUM button press
-    u16 up      	: 1;    // Short UP button press
-    u16 down      	: 1;    // Short DOWN button press
-    u16 backlight  	: 1;    // Short BACKLIGHT button press
-    u16 star_long   : 1;    // Long STAR button press
-    u16 num_long   	: 1;    // Long NUM button press
+    uint16_t star    	: 1;    // Short STAR button press
+    uint16_t num     	: 1;    // Short NUM button press
+    uint16_t up      	: 1;    // Short UP button press
+    uint16_t down      	: 1;    // Short DOWN button press
+    uint16_t backlight  	: 1;    // Short BACKLIGHT button press
+    uint16_t star_long   : 1;    // Long STAR button press
+    uint16_t num_long   	: 1;    // Long NUM button press
   } flag;
-  u16 all_flags;            // Shortcut to all display flags (for reset)
+  uint16_t all_flags;            // Shortcut to all display flags (for reset)
 } s_button_flags;
 extern volatile s_button_flags button;
 
 struct struct_button
 {
-	u8  star_timeout;		 
-	u8  num_timeout;		 
-	u8 backlight_timeout;
-	u8 backlight_status;
-	s16 repeats;			
+	uint8_t  star_timeout;		 
+	uint8_t  num_timeout;		 
+	uint8_t backlight_timeout;
+	uint8_t backlight_status;
+	int16_t repeats;			
 };
 extern volatile struct struct_button sButton;
 
 // *************************************************************************************************
 // Extern section
-extern void button_repeat_on(u16 msec);
+extern void button_repeat_on(uint16_t msec);
 extern void button_repeat_off(void);
 extern void button_repeat_function(void);
 extern void init_buttons(void);

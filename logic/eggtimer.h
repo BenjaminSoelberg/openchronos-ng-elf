@@ -49,10 +49,10 @@ extern void stop_eggtimer_alarm(void);
 extern void set_eggtimer_to_defaults(void);
 extern void set_eggtimer(void);
 extern void eggtimer_tick(void);
-extern void mx_eggtimer(u8 line);
-extern void sx_eggtimer(u8 line);
-extern void display_eggtimer(u8 line, u8 update);
-extern u8 eggtimer_visible(void);
+extern void mx_eggtimer(uint8_t line);
+extern void sx_eggtimer(uint8_t line);
+extern void display_eggtimer(uint8_t line, uint8_t update);
+extern uint8_t eggtimer_visible(void);
 
 
 // *************************************************************************************************
@@ -67,21 +67,21 @@ extern u8 eggtimer_visible(void);
 // Global Variable section
 struct eggtimer
 {
-        //NOTE: u8 means unsigned char
-	u8	state;
-	u8	drawFlag;
+        //NOTE: uint8_t means unsigned char
+	uint8_t	state;
+	uint8_t	drawFlag;
 	
 	// Values that are decremented each second
-	u8	hours;
-	u8	minutes;
-	u8	seconds;
+	uint8_t	hours;
+	uint8_t	minutes;
+	uint8_t	seconds;
 	
 	// Values to default to, after timer runs out and is cleared
-	u8	default_hours;
-	u8	default_minutes;
-	u8	default_seconds;
+	uint8_t	default_hours;
+	uint8_t	default_minutes;
+	uint8_t	default_seconds;
 	
-	u8	duration; //Number of times to request buzzer double-beep when time is up
+	uint8_t	duration; //Number of times to request buzzer double-beep when time is up
 };
 extern struct eggtimer sEggtimer;
 

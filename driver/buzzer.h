@@ -44,11 +44,11 @@
 // *************************************************************************************************
 // Prototypes section
 extern void reset_buzzer(void);
-extern void start_buzzer(u8 cycles, u16 on_time, u16 off_time);
-extern void start_buzzer_steps(u8 cycles, u16 on_time, u16 off_time, u8 steps);
+extern void start_buzzer(uint8_t cycles, uint16_t on_time, uint16_t off_time);
+extern void start_buzzer_steps(uint8_t cycles, uint16_t on_time, uint16_t off_time, uint8_t steps);
 extern void stop_buzzer(void);
 extern void toggle_buzzer(void);
-extern u8 is_buzzer(void);
+extern uint8_t is_buzzer(void);
 extern void countdown_buzzer(void);
 
 
@@ -80,17 +80,17 @@ extern void countdown_buzzer(void);
 struct buzzer
 {
 	// Keep output for "time" seconds
-	u8 time;
+	uint8_t time;
 	
 	// On/off duty 
-	u16 on_time;
-	u16 off_time;
+	uint16_t on_time;
+	uint16_t off_time;
 	
 	// Current buzzer output state
-	u8 state;
+	uint8_t state;
 
         // Current steps (~freq)
-        u8 steps;
+        uint8_t steps;
 
 };
 extern struct buzzer sBuzzer;

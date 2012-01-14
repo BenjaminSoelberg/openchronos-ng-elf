@@ -44,9 +44,9 @@
 // *************************************************************************************************
 // Prototypes section
 extern void reset_date(void);
-extern void mx_date(u8 line);
-extern void sx_date(u8 line);
-extern void display_date(u8 line, u8 update);
+extern void mx_date(uint8_t line);
+extern void sx_date(uint8_t line);
+extern void display_date(uint8_t line, uint8_t update);
 extern void date_event(rtca_tevent_ev_t ev);
 
 // *************************************************************************************************
@@ -57,7 +57,7 @@ extern void date_event(rtca_tevent_ev_t ev);
 // Global Variable section
 struct date
 {
-	u8  view;
+	uint8_t  view;
 };
 extern struct date sDate;
 

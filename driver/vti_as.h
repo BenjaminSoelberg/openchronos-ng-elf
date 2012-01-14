@@ -48,12 +48,12 @@ extern void as_disconnect(void);
 extern void as_init(void);
 extern void as_start(void);
 extern void as_stop(void);
-extern u8 as_read_register(u8 bAddress);
-extern u8 as_write_register(u8 bAddress, u8 bData);
-extern void as_get_data(u8 * data);
-extern u8 as_get_x(void);
-extern u8 as_get_y(void);
-extern u8 as_get_z(void);
+extern uint8_t as_read_register(uint8_t bAddress);
+extern uint8_t as_write_register(uint8_t bAddress, uint8_t bData);
+extern void as_get_data(uint8_t * data);
+extern uint8_t as_get_x(void);
+extern uint8_t as_get_y(void);
+extern uint8_t as_get_z(void);
 #endif
 
 

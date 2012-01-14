@@ -75,7 +75,7 @@ struct prouttimer sprouttimer;
 
 #define POUET_STR " POUET PROUT KATAPLOP  POUET"
 
-static u8 *str = POUET_STR;
+static uint8_t *str = POUET_STR;
 
 void prout_tick()
 {
@@ -83,7 +83,7 @@ void prout_tick()
   display_prout(0, 0);
 }
 
-u8 is_prout(void)
+uint8_t is_prout(void)
 {
   return (sprouttimer.state == PROUT_RUN &&  (ptrMenu_L2 == &menu_L2_Prout));
 }
@@ -129,7 +129,7 @@ void stop_prout()
   display_prout(LINE2, DISPLAY_LINE_UPDATE_FULL);
 }
 
-void sx_prout(u8 line)
+void sx_prout(uint8_t line)
 {
   if (button.flag.down)
     {
@@ -141,13 +141,13 @@ void sx_prout(u8 line)
     }
 }
 
-void mx_prout(u8 line)
+void mx_prout(uint8_t line)
 {
 }
 
-void display_prout(u8 line, u8 update)
+void display_prout(uint8_t line, uint8_t update)
 {
-  u8 cur[7];
+  uint8_t cur[7];
   memcpy(cur, str + sprouttimer.pos, 6);
   cur[6] = 0;
   

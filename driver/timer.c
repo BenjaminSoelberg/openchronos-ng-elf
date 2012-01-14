@@ -105,11 +105,11 @@
 // Prototypes section
 void Timer0_Init(void);
 void Timer0_Stop(void);
-void Timer0_A1_Start(u16 ticks);
+void Timer0_A1_Start(uint16_t ticks);
 void Timer0_A1_Stop(void);
-void Timer0_A3_Start(u16 ticks);
+void Timer0_A3_Start(uint16_t ticks);
 void Timer0_A3_Stop(void);
-void Timer0_A4_Delay(u16 ticks);
+void Timer0_A4_Delay(uint16_t ticks);
 void (*fptr_Timer0_A3_function)(void);
 #ifdef CONFIG_USE_GPS
 void (*fptr_Timer0_A1_function)(void);
@@ -129,7 +129,7 @@ extern void BRRX_TimerTask_v(void);
 extern void to_lpm(void);
 
 #ifdef CONFIG_ALTI_ACCUMULATOR
-extern u8 alt_accum_enable; // 1 means the altitude accumulator is enabled
+extern uint8_t alt_accum_enable; // 1 means the altitude accumulator is enabled
 #endif
 
 // *************************************************************************************************
@@ -184,7 +184,7 @@ void Timer0_Stop(void)
 }
 
 
-void Timer0_A1_Start(u16 ticks)
+void Timer0_A1_Start(uint16_t ticks)
 {
 	/*old version
 	// Set interrupt frequency to 1Hz
@@ -193,7 +193,7 @@ void Timer0_A1_Start(u16 ticks)
 	// Enable timer interrupt
 	TA0CCTL1 |= CCIE; */
 
-	u16 value;
+	uint16_t value;
 
 		// Store timer ticks in global variable
 		sTimer.timer0_A1_ticks = ticks;
@@ -254,9 +254,9 @@ void Timer0_A1_Unregister(void (*callback)(void))
 // @param       ticks (1 tick = 1/32768 sec)
 // @return      none
 // *************************************************************************************************
-void Timer0_A3_Start(u16 ticks)
+void Timer0_A3_Start(uint16_t ticks)
 {
-	u16 value;
+	uint16_t value;
 	
 	// Store timer ticks in global variable
 	sTimer.timer0_A3_ticks = ticks;
@@ -295,9 +295,9 @@ void Timer0_A3_Stop(void)
 // @param       ticks (1 tick = 1/32768 sec)
 // @return      none
 // *************************************************************************************************
-void Timer0_A4_Delay(u16 ticks)
+void Timer0_A4_Delay(uint16_t ticks)
 {
-	u16 value;
+	uint16_t value;
 	
 	// Exit immediately if Timer0 not running - otherwise we'll get stuck here
 	if ((TA0CTL & (BIT4 | BIT5)) == 0) return;    
@@ -362,8 +362,8 @@ __interrupt
 #endif
 void TIMER0_A0_ISR(void)
 {
-	static u8 button_lock_counter = 0;
-	static u8 button_beep_counter = 0;
+	static uint8_t button_lock_counter = 0;
+	static uint8_t button_beep_counter = 0;
 	
 	// Disable IE 
 	TA0CCTL0 &= ~CCIE;
@@ -439,7 +439,7 @@ void TIMER0_A0_ISR(void)
 		{
 			stop_altitude_measurement();
 			// Show ---- m/ft
-			display_chars(LCD_SEG_L1_3_0, (u8*)"----", SEG_ON);
+			display_chars(LCD_SEG_L1_3_0, (uint8_t*)"----", SEG_ON);
 			// Clear up/down arrow
 			display_symbol(LCD_SYMB_ARROW_UP, SEG_OFF);
 			display_symbol(LCD_SYMB_ARROW_DOWN, SEG_OFF);
@@ -632,7 +632,7 @@ __interrupt
 #endif
 void TIMER0_A1_5_ISR(void)
 {
-	u16 value;
+	uint16_t value;
 		
 	switch (TA0IV)
 	{

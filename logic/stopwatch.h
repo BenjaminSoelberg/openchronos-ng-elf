@@ -47,13 +47,13 @@ extern void start_stopwatch(void);
 extern void stop_stopwatch(void);
 extern void reset_stopwatch(void);
 extern void split_stopwatch(void);
-extern u8 is_stopwatch_run(void);
-extern u8 is_stopwatch_stop(void);
+extern uint8_t is_stopwatch_run(void);
+extern uint8_t is_stopwatch_stop(void);
 extern void stopwatch_tick(void);
 extern void update_stopwatch_timer(void);
-extern void mx_stopwatch(u8 line);
-extern void sx_stopwatch(u8 line);
-extern void display_stopwatch(u8 line, u8 update);
+extern void mx_stopwatch(uint8_t line);
+extern void sx_stopwatch(uint8_t line);
+extern void display_stopwatch(uint8_t line, uint8_t update);
 
 
 // *************************************************************************************************
@@ -76,10 +76,10 @@ extern void display_stopwatch(u8 line, u8 update);
 // Global Variable section
 struct stopwatch
 {
-	u8 		state;
-	u8		drawFlag;
-	u8		swtIs1Hz;
-	u8		swtIs10Hz;
+	uint8_t 		state;
+	uint8_t		drawFlag;
+	uint8_t		swtIs1Hz;
+	uint8_t		swtIs10Hz;
 	
 	//	time[0] 	hour H
 	//	time[1] 	hour L
@@ -89,12 +89,12 @@ struct stopwatch
 	//	time[5] 	second L
 	//	time[6] 	1/10 sec 
 	//	time[7] 	1/100 sec
-	u8		time[8]; //ASCII codes
-	u8		time_split[8];
+	uint8_t		time[8]; //ASCII codes
+	uint8_t		time_split[8];
 	
 	// Display style
-	u8 	viewStyle;
-	u8 	viewStyle_split;
+	uint8_t 	viewStyle;
+	uint8_t 	viewStyle_split;
 };
 extern struct stopwatch sStopwatch;
 

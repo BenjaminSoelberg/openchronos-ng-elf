@@ -100,16 +100,16 @@ unsigned char phase_clock_ed_address[4];
 unsigned char phase_clock_reply_count;
 
 // 1 = send packets sequentially from burst_start to burst_end, 2 = send packets addressed by their index
-//u8 		burst_mode;
+//uint8_t 		burst_mode;
 
 // Start and end index of packets to send out
-//u16		burst_start, burst_end;
+//uint16_t		burst_start, burst_end;
 
 // Array containing requested packets
-//u16		burst_packet[BM_SYNC_BURST_PACKETS_IN_DATA];
+//uint16_t		burst_packet[BM_SYNC_BURST_PACKETS_IN_DATA];
 
 // Current packet index
-//u8		burst_packet_index;
+//uint8_t		burst_packet_index;
 
 
 // *************************************************************************************************
@@ -119,10 +119,10 @@ unsigned char phase_clock_reply_count;
 // *************************************************************************************************
 // @fn          sx_sleep
 // @brief       Start Sleep mode. Button DOWN connects/disconnects to access point.
-// @param       u8 line		LINE2
+// @param       uint8_t line		LINE2
 // @return      none
 // *************************************************************************************************
-void sx_phase(u8 line)
+void sx_phase(uint8_t line)
 {
 	// Exit if battery voltage is too low for radio operation
 	if (sys.flag.low_battery) return;
@@ -146,14 +146,14 @@ void sx_phase(u8 line)
 // *************************************************************************************************
 // @fn          mx_phase
 // @brief       Set program number to use
-// @param       u8 line		LINE2
+// @param       uint8_t line		LINE2
 // @return      none
 // *************************************************************************************************
-void mx_phase(u8 line){
-		s32 prog, bug;
-        u8 mode = 0;
-		prog = (s32)sPhase.program;
-        bug = (s32)sPhase.bug;
+void mx_phase(uint8_t line){
+		int32_t prog, bug;
+        uint8_t mode = 0;
+		prog = (int32_t)sPhase.program;
+        bug = (int32_t)sPhase.bug;
 		// Loop values until all are set or user breaks	set
 		while(1) 
 		{
@@ -166,8 +166,8 @@ void mx_phase(u8 line){
 				// Store local variables in global Eggtimer default
 				//sAlarm.hour = hours;
 				//sAlarm.minute = minutes;
-				sPhase.program = (u8)prog;
-                sPhase.bug = (u8)bug;
+				sPhase.program = (uint8_t)prog;
+                sPhase.bug = (uint8_t)bug;
 				display.flag.line2_full_update = 1;
 				break;
 			}
@@ -177,11 +177,11 @@ void mx_phase(u8 line){
             switch (mode) {
                 case 0:
                     //set_value(&prog, 2, 0, 0, 99, SETVALUE_ROLLOVER_VALUE + SETVALUE_DISPLAY_VALUE + SETVALUE_NEXT_VALUE, LCD_SEG_L2_1_0, display_value1);
-                    display_chars(LCD_SEG_L2_5_0, (u8 *)" PR ", SEG_ON);
+                    display_chars(LCD_SEG_L2_5_0, (uint8_t *)" PR ", SEG_ON);
                     set_value(&prog, 2, 0, 0, 99, SETVALUE_ROLLOVER_VALUE + SETVALUE_DISPLAY_VALUE + SETVALUE_NEXT_VALUE, LCD_SEG_L2_1_0, display_value1);
                     break;
                 case 1:
-                    display_chars(LCD_SEG_L2_5_0, (u8 *)" BUG", SEG_ON);
+                    display_chars(LCD_SEG_L2_5_0, (uint8_t *)" BUG", SEG_ON);
                     set_value(&bug, 2, 0, 0, 1, SETVALUE_ROLLOVER_VALUE + SETVALUE_DISPLAY_VALUE + SETVALUE_NEXT_VALUE, LCD_SEG_L2_1_0, display_value1);
                     break;
             }
@@ -200,8 +200,8 @@ void mx_phase(u8 line){
 // @param       none
 // @return      none
 // *************************************************************************************************
-static u8 diff(u8 x1, u8 x2) {
-    u8 b1 = x1 - x2;
+static uint8_t diff(uint8_t x1, uint8_t x2) {
+    uint8_t b1 = x1 - x2;
     if(b1 > 127)
         b1 = x2 - x1;
     // high pass filter
@@ -217,10 +217,10 @@ static u8 diff(u8 x1, u8 x2) {
 // @return      none
 // *************************************************************************************************
 void phase_clock_calcpoint() {
-	u16 x,y,z,res;
+	uint16_t x,y,z,res;
 	x = y = z = res = 0;
 
-	u8 i = 0;
+	uint8_t i = 0;
 	for(i=1;i<SLEEP_DATA_BUFFER;i++) {
 		x += diff(sPhase.data[i-1][0], sPhase.data[i][0]);
 		y += diff(sPhase.data[i-1][1], sPhase.data[i][1]);
@@ -241,15 +241,15 @@ void phase_clock_calcpoint() {
 // *************************************************************************************************
 // @fn          display_phase_clock
 // @brief       SimpliciTI display routine. 
-// @param       u8 line			LINE2
-//				u8 update		DISPLAY_LINE_UPDATE_FULL
+// @param       uint8_t line			LINE2
+//				uint8_t update		DISPLAY_LINE_UPDATE_FULL
 // @return      none
 // *************************************************************************************************
-void display_phase_clock(u8 line, u8 update)
+void display_phase_clock(uint8_t line, uint8_t update)
 {
 	if (update == DISPLAY_LINE_UPDATE_FULL)	
 	{
-		display_chars(LCD_SEG_L2_5_0, (u8 *)" SLEEP", SEG_ON);
+		display_chars(LCD_SEG_L2_5_0, (uint8_t *)" SLEEP", SEG_ON);
 	}
 }
 

@@ -45,16 +45,16 @@
 // *************************************************************************************************
 // Prototypes section
 extern void reset_bluerobin(void);
-extern void mx_bluerobin(u8 line);
-extern void sx_bluerobin(u8 line);
-extern void mx_caldist(u8 line);
-extern void display_heartrate(u8 line, u8 update);
-extern void display_speed(u8 line, u8 update);
-extern void sx_caldist(u8 line);
-extern void mx_caldist(u8 line);
-extern void display_caldist(u8 line, u8 update);
-extern u8 is_bluerobin(void);
-extern u8 is_bluerobin_searching(void);
+extern void mx_bluerobin(uint8_t line);
+extern void sx_bluerobin(uint8_t line);
+extern void mx_caldist(uint8_t line);
+extern void display_heartrate(uint8_t line, uint8_t update);
+extern void display_speed(uint8_t line, uint8_t update);
+extern void sx_caldist(uint8_t line);
+extern void mx_caldist(uint8_t line);
+extern void display_caldist(uint8_t line, uint8_t update);
+extern uint8_t is_bluerobin(void);
+extern uint8_t is_bluerobin_searching(void);
 extern void get_bluerobin_data(void);
 extern void stop_bluerobin(void);
 
@@ -97,26 +97,26 @@ struct br
 	BlueRobin_update_t	update;
 	
 	// Chest strap ID	
-	u32	cs_id;
+	uint32_t	cs_id;
 
 	// User settings
-	u8 		user_sex;
-	u16		user_weight;
+	uint8_t 		user_sex;
+	uint16_t		user_weight;
 	
 	// Heart rate (1 bpm)
-	u8 		heartrate;
+	uint8_t 		heartrate;
 	
 	// Calories (1 kCal) - calculated from heart rate, user weight and user sex
-	u32 	calories;
+	uint32_t 	calories;
 	
 	// Speed (0.1 km/h) - demo version range is 0.0 to 25.5km/h 
-	u8 		speed;
+	uint8_t 		speed;
 	
 	// Distance (1 m)
-	u32 	distance;
+	uint32_t 	distance;
 	
 	// 0=display calories, 1=display distance
-	u8		caldist_view;
+	uint8_t		caldist_view;
 };
 extern struct br sBlueRobin;
 

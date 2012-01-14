@@ -47,9 +47,9 @@ extern void stop_alarm(void);
 extern void alarm_tick(void);
 
 // menu functions
-extern void sx_alarm(u8 line);
-extern void mx_alarm(u8 line);
-extern void display_alarm(u8 line, u8 update);
+extern void sx_alarm(uint8_t line);
+extern void mx_alarm(uint8_t line);
+extern void display_alarm(uint8_t line, uint8_t update);
 
 extern void alarm_event(rtca_tevent_ev_t ev);
 
@@ -68,18 +68,18 @@ struct alarm
 	union {
 		struct {
 			// one shot alarm
-			u8 alarm:1;
+			uint8_t alarm:1;
 			// hourly chime
-			u8 chime:1;
+			uint8_t chime:1;
 		};
-		u8 state:2;
+		uint8_t state:2;
 	};
 	// set after alarm fires off until the minute changes value
-	u8 hold:1;
+	uint8_t hold:1;
 	// is alarm running?
-	u8 running:1;
+	uint8_t running:1;
 	// Alarm duration
-	u8 duration;
+	uint8_t duration;
 } __attribute__((packed));
 
 //TODO: Try to kill all external references to this struct. Then make it

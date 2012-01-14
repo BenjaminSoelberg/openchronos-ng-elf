@@ -83,9 +83,9 @@ void display_all_off(void);
 // *************************************************************************************************
 void test_mode(void)
 {
-	u8 test_step, start_next_test;
-	u8 * str;
-	u8 i;
+	uint8_t test_step, start_next_test;
+	uint8_t * str;
+	uint8_t i;
 	
 	// Disable timer - no need for a clock tick
 	Timer0_Stop();
@@ -95,8 +95,8 @@ void test_mode(void)
 	LCDBVCTL = 0;
 	
 	// Show welcome screen 
-	display_chars(LCD_SEG_L1_3_0, (u8*)"0430", SEG_ON);
-	display_chars(LCD_SEG_L2_4_0, (u8*)"CC430", SEG_ON);
+	display_chars(LCD_SEG_L1_3_0, (uint8_t*)"0430", SEG_ON);
+	display_chars(LCD_SEG_L2_4_0, (uint8_t*)"CC430", SEG_ON);
 	display_symbol(LCD_SEG_L1_COL, SEG_ON);
 	display_symbol(LCD_ICON_HEART, SEG_ON);
 	display_symbol(LCD_ICON_STOPWATCH, SEG_ON);
@@ -278,8 +278,8 @@ void test_mode(void)
 
 void display_all_on(void)
 {
-	u8 * lcdptr = (u8*)0x0A20;
-	u8 i;
+	uint8_t * lcdptr = (uint8_t*)0x0A20;
+	uint8_t i;
 	
 	for (i=1; i<=12; i++) 
 	{

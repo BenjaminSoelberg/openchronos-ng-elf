@@ -57,8 +57,8 @@
 
 // *************************************************************************************************
 // Global Variable section
-u16 adc12_result;
-u8  adc12_data_ready;
+uint16_t adc12_result;
+uint8_t  adc12_data_ready;
 
 
 // *************************************************************************************************
@@ -73,9 +73,9 @@ u8  adc12_data_ready;
 //// @param       none
 //// @return      none
 //// *************************************************************************************************
-//u16 adc12_single_conversion(u16 ref_v, u16 adc12_sht, u16 adc12_ssel, u16 adc12_vref, u16 adc12_channel, u16 adc12_conv_delay)
+//uint16_t adc12_single_conversion(uint16_t ref_v, uint16_t adc12_sht, uint16_t adc12_ssel, uint16_t adc12_vref, uint16_t adc12_channel, uint16_t adc12_conv_delay)
 //{
-//	u16 adc12_result;
+//	uint16_t adc12_result;
 //
 //	// Set REF reference voltage to 1.5V (temperature) or 2.5V (battery)	
 //	REFCTL0 |= REFMSTR + REFON + ref_v;           
@@ -117,7 +117,7 @@ u8  adc12_data_ready;
 // @param       none
 // @return      none
 // *************************************************************************************************
-u16 adc12_single_conversion(u16 ref, u16 sht, u16 channel)
+uint16_t adc12_single_conversion(uint16_t ref, uint16_t sht, uint16_t channel)
 {
 	// Initialize the shared reference module 
 	REFCTL0 |= REFMSTR + ref + REFON;    		// Enable internal reference (1.5V or 2.5V)

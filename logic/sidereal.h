@@ -43,10 +43,10 @@
 // Prototypes section
 extern void sync_sidereal(void);
 extern void reset_sidereal_clock(void);
-extern void sx_sidereal(u8 line);
-extern void mx_sidereal(u8 line);
+extern void sx_sidereal(uint8_t line);
+extern void mx_sidereal(uint8_t line);
 extern void sidereal_clock_tick(void);
-extern void display_sidereal(u8 line, u8 update);
+extern void display_sidereal(uint8_t line, uint8_t update);
 
 // *************************************************************************************************
 // Global Variable section
@@ -57,33 +57,33 @@ extern void display_sidereal(u8 line, u8 update);
 //longitude >0:east, <0:west (the parts are not allowed to differ in sign)
 struct longitude
 {
-	s16		deg;
-	s8		min;
-	s8		sec;
+	int16_t		deg;
+	int8_t		min;
+	int8_t		sec;
 };
 
 
 struct sidereal_time
 {
 	// Flag to minimize display updates
-	u8 		drawFlag;
+	uint8_t 		drawFlag;
 
 	// Viewing style
-	u8		line1ViewStyle;
-	u8		line2ViewStyle;
+	uint8_t		line1ViewStyle;
+	uint8_t		line2ViewStyle;
 	
 	// Time data
-	u8		hour;
-	u8		minute;
-	u8 		second;
+	uint8_t		hour;
+	uint8_t		minute;
+	uint8_t 		second;
 	
 	//SIDEREAL_NUM_LON different longitudes
 	struct longitude lon[SIDEREAL_NUM_LON];
 	//selected longitude to use for time calculation
-	u8		lon_selection;
+	uint8_t		lon_selection;
 	
 	//synchronize to normal time automatically
-	u8		sync;
+	uint8_t		sync;
 };
 extern struct sidereal_time sSidereal_time;
 

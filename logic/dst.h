@@ -24,14 +24,14 @@
 
 struct dst_date_struct
 {
-    u8 month;
-    u8 day;
+    uint8_t month;
+    uint8_t day;
 };
 
 extern struct dst_date_struct dst_dates[];
-extern u8 dst_state;
+extern uint8_t dst_state;
 
 void dst_init(void);
-void dst_calculate_dates(u16 year, u8 month, u8 day);
+void dst_calculate_dates(uint16_t year, uint8_t month, uint8_t day);
 
 #endif

@@ -74,12 +74,12 @@ typedef struct
 	 * The process_request function will later start the buzzer for this many beeps
 	 * and reset this variable again.
 	 */
-	u8 num_beeps;
+	uint8_t num_beeps;
 
 	/**
 	 * Number of seconds since the start button was pressed.
 	 */
-	u8 seconds_since_start;
+	uint8_t seconds_since_start;
 
 	/**
 	 * ASCII representation of the time to be shown the user.
@@ -89,19 +89,19 @@ typedef struct
 	 * The biased representation helps reach more than 128 seconds
 	 * with an 8-bit counter.
 	 */
-	u8 time[4];
+	uint8_t time[4];
 } strength_data_t;
 
 extern strength_data_t strength_data;
 
-static inline u8 is_strength() { return strength_data.flags.running ; }
+static inline uint8_t is_strength() { return strength_data.flags.running ; }
 
 void strength_tick();
 
-void display_strength_time(u8 line, u8 update);
+void display_strength_time(uint8_t line, uint8_t update);
 
-void strength_sx(u8);
+void strength_sx(uint8_t);
 
-u8 strength_display_needs_updating(void);
+uint8_t strength_display_needs_updating(void);
 
 #endif

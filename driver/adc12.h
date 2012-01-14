@@ -42,7 +42,7 @@
 
 // *************************************************************************************************
 // Prototypes section
-extern u16 adc12_single_conversion(u16 ref, u16 sht, u16 channel);
+extern uint16_t adc12_single_conversion(uint16_t ref, uint16_t sht, uint16_t channel);
 
 // *************************************************************************************************
 // Defines section
@@ -59,8 +59,8 @@ extern u16 adc12_single_conversion(u16 ref, u16 sht, u16 channel);
 
 // *************************************************************************************************
 // Global Variable section
-extern u16 adc12_result;
-extern u8  adc12_data_ready;
+extern uint16_t adc12_result;
+extern uint8_t  adc12_data_ready;
 
 
 // *************************************************************************************************

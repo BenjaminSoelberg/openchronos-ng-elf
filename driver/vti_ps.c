@@ -52,9 +52,9 @@
 
 // *************************************************************************************************
 // Prototypes section
-u16 ps_read_register(u8 address, u8 mode);
-u8 ps_write_register(u8 address, u8 data);
-u8 ps_twi_read(u8 ack);
+uint16_t ps_read_register(uint8_t address, uint8_t mode);
+uint8_t ps_write_register(uint8_t address, uint8_t data);
+uint8_t ps_twi_read(uint8_t ack);
 void twi_delay(void);
 
 
@@ -67,19 +67,19 @@ void twi_delay(void);
 
 #ifndef FIXEDPOINT
 // VTI pressure (hPa) to altitude (m) conversion tables
-const s16 h0[17] = { -153, 0, 111, 540, 989, 1457, 1949, 2466, 3012, 3591, 4206, 4865, 5574, 6344, 7185, 8117, 9164 };
-const u16 p0[17] = { 1031, 1013, 1000, 950, 900, 850, 800, 750, 700, 650, 600, 550, 500, 450, 400, 350, 300 };
+const int16_t h0[17] = { -153, 0, 111, 540, 989, 1457, 1949, 2466, 3012, 3591, 4206, 4865, 5574, 6344, 7185, 8117, 9164 };
+const uint16_t p0[17] = { 1031, 1013, 1000, 950, 900, 850, 800, 750, 700, 650, 600, 550, 500, 450, 400, 350, 300 };
 float p[17];
 #else
 // Storage for pressure to altitude conversions
-static s16 pLast; // Last measured pressure in 4Pa units
-static s16 pRef; // Reference pressure at sea level in 4Pa units
-static s16 hLast; // Last altitude estimate in normalized units b/H0/2^15
+static int16_t pLast; // Last measured pressure in 4Pa units
+static int16_t pRef; // Reference pressure at sea level in 4Pa units
+static int16_t hLast; // Last altitude estimate in normalized units b/H0/2^15
 #endif
 
 
 // Global flag for proper pressure sensor operation
-u8 ps_ok;
+uint8_t ps_ok;
 
 
 // *************************************************************************************************
@@ -95,7 +95,7 @@ u8 ps_ok;
 // *************************************************************************************************
 void ps_init(void)
 {
-	volatile u8 success, status, eeprom;
+	volatile uint8_t success, status, eeprom;
 	
 	PS_INT_DIR &= ~PS_INT_PIN;            	// DRDY is input
 	PS_INT_IES &= ~PS_INT_PIN;				// Interrupt on DRDY rising edge
@@ -130,7 +130,7 @@ void ps_init(void)
 // @fn          ps_start
 // @brief       Init pressure sensor registers and start sampling
 // @param       none
-// @return      u8		1=Sensor started, 0=Sensor did not start
+// @return      uint8_t		1=Sensor started, 0=Sensor did not start
 // *************************************************************************************************
 void ps_start(void)
 {
@@ -157,13 +157,13 @@ void ps_stop(void)
 // *************************************************************************************************
 // @fn          ps_twi_sda
 // @brief       Control SDA line
-// @param       u8 condition		PS_TWI_SEND_START, PS_TWI_SEND_RESTART, PS_TWI_SEND_STOP
+// @param       uint8_t condition		PS_TWI_SEND_START, PS_TWI_SEND_RESTART, PS_TWI_SEND_STOP
 //										PS_TWI_CHECK_ACK
-// @return      u8					1=ACK, 0=NACK
+// @return      uint8_t					1=ACK, 0=NACK
 // *************************************************************************************************
-u8 ps_twi_sda(u8 condition)
+uint8_t ps_twi_sda(uint8_t condition)
 {
-	u8 sda = 0;
+	uint8_t sda = 0;
 	
 	if (condition == PS_TWI_SEND_START)
 	{
@@ -232,12 +232,12 @@ void twi_delay(void)
 // *************************************************************************************************
 // @fn          ps_twi_write
 // @brief       Clock out bits through SDA.
-// @param       u8 data		Byte to send
+// @param       uint8_t data		Byte to send
 // @return      none
 // *************************************************************************************************
-void ps_twi_write(u8 data)
+void ps_twi_write(uint8_t data)
 {
-	u8 i, mask;
+	uint8_t i, mask;
 	
 	// Set mask byte to 10000000b
 	mask = BIT0<<7;
@@ -269,13 +269,13 @@ void ps_twi_write(u8 data)
 // *************************************************************************************************
 // @fn          ps_twi_read
 // @brief       Read bits from SDA
-// @param       u8 ack		1=Send ACK after read, 0=Send NACK after read
-// @return      u8			Bits read
+// @param       uint8_t ack		1=Send ACK after read, 0=Send NACK after read
+// @return      uint8_t			Bits read
 // *************************************************************************************************
-u8 ps_twi_read(u8 ack)
+uint8_t ps_twi_read(uint8_t ack)
 {
-	u8 i;
-	u8 data = 0;
+	uint8_t i;
+	uint8_t data = 0;
 	
 	PS_TWI_SDA_IN;		// SDA is input
 	
@@ -312,13 +312,13 @@ u8 ps_twi_read(u8 ack)
 // *************************************************************************************************
 // @fn          as_write_register
 // @brief  		Write a byte to the pressure sensor
-// @param       u8 address			Register address
-//				u8 data			Data to write
-// @return      u8					
+// @param       uint8_t address			Register address
+//				uint8_t data			Data to write
+// @return      uint8_t					
 // *************************************************************************************************
-u8 ps_write_register(u8 address, u8 data)
+uint8_t ps_write_register(uint8_t address, uint8_t data)
 {
-  volatile u8 success;
+  volatile uint8_t success;
 
   ps_twi_sda(PS_TWI_SEND_START);			// Generate start condition
   
@@ -344,14 +344,14 @@ u8 ps_write_register(u8 address, u8 data)
 // *************************************************************************************************
 // @fn          ps_read_register
 // @brief       Read a byte from the pressure sensor
-// @param       u8 address		Register address
-//				u8	mode		PS_TWI_8BIT_ACCESS, PS_TWI_16BIT_ACCESS
-// @return      u16			Register content
+// @param       uint8_t address		Register address
+//				uint8_t	mode		PS_TWI_8BIT_ACCESS, PS_TWI_16BIT_ACCESS
+// @return      uint16_t			Register content
 // *************************************************************************************************
-u16 ps_read_register(u8 address, u8 mode)
+uint16_t ps_read_register(uint8_t address, uint8_t mode)
 {
-  u8 success;
-  u16 data = 0;
+  uint8_t success;
+  uint16_t data = 0;
 
   ps_twi_sda(PS_TWI_SEND_START);			// Generate start condition
 
@@ -390,11 +390,11 @@ u16 ps_read_register(u8 address, u8 mode)
 // @fn          ps_get_pa
 // @brief       Read out pressure. Format is Pa. Range is 30000 .. 120000 Pa.
 // @param       none
-// @return      u32		15-bit pressure sensor value (Pa)
+// @return      uint32_t		15-bit pressure sensor value (Pa)
 // *************************************************************************************************
-u32 ps_get_pa(void)
+uint32_t ps_get_pa(void)
 {
-	volatile u32 data = 0;
+	volatile uint32_t data = 0;
 	
 	// Get 3 MSB from DATARD8 register
 	data = ps_read_register(0x7F, PS_TWI_8BIT_ACCESS);
@@ -414,20 +414,20 @@ u32 ps_get_pa(void)
 // @fn          ps_get_temp
 // @brief       Read out temperature.
 // @param       none
-// @return      u16		13-bit temperature value in xx.x°K format
+// @return      uint16_t		13-bit temperature value in xx.x°K format
 // *************************************************************************************************
-u16 ps_get_temp(void)
+uint16_t ps_get_temp(void)
 {
-	volatile u16 data = 0;
-	u16 temp = 0;
-	u8 is_negative = 0;
-	u16 kelvin;
+	volatile uint16_t data = 0;
+	uint16_t temp = 0;
+	uint8_t is_negative = 0;
+	uint16_t kelvin;
 	
 	// Get 13 bit from TEMPOUT register
 	data = ps_read_register(0x81, PS_TWI_16BIT_ACCESS);
 	
 	// Convert negative temperatures
-	if ((data & BIT(13)) == BIT(13)) 
+	if ((data>>13) & 0x1) 
 	{
 		// Sign extend temperature
 		data |= 0xC000;
@@ -449,13 +449,13 @@ u16 ps_get_temp(void)
 // *************************************************************************************************
 // @fn          init_pressure_table
 // @brief       Init pressure table with constants
-// @param       u32		p 		Pressure (Pa)
-// @return      u16				Altitude (m)
+// @param       uint32_t		p 		Pressure (Pa)
+// @return      uint16_t				Altitude (m)
 // *************************************************************************************************
 void init_pressure_table(void)
 {
 #ifndef FIXEDPOINT
-	u8 i;
+	uint8_t i;
 
 	for (i=0; i<17; i++) p[i] = p0[i];
 #else
@@ -469,10 +469,10 @@ void init_pressure_table(void)
 // *************************************************************************************************
 // @fn          conv_altitude_to_fraction
 // @brief       Relative pressure deviation from reference pressure for given altitude estimate.
-// @param       s16 hh Altitude estimate (in normalised units).
+// @param       int16_t hh Altitude estimate (in normalised units).
 // @return      Calculated relative pressure deviation for this altitude
 // *************************************************************************************************
-s16 conv_altitude_to_fraction(s16 hh)
+int16_t conv_altitude_to_fraction(int16_t hh)
 {
 	/*
 	The fixed part of the function of altitude can be broken into tabulated ranges
@@ -487,15 +487,15 @@ s16 conv_altitude_to_fraction(s16 hh)
 		hh = b*h/H0
 		(1 - f) = (1 – h/H0)^b
 		        = 1 - hh*(1 – hh*(b–1)/2/b*(1 – hh*(b–2)/3/b*(...
-	We stick to integer multiply and shift operations. Signed s16 values can contain
-	values +/–2^15 and unsigned u16 values 0..2^16. In C multiplication amounts to
-	expanding to s32, integer multiply and scaling back by a proper shift operation.
+	We stick to integer multiply and shift operations. Signed int16_t values can contain
+	values +/–2^15 and unsigned uint16_t values 0..2^16. In C multiplication amounts to
+	expanding to int32_t, integer multiply and scaling back by a proper shift operation.
 
 	Given the above equations the natural unit of hh as the first order correction is
-	H0/b = 8434.48m. If we accept this as a maximum +/– range we can store s16 hh in
+	H0/b = 8434.48m. If we accept this as a maximum +/– range we can store int16_t hh in
 	units of (H0/b)/2^15 = 0,26m which keeps the resolution at less than a foot.
 	 */
-	s16 f, hf;
+	int16_t f, hf;
 	// f  = hh*(b – 4)/5/b, correction relevant above 3.5km:
 	// (Could be omitted, but it is relatively little work.)
 	f = mult_scale16(hh, 3132);
@@ -520,12 +520,12 @@ s16 conv_altitude_to_fraction(s16 hh)
 // @fn          update_pressure_table
 // @brief       Calculate pressure table for reference altitude.
 //				Implemented straight from VTI reference code.
-// @param       s16		href	Reference height
-//				u32		p_meas	Pressure (Pa)
-//				u16		t_meas	Temperature (10*°K)
+// @param       int16_t		href	Reference height
+//				uint32_t		p_meas	Pressure (Pa)
+//				uint16_t		t_meas	Temperature (10*°K)
 // @return     	none
 // *************************************************************************************************
-void update_pressure_table(s16 href, u32 p_meas, u16 t_meas)
+void update_pressure_table(int16_t href, uint32_t p_meas, uint16_t t_meas)
 {
 #ifndef FIXEDPOINT
 	const float Invt00 = 0.003470415;
@@ -535,7 +535,7 @@ void update_pressure_table(s16 href, u32 p_meas, u16 t_meas)
 	volatile float hnoll;
 	volatile float h_low = 0;
 	volatile float t0;
-	u8 i;
+	uint8_t i;
 	
 	// Typecast arguments
 	volatile float fl_href 		= href;
@@ -564,20 +564,20 @@ void update_pressure_table(s16 href, u32 p_meas, u16 t_meas)
 	}
 #else
 	// Note: a user-provided sea-level reference pressure in mbar as used by pilots
-	// would be straightforward: href = 0; p_meas = (s32)mbar*100;
+	// would be straightforward: href = 0; p_meas = (int32_t)mbar*100;
 	// The altitude reading will be iteratively updated.
 
 	// Convert to 4Pa units:
-	pLast = (s16)((p_meas+2) >> 2);
+	pLast = (int16_t)((p_meas+2) >> 2);
 	// Convert reference altitude to normalized units:
 	if (sys.flag.use_metric_units) { // user_altitude in m
 		hLast = 4*href - mult_scale16(href, 7536);
 	} else { // user_altitude in ft
 		hLast = href + mult_scale16(href,12068);
 	}
-	s32 f = (s32)0x8000 - conv_altitude_to_fraction(hLast);
+	int32_t f = (int32_t)0x8000 - conv_altitude_to_fraction(hLast);
 	// pRef = p_meas*2^15/f:
-	pRef = ((((s32)pLast << 16) + f) >> 1) / f;
+	pRef = ((((int32_t)pLast << 16) + f) >> 1) / f;
 	// The long division is acceptable because it happens rarely.
 	// The term + f) is for proper rounding.
 	// The <<16 and >>1 operations correct for the 15bit scale of f.
@@ -589,11 +589,11 @@ void update_pressure_table(s16 href, u32 p_meas, u16 t_meas)
 // @fn          conv_pa_to_meter
 // @brief       Convert pressure (Pa) to altitude (m) using a conversion table
 //				Implemented straight from VTI reference code.
-// @param       u32		p_meas	Pressure (Pa)
-//				u16		t_meas	Temperature (10*°K)
-// @return      s16				Altitude (m)
+// @param       uint32_t		p_meas	Pressure (Pa)
+//				uint16_t		t_meas	Temperature (10*°K)
+// @return      int16_t				Altitude (m)
 // *************************************************************************************************
-s16 conv_pa_to_meter(u32 p_meas, u16 t_meas)
+int16_t conv_pa_to_meter(uint32_t p_meas, uint16_t t_meas)
 {
 	const float coef2  = 0.0007;
 	const float Invt00 = 0.003470415;
@@ -601,8 +601,8 @@ s16 conv_pa_to_meter(u32 p_meas, u16 t_meas)
 	volatile float t0;
 	volatile float p_low;
 	volatile float fl_h;
-	volatile s16 h;
-	u8 i;
+	volatile int16_t h;
+	uint8_t i;
 
 	// Typecast arguments
 	volatile float fl_p_meas = (float)p_meas/100;	// Convert from Pa to hPa
@@ -634,7 +634,7 @@ s16 conv_pa_to_meter(u32 p_meas, u16 t_meas)
 	// Compensate temperature error
 	t0 = fl_t_meas/(1 - hnoll*Invt00*0.0065);
 	fl_h = Invt00*t0*hnoll;
-	h = (u16)fl_h;
+	h = (uint16_t)fl_h;
 	
 	return (h);
 }
@@ -644,12 +644,12 @@ s16 conv_pa_to_meter(u32 p_meas, u16 t_meas)
 // @brief       Calculates altitude from current pressure, and
 //				stored reference pressure at sea level and previous altitude estimate.
 //				Temperature info is ignored.
-// @param       u32		p_meas	Pressure (Pa)
-// @param		u16		t_meas	Temperature (10*°K) Ignored !!!
+// @param       uint32_t		p_meas	Pressure (Pa)
+// @param		uint16_t		t_meas	Temperature (10*°K) Ignored !!!
 // @return      Estimated altitude in user-selected unit (m or ft)
 //              (internally filtered, slightly sluggish).
 // *************************************************************************************************
-s16 conv_pa_to_altitude(u32 p_meas, u16 t_meas)
+int16_t conv_pa_to_altitude(uint32_t p_meas, uint16_t t_meas)
 {
 	/*
 	Assumption: fixed, linear T(h)
@@ -691,7 +691,7 @@ s16 conv_pa_to_altitude(u32 p_meas, u16 t_meas)
 
 	The sensor provides 19bit absolute pressure in units of 0.25Pa, but that is more
 	resolution than we can easily handle in the multiplications. We store measured
-	pressure p, reference pressure pRef and calculated pressure as u16 in units of 4Pa.
+	pressure p, reference pressure pRef and calculated pressure as uint16_t in units of 4Pa.
 
 	In the units chosen for p (4Pa) and for hLast (see function conv_altitude_to_fraction),
 	the slope dpdh is about -0.75 at sea level down to -0.375 at high altitudes. To avoid
@@ -699,15 +699,15 @@ s16 conv_pa_to_altitude(u32 p_meas, u16 t_meas)
 	extra filtering delay at higher altitudes. The factor 1/0.75 is approximated by 1.
 	*/
 	// Scale to 4Pa units:
-	s16 p = (s16)((p_meas+2) >> 2);
+	int16_t p = (int16_t)((p_meas+2) >> 2);
 	// Predictor to speed up response to pressure changes:
 //	hLast -= p - pLast; // Factor of about 1/0.75 would be better.
 	// Store current pressure for next predictor:
 	pLast = p;
 	// Calculate pressure ratio based on guessed altitude (serious DSP work):
-	s16 f = conv_altitude_to_fraction(hLast);
+	int16_t f = conv_altitude_to_fraction(hLast);
 	// Calculate pressure expected for guessed height
-	u16 pCalculated = pRef - mult_scale15(pRef,f);
+	uint16_t pCalculated = pRef - mult_scale15(pRef,f);
 	// This calculation is correct within about 7Pa.
 	// We still have to reverse the solution with a linearly improved guess:
 	hLast -= p - pCalculated;

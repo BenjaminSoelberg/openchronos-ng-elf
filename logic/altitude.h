@@ -44,23 +44,23 @@
 // *************************************************************************************************
 // Prototypes section
 extern void reset_altitude_measurement(void);
-extern u8 is_altitude_measurement(void);
+extern uint8_t is_altitude_measurement(void);
 extern void start_altitude_measurement(void);
 extern void stop_altitude_measurement(void);
-extern void do_altitude_measurement(u8 filter);
+extern void do_altitude_measurement(uint8_t filter);
 #ifdef CONFIG_ALTI_ACCUMULATOR
-extern void display_selection_altunits(u8 segments, u32 index, u8 digits, u8 blanks);
+extern void display_selection_altunits(uint8_t segments, uint32_t index, uint8_t digits, uint8_t blanks);
 extern void altitude_accumulator_periodic (void);
 #endif
 
 // menu functions
-extern void sx_altitude(u8 line);
-extern void mx_altitude(u8 line);
-extern void display_altitude(u8 line, u8 update);
+extern void sx_altitude(uint8_t line);
+extern void mx_altitude(uint8_t line);
+extern void display_altitude(uint8_t line, uint8_t update);
 #ifdef CONFIG_ALTI_ACCUMULATOR
-extern void sx_alt_accumulator(u8 line);
-extern void mx_alt_accumulator(u8 line);
-extern void display_alt_accumulator (u8 line, u8 update);
+extern void sx_alt_accumulator(uint8_t line);
+extern void mx_alt_accumulator(uint8_t line);
+extern void display_alt_accumulator (uint8_t line, uint8_t update);
 #endif
 
 // *************************************************************************************************
@@ -78,19 +78,19 @@ struct alt
 	menu_t	state; 
 
 	// Pressure (Pa)
-	u32		pressure;
+	uint32_t		pressure;
 
 	// Temperature (°K)
-	u16		temperature;
+	uint16_t		temperature;
 
 	// Altitude (m)
-	s16		altitude;
+	int16_t		altitude;
 	
 	// Altitude offset stored during calibration
-	s16		altitude_offset;
+	int16_t		altitude_offset;
 
 	// Timeout
-	u16		timeout;
+	uint16_t		timeout;
 };
 extern struct alt sAlt;
 

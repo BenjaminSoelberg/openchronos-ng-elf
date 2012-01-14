@@ -64,7 +64,7 @@
 //   G
 // E   C
 //   D
-const u8 lcd_font[] =
+const uint8_t lcd_font[] =
 {
   SEG_A+SEG_B+SEG_C+SEG_D+SEG_E+SEG_F,           // Displays "0"
         SEG_B+SEG_C,                             // Displays "1"
@@ -113,7 +113,7 @@ const u8 lcd_font[] =
 
 
 // Table with memory address for each display element 
-const u8 * segments_lcdmem[] =
+const uint8_t * segments_lcdmem[] =
 {
 	LCD_SYMB_AM_MEM,
 	LCD_SYMB_PM_MEM,
@@ -161,7 +161,7 @@ const u8 * segments_lcdmem[] =
 
 
 // Table with bit mask for each display element 
-const u8 segments_bitmask[] =
+const uint8_t segments_bitmask[] =
 {
 	LCD_SYMB_AM_MASK,
 	LCD_SYMB_PM_MASK,
@@ -209,7 +209,7 @@ const u8 segments_bitmask[] =
 
 
 // Quick integer to array conversion table for most common integer values
-const u8 itoa_conversion_table[][3] =
+const uint8_t itoa_conversion_table[][3] =
 {
 	"000", "001", "002", "003", "004", "005", "006", "007", "008", "009", "010", "011", "012", "013", "014", "015",
 	"016", "017", "018", "019", "020", "021", "022", "023", "024", "025", "026", "027", "028", "029", "030", "031",

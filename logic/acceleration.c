@@ -58,13 +58,13 @@
 struct accel sAccel;
 
 // Conversion values from data to mgrav taken from CMA3000-D0x datasheet (rev 0.4, table 4)
-const u16 mgrav_per_bit[7] = { 18, 36, 71, 143, 286, 571, 1142 };
+const uint16_t mgrav_per_bit[7] = { 18, 36, 71, 143, 286, 571, 1142 };
 
 // *************************************************************************************************
 // Extern section
 
 // Global flag for proper acceleration sensor operation
-extern u8 as_ok;
+extern uint8_t as_ok;
 
 
 // *************************************************************************************************
@@ -89,10 +89,10 @@ void reset_acceleration(void)
 // *************************************************************************************************
 // @fn          sx_acceleration
 // @brief       Acceleration direct function. Button UP switches between X/Y/Z values.
-// @param       u8 line		LINE2
+// @param       uint8_t line		LINE2
 // @return      none
 // *************************************************************************************************
-void sx_acceleration(u8 line)
+void sx_acceleration(uint8_t line)
 {
 	if (++sAccel.view_style > 2) sAccel.view_style = 0;
 	
@@ -107,10 +107,10 @@ void sx_acceleration(u8 line)
 // *************************************************************************************************
 // @fn          acceleration_value_is_positive
 // @brief       Returns 1 if 2's complement number is positive
-// @param       u8 value	2's complement number
-// @return      u8			1 = number is positive, 0 = number is negavtive
+// @param       uint8_t value	2's complement number
+// @return      uint8_t			1 = number is positive, 0 = number is negavtive
 // *************************************************************************************************
-u8 acceleration_value_is_positive(u8 value)
+uint8_t acceleration_value_is_positive(uint8_t value)
 {
 	return ((value & BIT7) == 0);
 }
@@ -119,13 +119,13 @@ u8 acceleration_value_is_positive(u8 value)
 // *************************************************************************************************
 // @fn          convert_acceleration_value_to_mgrav
 // @brief       Converts measured value to mgrav units
-// @param       u8 value	g data from sensor 
-// @return      u16			Acceleration (mgrav)
+// @param       uint8_t value	g data from sensor 
+// @return      uint16_t			Acceleration (mgrav)
 // *************************************************************************************************
-u16 convert_acceleration_value_to_mgrav(u8 value)
+uint16_t convert_acceleration_value_to_mgrav(uint8_t value)
 {
-	u16 result;
-	u8 i;
+	uint16_t result;
+	uint8_t i;
 	
 	if (!acceleration_value_is_positive(value))
 	{
@@ -137,7 +137,7 @@ u16 convert_acceleration_value_to_mgrav(u8 value)
 	result = 0;
 	for (i=0; i<7; i++)
 	{
-		result += ((value & (BIT(i)))>>i) * mgrav_per_bit[i];
+		result += ((value>>i) & 0x1) * mgrav_per_bit[i];
 	}
 	
 	return (result);
@@ -149,9 +149,9 @@ u16 convert_acceleration_value_to_mgrav(u8 value)
 // @fn          is_acceleration_measurement
 // @brief       Returns 1 if acceleration is currently measured.
 // @param       none
-// @return      u8		1 = acceleration measurement ongoing
+// @return      uint8_t		1 = acceleration measurement ongoing
 // *************************************************************************************************
-u8 is_acceleration_measurement(void)
+uint8_t is_acceleration_measurement(void)
 {
 	return ((sAccel.mode == ACCEL_MODE_ON) && (sAccel.timeout > 0));
 }
@@ -177,20 +177,20 @@ void do_acceleration_measurement(void)
 // *************************************************************************************************
 // @fn          display_acceleration
 // @brief       Display routine.
-// @param       u8 line			LINE1
-//				u8 update		DISPLAY_LINE_UPDATE_FULL, DISPLAY_LINE_CLEAR
+// @param       uint8_t line			LINE1
+//				uint8_t update		DISPLAY_LINE_UPDATE_FULL, DISPLAY_LINE_CLEAR
 // @return      none
 // *************************************************************************************************
-void display_acceleration(u8 line, u8 update)
+void display_acceleration(uint8_t line, uint8_t update)
 {
-	u8 * str;
-	u8 raw_data;
-	u16 accel_data;
+	uint8_t * str;
+	uint8_t raw_data;
+	uint16_t accel_data;
 
 	// Show warning if acceleration sensor was not initialised properly
 	if (!as_ok)
 	{
-		display_chars(LCD_SEG_L1_2_0, (u8*)"ERR", SEG_ON);
+		display_chars(LCD_SEG_L1_2_0, (uint8_t*)"ERR", SEG_ON);
 	}
 	else
 	{
@@ -240,9 +240,9 @@ void display_acceleration(u8 line, u8 update)
 			
 			// Filter acceleration
 #ifdef FIXEDPOINT
-			accel_data = (u16)(((accel_data * 2) + (sAccel.data * 8))/10);
+			accel_data = (uint16_t)(((accel_data * 2) + (sAccel.data * 8))/10);
 #else
-			accel_data = (u16)((accel_data * 0.2) + (sAccel.data * 0.8));
+			accel_data = (uint16_t)((accel_data * 0.2) + (sAccel.data * 0.8));
 #endif
 			
 			// Store average acceleration

@@ -45,12 +45,12 @@
 
 // internal functions
 extern void reset_temp_measurement(void);
-extern u8 is_temp_measurement(void);
-extern void temperature_measurement(u8 filter);
+extern uint8_t is_temp_measurement(void);
+extern void temperature_measurement(uint8_t filter);
 
 // menu functions
-extern void mx_temperature(u8 line);
-extern void display_temperature(u8 line, u8 update);
+extern void mx_temperature(uint8_t line);
+extern void display_temperature(uint8_t line, uint8_t update);
 
 
 // *************************************************************************************************
@@ -64,9 +64,9 @@ struct temp
 	// MENU_ITEM_NOT_VISIBLE, MENU_ITEM_VISIBLE
 	menu_t	 	state;
 	// Temperature (°C) in 2.1 format
-	s16		degrees;
+	int16_t		degrees;
 	// User set calibration value (°C) in 2.1 format
-	s16		offset;
+	int16_t		offset;
 };
 extern struct temp sTemp;
 

@@ -71,8 +71,8 @@
 // *************************************************************************************************
 // Prototypes section
 void reset_clock(void);
-void mx_time(u8 line);
-void sx_time(u8 line);
+void mx_time(uint8_t line);
+void sx_time(uint8_t line);
 
 
 // *************************************************************************************************
@@ -85,7 +85,7 @@ struct time sTime;
 
 // Display values for time format selection
 #if (OPTION_TIME_DISPLAY == CLOCK_DISPLAY_SELECT)
-const u8 selection_Timeformat[][4] = {
+const uint8_t selection_Timeformat[][4] = {
 	"24H", "12H"
 };
 #endif
@@ -133,11 +133,11 @@ void clock_event(rtca_tevent_ev_t ev)
 // *************************************************************************************************
 // @fn          convert_hour_to_12H_format
 // @brief       Convert internal 24H time to 12H time.
-// @param       u8 hour		Hour in 24H format
-// @return      u8				Hour in 12H format
+// @param       uint8_t hour		Hour in 24H format
+// @return      uint8_t				Hour in 12H format
 // *************************************************************************************************
 #if (OPTION_TIME_DISPLAY > CLOCK_24HR)
-u8 convert_hour_to_12H_format(u8 hour)
+uint8_t convert_hour_to_12H_format(uint8_t hour)
 {
 	// 00:00 .. 11:59 --> AM 12:00 .. 11:59
 	if (hour == 0)
@@ -153,10 +153,10 @@ u8 convert_hour_to_12H_format(u8 hour)
 // *************************************************************************************************
 // @fn          is_hour_am
 // @brief       Checks if internal 24H time is AM or PM
-// @param       u8 hour		Hour in 24H format
-// @return      u8				1 = AM, 0 = PM
+// @param       uint8_t hour		Hour in 24H format
+// @return      uint8_t				1 = AM, 0 = PM
 // *************************************************************************************************
-u8 is_hour_am(u8 hour)
+uint8_t is_hour_am(uint8_t hour)
 {
 	// 00:00 .. 11:59 --> AM 12:00 .. 11:59
 	if (hour < 12) return (1);
@@ -168,15 +168,15 @@ u8 is_hour_am(u8 hour)
 // *************************************************************************************************
 // @fn          display_selection_Timeformat
 // @brief       Display time format 12H / 24H.
-// @param       u8 segments			Target segments where to display information
-//				u32 index			0 or 1, index for value string
-//				u8 digits			Not used
-//				u8 blanks			Not used
+// @param       uint8_t segments			Target segments where to display information
+//				uint32_t index			0 or 1, index for value string
+//				uint8_t digits			Not used
+//				uint8_t blanks			Not used
 // @return      none
 // *************************************************************************************************
-void display_selection_Timeformat1(u8 segments, u32 index, u8 digits, u8 blanks, u8 dummy)
+void display_selection_Timeformat1(uint8_t segments, uint32_t index, uint8_t digits, uint8_t blanks, uint8_t dummy)
 {
-	if (index < 2) display_chars(segments, (u8 *)selection_Timeformat[index], SEG_ON_BLINK_ON);
+	if (index < 2) display_chars(segments, (uint8_t *)selection_Timeformat[index], SEG_ON_BLINK_ON);
 }
 #endif // CLOCK_DISPLAY_SELECT
 
@@ -186,18 +186,18 @@ void display_selection_Timeformat1(u8 segments, u32 index, u8 digits, u8 blanks,
 // *************************************************************************************************
 // @fn          mx_time
 // @brief       Clock set routine.
-// @param       u8 line		LINE1, LINE2
+// @param       uint8_t line		LINE1, LINE2
 // @return      none
 // *************************************************************************************************
-void mx_time(u8 line)
+void mx_time(uint8_t line)
 {
-	u8 select;
-	s32 timeformat;
-	s16 timeformat1;
-	u8 hours;
-	u8 minutes;
-	u8 seconds;
-	u8 *str;
+	uint8_t select;
+	int32_t timeformat;
+	int16_t timeformat1;
+	uint8_t hours;
+	uint8_t minutes;
+	uint8_t seconds;
+	uint8_t *str;
 
 	// Clear display
 	clear_display_all();
@@ -256,7 +256,7 @@ void mx_time(u8 line)
 			break;
 		}
 
-		s32 val;
+		int32_t val;
 
 		switch (select) {
 #if (OPTION_TIME_DISPLAY == CLOCK_DISPLAY_SELECT)
@@ -328,7 +328,7 @@ void mx_time(u8 line)
 // @param       line		LINE1
 // @return      none
 // *************************************************************************************************
-void sx_time(u8 line)
+void sx_time(uint8_t line)
 {
 	// Toggle display view style
 	if (sTime.line1ViewStyle == DISPLAY_DEFAULT_VIEW)
@@ -341,13 +341,13 @@ void sx_time(u8 line)
 // @fn          display_time
 // @brief       Clock display routine. Supports 24H and 12H time format,
 //              through the helper display_hours_with_12_24.
-// @param       u8 line			LINE1
-//		u8 update		DISPLAY_LINE_UPDATE_FULL, DISPLAY_LINE_UPDATE_PARTIAL
+// @param       uint8_t line			LINE1
+//		uint8_t update		DISPLAY_LINE_UPDATE_FULL, DISPLAY_LINE_UPDATE_PARTIAL
 // @return      none
 // *************************************************************************************************
-void display_time(u8 line, u8 update)
+void display_time(uint8_t line, uint8_t update)
 {
-	u8 hour, min, sec;
+	uint8_t hour, min, sec;
 
 	rtca_get_time(&hour, &min, &sec);
 

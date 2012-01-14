@@ -79,21 +79,21 @@ struct alt sAlt;
 #define	ALT_ACCUM_DIR_THRESHOLD  5 // change in meters needed to switch direction up <-> down
 
 // The following used by the altitude accumulation function
-u8  alt_accum_enable;		// 1 means the altitude accumulator is enabled, zero means disabled
-s32 alt_accum_startpoint;	// altitude in metres that user "zeroed" the accumulator at
-s32 alt_accum__accumtotal;	// total accumulated upwards vertical in metres
-s32 alt_accum_lastpeakdip;	// altitude in metres of last "inflection point", either a peak or a dip
-u8  alt_accum_direction;	// 1 means we're currently going up (last peakdip was a dip), 0 means we're going down
-s32 alt_accum_prevalt;		// previous altitude - altitude the last time we read the altimeter 
-s32 alt_accum_max;		// maximum altitude encountered
-u8  alt_accum_displaycode;	// what to display
+uint8_t  alt_accum_enable;		// 1 means the altitude accumulator is enabled, zero means disabled
+int32_t alt_accum_startpoint;	// altitude in metres that user "zeroed" the accumulator at
+int32_t alt_accum__accumtotal;	// total accumulated upwards vertical in metres
+int32_t alt_accum_lastpeakdip;	// altitude in metres of last "inflection point", either a peak or a dip
+uint8_t  alt_accum_direction;	// 1 means we're currently going up (last peakdip was a dip), 0 means we're going down
+int32_t alt_accum_prevalt;		// previous altitude - altitude the last time we read the altimeter 
+int32_t alt_accum_max;		// maximum altitude encountered
+uint8_t  alt_accum_displaycode;	// what to display
 #endif
 
 // *************************************************************************************************
 // Extern section
 
 // Global flag for pressure sensor initialisation status
-extern u8 ps_ok;
+extern uint8_t ps_ok;
 
 
 // *************************************************************************************************
@@ -136,24 +136,24 @@ void reset_altitude_measurement(void)
 // *************************************************************************************************
 // @fn          conv_m_to_ft
 // @brief       Convert meters to feet
-// @param       u16 m		Meters
-// @return      u16		Feet
+// @param       uint16_t m		Meters
+// @return      uint16_t		Feet
 // *************************************************************************************************
-s16 convert_m_to_ft(s16 m)
+int16_t convert_m_to_ft(int16_t m)
 {
-	return (((s32)328*m)/100);
+	return (((int32_t)328*m)/100);
 }
 
 
 // *************************************************************************************************
 // @fn          conv_ft_to_m
 // @brief       Convert feet to meters
-// @param       u16 ft		Feet
-// @return      u16		Meters
+// @param       uint16_t ft		Feet
+// @return      uint16_t		Meters
 // *************************************************************************************************
-s16 convert_ft_to_m(s16 ft)
+int16_t convert_ft_to_m(int16_t ft)
 {
-	return (((s32)ft*61)/200);
+	return (((int32_t)ft*61)/200);
 }
 
 #endif
@@ -162,9 +162,9 @@ s16 convert_ft_to_m(s16 ft)
 // @fn          is_altitude_measurement
 // @brief       Altitude measurement check
 // @param       none
-// @return      u8		1=Measurement ongoing, 0=measurement off
+// @return      uint8_t		1=Measurement ongoing, 0=measurement off
 // *************************************************************************************************
-u8 is_altitude_measurement(void)
+uint8_t is_altitude_measurement(void)
 {
 	return ((sAlt.state == MENU_ITEM_VISIBLE) && (sAlt.timeout > 0));
 }
@@ -181,7 +181,7 @@ void start_altitude_measurement(void)
 	// Show warning if pressure sensor was not initialised properly
 	if (!ps_ok) 
 	{
-		display_chars(LCD_SEG_L1_2_0, (u8*)"ERR", SEG_ON);
+		display_chars(LCD_SEG_L1_2_0, (uint8_t*)"ERR", SEG_ON);
 		return;
 	}
 
@@ -235,9 +235,9 @@ void stop_altitude_measurement(void)
 // @param       none
 // @return      none
 // *************************************************************************************************
-void do_altitude_measurement(u8 filter)
+void do_altitude_measurement(uint8_t filter)
 {
-	volatile u32 pressure;
+	volatile uint32_t pressure;
 
 	// If sensor is not ready, skip data read	
 	if ((PS_INT_IN & PS_INT_PIN) == 0) return;
@@ -257,9 +257,9 @@ void do_altitude_measurement(u8 filter)
 	{
 		// Filter current pressure
 #ifdef FIXEDPOINT
-        pressure = (u32)(((pressure * 2) + (sAlt.pressure * 8))/10);
+        pressure = (uint32_t)(((pressure * 2) + (sAlt.pressure * 8))/10);
 #else
-		pressure = (u32)((pressure * 0.2) + (sAlt.pressure * 0.8));
+		pressure = (uint32_t)((pressure * 0.2) + (sAlt.pressure * 0.8));
 #endif
 		// Store average pressure
 		sAlt.pressure = pressure;
@@ -283,10 +283,10 @@ void do_altitude_measurement(u8 filter)
 // *************************************************************************************************
 // @fn          sx_altitude
 // @brief       Altitude direct function. Sx restarts altitude measurement.
-// @param       u8 line	LINE1, LINE2
+// @param       uint8_t line	LINE1, LINE2
 // @return      none
 // *************************************************************************************************
-void sx_altitude(u8 line)
+void sx_altitude(uint8_t line)
 {
 	// Function can be empty
 	
@@ -297,19 +297,19 @@ void sx_altitude(u8 line)
 // *************************************************************************************************
 // @fn          mx_altitude
 // @brief       Mx button handler to set the altitude offset. 
-// @param       u8 line		LINE1
+// @param       uint8_t line		LINE1
 // @return      none
 // *************************************************************************************************
-void mx_altitude(u8 line)
+void mx_altitude(uint8_t line)
 {
-	s32 altitude;
-	s32	limit_high, limit_low;
+	int32_t altitude;
+	int32_t	limit_high, limit_low;
 
 	// Clear display
 	clear_display_all();
 #ifdef CONFIG_ALTI_ACCUMULATOR
 	// Display "ALt" on top line
-	display_chars(LCD_SEG_L1_3_0, (u8*)"ALT ", SEG_ON);
+	display_chars(LCD_SEG_L1_3_0, (uint8_t*)"ALT ", SEG_ON);
 	clear_line(LINE2);
 #endif
 
@@ -367,11 +367,11 @@ void mx_altitude(u8 line)
 		{
 			// When using English units, convert ft back to m before updating pressure table
 #ifndef CONFIG_METRIC_ONLY
-			if (!sys.flag.use_metric_units) altitude = convert_ft_to_m((s16)altitude);
+			if (!sys.flag.use_metric_units) altitude = convert_ft_to_m((int16_t)altitude);
 #endif
 
 			// Update pressure table
-			update_pressure_table((s16)altitude, sAlt.pressure, sAlt.temperature);
+			update_pressure_table((int16_t)altitude, sAlt.pressure, sAlt.temperature);
 			
 			// Set display update flag
 			display.flag.line1_full_update = 1;
@@ -396,16 +396,16 @@ void mx_altitude(u8 line)
 // *************************************************************************************************
 // @fn          display_altitude
 // @brief       Display routine. Supports display in meters and feet. 
-// @param       u8 line			LINE1
-//				u8 update		DISPLAY_LINE_UPDATE_FULL, DISPLAY_LINE_UPDATE_PARTIAL, DISPLAY_LINE_CLEAR
+// @param       uint8_t line			LINE1
+//				uint8_t update		DISPLAY_LINE_UPDATE_FULL, DISPLAY_LINE_UPDATE_PARTIAL, DISPLAY_LINE_CLEAR
 // @return      none
 // *************************************************************************************************
 #ifdef CONFIG_ALTITUDE
-void display_altitude(u8 line, u8 update)
+void display_altitude(uint8_t line, uint8_t update)
 {
-	u8 * str;
+	uint8_t * str;
 #ifndef CONFIG_METRIC_ONLY
-	s16 ft;
+	int16_t ft;
 #endif
 	
 	// redraw whole screen
@@ -417,7 +417,7 @@ void display_altitude(u8 line, u8 update)
 		// Start measurement
 		start_altitude_measurement();
 #ifdef CONFIG_ALTI_ACCUMULATOR
-		display_chars(LCD_SEG_L1_3_0, (u8*)"ALT ", SEG_ON);
+		display_chars(LCD_SEG_L1_3_0, (uint8_t*)"ALT ", SEG_ON);
 #endif
 #ifdef CONFIG_METRIC_ONLY
 			display_symbol(LCD_UNIT_L1_M, SEG_ON);
@@ -577,7 +577,7 @@ void display_altitude(u8 line, u8 update)
 // *************************************************************************************************
 void altitude_accumulator_periodic (void)
 {
-	s32 currentalt;					// our current altitude
+	int32_t currentalt;					// our current altitude
 
 	// First a quick sanity check. If we're not supposed to be running, something's wrong, so just exit
 	if (alt_accum_enable==0) return;
@@ -647,7 +647,7 @@ void altitude_accumulator_periodic (void)
 // *************************************************************************************************
 void altitude_accumulator_start (void)
 {
-	s32 temp;
+	int32_t temp;
 
 	alt_accum__accumtotal = 0;		// So far total upwards vertical accumulation is zero
 	alt_accum_direction = 1;		// start off by assuming we're heading uphill
@@ -678,21 +678,21 @@ void altitude_accumulator_start (void)
 // *************************************************************************************************
 // @fn          display_selection_altaccum
 // @brief       Display altitude accumulator ON or OFF
-// @param       u8 segments			where to display, usually LCD_SEG_L2_4_0
-//				u32 index			0 = OFF, 1 = ON
-//				u8 digits			Not used
-//				u8 blanks			Not used
+// @param       uint8_t segments			where to display, usually LCD_SEG_L2_4_0
+//				uint32_t index			0 = OFF, 1 = ON
+//				uint8_t digits			Not used
+//				uint8_t blanks			Not used
 // @return      none
 // *************************************************************************************************
-void display_selection_altaccum (u8 segments, u32 index, u8 digits, u8 blanks)
+void display_selection_altaccum (uint8_t segments, uint32_t index, uint8_t digits, uint8_t blanks)
 {
 	if (index) {
 		clear_line(LINE2);
-		display_chars(segments, (u8*)" ON  ", SEG_ON_BLINK_ON);		// display "ON" on bottom line
+		display_chars(segments, (uint8_t*)" ON  ", SEG_ON_BLINK_ON);		// display "ON" on bottom line
 	}
 	else {
 		clear_line(LINE2);
-		display_chars(segments, (u8*)" OFF ", SEG_ON_BLINK_ON);		// display "OFF" on bottom line
+		display_chars(segments, (uint8_t*)" OFF ", SEG_ON_BLINK_ON);		// display "OFF" on bottom line
 	}
 }
 
@@ -702,7 +702,7 @@ void display_selection_altaccum (u8 segments, u32 index, u8 digits, u8 blanks)
 // *************************************************************************************************
 // @fn          sx_alt_accumulator
 // @brief       Altitude accumulator direct function. Called when "up" button is pressed.
-// @param       u8 line	LINE1, LINE2
+// @param       uint8_t line	LINE1, LINE2
 // @return      none
 //
 // Simply increments alt_accum_displaycode so that the display function display_alt_accumulator()
@@ -711,7 +711,7 @@ void display_selection_altaccum (u8 segments, u32 index, u8 digits, u8 blanks)
 // alt_accum_displaycode = 1:  Total accumulated upwards vertical altitude
 // alt_accum_displaycode = 2:  Maximum altitude encountered (max height)
 // *************************************************************************************************
-void sx_alt_accumulator(u8 line)
+void sx_alt_accumulator(uint8_t line)
 {
 	alt_accum_displaycode++;
 
@@ -723,26 +723,26 @@ void sx_alt_accumulator(u8 line)
 // *************************************************************************************************
 // @fn          display_alt_accumulator
 // @brief       Display altitude accumulator routine. Supports display in meters and feet.
-// @param       u8 line			LINE1
-//				u8 update		DISPLAY_LINE_UPDATE_FULL, DISPLAY_LINE_UPDATE_PARTIAL, DISPLAY_LINE_CLEAR
+// @param       uint8_t line			LINE1
+//				uint8_t update		DISPLAY_LINE_UPDATE_FULL, DISPLAY_LINE_UPDATE_PARTIAL, DISPLAY_LINE_CLEAR
 // @return      none
 // *************************************************************************************************
-void display_alt_accumulator (u8 line, u8 update)
+void display_alt_accumulator (uint8_t line, uint8_t update)
 {
-	s32 temp;
-	u8 * str;
+	int32_t temp;
+	uint8_t * str;
 
 
 	// show our altitude accumulator numbers on the second line
 	if ( (update==DISPLAY_LINE_UPDATE_FULL) || (update==DISPLAY_LINE_UPDATE_PARTIAL) )
 	{
 		// Show "ALtA" on top line
-		display_chars(LCD_SEG_L1_3_0, (u8*)"ALTA", SEG_ON);
+		display_chars(LCD_SEG_L1_3_0, (uint8_t*)"ALTA", SEG_ON);
 
 		// if the altitude accumulator is currently disabled, we've got nothing else to display so exit
 		if (alt_accum_enable == 0) {
 			clear_line(LINE2);
-			display_chars(LCD_SEG_L2_4_0, (u8*)" OFF ", SEG_ON);	// display "OFF" on bottom line
+			display_chars(LCD_SEG_L2_4_0, (uint8_t*)" OFF ", SEG_ON);	// display "OFF" on bottom line
 			return;
 		}
 
@@ -760,7 +760,7 @@ void display_alt_accumulator (u8 line, u8 update)
 		{
 			// Display current altitude relative to the accumulator's starting point
 			// "DIFF" means difference between starting elevation & current elevation
-			display_chars(LCD_SEG_L1_3_0, (u8*)"DIFF", SEG_ON);		// top line display message
+			display_chars(LCD_SEG_L1_3_0, (uint8_t*)"DIFF", SEG_ON);		// top line display message
 
 			start_altitude_measurement();
 			stop_altitude_measurement();					// grab our current altitude
@@ -789,7 +789,7 @@ void display_alt_accumulator (u8 line, u8 update)
 		{
 			// Display total accumulated elevation gain. Remember we might currently be going uphill
 			// so we need to check for, and include, any current elevation gain
-			display_chars(LCD_SEG_L1_3_0, (u8*)"ACCA", SEG_ON);		// top line display message
+			display_chars(LCD_SEG_L1_3_0, (uint8_t*)"ACCA", SEG_ON);		// top line display message
 			clear_line(LINE2);						// clear the bottom line of the display
 
 			if (alt_accum__accumtotal<0) alt_accum__accumtotal = 0;	// accumulated total should never be negative!
@@ -809,7 +809,7 @@ void display_alt_accumulator (u8 line, u8 update)
 		else
 		{
 			// Display maximum altitude found so far
-			display_chars(LCD_SEG_L1_3_0, (u8*)"PEAK", SEG_ON);	// top line display message
+			display_chars(LCD_SEG_L1_3_0, (uint8_t*)"PEAK", SEG_ON);	// top line display message
 			clear_line(LINE2);					// clear the bottom line of the display
 
 			temp = alt_accum_max;					// local copy of peak altitude
@@ -839,16 +839,16 @@ void display_alt_accumulator (u8 line, u8 update)
 // *************************************************************************************************
 // @fn          mx_alt_accumulator
 // @brief       Altitude accumulator modify function. Turn accumulator function on or off.
-// @param       u8 line	LINE1, LINE2
+// @param       uint8_t line	LINE1, LINE2
 // @return      none
 // *************************************************************************************************
-void mx_alt_accumulator(u8 line)
+void mx_alt_accumulator(uint8_t line)
 {
-	s32 temp_enable;				// local copy of the global altitude accumumulator enable flag
+	int32_t temp_enable;				// local copy of the global altitude accumumulator enable flag
 
 
 	// Show "ALtA" on top line
-	display_chars(LCD_SEG_L1_3_0, (u8*)"ALTA", SEG_ON);
+	display_chars(LCD_SEG_L1_3_0, (uint8_t*)"ALTA", SEG_ON);
 
 	// Allow the user to turn the altitude accumulator function ON or OFF. This is stored in global variable
 	// alt_accum_enable where 0 = off, 1 = on. Display "on" or "off" on the bottom line as appropriate.

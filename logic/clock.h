@@ -48,15 +48,15 @@
 // *************************************************************************************************
 // Prototypes section
 extern void reset_clock(void);
-extern void sx_time(u8 line);
-extern void mx_time(u8 line);
-extern void display_selection_Timeformat1(u8 segments, u32 index, u8 digits, u8 blanks, u8 dummy);
-extern void display_time(u8 line, u8 update);
+extern void sx_time(uint8_t line);
+extern void mx_time(uint8_t line);
+extern void display_selection_Timeformat1(uint8_t segments, uint32_t index, uint8_t digits, uint8_t blanks, uint8_t dummy);
+extern void display_time(uint8_t line, uint8_t update);
 extern void clock_event(rtca_tevent_ev_t ev);
 
 // English units support
-extern u8 convert_hour_to_12H_format(u8 hour);
-extern u8 is_hour_am(u8 hour);
+extern uint8_t convert_hour_to_12H_format(uint8_t hour);
+extern uint8_t is_hour_am(uint8_t hour);
 
 
 // *************************************************************************************************
@@ -64,17 +64,17 @@ extern u8 is_hour_am(u8 hour);
 struct time
 {
 	// Flag to minimize display updates
-	u8 		drawFlag;
+	uint8_t 		drawFlag;
 
 	// Viewing style
-	u8		line1ViewStyle;
-	u8		line2ViewStyle;
+	uint8_t		line1ViewStyle;
+	uint8_t		line2ViewStyle;
 	
 	// Inactivity detection (exits set_value() function)
-	u32 	last_activity;
+	uint32_t 	last_activity;
 	#ifdef CONFIG_SIDEREAL
 	// offset of local time from UTC (=1: set time is UTC+1 =CET)
-	s8		UTCoffset;
+	int8_t		UTCoffset;
 	#endif
 };
 extern struct time sTime;

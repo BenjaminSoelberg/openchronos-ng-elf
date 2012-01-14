@@ -17,35 +17,35 @@
  */
 // *************************************************************************************************
 //
-//	Copyright (C) 2009 Texas Instruments Incorporated - http://www.ti.com/ 
-//	 
-//	 
-//	  Redistribution and use in source and binary forms, with or without 
-//	  modification, are permitted provided that the following conditions 
+//	Copyright (C) 2009 Texas Instruments Incorporated - http://www.ti.com/
+//
+//
+//	  Redistribution and use in source and binary forms, with or without
+//	  modification, are permitted provided that the following conditions
 //	  are met:
-//	
-//	    Redistributions of source code must retain the above copyright 
+//
+//	    Redistributions of source code must retain the above copyright
 //	    notice, this list of conditions and the following disclaimer.
-//	 
+//
 //	    Redistributions in binary form must reproduce the above copyright
-//	    notice, this list of conditions and the following disclaimer in the 
-//	    documentation and/or other materials provided with the   
+//	    notice, this list of conditions and the following disclaimer in the
+//	    documentation and/or other materials provided with the
 //	    distribution.
-//	 
+//
 //	    Neither the name of Texas Instruments Incorporated nor the names of
 //	    its contributors may be used to endorse or promote products derived
 //	    from this software without specific prior written permission.
-//	
-//	  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
-//	  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
+//
+//	  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+//	  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 //	  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-//	  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT 
-//	  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
-//	  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT 
+//	  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+//	  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+//	  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
 //	  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
 //	  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-//	  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT 
-//	  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
+//	  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+//	  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 //	  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 // *************************************************************************************************
@@ -55,12 +55,12 @@
 
 // *************************************************************************************************
 // Include section
-//pfs
+#include <msp430.h>
+#include <stdint.h>
 #include <intrinsics.h>
+#ifndef ELIMINATE_BLUEROBIN
 #include "../bluerobin/bm.h"
-
-#include <cc430x613x.h>
-//pfs #include <bm.h>
+#endif
 
 #include "config.h"
 
@@ -86,91 +86,84 @@
 // Macro section
 
 // Conversion from usec to ACLK timer ticks
-#define CONV_US_TO_TICKS(usec)         			(((usec) * 32768) / 1000000)
+#define CONV_US_TO_TICKS(usec)				(((usec) * 32768) / 1000000)
 
 // Conversion from msec to ACLK timer ticks
-#define CONV_MS_TO_TICKS(msec)         			(((msec) * 32768) / 1000) 
+#define CONV_MS_TO_TICKS(msec)				(((msec) * 32768) / 1000)
 
 
 // *************************************************************************************************
 // Typedef section
 
-typedef u8 line_t;
-typedef u8 update_t;
+typedef uint8_t line_t;
+typedef uint8_t update_t;
 
-typedef enum
-{
-  MENU_ITEM_NOT_VISIBLE = 0,   	// Menu item is not visible
-  MENU_ITEM_VISIBLE      		// Menu item is visible
+typedef enum {
+	MENU_ITEM_NOT_VISIBLE = 0,	// Menu item is not visible
+	MENU_ITEM_VISIBLE		// Menu item is visible
 } menu_t;
 
 
 // Set of system flags
-typedef union
-{
-  struct
-  {
-    u16 idle_timeout      		: 1;    // Timeout after inactivity
-    u16 idle_timeout_enabled    : 1;    // When in set mode, timeout after a given period
-    u16 lock_buttons			: 1;    // Lock buttons
-    u16 mask_buzzer		 		: 1;	// Do not output buzz for next button event
-    u16 up_down_repeat_enabled  : 1;    // While in set_value(), create virtual UP/DOWN button events
-    u16 low_battery      		: 1;    // 1 = Battery is low
-    u16 use_metric_units		: 1;    // 1 = Use metric units, 0 = use English units
-    u16 am_pm_time          : 1;    // 1 = Display times as AM/PM else 24Hr
-    u16 delay_over     			: 1;    // 1 = Timer delay over
-    u16 no_beep                 : 1;    // Don't beep on key press
-  } flag;
-  u16 all_flags;            // Shortcut to all display flags (for reset)
+typedef union {
+	struct {
+		uint16_t idle_timeout		: 1;    // Timeout after inactivity
+		uint16_t idle_timeout_enabled   : 1;    // When in set mode, timeout after a given period
+		uint16_t lock_buttons	        : 1;    // Lock buttons
+		uint16_t mask_buzzer		: 1;	// Do not output buzz for next button event
+		uint16_t up_down_repeat_enabled : 1;    // While in set_value(), create virtual UP/DOWN button events
+		uint16_t low_battery		: 1;    // 1 = Battery is low
+		uint16_t use_metric_units	: 1;    // 1 = Use metric units, 0 = use English units
+		uint16_t am_pm_time		: 1;    // 1 = Display times as AM/PM else 24Hr
+		uint16_t delay_over		: 1;    // 1 = Timer delay over
+		uint16_t no_beep                : 1;    // Don't beep on key press
+	} flag;
+	uint16_t all_flags;            // Shortcut to all display flags (for reset)
 } s_system_flags;
 extern volatile s_system_flags sys;
 
 
 // Set of request flags
-typedef union
-{
-  struct
-  {
-    u16 temperature_measurement 	: 1;    // 1 = Measure temperature
-    u16 voltage_measurement    		: 1;    // 1 = Measure voltage
-    u16 altitude_measurement    	: 1;    // 1 = Measure air pressure
+typedef union {
+	struct {
+		uint16_t temperature_measurement	: 1;    // 1 = Measure temperature
+		uint16_t voltage_measurement		: 1;    // 1 = Measure voltage
+		uint16_t altitude_measurement		: 1;    // 1 = Measure air pressure
 #ifdef CONFIG_ALTI_ACCUMULATOR
-    u16 altitude_accumulator            : 1;	// 1 = Measure altitude & accumulate it
+		uint16_t altitude_accumulator           : 1;	// 1 = Measure altitude & accumulate it
 #endif
-    u16	acceleration_measurement	: 1; 	// 1 = Measure acceleration
-    u16 alarm_buzzer			: 1;	// 1 = Output buzzer for alarm
+		uint16_t acceleration_measurement	: 1;	// 1 = Measure acceleration
+		uint16_t alarm_buzzer			: 1;	// 1 = Output buzzer for alarm
 #ifdef CONFIG_EGGTIMER
-    u16 eggtimer_buzzer : 1; // 1 = Output buzzer for eggtimer
+		uint16_t eggtimer_buzzer		: 1; // 1 = Output buzzer for eggtimer
 #endif
 #ifdef CONFIG_STRENGTH
-    u16 strength_buzzer 		: 1;    // 1 = Output buzzer from strength_data
+		uint16_t strength_buzzer		: 1;    // 1 = Output buzzer from strength_data
 #endif
-  } flag;
-  u16 all_flags;            // Shortcut to all display flags (for reset)
+	} flag;
+	uint16_t all_flags;            // Shortcut to all display flags (for reset)
 } s_request_flags;
 extern volatile s_request_flags request;
 
 
 // Set of message flags
-typedef union
-{
-  struct
-  {
-    u16	prepare							: 1;	// 1 = Wait for clock tick, then set display.flag.show flag
-    u16	show							: 1;	// 1 = Display message now
-    u16 erase							: 1;	// 1 = Erase message
-    u16 timeout						: 4;  // [1..7] message timeout (1-7 seconds)
-    u16 line1							: 1;  // 1 = call message handler with line1, line2 otherwise
-	 u16 user							: 1;  // 1 = is user message, system message otherwise
-    u16	type_locked						: 1;	// 1 = Show "buttons are locked" in Line2
-    u16 type_unlocked					: 1;	// 1 = Show "buttons are unlocked" in Line2
-    u16 type_lobatt						: 1;	// 1 = Show "lobatt" text in Line2
-    u16 type_no_beep_on					: 1;	// 1 = Show " beep" text in Line2
-    u16 type_no_beep_off				: 1;	// 1 = Show "nobeep" text in Line2
-    u16 block_line1						: 1;	// 1 = block Line1 from updating until message erase
-    u16 block_line2						: 1;	// 1 = block Line2 from updating until message erase
- } flag;
-  u16 all_flags;            // Shortcut to all message flags (for reset)
+typedef union {
+	struct {
+		uint16_t prepare			: 1;	// 1 = Wait for clock tick, then set display.flag.show flag
+		uint16_t show				: 1;	// 1 = Display message now
+		uint16_t erase				: 1;	// 1 = Erase message
+		uint16_t timeout			: 4;  // [1..7] message timeout (1-7 seconds)
+		uint16_t line1				: 1;  // 1 = call message handler with line1, line2 otherwise
+		uint16_t user				: 1;  // 1 = is user message, system message otherwise
+		uint16_t type_locked			: 1;	// 1 = Show "buttons are locked" in Line2
+		uint16_t type_unlocked			: 1;	// 1 = Show "buttons are unlocked" in Line2
+		uint16_t type_lobatt			: 1;	// 1 = Show "lobatt" text in Line2
+		uint16_t type_no_beep_on		: 1;	// 1 = Show " beep" text in Line2
+		uint16_t type_no_beep_off		: 1;	// 1 = Show "nobeep" text in Line2
+		uint16_t block_line1			: 1;	// 1 = block Line1 from updating until message erase
+		uint16_t block_line2			: 1;	// 1 = block Line2 from updating until message erase
+	} flag;
+	uint16_t all_flags;            // Shortcut to all message flags (for reset)
 } s_message_flags;
 extern volatile s_message_flags message;
 
@@ -185,30 +178,27 @@ extern volatile s_message_flags message;
 // Global Variable section
 
 
-// include firmware image
-#include "../config.h"
-
 // feature dependency calculations
 
 #if defined( CONFIG_PHASE_CLOCK ) || defined( CONFIG_ACCEL) || defined (CONFIG_USE_GPS)
-	#define FEATURE_PROVIDE_ACCEL
+#define FEATURE_PROVIDE_ACCEL
 #endif
 
 #if defined (CONFIG_USEPPT) || defined (CONFIG_PHASE_CLOCK) || defined(CONFIG_ACCEL)
-  #define SIMPLICITI_TX_ONLY_REQ
+#define SIMPLICITI_TX_ONLY_REQ
 #endif
 
 #if defined (CONFIG_ALTITUDE) || defined (CONFIG_VARIO) || defined (CONFIG_ALTI_ACCUMULATOR)
-  #define FEATURE_ALTITUDE
+#define FEATURE_ALTITUDE
 #endif
 
 #if defined (CONFIG_USEPPT) || defined (CONFIG_EGGTIMER) || defined(CONFIG_ACCEL) || defined(CONFIG_USE_GPS)
-  #define SIMPLICITI_TX_ONLY_REQ
+#define SIMPLICITI_TX_ONLY_REQ
 #endif
 
 #if defined(CONFIG_INFOMEM) &&  !defined(CONFIG_SIDEREAL)
-	//undefine feature if it is not used by any option
-	#undef CONFIG_INFOMEM
+//undefine feature if it is not used by any option
+#undef CONFIG_INFOMEM
 #endif
 
 #endif /*PROJECT_H_*/

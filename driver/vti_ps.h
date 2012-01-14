@@ -45,15 +45,15 @@
 extern void ps_init(void);
 extern void ps_start(void);
 extern void ps_stop(void);
-extern u32 ps_get_pa(void);
-extern u16 ps_get_temp(void);
+extern uint32_t ps_get_pa(void);
+extern uint16_t ps_get_temp(void);
 
 extern void init_pressure_table(void);
-extern void update_pressure_table(s16 href, u32 p_meas, u16 t_meas);
+extern void update_pressure_table(int16_t href, uint32_t p_meas, uint16_t t_meas);
 #ifndef FIXEDPOINT
-extern s16 conv_pa_to_meter(u32 p_meas, u16 t_meas);
+extern int16_t conv_pa_to_meter(uint32_t p_meas, uint16_t t_meas);
 #else
-extern s16 conv_pa_to_altitude(u32 p_meas, u16 t_meas);
+extern int16_t conv_pa_to_altitude(uint32_t p_meas, uint16_t t_meas);
 #endif
 
 // *************************************************************************************************

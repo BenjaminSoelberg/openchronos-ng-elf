@@ -104,59 +104,59 @@
 
 // *************************************************************************************************
 // Global Variable section
-const struct menu * ptrMenu_L1 = NULL;
-const struct menu * ptrMenu_L2 = NULL;
+const struct menu * ptrMenu_L1;
+const struct menu * ptrMenu_L2;
 
 // *************************************************************************************************
 // Extern section
 extern void menu_skip_next(line_t line); //ezchronos.c
 
 
-void display_nothing(u8 line, u8 update) {}
+void display_nothing(uint8_t line, uint8_t update) {}
 
-u8 update_time(void)
+uint8_t update_time(void)
 {
 	return (display.flag.update_time);
 }
 #ifdef CONFIG_STOP_WATCH
-u8 update_stopwatch(void)
+uint8_t update_stopwatch(void)
 {
 	return (display.flag.update_stopwatch);
 }
 #endif
-u8 update_date(void)
+uint8_t update_date(void)
 {
 	return (display.flag.update_date);
 }
 #ifdef CONFIG_ALARM
-u8 update_alarm(void)
+uint8_t update_alarm(void)
 {
 	return (display.flag.update_alarm);
 }
 #endif
-u8 update_temperature(void)
+uint8_t update_temperature(void)
 {
 	return (display.flag.update_temperature);
 }
 #ifdef CONFIG_BATTERY
-u8 update_battery_voltage(void)
+uint8_t update_battery_voltage(void)
 {
 	return (display.flag.update_battery_voltage);
 }
 #endif
-u8 update_acceleration(void)
+uint8_t update_acceleration(void)
 {
 	return (display.flag.update_acceleration);
 }
 #ifdef CONFIG_EGGTIMER
-u8 update_eggtimer(void)
+uint8_t update_eggtimer(void)
 {
 	return (display.flag.update_eggtimer);
 }
 #endif
 
 #ifdef CONFIG_SIDEREAL
-u8 update_sidereal(void)
+uint8_t update_sidereal(void)
 {
 	return (display.flag.update_sidereal_time);
 }

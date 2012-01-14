@@ -85,10 +85,10 @@ void stop_eggtimer_alarm(void);
 void set_eggtimer_to_defaults(void);
 void set_eggtimer(void);
 void eggtimer_tick(void);
-void mx_eggtimer(u8 line);
-void sx_eggtimer(u8 line);
-void display_eggtimer(u8 line, u8 update);
-u8 eggtimer_visible(void);
+void mx_eggtimer(uint8_t line);
+void sx_eggtimer(uint8_t line);
+void display_eggtimer(uint8_t line, uint8_t update);
+uint8_t eggtimer_visible(void);
 
 // *************************************************************************************************
 // Defines section
@@ -212,11 +212,11 @@ void set_eggtimer_to_defaults(void)
 // @return      none
 // *************************************************************************************************
 extern void set_eggtimer(void){
-        u8 select;
-	s32 hours; // must be s32 to work properly with set_value(...)
-	s32 minutes;
-        s32 seconds;
-        u8 * str;
+        uint8_t select;
+	int32_t hours; // must be int32_t to work properly with set_value(...)
+	int32_t minutes;
+        int32_t seconds;
+        uint8_t * str;
         
         // Store hours, minutes, and seconds in local variables
         hours   = sEggtimer.hours;
@@ -330,10 +330,10 @@ void eggtimer_tick(void) //gibbons: This function could benefit from an alarm qu
 // *************************************************************************************************
 // @fn          mx_eggtimer
 // @brief       eggtimer set routine. Mx stops eggtimer and resets count.
-// @param       u8 line	LINE2
+// @param       uint8_t line	LINE2
 // @return      none
 // *************************************************************************************************
-void mx_eggtimer(u8 line)
+void mx_eggtimer(uint8_t line)
 {
 	// Stop eggtimer
 	stop_eggtimer();
@@ -352,10 +352,10 @@ void mx_eggtimer(u8 line)
 // *************************************************************************************************
 // @fn          sx_eggtimer
 // @brief       eggtimer direct function. S2 starts/stops eggtimer, but does not reset count.
-// @param       u8 line	LINE2
+// @param       uint8_t line	LINE2
 // @return      none
 // *************************************************************************************************
-void sx_eggtimer(u8 line)
+void sx_eggtimer(uint8_t line)
 {
 	if (sEggtimer.state == EGGTIMER_STOP)
 	{
@@ -373,13 +373,13 @@ void sx_eggtimer(u8 line)
 // *************************************************************************************************
 // @fn          display_eggtimer
 // @brief       eggtimer user routine.
-// @param       u8 line		LINE2
-//		u8 update	DISPLAY_LINE_UPDATE_PARTIAL, DISPLAY_LINE_UPDATE_FULL
+// @param       uint8_t line		LINE2
+//		uint8_t update	DISPLAY_LINE_UPDATE_PARTIAL, DISPLAY_LINE_UPDATE_FULL
 // @return      none
 // *************************************************************************************************
-void display_eggtimer(u8 line, u8 update)
+void display_eggtimer(uint8_t line, uint8_t update)
 {
-	u8 * str;
+	uint8_t * str;
 	
 	// Partial line update only
 	if (update == DISPLAY_LINE_UPDATE_PARTIAL)
@@ -434,7 +434,7 @@ void display_eggtimer(u8 line, u8 update)
 // @param       none
 // @return      1=Eggtimer menu currently visible, 0=menu not visible
 // *************************************************************************************************
-u8 eggtimer_visible(void)
+uint8_t eggtimer_visible(void)
 {
 	return (ptrMenu_L2 == &menu_L2_Eggtimer); // gibbons: currently hardcoded to Line2; change?
 }

@@ -68,8 +68,8 @@ extern void BlueRobin_RadioISR_v(void);
 // *************************************************************************************************
 void radio_reset(void)
 {
-	volatile u16 i;
-	u8 x;
+	volatile uint16_t i;
+	uint8_t x;
 	
 	// Reset radio core
 	Strobe(RF_SRES);
@@ -177,7 +177,7 @@ __interrupt
 #endif
 void radio_ISR(void)
 {
-	u8 rf1aivec = RF1AIV;
+	uint8_t rf1aivec = RF1AIV;
 	
 	// Forward to SimpliciTI interrupt service routine
 	if (is_rf())

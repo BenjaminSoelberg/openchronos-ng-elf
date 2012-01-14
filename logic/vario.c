@@ -79,25 +79,25 @@
 //
 struct
 {
-   u32 pressure;  // updated by altitude.c - need a mutex ?
-   u32 prev_pa;   // pressure at last scan
-   u8 p_valid;    // mutex for pressure field
-   u8 view_mode;  // view mode, controlled by "v" key
-   u8 beep_mode;  // beeper mode, controlled by "#" key
+   uint32_t pressure;  // updated by altitude.c - need a mutex ?
+   uint32_t prev_pa;   // pressure at last scan
+   uint8_t p_valid;    // mutex for pressure field
+   uint8_t view_mode;  // view mode, controlled by "v" key
+   uint8_t beep_mode;  // beeper mode, controlled by "#" key
    struct
      {
 #if VARIO_VZ
-	s16 vzmin; // Vz min in Pascal
-	s16 vzmax; // Vz max in Pascal
+	int16_t vzmin; // Vz min in Pascal
+	int16_t vzmax; // Vz max in Pascal
 #endif
 #if VARIO_ALTMAX
-	u16 altmax; // altitude max - 32767m should be enough.
+	uint16_t altmax; // altitude max - 32767m should be enough.
 #endif
 #if VARIO_F_TIME
 	struct {
-	   u8 hh;    // 00-99
-	   u8 mm;    // 00-59
-	   u8 ss;    // 00-59
+	   uint8_t hh;    // 00-99
+	   uint8_t mm;    // 00-59
+	   uint8_t ss;    // 00-59
 	   } f_time; // flight time
 #endif
      } stats;
@@ -166,7 +166,7 @@ _clear_stats( void )
 
 // "v" button press changes display mode
 extern void
-sx_vario(u8 line)
+sx_vario(uint8_t line)
 {
    G_vario.view_mode++;
    G_vario.view_mode %= VARIO_VIEWMODE_MAX;
@@ -177,7 +177,7 @@ sx_vario(u8 line)
 // or clear stats if in stats view mode.
 // 
 extern void
-mx_vario(u8 line)
+mx_vario(uint8_t line)
 {
    switch( G_vario.view_mode )
      {
@@ -216,7 +216,7 @@ mx_vario(u8 line)
 // me figure a problem with calls to display_vario() from interrupt level.
 //
 extern void
-vario_p_write( u32 p )
+vario_p_write( uint32_t p )
 {
    if ( !G_vario.p_valid )
      {	
@@ -236,7 +236,7 @@ vario_p_write( u32 p )
      }
 }
 
-int vario_p_read( u32 *retp )
+int vario_p_read( uint32_t *retp )
 {
    if ( G_vario.p_valid )
      {
@@ -250,13 +250,13 @@ int vario_p_read( u32 *retp )
 //
 // Produce a sound depending on the ascent/descent rate.
 //
-void chirp( s16 pdiff )
+void chirp( int16_t pdiff )
 {
-   const u8 center_steps = 8;
-   const u8 range_steps  = 5;
-   u8 bsteps;
-   u8 nchirps;
-   u16 on_time;
+   const uint8_t center_steps = 8;
+   const uint8_t range_steps  = 5;
+   uint8_t bsteps;
+   uint8_t nchirps;
+   uint16_t on_time;
 
    //
    // Buzzer steps (see driver/buzzer) 3..23 provide a frequency
@@ -290,9 +290,9 @@ void chirp( s16 pdiff )
 // Used to display pressure (in Pascal) as hPa and cm/s as m/s.
 //
 static void
-_display_signed( s32 value, u8 is_fraction )
+_display_signed( int32_t value, uint8_t is_fraction )
 {
-   u8 *str;
+   uint8_t *str;
    int i;
    int is_neg;
    
@@ -324,8 +324,8 @@ _display_signed( s32 value, u8 is_fraction )
 //
 // TBS -- allow non-metric display...
 //
-static inline s32
-_pascal_to_vz( s32 pa )
+static inline int32_t
+_pascal_to_vz( int32_t pa )
 {
    return pa * 10;
 }
@@ -353,12 +353,12 @@ _display_l2_clean( void )
 //
 
 extern void
-display_vario( u8 line, u8 update )
+display_vario( uint8_t line, uint8_t update )
 {
-   static u8 _idone; // initialisation helper
-   static u8 _vbeat; // heartbeat
+   static uint8_t _idone; // initialisation helper
+   static uint8_t _vbeat; // heartbeat
 
-   u32 pressure;
+   uint32_t pressure;
 
    switch( update )
      {
@@ -419,7 +419,7 @@ display_vario( u8 line, u8 update )
 
    if ( is_altitude_measurement() )
      {
-	s16 diff;
+	int16_t diff;
 
 	if ( vario_p_read( &pressure ) )
 	  {
@@ -548,7 +548,7 @@ display_vario( u8 line, u8 update )
    else
      {
 	_display_l2_clean();
-	display_chars(LCD_SEG_L2_5_0, (u8*) " NOALT", SEG_ON);
+	display_chars(LCD_SEG_L2_5_0, (uint8_t*) " NOALT", SEG_ON);
 	_idone = 0; // avoid false peaks when re-enabling the altimeter
      }
 }

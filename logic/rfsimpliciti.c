@@ -89,7 +89,7 @@
 void simpliciti_get_data_callback(void);
 void start_simpliciti_tx_only(simpliciti_mode_t mode);
 void start_simpliciti_sync(void);
-int simpliciti_get_rvc_callback(u8 len) __attribute__((noinline));
+int simpliciti_get_rvc_callback(uint8_t len) __attribute__((noinline));
 
 
 // *************************************************************************************************
@@ -113,21 +113,21 @@ unsigned char simpliciti_payload_length;
 unsigned char simpliciti_reply_count;
 
 // 1 = send packets sequentially from burst_start to burst_end, 2 = send packets addressed by their index
-u8 		burst_mode;
+uint8_t 		burst_mode;
 
 // Start and end index of packets to send out
-u16		burst_start, burst_end;
+uint16_t		burst_start, burst_end;
 
 // Array containing requested packets
-u16		burst_packet[BM_SYNC_BURST_PACKETS_IN_DATA];
+uint16_t		burst_packet[BM_SYNC_BURST_PACKETS_IN_DATA];
 
 // Current packet index
-u8		burst_packet_index;
+uint8_t		burst_packet_index;
 
 
 // *************************************************************************************************
 // Extern section
-extern void (*fptr_lcd_function_line1)(u8 line, u8 update);
+extern void (*fptr_lcd_function_line1)(uint8_t line, uint8_t update);
 
 
 // *************************************************************************************************
@@ -149,10 +149,10 @@ void reset_rf(void)
 // *************************************************************************************************
 // @fn          sx_rf
 // @brief       Start SimpliciTI. Button DOWN connects/disconnects to access point.
-// @param       u8 line		LINE2
+// @param       uint8_t line		LINE2
 // @return      none
 // *************************************************************************************************
-void sx_rf(u8 line)
+void sx_rf(uint8_t line)
 {
 	// Exit if battery voltage is too low for radio operation
 	if (sys.flag.low_battery) return;
@@ -175,10 +175,10 @@ void sx_rf(u8 line)
 // *************************************************************************************************
 // @fn          sx_ppt
 // @brief       Start SimpliciTI. Button DOWN connects/disconnects to access point.
-// @param       u8 line		LINE2
+// @param       uint8_t line		LINE2
 // @return      none
 // *************************************************************************************************
-void sx_ppt(u8 line)
+void sx_ppt(uint8_t line)
 {
 	// Exit if battery voltage is too low for radio operation
 	if (sys.flag.low_battery) return;
@@ -200,10 +200,10 @@ void sx_ppt(u8 line)
 // *************************************************************************************************
 // @fn          sx_sync
 // @brief       Start SimpliciTI. Button DOWN connects/disconnects to access point.
-// @param       u8 line		LINE2
+// @param       uint8_t line		LINE2
 // @return      none
 // *************************************************************************************************
-void sx_sync(u8 line)
+void sx_sync(uint8_t line)
 {
 	// Exit if battery voltage is too low for radio operation
 	if (sys.flag.low_battery) return;
@@ -230,7 +230,7 @@ void sx_sync(u8 line)
 void start_simpliciti_tx_only(simpliciti_mode_t mode)
 {
 #ifdef FEATURE_PROVIDE_ACCEL
-	u8 start_as = 0;
+	uint8_t start_as = 0;
 #endif
 	// Display time in line 1
 	clear_line(LINE1);
@@ -340,14 +340,14 @@ void start_simpliciti_tx_only(simpliciti_mode_t mode)
 // *************************************************************************************************
 // @fn          display_rf
 // @brief       SimpliciTI display routine.
-// @param       u8 line			LINE2
-//				u8 update		DISPLAY_LINE_UPDATE_FULL
+// @param       uint8_t line			LINE2
+//				uint8_t update		DISPLAY_LINE_UPDATE_FULL
 // @return      none
 // *************************************************************************************************
-void display_rf(u8 line, u8 update)
+void display_rf(uint8_t line, uint8_t update)
 {
 	if (update == DISPLAY_LINE_UPDATE_FULL) {
-		display_chars(LCD_SEG_L2_5_0, (u8 *)"   ACC", SEG_ON);
+		display_chars(LCD_SEG_L2_5_0, (uint8_t *)"   ACC", SEG_ON);
 	}
 }
 
@@ -355,14 +355,14 @@ void display_rf(u8 line, u8 update)
 // *************************************************************************************************
 // @fn          display_ppt
 // @brief       SimpliciTI display routine.
-// @param       u8 line			LINE2
-//				u8 update		DISPLAY_LINE_UPDATE_FULL
+// @param       uint8_t line			LINE2
+//				uint8_t update		DISPLAY_LINE_UPDATE_FULL
 // @return      none
 // *************************************************************************************************
-void display_ppt(u8 line, u8 update)
+void display_ppt(uint8_t line, uint8_t update)
 {
 	if (update == DISPLAY_LINE_UPDATE_FULL) {
-		display_chars(LCD_SEG_L2_5_0, (u8 *)"   PPT", SEG_ON);
+		display_chars(LCD_SEG_L2_5_0, (uint8_t *)"   PPT", SEG_ON);
 	}
 }
 #endif
@@ -371,14 +371,14 @@ void display_ppt(u8 line, u8 update)
 // *************************************************************************************************
 // @fn          display_sync
 // @brief       SimpliciTI display routine.
-// @param       u8 line			LINE2
-//				u8 update		DISPLAY_LINE_UPDATE_FULL
+// @param       uint8_t line			LINE2
+//				uint8_t update		DISPLAY_LINE_UPDATE_FULL
 // @return      none
 // *************************************************************************************************
-void display_sync(u8 line, u8 update)
+void display_sync(uint8_t line, uint8_t update)
 {
 	if (update == DISPLAY_LINE_UPDATE_FULL) {
-		display_chars(LCD_SEG_L2_5_0, (u8 *)"  SYNC", SEG_ON);
+		display_chars(LCD_SEG_L2_5_0, (uint8_t *)"  SYNC", SEG_ON);
 	}
 }
 
@@ -387,9 +387,9 @@ void display_sync(u8 line, u8 update)
 // @fn          is_rf
 // @brief       Returns TRUE if SimpliciTI receiver is connected.
 // @param       none
-// @return      u8
+// @return      uint8_t
 // *************************************************************************************************
-u8 is_rf(void)
+uint8_t is_rf(void)
 {
 	return (sRFsmpl.mode != SIMPLICITI_OFF);
 }
@@ -405,7 +405,7 @@ u8 is_rf(void)
 // *************************************************************************************************
 void simpliciti_get_ed_data_callback(void)
 {
-	static u8 packet_counter = 0;
+	static uint8_t packet_counter = 0;
 	WDTCTL = WDTPW + WDTHOLD;
 #ifdef CONFIG_ACCEL
 
@@ -486,7 +486,7 @@ void simpliciti_get_ed_data_callback(void)
 
 			} else {
 				// copy current value onto the stack
-				//memcpy(&sPhase.data[sPhase.data_nr][0], &sAccel.xyz, sizeof(u8)*3);
+				//memcpy(&sPhase.data[sPhase.data_nr][0], &sAccel.xyz, sizeof(uint8_t)*3);
 				sPhase.data[sPhase.data_nr][0] = sAccel.xyz[0];
 				sPhase.data[sPhase.data_nr][1] = sAccel.xyz[1];
 				sPhase.data[sPhase.data_nr][2] = sAccel.xyz[2];
@@ -499,8 +499,8 @@ void simpliciti_get_ed_data_callback(void)
 			if ((sPhase.out_nr > SLEEP_OUT_BUFFER - 1)) {
 				// Reset counter
 				sPhase.out_nr = 0;
-				u8 i;
-				u16 res = 0;
+				uint8_t i;
+				uint16_t res = 0;
 
 				for (i = 0; i < SLEEP_OUT_BUFFER; i++) {
 					//if (((2**17)-1))
@@ -572,11 +572,11 @@ void simpliciti_get_ed_data_callback(void)
 // *************************************************************************************************
 // @fn          simpliciti_get_rvc_callback
 // @brief       Callback when data was received
-// @param       u8 lenght
+// @param       uint8_t lenght
 // @return      none
 // *************************************************************************************************
 #ifdef SIMPLICITI_TX_ONLY_REQ
-int simpliciti_get_rvc_callback(u8 len)
+int simpliciti_get_rvc_callback(uint8_t len)
 {
 
 	switch (simpliciti_data[0]) {
@@ -678,8 +678,8 @@ void start_simpliciti_sync(void)
 // *************************************************************************************************
 void simpliciti_sync_decode_ap_cmd_callback(void)
 {
-	u8 i;
-	s16 t1, offset;
+	uint8_t i;
+	int16_t t1, offset;
 
 	// Default behaviour is to send no reply packets
 	simpliciti_reply_count = 0;
@@ -710,13 +710,13 @@ void simpliciti_sync_decode_ap_cmd_callback(void)
 #endif
 
 			// Set temperature and temperature offset
-			t1 = (s16)((simpliciti_data[10] << 8) + simpliciti_data[11]);
+			t1 = (int16_t)((simpliciti_data[10] << 8) + simpliciti_data[11]);
 			offset = t1 - (sTemp.degrees - sTemp.offset);
 			sTemp.offset  = offset;
 			sTemp.degrees = t1;
 			// Set altitude
 #ifdef CONFIG_ALTITUDE
-			sAlt.altitude = (s16)((simpliciti_data[12] << 8) + simpliciti_data[13]);
+			sAlt.altitude = (int16_t)((simpliciti_data[12] << 8) + simpliciti_data[13]);
 			update_pressure_table(sAlt.altitude, sAlt.pressure, sAlt.temperature);
 #endif
 #ifdef CONFIG_SIDEREAL
@@ -771,17 +771,17 @@ void simpliciti_sync_decode_ap_cmd_callback(void)
 // *************************************************************************************************
 // @fn          simpliciti_sync_get_data_callback
 // @brief       For SYNC mode only: Access point has requested data. Copy this data into the TX buffer now.
-// @param       u16 index		Index used for memory requests
+// @param       uint16_t index		Index used for memory requests
 // @return      none
 // *************************************************************************************************
 void simpliciti_sync_get_data_callback(unsigned int index)
 {
-	u8 i;
+	uint8_t i;
 
 	// simpliciti_data[0] contains data type and needs to be returned to AP
 	switch (simpliciti_data[0]) {
 		case SYNC_ED_TYPE_STATUS: {	// Assemble status packet
-				u8 hour, min, sec;
+				uint8_t hour, min, sec;
 				rtca_get_time(&hour, &min, &sec);
 
 				simpliciti_data[1]  = (sys.flag.use_metric_units << 7) | (hour & 0x7F);
@@ -790,8 +790,8 @@ void simpliciti_sync_get_data_callback(unsigned int index)
 			}
 
 			{
-				u16 year;
-				u8 mon, day, dow;
+				uint16_t year;
+				uint8_t mon, day, dow;
 				rtca_get_date(&year, &mon, &day, &dow);
 
 				simpliciti_data[4]  = year >> 8;

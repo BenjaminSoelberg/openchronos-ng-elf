@@ -69,11 +69,11 @@ void as_disconnect(void)
 // Prototypes section
 void as_start(void);
 void as_stop(void);
-u8 as_read_register(u8 bAddress);
-u8 as_write_register(u8 bAddress, u8 bData);
-u8 as_get_x(void);
-u8 as_get_y(void);
-u8 as_get_z(void);
+uint8_t as_read_register(uint8_t bAddress);
+uint8_t as_write_register(uint8_t bAddress, uint8_t bData);
+uint8_t as_get_x(void);
+uint8_t as_get_y(void);
+uint8_t as_get_z(void);
 
 // *************************************************************************************************
 // Defines section
@@ -99,7 +99,7 @@ u8 as_get_z(void);
 // Global Variable section
 
 // Global flag for proper acceleration sensor operation
-u8 as_ok;
+uint8_t as_ok;
 
 
 // *************************************************************************************************
@@ -149,8 +149,7 @@ void as_init(void)
 // *************************************************************************************************
 void as_start(void)
 {
-	volatile u16 Counter_u16;
-	u8 bConfig;//, bStatus;
+	uint8_t bConfig;//, bStatus;
 	
 	// Initialize SPI interface to acceleration sensor
 	AS_SPI_CTL0 |= UCSYNC | UCMST | UCMSB // SPI master, 8 data bits,  MSB first,
@@ -252,13 +251,13 @@ void as_stop(void)
 // *************************************************************************************************
 // @fn          as_read_register
 // @brief       Read a byte from the acceleration sensor
-// @param       u8 bAddress		Register address
-// @return      u8					Register content
+// @param       uint8_t bAddress		Register address
+// @return      uint8_t					Register content
 // *************************************************************************************************
-u8 as_read_register(u8 bAddress)
+uint8_t as_read_register(uint8_t bAddress)
 {
-  u8 bResult;
-  u16 timeout;
+  uint8_t bResult;
+  uint16_t timeout;
   
   // Exit function if an error was detected previously
   if (!as_ok) return (0);
@@ -303,14 +302,14 @@ u8 as_read_register(u8 bAddress)
 // *************************************************************************************************
 // @fn          as_write_register
 // @brief  		Write a byte to the acceleration sensor
-// @param       u8 bAddress		Register address
-//				u8 bData			Data to write
-// @return      u8					
+// @param       uint8_t bAddress		Register address
+//				uint8_t bData			Data to write
+// @return      uint8_t					
 // *************************************************************************************************
-u8 as_write_register(u8 bAddress, u8 bData)
+uint8_t as_write_register(uint8_t bAddress, uint8_t bData)
 {
-  u8 bResult;
-  u16 timeout;
+  uint8_t bResult;
+  uint16_t timeout;
   
   // Exit function if an error was detected previously
   if (!as_ok) return (0);
@@ -358,7 +357,7 @@ u8 as_write_register(u8 bAddress, u8 bData)
 // @param       none
 // @return      none
 // *************************************************************************************************
-void as_get_data(u8 * data)
+void as_get_data(uint8_t * data)
 {
 	// Exit if sensor is not powered up
 	if ((AS_PWR_OUT & AS_PWR_PIN) != AS_PWR_PIN) return;
@@ -369,19 +368,19 @@ void as_get_data(u8 * data)
 	*(data+2) = as_read_register(0x08);
 }
 
-u8 as_get_x(void)
+uint8_t as_get_x(void)
 {
 	if ((AS_PWR_OUT & AS_PWR_PIN) != AS_PWR_PIN) return 0;
 	return as_read_register(0x06);
 }
 
-u8 as_get_y(void)
+uint8_t as_get_y(void)
 {
 	if ((AS_PWR_OUT & AS_PWR_PIN) != AS_PWR_PIN) return 0;
 	return as_read_register(0x07);
 }
 
-u8 as_get_z(void)
+uint8_t as_get_z(void)
 {
 	if ((AS_PWR_OUT & AS_PWR_PIN) != AS_PWR_PIN) return 0;
 	return as_read_register(0x08);

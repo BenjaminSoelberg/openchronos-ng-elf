@@ -32,38 +32,38 @@
 
 
 //check if infomem is initialized and in sane state, return amount of data present
-extern s16 infomem_ready();
+extern int16_t infomem_ready();
 //write infomem data structure
-extern s16 infomem_init(u16 start, u16 end);
+extern int16_t infomem_init(uint16_t start, uint16_t end);
 //return amount of free space
-extern s16 infomem_space();
+extern int16_t infomem_space();
 //change start and end address of data storage (can change size)
-extern s16 infomem_relocate(u16 start, u16 end);
+extern int16_t infomem_relocate(uint16_t start, uint16_t end);
 //delete complete data storage (only managed space)
-extern s16 infomem_delete_all(void);
+extern int16_t infomem_delete_all(void);
 
 //return how much data for the application is available
-extern s16 infomem_app_amount(u8 identifier);
+extern int16_t infomem_app_amount(uint8_t identifier);
 //read count bytes of data with offset for given application into prepared memory
-extern s16 infomem_app_read(u8 identifier, u16* data, u8 count, u8 offset);
+extern int16_t infomem_app_read(uint8_t identifier, uint16_t* data, uint8_t count, uint8_t offset);
 //replace all memory content for application by new data
-extern s16 infomem_app_replace(u8 identifier, u16* data, u8 count);
+extern int16_t infomem_app_replace(uint8_t identifier, uint16_t* data, uint8_t count);
 //delete all memory content for application
-extern s16 infomem_app_clear(u8 identifier);
+extern int16_t infomem_app_clear(uint8_t identifier);
 //delete all memory content beginning with offset
-extern s16 infomem_app_delete(u8 identifier,u8 offset);
+extern int16_t infomem_app_delete(uint8_t identifier,uint8_t offset);
 //modify given bytes of data
-extern s16 infomem_app_modify(u8 identifier, u16* data, u8 count, u8 offset);
+extern int16_t infomem_app_modify(uint8_t identifier, uint16_t* data, uint8_t count, uint8_t offset);
 
 
 
 struct infomem
 {
-	u16*		startaddr; //starting address (position of header)
-	u8			size;  //size of payload in words
-	u8			maxsize;  //maximum size of payload in words
-	volatile u8	not_lock;  //memory is not locked for write
-	u8			sane;  //sanity check passed
+	uint16_t*		startaddr; //starting address (position of header)
+	uint8_t			size;  //size of payload in words
+	uint8_t			maxsize;  //maximum size of payload in words
+	volatile uint8_t	not_lock;  //memory is not locked for write
+	uint8_t			sane;  //sanity check passed
 };
 // extern struct infomem sInfomem;
 

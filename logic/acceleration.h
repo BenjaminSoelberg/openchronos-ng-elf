@@ -63,19 +63,19 @@
 struct accel
 {
 	// ACC_MODE_OFF, ACC_MODE_ON
-	u8			mode;
+	uint8_t			mode;
 	
 	// Sensor raw data
-	u8			xyz[3];
+	uint8_t			xyz[3];
 
 	// Acceleration data in 10 * mgrav
-	u16			data;
+	uint16_t			data;
 
 	// Display X/Y/Z values	
-	u8 			view_style;
+	uint8_t 			view_style;
 
 	// Timeout
-	u16			timeout;	
+	uint16_t			timeout;	
 };
 extern struct accel sAccel;
 
@@ -83,9 +83,9 @@ extern struct accel sAccel;
 // *************************************************************************************************
 // Extern section
 extern void reset_acceleration(void);
-extern void sx_acceleration(u8 line);
-extern void display_acceleration(u8 line, u8 update);
-extern u8 is_acceleration_measurement(void);
+extern void sx_acceleration(uint8_t line);
+extern void display_acceleration(uint8_t line, uint8_t update);
+extern uint8_t is_acceleration_measurement(void);
 extern void do_acceleration_measurement(void);
 
 #endif /*ACCELERATION_H_*/

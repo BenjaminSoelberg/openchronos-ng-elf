@@ -13,10 +13,10 @@
 
 struct infomem sInfomem;
 
-void infomem_write_flash_segment(u16* start, u16* data, u8 erase);
-void infomem_insert_delete_modify(u16* start, u16* data, u8 del_count, u8 ins_count, u16** mod_addr, u16* mod_data, u8 mod_count, u16* free_start, u16* free_stop);
-void infomem_write_data(u16* start, u16* data, u8 count);
-u16* infomem_get_app_addr(u8 identifier);
+void infomem_write_flash_segment(uint16_t* start, uint16_t* data, uint8_t erase);
+void infomem_insert_delete_modify(uint16_t* start, uint16_t* data, uint8_t del_count, uint8_t ins_count, uint16_t** mod_addr, uint16_t* mod_data, uint8_t mod_count, uint16_t* free_start, uint16_t* free_stop);
+void infomem_write_data(uint16_t* start, uint16_t* data, uint8_t count);
+uint16_t* infomem_get_app_addr(uint8_t identifier);
 
 #define infomem_waitbusy() \
 	while(1) \
@@ -31,7 +31,7 @@ u16* infomem_get_app_addr(u8 identifier);
 // erases segment when needed. Only writes to a long word if data has changed
 //data has size of at least 128 Byte
 //erase 0: do not erase; 1: test if need to erase; 2: erase without test
-void infomem_write_flash_segment(u16* start, u16* data, u8 erase)
+void infomem_write_flash_segment(uint16_t* start, uint16_t* data, uint8_t erase)
 {
 	int i;
 	
@@ -57,7 +57,7 @@ void infomem_write_flash_segment(u16* start, u16* data, u8 erase)
 	infomem_waitbusy()
 	
 	//remove LOCK and LOCKA bit if needed (LOCKA is toggled if it is written as 1)
-	if(start == (u16*)INFOMEM_A && (FCTL3 & LOCKA))
+	if(start == (uint16_t*)INFOMEM_A && (FCTL3 & LOCKA))
 	{
 		FCTL3 = FWKEY | LOCKA;
 	}
@@ -106,7 +106,7 @@ void infomem_write_flash_segment(u16* start, u16* data, u8 erase)
 
 
 //write count words at address start
-void infomem_write_data(u16* start, u16* data, u8 count)
+void infomem_write_data(uint16_t* start, uint16_t* data, uint8_t count)
 {
 	infomem_insert_delete_modify(start, data, count, count, NULL, NULL, 0, sInfomem.startaddr+3+sInfomem.size, sInfomem.startaddr+3+sInfomem.maxsize);
 }
@@ -122,25 +122,25 @@ void infomem_write_data(u16* start, u16* data, u8 count)
 // memory right of free_stop is never changed
 // free_start is the first address after the meaningful data (BEFORE any insert or delete)
 // mod_addr are addresses AFTER the insert/delete
-void infomem_insert_delete_modify(u16* start, u16* data, u8 del_count, u8 ins_count, u16** mod_addr, u16* mod_data, u8 mod_count, u16* free_start, u16* free_stop)
+void infomem_insert_delete_modify(uint16_t* start, uint16_t* data, uint8_t del_count, uint8_t ins_count, uint16_t** mod_addr, uint16_t* mod_data, uint8_t mod_count, uint16_t* free_start, uint16_t* free_stop)
 {
 	int i;
-	u8 next_mod;
+	uint8_t next_mod;
 	int more=ins_count-del_count;
 	
 	//beginning of segment that is the first (address wise) to be modified
-	u16* segment_first;
+	uint16_t* segment_first;
 	//beginning of the segment that is the last (address wise) to be modified
-	u16* segment_last;
+	uint16_t* segment_last;
 	
 	//find first modified flash segment
 	if((mod_count>0) && (mod_addr[0]< start))
 	{
-		segment_first=(u16*)((u16) mod_addr[0] & ~(INFOMEM_SEGMENT_SIZE-1));
+		segment_first=(uint16_t*)((uint16_t) mod_addr[0] & ~(INFOMEM_SEGMENT_SIZE-1));
 	}
 	else
 	{
-		segment_first=(u16*)((u16) start & ~(INFOMEM_SEGMENT_SIZE-1));
+		segment_first=(uint16_t*)((uint16_t) start & ~(INFOMEM_SEGMENT_SIZE-1));
 	}
 	
 	//find last modified flash segment
@@ -148,24 +148,24 @@ void infomem_insert_delete_modify(u16* start, u16* data, u8 del_count, u8 ins_co
 	{
 		if((mod_count>0) && (mod_addr[mod_count-1]>=start+ins_count))
 		{
-			segment_last= (u16*)((u16) mod_addr[mod_count-1] & ~(INFOMEM_SEGMENT_SIZE-1));
+			segment_last= (uint16_t*)((uint16_t) mod_addr[mod_count-1] & ~(INFOMEM_SEGMENT_SIZE-1));
 		}
 		else
 		{
-			segment_last= (u16*)((u16) (start+ins_count-1) & ~(INFOMEM_SEGMENT_SIZE-1));
+			segment_last= (uint16_t*)((uint16_t) (start+ins_count-1) & ~(INFOMEM_SEGMENT_SIZE-1));
 		}
 	}
 	else if(more>0)
 	{
-		segment_last= (u16*)((u16) (free_start+more-1) & ~(INFOMEM_SEGMENT_SIZE-1));
+		segment_last= (uint16_t*)((uint16_t) (free_start+more-1) & ~(INFOMEM_SEGMENT_SIZE-1));
 	}
 	else  //more<0
 	{
-		segment_last= (u16*)((u16) (free_start-1) & ~(INFOMEM_SEGMENT_SIZE-1));
+		segment_last= (uint16_t*)((uint16_t) (free_start-1) & ~(INFOMEM_SEGMENT_SIZE-1));
 	}
 	
 	//we need buffer memory to store a flash page while it is erased and rewritten
-	u16 buf[INFOMEM_SEGMENT_WORDS];
+	uint16_t buf[INFOMEM_SEGMENT_WORDS];
 	
 	//position of the newly to insert data relative to the beginning of the segment
 	int data_offset;
@@ -178,7 +178,7 @@ void infomem_insert_delete_modify(u16* start, u16* data, u8 del_count, u8 ins_co
 		//while we have not processed all modified flash segments
 		while(segment_first<=segment_last)
 		{
-			data_offset=((u16)start - (u16)segment_last)/2;
+			data_offset=((uint16_t)start - (uint16_t)segment_last)/2;
 			
 			for(i=INFOMEM_SEGMENT_WORDS-1;i>=0;i--)
 			{
@@ -234,7 +234,7 @@ void infomem_insert_delete_modify(u16* start, u16* data, u8 del_count, u8 ins_co
 		next_mod=0;
 		while(segment_first<=segment_last)
 		{
-			data_offset=((u16)start - (u16)segment_first)/2;
+			data_offset=((uint16_t)start - (uint16_t)segment_first)/2;
 			
 			for(i=0;i<INFOMEM_SEGMENT_WORDS;i++)
 			{
@@ -287,27 +287,27 @@ void infomem_insert_delete_modify(u16* start, u16* data, u8 del_count, u8 ins_co
 // @fn          infomem_get_app_addr
 // @brief       return the address of the header for an address
 //				FOR INTERNAL USE ONLY
-// @param       u8 identifier	Identifier byte for application
+// @param       uint8_t identifier	Identifier byte for application
 // @return		NULL not present
 //				n address of identifier byte
 // *************************************************************************************************
-u16* infomem_get_app_addr(u8 identifier)
+uint16_t* infomem_get_app_addr(uint8_t identifier)
 {
 	//start at the first word of payload
-	u16* addr= sInfomem.startaddr +2;
+	uint16_t* addr= sInfomem.startaddr +2;
 	
 	//while we have not reached the end
 	while(addr<sInfomem.startaddr+2+sInfomem.size)
 	{
 		//application found, return address
-		if( ((u8*)addr)[0] == identifier )
+		if( ((uint8_t*)addr)[0] == identifier )
 		{
 			return addr;
 		}
 		//step to header of next application
 		else
 		{
-			addr+=((u8*)addr)[1]+1;
+			addr+=((uint8_t*)addr)[1]+1;
 		}
 	}
 	//application not found
@@ -322,9 +322,9 @@ u16* infomem_get_app_addr(u8 identifier)
 //				-3,-4,-5 data structure error
 //				>=0 size of data present
 // *************************************************************************************************
-s16 infomem_ready()
+int16_t infomem_ready()
 {
-	u8 found_beg=0;
+	uint8_t found_beg=0;
 	
 	//already checked, trust that and just return size
 	if(sInfomem.sane== INFOMEM_SANE)
@@ -333,7 +333,7 @@ s16 infomem_ready()
 	}
 	
 	//if address is already set and in right range, look if it is correct, otherwise reset it
-	if( (((u16) (sInfomem.startaddr)) >= INFOMEM_START) && (((u16) (sInfomem.startaddr)) < (INFOMEM_START+4*INFOMEM_SEGMENT_SIZE)))
+	if( (((uint16_t) (sInfomem.startaddr)) >= INFOMEM_START) && (((uint16_t) (sInfomem.startaddr)) < (INFOMEM_START+4*INFOMEM_SEGMENT_SIZE)))
 	{
 		if(  *(sInfomem.startaddr) == INFOMEM_IDENTIFIER)
 		{
@@ -348,8 +348,8 @@ s16 infomem_ready()
 	//search for identifier word of information memory by looping over memory
 	if( found_beg == 0 )
 	{
-		u16* addr;
-		for(addr=(u16*)INFOMEM_START; addr<(u16*)(INFOMEM_START+4*INFOMEM_SEGMENT_SIZE); addr++)
+		uint16_t* addr;
+		for(addr=(uint16_t*)INFOMEM_START; addr<(uint16_t*)(INFOMEM_START+4*INFOMEM_SEGMENT_SIZE); addr++)
 		{
 			if( *addr == INFOMEM_IDENTIFIER )
 			{
@@ -367,20 +367,20 @@ s16 infomem_ready()
 	}
 	
 	//read size and maxsize
-	sInfomem.size = ((u8*)(sInfomem.startaddr))[2];
-	sInfomem.maxsize =  ((u8*)(sInfomem.startaddr))[3];
+	sInfomem.size = ((uint8_t*)(sInfomem.startaddr))[2];
+	sInfomem.maxsize =  ((uint8_t*)(sInfomem.startaddr))[3];
 	
 	//check size and maxsize for plausibility
-	if(sInfomem.size > sInfomem.maxsize || sInfomem.maxsize > (INFOMEM_START+4*INFOMEM_SEGMENT_SIZE-6 - (u16)sInfomem.startaddr)/2 )
+	if(sInfomem.size > sInfomem.maxsize || sInfomem.maxsize > (INFOMEM_START+4*INFOMEM_SEGMENT_SIZE-6 - (uint16_t)sInfomem.startaddr)/2 )
 	{
 		return -3;
 	}
 	
 	//loop through applications towards the end of the memory
-	u16* addr= sInfomem.startaddr+2;
+	uint16_t* addr= sInfomem.startaddr+2;
 	while(addr<sInfomem.startaddr+2+sInfomem.size)
 	{
-		addr+=((u8*)addr)[1]+1;
+		addr+=((uint8_t*)addr)[1]+1;
 	}
 	//return when the sum of the application sizes does not match the total size
 	if(addr !=sInfomem.startaddr+sInfomem.size+2)
@@ -405,21 +405,21 @@ s16 infomem_ready()
 // *************************************************************************************************
 // @fn          infomem_init
 // @brief       write infomem data structure
-// @param		u16	start		(word) address of first word of used memory
-//				u16	end			(word) address of first word of NOT used memory
+// @param		uint16_t	start		(word) address of first word of used memory
+//				uint16_t	end			(word) address of first word of NOT used memory
 // @return		-1 infomem already present
 //				-2 addresses not word addresses or out of range
 //				-3 memory not empty
 //				>0 new maximum size
 // *************************************************************************************************
-s16 infomem_init(u16 start, u16 end)
+int16_t infomem_init(uint16_t start, uint16_t end)
 {
 	if(sInfomem.sane==INFOMEM_SANE)
 	{
 		return -1;
 	}
 	
-	u16 numwords=(end-start)/2;
+	uint16_t numwords=(end-start)/2;
 	
 	//check if address boundaries are usable
 	if( start & 0x1 || end &0x1 || end<start || numwords<10 || start < INFOMEM_START || end > INFOMEM_START+4*INFOMEM_SEGMENT_SIZE )
@@ -432,23 +432,23 @@ s16 infomem_init(u16 start, u16 end)
 	//check if memory area is empty
 	for(i=0; i<numwords; i++)
 	{
-		if( ((u16*)start)[i] != INFOMEM_ERASED_WORD )
+		if( ((uint16_t*)start)[i] != INFOMEM_ERASED_WORD )
 		{
 			return -3;
 		}
 	}
 	
 	//init struct with standard values
-	sInfomem.startaddr = (u16*) start;
+	sInfomem.startaddr = (uint16_t*) start;
 	sInfomem.size=0;
 	sInfomem.maxsize=(end-start-6)/2;
 	sInfomem.not_lock=0;
 	
 	//prepare the three words of the initial structure
-	u16 buf[3]={INFOMEM_IDENTIFIER,((numwords-3) & 0xFF)<<8,INFOMEM_TERMINATOR};
+	uint16_t buf[3]={INFOMEM_IDENTIFIER,((numwords-3) & 0xFF)<<8,INFOMEM_TERMINATOR};
 	
 	//write the initial structure to memory
-	infomem_write_data((u16*)start, buf,3);
+	infomem_write_data((uint16_t*)start, buf,3);
 	
 	//make structure usable
 	sInfomem.sane= INFOMEM_SANE;
@@ -465,9 +465,9 @@ s16 infomem_init(u16 start, u16 end)
 // @return		<0 see infomem_ready
 //				>=0 available free space (in words)
 // *************************************************************************************************
-s16 infomem_space()
+int16_t infomem_space()
 {
-	s16 ret;
+	int16_t ret;
 	if(sInfomem.sane!=INFOMEM_SANE)
 	{
 		if((ret=infomem_ready())<0)
@@ -481,8 +481,8 @@ s16 infomem_space()
 // *************************************************************************************************
 // @fn          infomem_relocate
 // @brief       change start and end address of data storage (can change size)
-// @param		u16	start		(word) address of first word of used memory
-//				u16	end			(word) address of first word of NOT used memory
+// @param		uint16_t	start		(word) address of first word of used memory
+//				uint16_t	end			(word) address of first word of NOT used memory
 // @return		-1 data structure error or memory not initialized
 //				-2 temporary error (try again later)
 //				-3 address not word addresses
@@ -490,7 +490,7 @@ s16 infomem_space()
 //				-5 new space too small
 //				>0 new maximum size
 // *************************************************************************************************
-s16 infomem_relocate(u16 start, u16 end)
+int16_t infomem_relocate(uint16_t start, uint16_t end)
 {
 	//check if we really have word addresses
 	if((start & 0x1) || (end & 0x1))
@@ -508,7 +508,7 @@ s16 infomem_relocate(u16 start, u16 end)
 		return -4;
 	}
 	//check if new memory range is big enough
-	if((u16*)end < (u16*)start +sInfomem.size+3)
+	if((uint16_t*)end < (uint16_t*)start +sInfomem.size+3)
 	{
 		return -5;
 	}
@@ -520,37 +520,37 @@ s16 infomem_relocate(u16 start, u16 end)
 	sInfomem.not_lock=0;
 	
 	
-	u16* old_end=sInfomem.startaddr+sInfomem.maxsize+3;
+	uint16_t* old_end=sInfomem.startaddr+sInfomem.maxsize+3;
 	
-	sInfomem.maxsize= (u16*)end - (u16*)start - 3;
+	sInfomem.maxsize= (uint16_t*)end - (uint16_t*)start - 3;
 	
 	//new address of size word
-	u16* mod_addr= (u16*)start+1;
+	uint16_t* mod_addr= (uint16_t*)start+1;
 	
 	//prepare new size word
-	u16 buf;
-	((u8*)(&buf))[0] = sInfomem.size;
-	((u8*)(&buf))[1] = sInfomem.maxsize;
+	uint16_t buf;
+	((uint8_t*)(&buf))[0] = sInfomem.size;
+	((uint8_t*)(&buf))[1] = sInfomem.maxsize;
 	
 	//no relocation, just resize
-	if((u16*)start == sInfomem.startaddr)
+	if((uint16_t*)start == sInfomem.startaddr)
 	{
 		infomem_write_data(mod_addr, &buf, 1);
 	}
 	//left shift (might be with resize)
-	else if((u16*)start < sInfomem.startaddr)
+	else if((uint16_t*)start < sInfomem.startaddr)
 	{
 		//delete bytes before information memory
-		infomem_insert_delete_modify((u16*)start, NULL, (u8)(sInfomem.startaddr-(u16*)start), 0, &mod_addr, &buf, 1, sInfomem.startaddr+3+sInfomem.size, old_end);
+		infomem_insert_delete_modify((uint16_t*)start, NULL, (uint8_t)(sInfomem.startaddr-(uint16_t*)start), 0, &mod_addr, &buf, 1, sInfomem.startaddr+3+sInfomem.size, old_end);
 	}
 	//right shift
 	else
 	{
 		//insert empty bytes before information memory
-		infomem_insert_delete_modify(sInfomem.startaddr, NULL, 0, (u8)((u16*)start-sInfomem.startaddr), &mod_addr, &buf, 1, sInfomem.startaddr+3+sInfomem.size, (u16*)start+3+sInfomem.maxsize);
+		infomem_insert_delete_modify(sInfomem.startaddr, NULL, 0, (uint8_t)((uint16_t*)start-sInfomem.startaddr), &mod_addr, &buf, 1, sInfomem.startaddr+3+sInfomem.size, (uint16_t*)start+3+sInfomem.maxsize);
 	}
 	
-	sInfomem.startaddr=(u16*)start;
+	sInfomem.startaddr=(uint16_t*)start;
 	
 	sInfomem.not_lock=1;
 	return sInfomem.maxsize;
@@ -563,7 +563,7 @@ s16 infomem_relocate(u16 start, u16 end)
 // @return		-1 data structure error or memory not initialized
 //				0 deleted
 // *************************************************************************************************
-s16 infomem_delete_all(void)
+int16_t infomem_delete_all(void)
 {
 	if(sInfomem.sane!=INFOMEM_SANE)
 	{
@@ -583,41 +583,41 @@ s16 infomem_delete_all(void)
 // *************************************************************************************************
 // @fn          infomem_app_amount
 // @brief       return how much data for the application is available
-// @param       u8 identifier	Identifier byte for application
+// @param       uint8_t identifier	Identifier byte for application
 // @return		-1 data structure error or memory not initialized
 //				0 application not present
 //				n number of words read
 // *************************************************************************************************
-s16 infomem_app_amount(u8 identifier)
+int16_t infomem_app_amount(uint8_t identifier)
 {
 	if(sInfomem.sane!=INFOMEM_SANE)
 	{
 		return -1;
 	}
 	
-	u16* addr= infomem_get_app_addr(identifier);
+	uint16_t* addr= infomem_get_app_addr(identifier);
 	if( addr == NULL)
 	{
 		return 0;
 	}
 	
-	return ((u8*)addr)[1];
+	return ((uint8_t*)addr)[1];
 }
 	
 	
 // *************************************************************************************************
 // @fn          infomem_app_read
 // @brief       read count bytes of data with offset for given application into prepared memory
-// @param       u8 identifier	Identifier byte for application
-//				u16* data		Data array of size>=count words
-//				u8 count		number of words to read
-//				u8 offset		word offset of data to read
+// @param       uint8_t identifier	Identifier byte for application
+//				uint16_t* data		Data array of size>=count words
+//				uint8_t count		number of words to read
+//				uint8_t offset		word offset of data to read
 // @return		-1 data structure error or memory not initialized
 //				-2 temporary error (try again later)
 //				0 offset to big or app not present
 //				n number of words read
 // *************************************************************************************************
-s16 infomem_app_read(u8 identifier, u16* data, u8 count, u8 offset)
+int16_t infomem_app_read(uint8_t identifier, uint16_t* data, uint8_t count, uint8_t offset)
 {
 	if(sInfomem.sane!=INFOMEM_SANE)
 	{
@@ -625,14 +625,14 @@ s16 infomem_app_read(u8 identifier, u16* data, u8 count, u8 offset)
 	}
 	
 	//find application
-	u16* addr= infomem_get_app_addr(identifier);
+	uint16_t* addr= infomem_get_app_addr(identifier);
 	if( addr == NULL)
 	{
 		return 0;
 	}
 	
 	//read application size
-	u8 size=((u8*)addr)[1];
+	uint8_t size=((uint8_t*)addr)[1];
 	//check if offset is still within application memory
 	if (offset>=size)
 	{
@@ -659,15 +659,15 @@ s16 infomem_app_read(u8 identifier, u16* data, u8 count, u8 offset)
 // *************************************************************************************************
 // @fn          infomem_app_replace
 // @brief       replace all memory content for application by new data
-// @param       u8 identifier	Identifier byte for application
-//				u16* data		Data array
-//				u8 count		number of words
+// @param       uint8_t identifier	Identifier byte for application
+//				uint16_t* data		Data array
+//				uint8_t count		number of words
 // @return		-1 data structure error or memory not initialized
 //				-2 temporary error (try again later)
 //				-4 not enough memory
 //				n new total size of data in information memory
 // *************************************************************************************************
-s16 infomem_app_replace(u8 identifier, u16* data, u8 count)
+int16_t infomem_app_replace(uint8_t identifier, uint16_t* data, uint8_t count)
 {
 	//delete app completely if we have to replace it with zero content.
 	if(count ==0)
@@ -685,57 +685,57 @@ s16 infomem_app_replace(u8 identifier, u16* data, u8 count)
 	}
 	sInfomem.not_lock=0;
 	
-	u8 old_size=0;
+	uint8_t old_size=0;
 	//get address of application
-	u16* addr= infomem_get_app_addr(identifier);
+	uint16_t* addr= infomem_get_app_addr(identifier);
 	//application is already present, really replace memory content
 	if( addr != NULL)
 	{
-		old_size=((u8*)addr)[1];
+		old_size=((uint8_t*)addr)[1];
 		
 		//check if new data does fit
-		if((s16)sInfomem.size + (s16) count - (s16)old_size > sInfomem.maxsize)
+		if((int16_t)sInfomem.size + (int16_t) count - (int16_t)old_size > sInfomem.maxsize)
 		{
 			sInfomem.not_lock=1;
 			return -4;
 		}
 		
 		//set global header and application header to be modified
-		u16* mod_addr[2]={sInfomem.startaddr+1,addr};
-		u16 mod_data[2];
-		((u8*)mod_data)[0]=sInfomem.size+count-old_size;
-		((u8*)mod_data)[1]=sInfomem.maxsize;
-		((u8*)mod_data)[2]=identifier;
-		((u8*)mod_data)[3]=count;
+		uint16_t* mod_addr[2]={sInfomem.startaddr+1,addr};
+		uint16_t mod_data[2];
+		((uint8_t*)mod_data)[0]=sInfomem.size+count-old_size;
+		((uint8_t*)mod_data)[1]=sInfomem.maxsize;
+		((uint8_t*)mod_data)[2]=identifier;
+		((uint8_t*)mod_data)[3]=count;
 		
 		//delete old_size words and write count new words instead, also replace headers
 		infomem_insert_delete_modify(addr+1, data, old_size, count, mod_addr, mod_data, 2, sInfomem.startaddr+3+sInfomem.size, sInfomem.startaddr+3+sInfomem.maxsize);
 		//store new size
-		sInfomem.size=((u8*)mod_data)[0];
+		sInfomem.size=((uint8_t*)mod_data)[0];
 	}
 	//application not present, add it at the end of the information memory
 	else
 	{
 		//check if new data does fit
-		if((s16)sInfomem.size + (s16) count +1 > sInfomem.maxsize)
+		if((int16_t)sInfomem.size + (int16_t) count +1 > sInfomem.maxsize)
 		{
 			sInfomem.not_lock=1;
 			return -4;
 		}
 		
 		//prepare header words
-		u16* mod_addr[2]={sInfomem.startaddr+1,sInfomem.startaddr+2+sInfomem.size};
-		u16 mod_data[2];
-		((u8*)mod_data)[0]=sInfomem.size+count+1;
-		((u8*)mod_data)[1]=sInfomem.maxsize;
-		((u8*)mod_data)[2]=identifier;
-		((u8*)mod_data)[3]=count;
+		uint16_t* mod_addr[2]={sInfomem.startaddr+1,sInfomem.startaddr+2+sInfomem.size};
+		uint16_t mod_data[2];
+		((uint8_t*)mod_data)[0]=sInfomem.size+count+1;
+		((uint8_t*)mod_data)[1]=sInfomem.maxsize;
+		((uint8_t*)mod_data)[2]=identifier;
+		((uint8_t*)mod_data)[3]=count;
 		
 		//hack: to write the application header and size add it to mod, increase count and decrease data pointer. the first data word at data-1 will not be read
 		//this avoids copying data to add a header
 		infomem_insert_delete_modify(sInfomem.startaddr+2+sInfomem.size, data-1, 0, count+1, mod_addr, mod_data, 2, sInfomem.startaddr+3+sInfomem.size, sInfomem.startaddr+3+sInfomem.maxsize);
 		//store size
-		sInfomem.size=((u8*)mod_data)[0];
+		sInfomem.size=((uint8_t*)mod_data)[0];
 	}
 	sInfomem.not_lock=1;
 	return sInfomem.size;
@@ -744,13 +744,13 @@ s16 infomem_app_replace(u8 identifier, u16* data, u8 count)
 // *************************************************************************************************
 // @fn          infomem_app_clear
 // @brief       delete all memory content for application
-// @param       u8 identifier	Identifier byte for application
+// @param       uint8_t identifier	Identifier byte for application
 // @return		-1 data structure error or memory not initialized
 //				-2 temporary error (try again later)
 //				0 application not present
 //				n new total size of data in information memory
 // *************************************************************************************************
-s16 infomem_app_clear(u8 identifier)
+int16_t infomem_app_clear(uint8_t identifier)
 {
 	return infomem_app_delete(identifier,0);
 }
@@ -759,15 +759,15 @@ s16 infomem_app_clear(u8 identifier)
 // @fn          infomem_app_delete
 // @brief       delete all memory content beginning with offset
 //				delete complete application memory if offset==0
-// @param       u8 identifier	Identifier byte for application
-//				u8 offset		Word offset of data to delete
+// @param       uint8_t identifier	Identifier byte for application
+//				uint8_t offset		Word offset of data to delete
 // @return		-1 data structure error or memory not initialized
 //				-2 temporary error (try again later)
 //				-3 offset out of range
 //				0 application not present
 //				n new total size of data in information memory
 // *************************************************************************************************
-s16 infomem_app_delete(u8 identifier,u8 offset)
+int16_t infomem_app_delete(uint8_t identifier,uint8_t offset)
 {
 	if(sInfomem.sane!=INFOMEM_SANE)
 	{
@@ -780,26 +780,26 @@ s16 infomem_app_delete(u8 identifier,u8 offset)
 	sInfomem.not_lock=0;
 	
 	//get address of application
-	u16* addr= infomem_get_app_addr(identifier);
+	uint16_t* addr= infomem_get_app_addr(identifier);
 	if( addr == NULL)
 	{
 		sInfomem.not_lock=1;
 		return 0;
 	}
 	//get old size of application
-	u8 old_size=((u8*)addr)[1];
+	uint8_t old_size=((uint8_t*)addr)[1];
 	//delete application completely
 	if(offset==0)
 	{
 		//prepare global size header
-		u16* mod_addr[1]={sInfomem.startaddr+1};
-		u16 mod_data[1];
-		((u8*)mod_data)[0]=sInfomem.size-old_size-1;
-		((u8*)mod_data)[1]=sInfomem.maxsize;
+		uint16_t* mod_addr[1]={sInfomem.startaddr+1};
+		uint16_t mod_data[1];
+		((uint8_t*)mod_data)[0]=sInfomem.size-old_size-1;
+		((uint8_t*)mod_data)[1]=sInfomem.maxsize;
 		
 		infomem_insert_delete_modify(addr, NULL, old_size+1, 0, mod_addr, mod_data, 1, sInfomem.startaddr+3+sInfomem.size, sInfomem.startaddr+3+sInfomem.maxsize);
 		//store new size
-		sInfomem.size=((u8*)mod_data)[0];
+		sInfomem.size=((uint8_t*)mod_data)[0];
 	}
 	//let some data be present
 	else
@@ -812,19 +812,19 @@ s16 infomem_app_delete(u8 identifier,u8 offset)
 		}
 		
 		//determine count of data to be deleted
-		u8 count_delete=old_size-offset;
+		uint8_t count_delete=old_size-offset;
 		
 		//prepare new size headers
-		u16* mod_addr[2]={sInfomem.startaddr+1,addr};
-		u16 mod_data[2];
-		((u8*)mod_data)[0]=sInfomem.size-count_delete;
-		((u8*)mod_data)[1]=sInfomem.maxsize;
-		((u8*)mod_data)[2]=identifier;
-		((u8*)mod_data)[3]=old_size-count_delete;
+		uint16_t* mod_addr[2]={sInfomem.startaddr+1,addr};
+		uint16_t mod_data[2];
+		((uint8_t*)mod_data)[0]=sInfomem.size-count_delete;
+		((uint8_t*)mod_data)[1]=sInfomem.maxsize;
+		((uint8_t*)mod_data)[2]=identifier;
+		((uint8_t*)mod_data)[3]=old_size-count_delete;
 		
 		infomem_insert_delete_modify(addr+1+offset, NULL, count_delete, 0, mod_addr, mod_data, 2, sInfomem.startaddr+3+sInfomem.size, sInfomem.startaddr+3+sInfomem.maxsize);
 		//store new size
-		sInfomem.size=((u8*)mod_data)[0];
+		sInfomem.size=((uint8_t*)mod_data)[0];
 	}
 	sInfomem.not_lock=1;
 	return sInfomem.size;
@@ -834,10 +834,10 @@ s16 infomem_app_delete(u8 identifier,u8 offset)
 // @fn          infomem_app_modify
 // @brief       modify given bytes of data
 //				overwrite count words of data for application beginning from offset
-// @param       u8 identifier	Identifier byte for application
-//				u16* data		Data array
-//				u8 count		Number of words to modyfy
-//				u8 offset		Word offset of data to modify
+// @param       uint8_t identifier	Identifier byte for application
+//				uint16_t* data		Data array
+//				uint8_t count		Number of words to modyfy
+//				uint8_t offset		Word offset of data to modify
 // @return		-1 data structure error or memory not initialized
 //				-2 temporary error (try again later)
 //				-3 offset too big
@@ -845,7 +845,7 @@ s16 infomem_app_delete(u8 identifier,u8 offset)
 //				0 application not present (use infomem_app_replace to add new application data)
 //				>0 new data syize for application
 // *************************************************************************************************
-s16 infomem_app_modify(u8 identifier, u16* data, u8 count, u8 offset)
+int16_t infomem_app_modify(uint8_t identifier, uint16_t* data, uint8_t count, uint8_t offset)
 {
 	if(sInfomem.sane!=INFOMEM_SANE)
 	{
@@ -857,14 +857,14 @@ s16 infomem_app_modify(u8 identifier, u16* data, u8 count, u8 offset)
 	}
 	sInfomem.not_lock=0;
 	
-	u16* addr= infomem_get_app_addr(identifier);
+	uint16_t* addr= infomem_get_app_addr(identifier);
 	
 	if( addr == NULL)
 	{
 		sInfomem.not_lock=1;
 		return 0;
 	}
-	u8 old_size=((u8*)addr)[1];
+	uint8_t old_size=((uint8_t*)addr)[1];
 	
 	if(offset>old_size)
 	{
@@ -883,27 +883,27 @@ s16 infomem_app_modify(u8 identifier, u16* data, u8 count, u8 offset)
 	else
 	{
 		//calculate number of words that are overwritten
-		u8 count_delete=old_size-offset;
+		uint8_t count_delete=old_size-offset;
 		
 		//check if new data does fit into memory
-		if((s16)sInfomem.size -(s16)count_delete+(s16) count > sInfomem.maxsize)
+		if((int16_t)sInfomem.size -(int16_t)count_delete+(int16_t) count > sInfomem.maxsize)
 		{
 			sInfomem.not_lock=1;
 			return -4;
 		}
 		
 		//prepare new headers with size
-		u16* mod_addr[2]={sInfomem.startaddr+1,addr};
-		u16 mod_data[2];
-		((u8*)mod_data)[0]=sInfomem.size-count_delete+count;
-		((u8*)mod_data)[1]=sInfomem.maxsize;
-		((u8*)mod_data)[2]=identifier;
-		((u8*)mod_data)[3]=old_size-count_delete+count;
+		uint16_t* mod_addr[2]={sInfomem.startaddr+1,addr};
+		uint16_t mod_data[2];
+		((uint8_t*)mod_data)[0]=sInfomem.size-count_delete+count;
+		((uint8_t*)mod_data)[1]=sInfomem.maxsize;
+		((uint8_t*)mod_data)[2]=identifier;
+		((uint8_t*)mod_data)[3]=old_size-count_delete+count;
 		
 		infomem_insert_delete_modify(addr+1+offset, data, count_delete, count, mod_addr, mod_data, 2, sInfomem.startaddr+3+sInfomem.size, sInfomem.startaddr+3+sInfomem.maxsize);
 		
 		//store new size
-		sInfomem.size=((u8*)mod_data)[0];
+		sInfomem.size=((uint8_t*)mod_data)[0];
 		
 		sInfomem.not_lock=1;
 		return offset+count;

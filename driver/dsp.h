@@ -14,7 +14,7 @@
 
 // *************************************************************************************************
 // Prototypes section
-extern s16 mult_scale16(s16 a, s16 b); // returns (s16)((s32)a*b + 0x8000) >> 16
-extern s16 mult_scale15(s16 a, s16 b); // returns (s16)(((s32)a*b << 1) + 0x8000) >> 16
+extern int16_t mult_scale16(int16_t a, int16_t b); // returns (int16_t)((int32_t)a*b + 0x8000) >> 16
+extern int16_t mult_scale15(int16_t a, int16_t b); // returns (int16_t)(((int32_t)a*b << 1) + 0x8000) >> 16
 
 #endif /*DSP_H_*/

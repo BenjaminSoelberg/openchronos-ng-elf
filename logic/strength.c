@@ -39,9 +39,9 @@ strength_data_t strength_data = { } ;
 // @param       update whether a full update is requested (but we do a full update anyway)
 // @return      none
 // *************************************************************************************************
-void display_strength_time(u8 line, u8 update) 
+void display_strength_time(uint8_t line, uint8_t update) 
 {
-	u8 secs = strength_data.seconds_since_start;
+	uint8_t secs = strength_data.seconds_since_start;
 	
 	// if there is anything to display, display that
 	if(strength_data.flags.running 
@@ -65,7 +65,7 @@ void display_strength_time(u8 line, u8 update)
 // *************************************************************************************************
 void strength_tick(void)
 {
-	u8 secs = strength_data.seconds_since_start + 1;
+	uint8_t secs = strength_data.seconds_since_start + 1;
 	strength_data.seconds_since_start = secs;
 	strength_data.flags.redisplay_requested = 1;
 
@@ -75,7 +75,7 @@ void strength_tick(void)
 
 	if(secs < STRENGTH_COUNTDOWN_SECS) 
 	{
-		u8 presecs = STRENGTH_COUNTDOWN_SECS - secs;
+		uint8_t presecs = STRENGTH_COUNTDOWN_SECS - secs;
 		strength_data.time[1] = '-';
 		strength_data.time[2] = '0'+presecs;
 	} 
@@ -151,7 +151,7 @@ void strength_reset(){
 // @param       line LINE1 or LINE2 (assumed to be LINE1)
 // @return      none
 // *************************************************************************************************
-void strength_sx(u8 line)
+void strength_sx(uint8_t line)
 {
 	if(strength_data.flags.running) 
 	{
@@ -182,7 +182,7 @@ void strength_sx(u8 line)
 // @brief       Has the Strength module the desire to redisplay?
 // @return      true iff the Strength data has something new to be displayed
 // *************************************************************************************************
-u8 strength_display_needs_updating(void)
+uint8_t strength_display_needs_updating(void)
 {
 	return strength_data.flags.redisplay_requested;
 }

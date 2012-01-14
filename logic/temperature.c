@@ -55,11 +55,11 @@
 
 // *************************************************************************************************
 // Prototypes section
-u8 is_temp_measurement(void);
+uint8_t is_temp_measurement(void);
 
 #ifndef CONFIG_METRIC_ONLY
-s16 convert_C_to_F(s16 value);
-s16 convert_F_to_C(s16 value);
+int16_t convert_C_to_F(int16_t value);
+int16_t convert_F_to_C(int16_t value);
 #endif
 
 // *************************************************************************************************
@@ -97,10 +97,10 @@ void reset_temp_measurement(void)
 // @param       none
 // @return      none
 // *************************************************************************************************
-void temperature_measurement(u8 filter)
+void temperature_measurement(uint8_t filter)
 {
-	u16 adc_result;
-	volatile s32 temperature;
+	uint16_t adc_result;
+	volatile int32_t temperature;
 	
 	// Convert internal temperature diode voltage 
 	adc_result = adc12_single_conversion(REFVSEL_0, ADC12SHT0_8, ADC12INCH_10);
@@ -109,7 +109,7 @@ void temperature_measurement(u8 filter)
  	// Temperature in Celsius
     // ((A10/4096*1500mV) - 680mV)*(1/2.25mV) = (A10/4096*667) - 302
     // = (A10 - 1855) * (667 / 4096)
-    temperature = (((s32)((s32)adc_result-1855))*667*10)/4096;
+    temperature = (((int32_t)((int32_t)adc_result-1855))*667*10)/4096;
 	
 	// Add temperature offset
 	temperature += sTemp.offset;	
@@ -124,7 +124,7 @@ void temperature_measurement(u8 filter)
 	else
 	{
 		// Override filter 
-		sTemp.degrees = (s16)temperature;
+		sTemp.degrees = (int16_t)temperature;
 	}
 
 	// New data is available --> do display update
@@ -135,13 +135,13 @@ void temperature_measurement(u8 filter)
 // *************************************************************************************************
 // @fn          convert_C_to_F
 // @brief       Convert °C to °F 
-// @param       s16 value		Temperature in °C
-// @return      s16 			Temperature in °F
+// @param       int16_t value		Temperature in °C
+// @return      int16_t 			Temperature in °F
 // *************************************************************************************************
 #ifndef CONFIG_METRIC_ONLY
-s16 convert_C_to_F(s16 value)
+int16_t convert_C_to_F(int16_t value)
 {
-	s16 DegF;
+	int16_t DegF;
 
 	// Celsius in Fahrenheit = (( TCelsius × 9 ) / 5 ) + 32
     DegF = ((value*9*10)/5/10)+32*10;
@@ -153,12 +153,12 @@ s16 convert_C_to_F(s16 value)
 // *************************************************************************************************
 // @fn          convert_F_to_C
 // @brief       Convert °F to °C 
-// @param       s16 value		Temperature in 2.1 °F
-// @return      s16 			Temperature in 2.1 °C
+// @param       int16_t value		Temperature in 2.1 °F
+// @return      int16_t 			Temperature in 2.1 °C
 // *************************************************************************************************
-s16 convert_F_to_C(s16 value)
+int16_t convert_F_to_C(int16_t value)
 {
-	s16 DegC;
+	int16_t DegC;
 
 	// TCelsius =( TFahrenheit - 32 ) × 5 / 9
     DegC = (((value-320)*5))/9;
@@ -174,9 +174,9 @@ s16 convert_F_to_C(s16 value)
 // @fn          is_temp_measurement
 // @brief       Returns TRUE if temperature measurement is enabled. 
 // @param       none
-// @return      u8
+// @return      uint8_t
 // *************************************************************************************************
-u8 is_temp_measurement(void)
+uint8_t is_temp_measurement(void)
 {
 	return (sTemp.state == MENU_ITEM_VISIBLE);
 }
@@ -185,15 +185,15 @@ u8 is_temp_measurement(void)
 // *************************************************************************************************
 // @fn          mx_temperature
 // @brief       Mx button handler to set the temperature offset. 
-// @param       u8 line		LINE1
+// @param       uint8_t line		LINE1
 // @return      none
 // *************************************************************************************************
-void mx_temperature(u8 line)
+void mx_temperature(uint8_t line)
 {
-	s32 temperature;
-	s16 temperature0;
-	volatile s16 temperature1;
-	volatile s16 offset;
+	int32_t temperature;
+	int16_t temperature0;
+	volatile int16_t temperature1;
+	volatile int16_t offset;
 
 	// Clear display
 	clear_display_all();
@@ -270,14 +270,14 @@ void mx_temperature(u8 line)
 // *************************************************************************************************
 // @fn          display_temperature
 // @brief       Common display routine for metric and English units. 
-// @param       u8 line			LINE1
-//				u8 update		DISPLAY_LINE_UPDATE_FULL, DISPLAY_LINE_CLEAR
+// @param       uint8_t line			LINE1
+//				uint8_t update		DISPLAY_LINE_UPDATE_FULL, DISPLAY_LINE_CLEAR
 // @return      none
 // *************************************************************************************************
-void display_temperature(u8 line, u8 update)
+void display_temperature(uint8_t line, uint8_t update)
 {
-	u8 * str;
-	s16 temperature;
+	uint8_t * str;
+	int16_t temperature;
 
 	// Redraw whole screen
 	if (update == DISPLAY_LINE_UPDATE_FULL)	

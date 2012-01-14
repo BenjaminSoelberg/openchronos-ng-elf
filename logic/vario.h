@@ -57,11 +57,11 @@
 #define VARIO_H_
 
 // menu function callbacks
-extern void sx_vario(u8 line);
-extern void mx_vario(u8 line);
-extern void display_vario(u8 line, u8 update);
+extern void sx_vario(uint8_t line);
+extern void mx_vario(uint8_t line);
+extern void display_vario(uint8_t line, uint8_t update);
 
 // external function to update the pressure value.
-extern void vario_p_write(u32);
+extern void vario_p_write(uint32_t);
 
 #endif

@@ -38,8 +38,8 @@
 // *************************************************************************************************
 unsigned char Strobe(unsigned char strobe)
 {
-  u8 statusByte = 0;
-  u16 int_state, gdo_state;
+  uint8_t statusByte = 0;
+  uint16_t int_state, gdo_state;
   
   // Check for valid strobe command 
   if((strobe == 0xBD) || ((strobe > RF_SRES) && (strobe < RF_SNOP)))
@@ -105,7 +105,7 @@ void ResetRadioCore(void)
 unsigned char ReadSingleReg(unsigned char addr)
 {
   unsigned char x;
-  u16 int_state;
+  uint16_t int_state;
 
   ENTER_CRITICAL_SECTION(int_state);
 
@@ -127,7 +127,7 @@ unsigned char ReadSingleReg(unsigned char addr)
 void WriteSingleReg(unsigned char addr, unsigned char value)
 { 
 	volatile unsigned int i;
-	u16 int_state;
+	uint16_t int_state;
 
 	ENTER_CRITICAL_SECTION(int_state);
 	
@@ -151,7 +151,7 @@ void WriteSingleReg(unsigned char addr, unsigned char value)
 void ReadBurstReg(unsigned char addr, unsigned char *buffer, unsigned char count)
 {
   unsigned int i;
-  u16 int_state;
+  uint16_t int_state;
 
   ENTER_CRITICAL_SECTION(int_state);
   
@@ -180,7 +180,7 @@ void WriteBurstReg(unsigned char addr, unsigned char *buffer, unsigned char coun
 {  
   // Write Burst works wordwise not bytewise - bug known already
   unsigned char i;                             
-  u16 int_state;
+  uint16_t int_state;
 
   ENTER_CRITICAL_SECTION(int_state);
 
@@ -207,7 +207,7 @@ void WriteBurstReg(unsigned char addr, unsigned char *buffer, unsigned char coun
 void WritePATable(unsigned char value)
 {
   unsigned char readbackPATableValue = 0;
-  u16 int_state;
+  uint16_t int_state;
 
   ENTER_CRITICAL_SECTION(int_state);
 

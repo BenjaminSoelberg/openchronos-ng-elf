@@ -50,15 +50,15 @@
 struct menu
 {
 	// Pointer to direct function (start, stop etc)
-	void (*sx_function)(u8 line);		 
+	void (*sx_function)(uint8_t line);		 
 	// Pointer to sub menu function (change settings, reset counter etc)
-	void (*mx_function)(u8 line);		 
+	void (*mx_function)(uint8_t line);		 
 	// Pointer to next item function (normally change to next item)
-	void (*nx_function)(u8 line);	
+	void (*nx_function)(uint8_t line);	
 	// Pointer to display function
-	void (*display_function)(u8 line, u8 mode);		 
+	void (*display_function)(uint8_t line, uint8_t mode);		 
 	// Display update trigger 
-	u8 (*display_update)(void); 	 
+	uint8_t (*display_update)(void); 	 
 };
 
 

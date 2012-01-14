@@ -62,9 +62,9 @@ void reset_stopwatch(void);
 void split_stopwatch(void);
 void stopwatch_tick(void);
 void update_stopwatch_timer(void);
-void mx_stopwatch(u8 line);
-void sx_stopwatch(u8 line);
-void display_stopwatch(u8 line, u8 update);
+void mx_stopwatch(uint8_t line);
+void sx_stopwatch(uint8_t line);
+void display_stopwatch(uint8_t line, uint8_t update);
 
 
 // *************************************************************************************************
@@ -88,7 +88,7 @@ extern void menu_skip_next(line_t line); //ezchronos.c
 // *************************************************************************************************
 void update_stopwatch_timer(void)
 {
-	u16 value;
+	uint16_t value;
 	if(!(sStopwatch.state & STOPWATCH_RUN)) return;
 	// Load CCR register with next capture time
 	if (sStopwatch.viewStyle == DISPLAY_DEFAULT_VIEW) 
@@ -132,7 +132,7 @@ void update_stopwatch_timer(void)
 // *************************************************************************************************
 void stopwatch_tick(void)
 {
-	static u8 delay = 0;
+	static uint8_t delay = 0;
 	
 	if(!(sStopwatch.state & STOPWATCH_RUN)) return;
 	// Default view (< 20 minutes): display and count MM:SS:hh
@@ -275,7 +275,7 @@ void reset_stopwatch(void)
 // @param       none
 // @return      1=STOPWATCH_RUN or STOPWATCH_SPLIT_RUN, 0=other states
 // *************************************************************************************************
-u8 is_stopwatch_run(void)
+uint8_t is_stopwatch_run(void)
 {
 	return ((sStopwatch.state & STOPWATCH_RUN) && (ptrMenu_L2 == &menu_L2_Stopwatch));
 }
@@ -286,7 +286,7 @@ u8 is_stopwatch_run(void)
 // @param       none
 // @return      1=STOPWATCH_STOP or STOPWATCH_RESET or STOPWATCH_SPLIT_STOP, 0=other states
 // *************************************************************************************************
-u8 is_stopwatch_stop(void)
+uint8_t is_stopwatch_stop(void)
 {
 	return (( (sStopwatch.state & STOPWATCH_STOP) || sStopwatch.state == STOPWATCH_RESET ) && (ptrMenu_L2 == &menu_L2_Stopwatch));
 }
@@ -385,10 +385,10 @@ void split_stopwatch(void)
 // *************************************************************************************************
 // @fn          mx_stopwatch
 // @brief       Stopwatch set routine. Mx stops stopwatch and resets count.
-// @param       u8 line	LINE2
+// @param       uint8_t line	LINE2
 // @return      none
 // *************************************************************************************************
-void mx_stopwatch(u8 line)
+void mx_stopwatch(uint8_t line)
 {
 	
 	if(sStopwatch.state == STOPWATCH_RESET)
@@ -417,10 +417,10 @@ void mx_stopwatch(u8 line)
 // *************************************************************************************************
 // @fn          sx_stopwatch
 // @brief       Stopwatch direct function. Button DOWN starts/stops stopwatch, but does not reset count.
-// @param       u8 line	LINE2
+// @param       uint8_t line	LINE2
 // @return      none
 // *************************************************************************************************
-void sx_stopwatch(u8 line)
+void sx_stopwatch(uint8_t line)
 {
 	//This function is likely never called because for timing reasons
 	//start_stopwatch and stop_stopwatch are called directly in ports.c
@@ -446,11 +446,11 @@ void sx_stopwatch(u8 line)
 // *************************************************************************************************
 // @fn          display_stopwatch
 // @brief       Stopwatch user routine. Sx starts/stops stopwatch, but does not reset count.
-// @param       u8 line	LINE2
-//				u8 update	DISPLAY_LINE_UPDATE_PARTIAL, DISPLAY_LINE_UPDATE_FULL
+// @param       uint8_t line	LINE2
+//				uint8_t update	DISPLAY_LINE_UPDATE_PARTIAL, DISPLAY_LINE_UPDATE_FULL
 // @return      none
 // *************************************************************************************************
-void display_stopwatch(u8 line, u8 update)
+void display_stopwatch(uint8_t line, uint8_t update)
 {
 	// Partial line update only
 	if (update == DISPLAY_LINE_UPDATE_PARTIAL)

@@ -99,7 +99,7 @@ void reset_batt_measurement(void)
 // *************************************************************************************************
 void battery_measurement(void)
 {
-	u16 voltage;
+	uint16_t voltage;
 	
 	// Convert external battery voltage (ADC12INCH_11=AVCC-AVSS/2)
 	//voltage = adc12_single_conversion(REFVSEL_2, ADC12SHT0_10, ADC12SSEL_0, ADC12SREF_1, ADC12INCH_11, ADC12_BATT_CONVERSION_TIME_USEC);
@@ -150,13 +150,13 @@ void battery_measurement(void)
 // *************************************************************************************************
 // @fn          display_battery_V
 // @brief       Display routine for battery voltage. 
-// @param       u8 line		LINE2
-//				u8 update		DISPLAY_LINE_UPDATE_FULL, DISPLAY_LINE_CLEAR
+// @param       uint8_t line		LINE2
+//				uint8_t update		DISPLAY_LINE_UPDATE_FULL, DISPLAY_LINE_CLEAR
 // @return      none
 // *************************************************************************************************
-void display_battery_V(u8 line, u8 update)
+void display_battery_V(uint8_t line, uint8_t update)
 {
-	u8 * str;
+	uint8_t * str;
 	
 	// Redraw line
 	if (update == DISPLAY_LINE_UPDATE_FULL)	

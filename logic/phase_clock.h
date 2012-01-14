@@ -52,10 +52,10 @@ extern void ping_clock(void);
 extern void collcet_data(void);
 extern void send_data(void);
 
-extern void display_phase_clock(u8 line, u8 update);
+extern void display_phase_clock(uint8_t line, uint8_t update);
 
-extern void sx_phase(u8 line);
-extern void mx_phase(u8 line);
+extern void sx_phase(uint8_t line);
+extern void mx_phase(uint8_t line);
 
 extern void phase_clock_calcpoint();
 
@@ -92,7 +92,7 @@ typedef enum
 //#define PHASE_CLOCK_SEND_LENGTH (SIMPLICITI_MAX_PAYLOAD_LENGTH-2)
 #define PHASE_CLOCK_SEND_LENGTH 2
 #define PHASE_CLOCK_BUFFER 2
-//#define PHASE_CLOCK_BUFFER ((SIMPLICITI_MAX_PAYLOAD_LENGTH-2)/sizeof(u16))
+//#define PHASE_CLOCK_BUFFER ((SIMPLICITI_MAX_PAYLOAD_LENGTH-2)/sizeof(uint16_t))
 
 // Button flags for SimpliciTI data
 //#define SIMPLICITI_BUTTON_STAR			(0x10)
@@ -108,18 +108,18 @@ typedef enum
 // Global Variable section
 struct SPhase
 {
-    u8                  bug;
+    uint8_t                  bug;
 	// current session id
-    u8                  session;
+    uint8_t                  session;
 	// sleep program to start
-	u8					program;
+	uint8_t					program;
     // collected data
     // 
-	u8                  data[SLEEP_DATA_BUFFER][3];
-    u8                  data_nr;
-    //u8                  out[PHASE_CLOCK_BUFFER];
-    u16                 out[SLEEP_OUT_BUFFER];
-    u8                  out_nr;
+	uint8_t                  data[SLEEP_DATA_BUFFER][3];
+    uint8_t                  data_nr;
+    //uint8_t                  out[PHASE_CLOCK_BUFFER];
+    uint16_t                 out[SLEEP_OUT_BUFFER];
+    uint8_t                  out_nr;
 };
 extern struct SPhase sPhase;
 

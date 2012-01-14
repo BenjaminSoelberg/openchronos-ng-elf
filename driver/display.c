@@ -56,11 +56,11 @@
 
 // *************************************************************************************************
 // Prototypes section
-void write_lcd_mem(u8 * lcdmem, u8 bits, u8 bitmask, u8 state);
-void clear_line(u8 line);
-void display_symbol(u8 symbol, u8 mode);
-void display_char(u8 segment, u8 chr, u8 mode);
-void display_chars(u8 segments, u8 * str, u8 mode);
+void write_lcd_mem(uint8_t * lcdmem, uint8_t bits, uint8_t bitmask, uint8_t state);
+void clear_line(uint8_t line);
+void display_symbol(uint8_t symbol, uint8_t mode);
+void display_char(uint8_t segment, uint8_t chr, uint8_t mode);
+void display_chars(uint8_t segments, uint8_t * str, uint8_t mode);
 
 
 // *************************************************************************************************
@@ -75,13 +75,13 @@ void display_chars(u8 segments, u8 * str, u8 mode);
 volatile s_display_flags display;
 
 // Global return string for itoa function
-u8 itoa_str[8];
+uint8_t itoa_str[8];
 
 
 // *************************************************************************************************
 // Extern section
-extern void (*fptr_lcd_function_line1)(u8 line, u8 update);
-extern void (*fptr_lcd_function_line2)(u8 line, u8 update);
+extern void (*fptr_lcd_function_line1)(uint8_t line, uint8_t update);
+extern void (*fptr_lcd_function_line2)(uint8_t line, uint8_t update);
 
 
 // *************************************************************************************************
@@ -111,7 +111,7 @@ void lcd_init(void)
   
 	// Activate LCD output
 	LCDBPCTL0 = 0xFFFF;                         // Select LCD segments S0-S15
-	LCDBPCTL1 = 0x00FF;                         // Select LCD segments S16-S22
+	LCDBPCTL1 = 0x00FF;                         // Select LCD segments int16_t-S22
 
 #ifdef USE_LCD_CHARGE_PUMP
 	// Charge pump voltage generated internally, internal bias (V2-V4) generation
@@ -155,10 +155,10 @@ void clear_display(void)
 // *************************************************************************************************
 // @fn          clear_line
 // @brief       Erase segments of a given line.
-// @param      	u8 line	LINE1, LINE2
+// @param      	uint8_t line	LINE1, LINE2
 // @return      none
 // *************************************************************************************************
-void clear_line(u8 line)
+void clear_line(uint8_t line)
 {
 	display_chars(switch_seg(line, LCD_SEG_L1_3_0, LCD_SEG_L2_5_0), NULL, SEG_OFF);
 	if (line == LINE1)
@@ -185,49 +185,49 @@ void clear_line(u8 line)
 //				mode		On, off or blink segments
 // @return      
 // *************************************************************************************************
-void write_lcd_mem(u8 * lcdmem, u8 bits, u8 bitmask, u8 state)
+void write_lcd_mem(uint8_t * lcdmem, uint8_t bits, uint8_t bitmask, uint8_t state)
 {
 	if (state == SEG_ON)
 	{
 		// Clear segments before writing
-		*lcdmem = (u8)(*lcdmem & ~bitmask);
+		*lcdmem = (uint8_t)(*lcdmem & ~bitmask);
 	
 		// Set visible segments
-		*lcdmem = (u8)(*lcdmem | bits);
+		*lcdmem = (uint8_t)(*lcdmem | bits);
 	}
 	else if (state == SEG_OFF)
 	{
 		// Clear segments
-		*lcdmem = (u8)(*lcdmem & ~bitmask);
+		*lcdmem = (uint8_t)(*lcdmem & ~bitmask);
 	}
 	else if (state == SEG_ON_BLINK_ON)
 	{
 		// Clear visible / blink segments before writing
-		*lcdmem 		= (u8)(*lcdmem & ~bitmask);
-		*(lcdmem+0x20) 	= (u8)(*(lcdmem+0x20) & ~bitmask);
+		*lcdmem 		= (uint8_t)(*lcdmem & ~bitmask);
+		*(lcdmem+0x20) 	= (uint8_t)(*(lcdmem+0x20) & ~bitmask);
 	
 		// Set visible / blink segments
-		*lcdmem 		= (u8)(*lcdmem | bits);
-		*(lcdmem+0x20) 	= (u8)(*(lcdmem+0x20) | bits);
+		*lcdmem 		= (uint8_t)(*lcdmem | bits);
+		*(lcdmem+0x20) 	= (uint8_t)(*(lcdmem+0x20) | bits);
 	}
 	else if (state == SEG_ON_BLINK_OFF)
 	{
 		// Clear visible segments before writing
-		*lcdmem = (u8)(*lcdmem & ~bitmask);
+		*lcdmem = (uint8_t)(*lcdmem & ~bitmask);
 	
 		// Set visible segments
-		*lcdmem = (u8)(*lcdmem | bits);
+		*lcdmem = (uint8_t)(*lcdmem | bits);
 
 		// Clear blink segments
-		*(lcdmem+0x20) 	= (u8)(*(lcdmem+0x20) & ~bitmask);
+		*(lcdmem+0x20) 	= (uint8_t)(*(lcdmem+0x20) & ~bitmask);
 	}
 	else if (state == SEG_OFF_BLINK_OFF)
 	{
 		// Clear segments
-		*lcdmem = (u8)(*lcdmem & ~bitmask);
+		*lcdmem = (uint8_t)(*lcdmem & ~bitmask);
 
 		// Clear blink segments
-		*(lcdmem+0x20) 	= (u8)(*(lcdmem+0x20) & ~bitmask);
+		*(lcdmem+0x20) 	= (uint8_t)(*(lcdmem+0x20) & ~bitmask);
 	}
 }
 
@@ -237,15 +237,15 @@ void write_lcd_mem(u8 * lcdmem, u8 bits, u8 bitmask, u8 state)
 // @brief       Generic integer to array routine. Converts integer n to string.
 //				Default conversion result has leading zeros, e.g. "00123"
 //				Option to convert leading '0' into whitespace (blanks)
-// @param       u32 n			integer to convert
-//				u8 digits		number of digits
-//				u8 blanks		fill up result string with number of whitespaces instead of leading zeros  
-// @return      u8				string
+// @param       uint32_t n			integer to convert
+//				uint8_t digits		number of digits
+//				uint8_t blanks		fill up result string with number of whitespaces instead of leading zeros  
+// @return      uint8_t				string
 // *************************************************************************************************
-u8 * _itoa(u32 n, u8 digits, u8 blanks)
+uint8_t * _itoa(uint32_t n, uint8_t digits, uint8_t blanks)
 {
-	u8 i;
-	u8 digits1 = digits;
+	uint8_t i;
+	uint8_t digits1 = digits;
 	
 	// Preset result string
 	memcpy(itoa_str, "0000000", 7);
@@ -295,15 +295,15 @@ u8 * _itoa(u32 n, u8 digits, u8 blanks)
 // *************************************************************************************************
 // @fn          display_value1
 // @brief       Generic decimal display routine. Used exclusively by set_value function.
-// @param       u8 segments		LCD segments where value is displayed
-//				u32 value			Integer value to be displayed
-//				u8 digits			Number of digits to convert
-//				u8 blanks			Number of leadings blanks in itoa result string
+// @param       uint8_t segments		LCD segments where value is displayed
+//				uint32_t value			Integer value to be displayed
+//				uint8_t digits			Number of digits to convert
+//				uint8_t blanks			Number of leadings blanks in itoa result string
 // @return      none
 // *************************************************************************************************
-void display_value1(u8 segments, u32 value, u8 digits, u8 blanks, u8 disp_mode)
+void display_value1(uint8_t segments, uint32_t value, uint8_t digits, uint8_t blanks, uint8_t disp_mode)
 {
-	u8 * str;
+	uint8_t * str;
 
 	str = _itoa(value, digits, blanks);
 
@@ -317,16 +317,16 @@ void display_value1(u8 segments, u32 value, u8 digits, u8 blanks, u8 disp_mode)
 // *************************************************************************************************
 // @fn          display_hours_12_or_24
 // @brief       Display hours in 24H / 12H time format.
-// @param       u8 segments	Segments where to display hour data
-//				u32 value		Hour data
-//				u8 digits		Must be "2"
-//				u8 blanks		Must be "0"
+// @param       uint8_t segments	Segments where to display hour data
+//				uint32_t value		Hour data
+//				uint8_t digits		Must be "2"
+//				uint8_t blanks		Must be "0"
 // @return      none
 // *************************************************************************************************
-void display_hours_12_or_24(u8 segments, u32 value, u8 digits, u8 blanks, u8 disp_mode)
+void display_hours_12_or_24(uint8_t segments, uint32_t value, uint8_t digits, uint8_t blanks, uint8_t disp_mode)
 {
 #if (OPTION_TIME_DISPLAY > CLOCK_24HR)
-  u8 hours;
+  uint8_t hours;
 #endif
 
 #if (OPTION_TIME_DISPLAY == CLOCK_DISPLAY_SELECT)
@@ -348,7 +348,7 @@ void display_hours_12_or_24(u8 segments, u32 value, u8 digits, u8 blanks, u8 dis
 #endif
 #if (OPTION_TIME_DISPLAY != CLOCK_AM_PM)
 		// Display hours in 24H time format 
-		display_value1(segments, (u16) value, digits, blanks, disp_mode);
+		display_value1(segments, (uint16_t) value, digits, blanks, disp_mode);
 #endif
 #if (OPTION_TIME_DISPLAY == CLOCK_DISPLAY_SELECT)
 	}
@@ -359,11 +359,11 @@ void display_hours_12_or_24(u8 segments, u32 value, u8 digits, u8 blanks, u8 dis
 // *************************************************************************************************
 // @fn          display_am_pm_symbol
 // @brief       Display AM or PM symbol.
-// @param       u8 hour		24H internal time format
+// @param       uint8_t hour		24H internal time format
 // @return      none
 // *************************************************************************************************
 #if (OPTION_TIME_DISPLAY > CLOCK_24HR)
-void display_am_pm_symbol(u8 hour)
+void display_am_pm_symbol(uint8_t hour)
 {
 	// Display AM/PM symbol
 	if (is_hour_am(hour))
@@ -382,20 +382,20 @@ void display_am_pm_symbol(u8 hour)
 // *************************************************************************************************
 // @fn          display_symbol
 // @brief       Switch symbol on or off on LCD.
-// @param       u8 symbol		A valid LCD symbol (index 0..42)
-//				u8 state		SEG_ON, SEG_OFF, SEG_BLINK
+// @param       uint8_t symbol		A valid LCD symbol (index 0..42)
+//				uint8_t state		SEG_ON, SEG_OFF, SEG_BLINK
 // @return      none
 // *************************************************************************************************
-void display_symbol(u8 symbol, u8 mode)
+void display_symbol(uint8_t symbol, uint8_t mode)
 {
-	u8 * lcdmem;
-	u8 bits;
-	u8 bitmask;
+	uint8_t * lcdmem;
+	uint8_t bits;
+	uint8_t bitmask;
 	
 	if (symbol <= LCD_SEG_L2_DP) 
 	{
 		// Get LCD memory address for symbol from table
-		lcdmem 	= (u8 *)segments_lcdmem[symbol];
+		lcdmem 	= (uint8_t *)segments_lcdmem[symbol];
 	
 		// Get bits for symbol from table
 		bits 	= segments_bitmask[symbol];
@@ -412,22 +412,22 @@ void display_symbol(u8 symbol, u8 mode)
 // *************************************************************************************************
 // @fn          display_char
 // @brief       Write to 7-segment characters.
-// @param       u8 segment		A valid LCD segment 
-//				u8 chr			Character to display
-//				u8 mode		SEG_ON, SEG_OFF, SEG_BLINK
+// @param       uint8_t segment		A valid LCD segment 
+//				uint8_t chr			Character to display
+//				uint8_t mode		SEG_ON, SEG_OFF, SEG_BLINK
 // @return      none
 // *************************************************************************************************
-void display_char(u8 segment, u8 chr, u8 mode)
+void display_char(uint8_t segment, uint8_t chr, uint8_t mode)
 {
-	u8 * lcdmem;			// Pointer to LCD memory
-	u8 bitmask;			// Bitmask for character
-	u8 bits, bits1;		// Bits to write
+	uint8_t * lcdmem;			// Pointer to LCD memory
+	uint8_t bitmask;			// Bitmask for character
+	uint8_t bits, bits1;		// Bits to write
 	
 	// Write to single 7-segment character
 	if ((segment >= LCD_SEG_L1_3) && (segment <= LCD_SEG_L2_DP))
 	{
 		// Get LCD memory address for segment from table
-		lcdmem = (u8 *)segments_lcdmem[segment];
+		lcdmem = (uint8_t *)segments_lcdmem[segment];
 
 		// Get bitmask for character from table
 		bitmask = segments_bitmask[segment];
@@ -473,16 +473,16 @@ void display_char(u8 segment, u8 chr, u8 mode)
 // *************************************************************************************************
 // @fn          display_chars
 // @brief       Write to consecutive 7-segment characters.
-// @param       u8 segments	LCD segment array 
-//				u8 * str		Pointer to a string
-//				u8 mode		SEG_ON, SEG_OFF, SEG_BLINK
+// @param       uint8_t segments	LCD segment array 
+//				uint8_t * str		Pointer to a string
+//				uint8_t mode		SEG_ON, SEG_OFF, SEG_BLINK
 // @return      none
 // *************************************************************************************************
-void display_chars(u8 segments, u8 * str, u8 mode)
+void display_chars(uint8_t segments, uint8_t * str, uint8_t mode)
 {
-	u8 i;
-	u8 length = 0;			// Write length
-	u8 char_start;			// Starting point for consecutive write
+	uint8_t i;
+	uint8_t length = 0;			// Write length
+	uint8_t char_start;			// Starting point for consecutive write
 	
 	//single charakter
 	if ((segments >= LCD_SEG_L1_3) && (segments <= LCD_SEG_L2_DP))
@@ -527,12 +527,12 @@ void display_chars(u8 segments, u8 * str, u8 mode)
 // @fn          switch_seg
 // @brief       Returns index of 7-segment character. Required for display routines that can draw 
 //				information on both lines.
-// @param       u8 line		LINE1, LINE2
-//				u8 index1		Index of LINE1
-//				u8 index2		Index of LINE2
+// @param       uint8_t line		LINE1, LINE2
+//				uint8_t index1		Index of LINE1
+//				uint8_t index2		Index of LINE2
 // @return      uint8
 // *************************************************************************************************
-u8 switch_seg(u8 line, u8 index1, u8 index2)
+uint8_t switch_seg(uint8_t line, uint8_t index1, uint8_t index2)
 {
 	if (line == LINE1)
 	{
@@ -587,7 +587,7 @@ void clear_blink_mem(void)
 // @param       none
 // @return      none
 // *************************************************************************************************
-void set_blink_rate(u8 bits)
+void set_blink_rate(uint8_t bits)
 {
 	LCDBBLKCTL &= ~(BIT7 | BIT6 | BIT5);	
 	LCDBBLKCTL |= bits;	
@@ -602,8 +602,8 @@ void set_blink_rate(u8 bits)
 // *************************************************************************************************
 void display_all_off(void)
 {
-	u8 * lcdptr = (u8*)0x0A20;
-	u8 i;
+	uint8_t * lcdptr = (uint8_t*)0x0A20;
+	uint8_t i;
 	
 	for (i=1; i<=12; i++) 
 	{
