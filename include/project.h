@@ -56,13 +56,13 @@
 // *************************************************************************************************
 // Include section
 //pfs
-#include <intrinsics.h>
+#include "intrinsics.h"
 #include "../bluerobin/bm.h"
 
 #include <cc430x613x.h>
 //pfs #include <bm.h>
 
-#include "config.h"
+#include <config.h>
 
 // *************************************************************************************************
 // Defines section
@@ -184,9 +184,6 @@ extern volatile s_message_flags message;
 // *************************************************************************************************
 // Global Variable section
 
-
-// include firmware image
-#include "../config.h"
 
 // feature dependency calculations
 

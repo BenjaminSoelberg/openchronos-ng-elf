@@ -72,6 +72,8 @@
 #include "rf1a.h"
 #include "rtca.h"
 
+#include "modinit.h"
+
 // logic
 #include "menu.h"
 #include "date.h"

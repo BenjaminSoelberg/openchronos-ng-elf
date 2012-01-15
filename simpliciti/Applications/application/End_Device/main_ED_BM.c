@@ -37,7 +37,7 @@
 #include "bsp_leds.h"
 #include "bsp_buttons.h"
 #include "simpliciti.h"
-#include "driver/display.h"
+#include "display.h"
 #include "rfsimpliciti.h"
 
 

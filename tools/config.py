@@ -418,7 +418,7 @@ class OpenChronosApp(object):
             else:
                 raise ValueError, "Unhandled type"
 
-        fp = open("config.h", "w")
+        fp = open("include/config.h", "w")
         fp.write("// !!!! DO NOT EDIT !!!, use: make config\n")
         fp.write(HEADER)
         for key,dat in DATA.iteritems():
@@ -448,7 +448,7 @@ class OpenChronosApp(object):
                     dat["value"] = dat["default"]
 
         try:
-            fp = open("config.h")
+            fp = open("include/config.h")
         except (OSError, IOError):
             set_default()
             return
