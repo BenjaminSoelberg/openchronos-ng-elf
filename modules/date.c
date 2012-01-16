@@ -217,7 +217,7 @@ void sx_date(line_t line)
 // *************************************************************************************************
 void display_date(line_t line, update_t update)
 {
-#ifdef CONFIG_DAY_OF_WEEK
+#ifdef CONFIG_DATE_DOW
 	const uint8_t weekDayStr[7][3] = {"SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"};
 #endif
 	/* nothing to clear */
@@ -241,7 +241,7 @@ void display_date(line_t line, update_t update)
 
 	switch (sDate.view) {
 	case 0: /* WWW.DD */
-#ifdef CONFIG_DAY_OF_WEEK
+#ifdef CONFIG_DATE_DOW
 		str = _itoa(day, 2, 1);
 		display_chars(switch_seg(line, LCD_SEG_L1_1_0, LCD_SEG_L2_1_0),
 								str, SEG_ON);

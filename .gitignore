@@ -5,7 +5,7 @@ eZChronos.elf
 *.pyc
 *.*~
 *.s
-config.h
+include/config.h
 .pida-metadata
 TAGS
 doc/*.html

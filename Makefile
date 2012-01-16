@@ -8,6 +8,8 @@ PYTHON := $(shell which python2 || which python)
 .PHONY: all
 .PHONY: clean
 .PHONY: subdirs $(SUBDIRS)
+.PHONY: install
+.PHONY: config
 
 all: include/config.h eZChronos.txt
 
@@ -26,14 +28,17 @@ modinit.o: modinit.c
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
 modinit.c:
-	$(PYTHON) tools/make_modinit.py
+	echo "Please do a 'make config' first!" && false
+
+include/config.h:
+	echo "Please do a 'make config' first!" && false
 
 $(SUBDIRS):
-	$(MAKE) -C $@ $(MAKECMDGOALS)
+	$(MAKE) -C $@ $(MAKECMDGOALS)	
 
 config:
 	$(PYTHON) tools/config.py
-	git update-index --assume-unchanged include/config.h 2> /dev/null || true
+	$(PYTHON) tools/make_modinit.py
 
 install: eZChronos.txt
 	contrib/ChronosTool.py rfbsl eZChronos.txt
