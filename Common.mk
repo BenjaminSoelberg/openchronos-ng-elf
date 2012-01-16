@@ -9,6 +9,7 @@ CFLAGS		+= -fno-force-addr -finline-limit=1 -fno-schedule-insns
 CFLAGS		+= -fshort-enums -Wl,-Map=output.map
 CFLAGS		+= -DELIMINATE_BLUEROBIN
 LDFLAGS		=
+INCLUDES	+= -I$(TOP)/
 INCLUDES	+= -I$(TOP)/include/ -I$(TOP)/gcc/
 INCLUDES	+= -I$(TOP)/drivers/ -I$(TOP)/logic/
 INCLUDES	+= -I$(TOP)/simpliciti/

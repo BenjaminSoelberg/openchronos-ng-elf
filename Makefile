@@ -14,7 +14,8 @@ PYTHON := $(shell which python2 || which python)
 all: include/config.h eZChronos.txt
 
 eZChronos.elf: even_in_range.o modinit.o $(SUBDIRS)
-	$(CC) $(CFLAGS) $(LDFLAGS) $(INCLUDES) -o eZChronos.elf \
+	@echo -e "\n>> Building $@"
+	@$(CC) $(CFLAGS) $(LDFLAGS) $(INCLUDES) -o eZChronos.elf \
 		ezchronos.c even_in_range.o drivers/xbuilt.o \
 		modules/xbuilt.o logic/xbuilt.o simpliciti/xbuilt.o
 
@@ -25,23 +26,26 @@ even_in_range.o: even_in_range.s
 	$(AS) $< -o $@
 
 modinit.o: modinit.c
-	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+	@echo "CC $<"
+	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
 modinit.c:
-	echo "Please do a 'make config' first!" && false
+	@echo "Please do a 'make config' first!" && false
 
 include/config.h:
-	echo "Please do a 'make config' first!" && false
+	@echo "Please do a 'make config' first!" && false
 
 $(SUBDIRS):
-	$(MAKE) -C $@ $(MAKECMDGOALS)	
+	@echo -e "\n>> Building $@"
+	@$(MAKE) -C $@ $(MAKECMDGOALS)	
 
 config:
 	$(PYTHON) tools/config.py
 	$(PYTHON) tools/make_modinit.py
+	@echo "Don't forget to do a make clean!" && true
 
 install: eZChronos.txt
 	contrib/ChronosTool.py rfbsl eZChronos.txt
 
 clean: $(SUBDIRS)
-	rm -f *.o ezChronos.elf ezChronos.txt modinit.c
+	rm -f *.o ezChronos.elf ezChronos.txt

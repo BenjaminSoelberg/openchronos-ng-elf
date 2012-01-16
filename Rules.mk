@@ -11,10 +11,12 @@ OBJS = $(patsubst %.c, %.o, $(SRCS))
 all: xbuilt.o
 
 xbuilt.o: $(OBJS)
-	$(LD) -r $(OBJS) -o $@
+	@echo "LD $@"
+	@$(LD) -r $(OBJS) -o $@
 
 %.o: %.c
-	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+	@echo "CC $<"
+	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
 clean:
 	rm -f *.o
