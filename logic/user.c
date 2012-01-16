@@ -48,7 +48,6 @@
 #include "ports.h"
 
 // logic
-#include "menu.h"
 #include "date.h"
 #include "clock.h"
 #include "user.h"

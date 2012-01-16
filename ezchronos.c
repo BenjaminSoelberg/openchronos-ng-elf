@@ -1,6 +1,9 @@
 /*
     Copyright (C) 2011 Angelo Arrifano <miknix@gmail.com>
-	   - Improve message display API, with timeout feature
+      - Improve message display API, with timeout feature.
+      - Merged with menu.c;
+      - Full modularization of menu code;
+      - Integration with build system.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -55,12 +58,11 @@
 // *************************************************************************************************
 // Include section
 
-// system
-#include "project.h"
-#include <string.h>
+#include <ezchronos.h>
 
-// driver
-#include "clock.h"
+#include "modinit.h"
+
+/* Driver */
 #include "display.h"
 #include "vti_as.h"
 #include "vti_ps.h"
@@ -72,47 +74,18 @@
 #include "rf1a.h"
 #include "rtca.h"
 
-#include "modinit.h"
-
-// logic
-#include "menu.h"
-#include "date.h"
-#include "alarm.h"
-#include "stopwatch.h"
-#include "battery.h"
-#include "temperature.h"
-#include "altitude.h"
-#ifdef FEATURE_PROVIDE_ACCEL
-#include "acceleration.h"
-#endif
-#include "rfsimpliciti.h"
-#include "simpliciti.h"
-#ifdef CONFIG_TEST
-#include "test.h"
-#endif
-#ifdef CONFIG_EGGTIMER
-#include "eggtimer.h"
-#endif
-#ifdef CONFIG_PHASE_CLOCK
-#include "phase_clock.h"
-#endif
-#ifdef CONFIG_SIDEREAL
-#include "sidereal.h"
-#endif
-
-#ifdef CONFIG_INFOMEM
-#include "infomem.h"
-#endif
-#ifdef CONFIG_STRENGTH
-#include "strength.h"
-#endif
-#if (CONFIG_DST > 0)
-#include "dst.h"
-#endif
-
+/* Simpliciti */
 #include "mrfi.h"
 #include "nwk_types.h"
+#include <simpliciti.h>
 
+/* Logic??? TODO: Try to remove remaining */
+#include <temperature.h>
+#include <rfsimpliciti.h>
+
+/* System */
+#include <stdlib.h>
+#include <string.h>
 
 // *************************************************************************************************
 // Prototypes section
@@ -124,9 +97,6 @@ void display_update(void);
 void idle_loop(void);
 void configure_ports(void);
 void read_calibration_values(void);
-
-void menu_skip_next(line_t line);
-
 
 // *************************************************************************************************
 // Defines section
@@ -154,6 +124,24 @@ uint8_t rf_frequoffset;
 // Function pointers for LINE1 and LINE2 display function
 void (*fptr_lcd_function_line1)(uint8_t line, uint8_t update);
 void (*fptr_lcd_function_line2)(uint8_t line, uint8_t update);
+
+/* Menu definitions and declarations */
+struct menu {
+	/* Pointer to direct function (up/down buttons) */
+	menu_item_fn_t sx_function;
+	/* Pointer to sub menu function (long star/number buttons) */
+	menu_item_fn_t mx_function;
+	/* Pointer to display function */
+	menu_disp_fn_t display_function;
+	/* pointer to next menu item */
+	struct menu *next;
+};
+
+static struct menu *menu_L1_head;
+static struct menu *menu_L1;
+
+static struct menu *menu_L2_head;
+static struct menu *menu_L2;
 
 // *************************************************************************************************
 // Extern section
@@ -346,19 +334,6 @@ void init_application(void)
 // *************************************************************************************************
 void init_global_variables(void)
 {
-	// --------------------------------------------
-	// Apply default settings
-
-	menu_L1_position = 0;
-	menu_L2_position = 0;
-	// set menu pointers to default menu items
-	ptrMenu_L1 = menu_L1[menu_L1_position];
-	ptrMenu_L2 = menu_L2[menu_L2_position];
-
-	// Assign LINE1 and LINE2 display functions
-	fptr_lcd_function_line1 = ptrMenu_L1->display_function;
-	fptr_lcd_function_line2 = ptrMenu_L2->display_function;
-
 	// Init system flags
 	button.all_flags 	= 0;
 	sys.all_flags 		= 0;
@@ -380,13 +355,7 @@ void init_global_variables(void)
 
 	// Read calibration values from info memory
 	read_calibration_values();
-#ifdef CONFIG_ALTI_ACCUMULATOR
-	// By default, don't have the altitude accumulator running
-	alt_accum_enable = 0;
-#endif
-
-
-#ifdef CONFIG_INFOMEM
+	#ifdef CONFIG_INFOMEM
 
 	if (infomem_ready() == -2) {
 		infomem_init(INFOMEM_C, INFOMEM_C + 2 * INFOMEM_SEGMENT_SIZE);
@@ -394,51 +363,8 @@ void init_global_variables(void)
 
 #endif
 
-	// Set system time to default value
-	reset_clock();
-
-	// Set date to default value
-	reset_date();
-
-#ifdef CONFIG_SIDEREAL
-	reset_sidereal_clock();
-#endif
-
-#ifdef CONFIG_ALARM
-	// Set alarm time to default value
-	reset_alarm();
-#endif
-
 	// Set buzzer to default value
 	reset_buzzer();
-
-#ifdef CONFIG_STOP_WATCH
-	// Reset stopwatch
-	reset_stopwatch();
-#endif
-
-	// Reset altitude measurement
-#ifdef CONFIG_ALTITUDE
-	reset_altitude_measurement();
-#endif
-
-#ifdef FEATURE_PROVIDE_ACCEL
-	// Reset acceleration measurement
-	reset_acceleration();
-#endif
-
-#ifdef CONFIG_EGGTIMER
-	init_eggtimer(); // Initialize eggtimer
-#endif
-
-#ifdef CONFIG_PROUT
-	reset_prout();
-#endif
-
-#ifdef CONFIG_PHASE_CLOCK
-	// default program
-	sPhase.program = 0;
-#endif
 
 	// Reset SimpliciTI stack
 	reset_rf();
@@ -446,11 +372,8 @@ void init_global_variables(void)
 	// Reset temperature measurement
 	reset_temp_measurement();
 
-#ifdef CONFIG_BATTERY
-	// Reset battery measurement
-	reset_batt_measurement();
-	battery_measurement();
-#endif
+	/* Init modules */
+	mod_init();
 }
 
 
@@ -482,7 +405,8 @@ void wakeup_event(void)
 		button.flag.star_long = 0;
 
 		// Call sub menu function
-		ptrMenu_L1->mx_function(LINE1);
+		if (menu_L1->mx_function)
+			menu_L1->mx_function(LINE1);
 
 		// Set display update flag
 		display.flag.full_update = 1;
@@ -491,7 +415,8 @@ void wakeup_event(void)
 		button.flag.num_long = 0;
 
 		// Call sub menu function
-		ptrMenu_L2->mx_function(LINE2);
+		if (menu_L2->mx_function)
+			menu_L2->mx_function(LINE2);
 
 		// Set display update flag
 		display.flag.full_update = 1;
@@ -502,7 +427,7 @@ void wakeup_event(void)
 		// (Short) Advance to next menu item
 		if (button.flag.star) {
 			//skip to next menu item
-			ptrMenu_L1->nx_function(LINE1);
+			menu_L1_skip_next();
 
 			// Set Line1 display update flag
 			display.flag.line1_full_update = 1;
@@ -514,7 +439,7 @@ void wakeup_event(void)
 		// (Short) Advance to next menu item
 		else if (button.flag.num) {
 			//skip to next menu item
-			ptrMenu_L2->nx_function(LINE2);
+			menu_L2_skip_next();
 
 			// Set Line2 display update flag
 			display.flag.line2_full_update = 1;
@@ -526,7 +451,8 @@ void wakeup_event(void)
 		// Activate user function for Line1 menu item
 		else if (button.flag.up) {
 			// Call direct function
-			ptrMenu_L1->sx_function(LINE1);
+			if (menu_L1->sx_function)
+				menu_L1->sx_function(LINE1);
 
 			// Set Line1 display update flag
 			display.flag.line1_full_update = 1;
@@ -538,7 +464,8 @@ void wakeup_event(void)
 		// Activate user function for Line2 menu item
 		else if (button.flag.down) {
 			// Call direct function
-			ptrMenu_L2->sx_function(LINE2);
+			if (menu_L2->sx_function)
+				menu_L2->sx_function(LINE2);
 
 			// Set Line1 display update flag
 			display.flag.line2_full_update = 1;
@@ -648,26 +575,24 @@ void display_update(void)
 
 	// ---------------------------------------------------------------------
 	// Call Line1 display function
-	if (display.flag.full_update ||	display.flag.line1_full_update) {
-		clear_line(LINE1);
-		fptr_lcd_function_line1(LINE1, DISPLAY_LINE_UPDATE_FULL);
-	}
-	else if (!message.flag.block_line1)
-	{
-		// Update line1 only when new data is available
-		fptr_lcd_function_line1(LINE1, DISPLAY_LINE_UPDATE_PARTIAL);
+	if (fptr_lcd_function_line1) {
+		if (display.flag.full_update || display.flag.line1_full_update) {
+			clear_line(LINE1);
+			fptr_lcd_function_line1(LINE1, DISPLAY_LINE_UPDATE_FULL);
+		} else if (!message.flag.block_line1) {
+			fptr_lcd_function_line1(LINE1, DISPLAY_LINE_UPDATE_PARTIAL);
+		}
 	}
 
 	// ---------------------------------------------------------------------
 	// Call Line2 display function
-	if (display.flag.full_update || display.flag.line2_full_update) {
-		clear_line(LINE2);
-		fptr_lcd_function_line2(LINE2, DISPLAY_LINE_UPDATE_FULL);
-	}
-	else if (!message.flag.block_line2)
-	{
-		// Update line2 only when new data is available
-		fptr_lcd_function_line2(LINE2, DISPLAY_LINE_UPDATE_PARTIAL);
+	if (fptr_lcd_function_line2) {
+		if (display.flag.full_update || display.flag.line2_full_update) {
+			clear_line(LINE2);
+			fptr_lcd_function_line2(LINE2, DISPLAY_LINE_UPDATE_FULL);
+		} else if (!message.flag.block_line2) {
+			fptr_lcd_function_line2(LINE2, DISPLAY_LINE_UPDATE_PARTIAL);
+		}
 	}
 
 	// ---------------------------------------------------------------------
@@ -913,40 +838,62 @@ void read_calibration_values(void)
 	}
 }
 
-// *************************************************************************************************
-// @fn          menu_skip_next
-// @brief       skip to next menu item
-// @param       line line to skip in
-// @return      none
-// *************************************************************************************************
-void menu_skip_next(line_t line)
+void menu_add_entry(uint8_t const line,
+             menu_item_fn_t const sx_fun,
+             menu_item_fn_t const mx_fun,
+             menu_disp_fn_t const disp_fun)
 {
-	if (line == LINE1) {
-		// Clean up display before activating next menu item
-		fptr_lcd_function_line1(LINE1, DISPLAY_LINE_CLEAR);
+	struct menu **menu_hd = (line == LINE1? &menu_L1_head : &menu_L2_head);
+	struct menu *menu_p;
 
-		if (++menu_L1_position >= menu_L1_size) {
-			menu_L1_position = 0;
+	if (! *menu_hd) {
+		/* Head is empty, create new menu item linked to itself */
+		menu_p = (struct menu *) malloc(sizeof(struct menu));
+		menu_p->next = menu_p;
+		*menu_hd = menu_p;
+		if (line == LINE1) {
+			menu_L1 = menu_p;
+			fptr_lcd_function_line1 = disp_fun;
+		} else {
+			menu_L2 = menu_p;
+			fptr_lcd_function_line2 = disp_fun;
 		}
-
-		// Go to next menu entry
-		ptrMenu_L1 = menu_L1[menu_L1_position];
-
-		// Assign new display function
-		fptr_lcd_function_line1 = ptrMenu_L1->display_function;
-	} else if (line == LINE2) {
-		// Clean up display before activating next menu item
-		fptr_lcd_function_line2(LINE2, DISPLAY_LINE_CLEAR);
-
-		if (++menu_L2_position >= menu_L2_size)
-			menu_L2_position = 0;
-
-		// Go to next menu entry
-		ptrMenu_L2 = menu_L2[menu_L2_position];
-
-		// Assign new display function
-		fptr_lcd_function_line2 = ptrMenu_L2->display_function;
+	} else {
+		/* insert new item after the head */
+		menu_p = (struct menu *) malloc(sizeof(struct menu));
+		menu_p->next = (*menu_hd)->next;
+		(*menu_hd)->next = menu_p;
 	}
+	menu_p->sx_function = sx_fun;
+	menu_p->mx_function = mx_fun;
+	menu_p->display_function = disp_fun;
+}
 
+void menu_L1_skip_next(void)
+{
+	if (! menu_L1)
+		return;
+
+	/* clean up display before activating next menu item */
+	fptr_lcd_function_line1(LINE1, DISPLAY_LINE_CLEAR);
+
+	menu_L1 = menu_L1->next;
+
+	/* Assign new display function */
+	fptr_lcd_function_line1 = menu_L1->display_function;
+}
+
+void menu_L2_skip_next(void)
+{
+	if (! menu_L2)
+		return;
+
+	/* Clean up display before activating next menu item */
+	fptr_lcd_function_line2(LINE2, DISPLAY_LINE_CLEAR);
+
+	menu_L2 = menu_L2->next;
+
+	/* Assign new display function */
+	fptr_lcd_function_line2 = menu_L2->display_function;
 }
 

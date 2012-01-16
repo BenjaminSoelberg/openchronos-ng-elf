@@ -48,7 +48,6 @@
 #include "timer.h"
 
 // logic
-#include "menu.h"
 #include "clock.h"
 #include "user.h"
 

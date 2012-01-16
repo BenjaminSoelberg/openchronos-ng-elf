@@ -100,11 +100,6 @@ struct eggtimer sEggtimer;
 
 
 // *************************************************************************************************
-// Extern section
-extern void menu_skip_next(line_t line); // in ezchronos.c
-
-
-// *************************************************************************************************
 // @fn          init_eggtimer
 // @brief       Initialize eggtimer; intended to be called once, on firmware restart
 // @param       none

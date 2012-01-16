@@ -43,6 +43,7 @@
 #include "project.h"
 #ifdef CONFIG_STOP_WATCH
 #include <string.h>
+#include <ezchronos.h>
 
 // driver
 #include "stopwatch.h"
@@ -75,10 +76,6 @@ void display_stopwatch(uint8_t line, uint8_t update);
 // Global Variable section
 struct stopwatch sStopwatch;
 
-
-// *************************************************************************************************
-// Extern section
-extern void menu_skip_next(line_t line); //ezchronos.c
 
 // *************************************************************************************************
 // @fn          update_stopwatch_timer
@@ -370,7 +367,10 @@ void mx_stopwatch(uint8_t line)
 
 	if (sStopwatch.state == STOPWATCH_RESET) {
 		//skip to next menu item when stopwatch is in reset state
-		menu_skip_next(line);
+		if (line == LINE1)
+			menu_L1_skip_next();
+		else
+			menu_L2_skip_next();
 	} else if (sStopwatch.state == STOPWATCH_STOP) {
 		// Stop stopwatch
 		stop_stopwatch();

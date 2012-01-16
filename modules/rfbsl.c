@@ -32,15 +32,10 @@
 //	  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 // *************************************************************************************************
-// Wireless Update functions.
-// *************************************************************************************************
-
-
-// *************************************************************************************************
-// Include section
 
 // system
 #include "project.h"
+#include <ezchronos.h>
 
 // driver
 #include "display.h"
@@ -52,15 +47,11 @@
 #include "rfsimpliciti.h"
 
 
-// *************************************************************************************************
+// Entry point of of the Flash Updater in BSL memory
+#define CALL_RFSBL()   ((void (*)())0x1000)()
+
 // Global Variable section
-uint8_t locked = 1;
-
-
-// *************************************************************************************************
-// Extern section
-extern void menu_skip_next(line_t line); //ezchronos.c
-
+static uint8_t locked = 1;
 
 // *************************************************************************************************
 // @fn          mx_rfbsl
@@ -68,7 +59,7 @@ extern void menu_skip_next(line_t line); //ezchronos.c
 // @param       line		LINE1, LINE2
 // @return      none
 // *************************************************************************************************
-void mx_rfbsl(uint8_t line)
+static void mx_rfbsl(uint8_t line)
 {
 	if (sys.flag.low_battery) return;
 
@@ -102,9 +93,9 @@ void mx_rfbsl(uint8_t line)
 // @param       line		LINE1, LINE2
 // @return      none
 // *************************************************************************************************
-void sx_rfbsl(uint8_t line)
+static void sx_rfbsl(uint8_t line)
 {
-#if defined(CONFIG_USE_DISCRET_RFBSL) && defined(CONFIG_BATTERY)
+#if defined(CONFIG_RFBSL_DISCRET) && defined(CONFIG_BATTERY)
 
 	if (locked) { // Was in battery mode, toggle to rfbsl mode
 		locked = 0;
@@ -136,26 +127,13 @@ void sx_rfbsl(uint8_t line)
 
 
 // *************************************************************************************************
-// @fn          nx_rfbsl
-// @brief       This function locks the RFBSL and switches to next menu item
-// @param       line		LINE1, LINE2
-// @return      none
-// *************************************************************************************************
-void nx_rfbsl(uint8_t line)
-{
-	locked = 1;
-	menu_skip_next(line);
-}
-
-
-// *************************************************************************************************
 // @fn          display_rfbsl
 // @brief       RFBSL display routine.
 // @param       uint8_t line			LINE2
 //				uint8_t update		DISPLAY_LINE_UPDATE_FULL
 // @return      none
 // *************************************************************************************************
-void display_rfbsl(uint8_t line, uint8_t update)
+static void display_rfbsl(uint8_t line, uint8_t update)
 {
 	if (update == DISPLAY_LINE_UPDATE_FULL) {
 		display_chars(LCD_SEG_L2_5_0, (uint8_t *)" RFBSL", SEG_ON);
@@ -170,8 +148,8 @@ void display_rfbsl(uint8_t line, uint8_t update)
 //		uint8_t update		DISPLAY_LINE_UPDATE_FULL
 // @return      none
 // *************************************************************************************************
-#if defined(CONFIG_USE_DISCRET_RFBSL) && defined(CONFIG_BATTERY)
-void display_discret_rfbsl(uint8_t line, uint8_t update)
+#if defined(CONFIG_RFBSL_DISCRET) && defined(CONFIG_BATTERY)
+static void display_discret_rfbsl(uint8_t line, uint8_t update)
 {
 	if (locked) { // battery mode
 		display_battery_V(line, update);
@@ -180,3 +158,9 @@ void display_discret_rfbsl(uint8_t line, uint8_t update)
 	}
 }
 #endif
+
+
+void rfbsl_init(void)
+{
+	menu_add_entry(LINE2, &sx_rfbsl, &mx_rfbsl, &display_rfbsl);
+}

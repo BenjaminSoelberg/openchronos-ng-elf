@@ -19,7 +19,6 @@
 #include "timer.h"
 
 // logic
-#include "menu.h"
 #include "strength.h"
 
 // only compile all of this if the user wants it
