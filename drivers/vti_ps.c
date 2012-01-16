@@ -95,7 +95,8 @@ uint8_t ps_ok;
 // *************************************************************************************************
 void ps_init(void)
 {
-	volatile uint8_t success, status, eeprom;
+	volatile uint8_t status, eeprom;
+	__attribute__((unused)) volatile uint8_t success;
 
 	PS_INT_DIR &= ~PS_INT_PIN;            	// DRDY is input
 	PS_INT_IES &= ~PS_INT_PIN;				// Interrupt on DRDY rising edge
