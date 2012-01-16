@@ -40,7 +40,7 @@
 // Include section
 
 // system
-#include "project.h"
+#include <ezchronos.h>
 
 // driver
 #include "display.h"
@@ -56,38 +56,8 @@
 #endif
 
 // *************************************************************************************************
-// Prototypes section
-void reset_date(void);
-void mx_date(line_t line);
-void sx_date(line_t line);
-void display_date(line_t line, update_t update);
-
-
-// *************************************************************************************************
-// Defines section
-
-
-// *************************************************************************************************
 // Global Variable section
 struct date sDate;
-
-// *************************************************************************************************
-// Extern section
-
-
-// *************************************************************************************************
-// @fn          reset_date
-// @brief       Reset date to start value.
-// @param       none
-// @return      none
-// *************************************************************************************************
-void reset_date(void)
-{
-	// Show default display
-	sDate.view = 0;
-
-	rtca_tevent_fn_register(&date_event);
-}
 
 void date_event(rtca_tevent_ev_t ev)
 {
@@ -294,3 +264,14 @@ void display_date(line_t line, update_t update)
 		display_time(line, update);
 	}
 }
+
+void date_init(void)
+{
+	// Show default display
+	sDate.view = 0;
+
+	menu_add_entry(LINE2, &sx_date, &mx_date, &display_date);
+
+	rtca_tevent_fn_register(&date_event);
+}
+

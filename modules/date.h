@@ -36,22 +36,10 @@
 #ifndef DATE_H_
 #define DATE_H_
 
-
-// *************************************************************************************************
-// Include section
 #include "rtca.h"
 
-// *************************************************************************************************
-// Prototypes section
-extern void reset_date(void);
-extern void mx_date(uint8_t line);
-extern void sx_date(uint8_t line);
-extern void display_date(uint8_t line, uint8_t update);
+void date_init(void);
 extern void date_event(rtca_tevent_ev_t ev);
-
-// *************************************************************************************************
-// Defines section
-
 
 // *************************************************************************************************
 // Global Variable section
@@ -63,10 +51,6 @@ struct date
 	uint8_t update_display;
 };
 extern struct date sDate;
-
-
-// *************************************************************************************************
-// Extern section
 
 
 #endif /*DATE_H_*/
