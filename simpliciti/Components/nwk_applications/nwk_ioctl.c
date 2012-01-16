@@ -120,7 +120,7 @@ smplStatus_t nwk_rawSend(ioctlRawSend_t *info)
       break;
   }
 
-  if (pOutFrame = nwk_buildFrame(info->port, info->msg, info->len, hops))
+  if ( (pOutFrame = nwk_buildFrame(info->port, info->msg, info->len, hops)) )
   {
     memcpy(MRFI_P_DST_ADDR(&pOutFrame->mrfiPkt), info->addr, NET_ADDR_SIZE);
 #ifdef SMPL_SECURE

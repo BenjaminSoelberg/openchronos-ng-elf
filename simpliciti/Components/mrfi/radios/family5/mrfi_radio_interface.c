@@ -115,7 +115,7 @@ uint8_t mrfiRadioInterfaceCmdStrobe(uint8_t addr)
   /* Check for invalid address.
    * 0xBD is for SNOP with MSP set to read the bytes available in RX FIFO.
    */
-  MRFI_RIF_ASSERT( (addr == 0xBD) || (addr >= RF_SRES) && (addr <= RF_SNOP));
+  MRFI_RIF_ASSERT( (addr == 0xBD) || ((addr >= RF_SRES) && (addr <= RF_SNOP)));
 
   /* Lock out access to Radio IF */
   MRFI_RIF_ENTER_CRITICAL_SECTION(s);

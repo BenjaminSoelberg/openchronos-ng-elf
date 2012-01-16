@@ -57,7 +57,7 @@
 /******************************************************************************
  * LOCAL VARIABLES
  */
-static const addr_t   sMyROMAddress = THIS_DEVICE_ADDRESS;
+static const addr_t   sMyROMAddress = { THIS_DEVICE_ADDRESS };
 static addr_t         sAPAddress;
 static addr_t         sMyRAMAddress;
 static uint8_t        sRAMAddressIsSet = 0;
@@ -67,10 +67,12 @@ static uint8_t        sRAMAddressIsSet = 0;
  */
 static const smplVersionInfo_t sVersionInfo = {
                                                 0x02,  /* protocol version */
+						{
                                                 0x01,  /* major revision number */
                                                 0x01,  /* minor revision number */
                                                 0x01,  /* maintenance release number */
                                                 0x00   /* special release */
+						}
                                                };
 
 /******************************************************************************

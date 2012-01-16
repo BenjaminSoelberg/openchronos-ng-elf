@@ -272,7 +272,7 @@ void MRFI_RxCompleteISR()
   frameInfo_t  *fInfoPtr;
 
   /* room for more? */
-  if (fInfoPtr=nwk_QfindSlot(INQ))
+  if ( (fInfoPtr=nwk_QfindSlot(INQ)) )
   {
     MRFI_Receive(&fInfoPtr->mrfiPkt);
 

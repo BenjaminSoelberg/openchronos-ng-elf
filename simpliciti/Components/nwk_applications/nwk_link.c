@@ -516,7 +516,7 @@ static uint8_t smpl_send_link_reply(mrfiPacket_t *frame)
 
   /* is this a duplicate request? */
   remotePort = *(MRFI_P_PAYLOAD(frame)+F_APP_PAYLOAD_OS+L_RMT_PORT_OS);
-  if (pCInfo=nwk_isLinkDuplicate(MRFI_P_SRC_ADDR(frame), remotePort))
+  if ( (pCInfo=nwk_isLinkDuplicate(MRFI_P_SRC_ADDR(frame), remotePort)) )
   {
     /* resend reply */
     msg[LB_REQ_OS] = LINK_REQ_LINK | NWK_APP_REPLY_BIT;
@@ -537,7 +537,7 @@ static uint8_t smpl_send_link_reply(mrfiPacket_t *frame)
     /* We also need to save the newly generated Rx counter value. */
     nwk_getNumObjectFromMsg((void *)(MRFI_P_PAYLOAD(frame)+F_APP_PAYLOAD_OS+L_CTR_OS), (void *)&pCInfo->connRxCTR, 4);
 #endif
-    if (pOutFrame = nwk_buildFrame(SMPL_PORT_LINK, msg, sizeof(msg), MAX_HOPS-(GET_FROM_FRAME(MRFI_P_PAYLOAD(frame),F_HOP_COUNT))))
+    if ( (pOutFrame = nwk_buildFrame(SMPL_PORT_LINK, msg, sizeof(msg), MAX_HOPS-(GET_FROM_FRAME(MRFI_P_PAYLOAD(frame),F_HOP_COUNT)))) )
     {
       /* destination address is the source adddress of the received frame. */
       memcpy(MRFI_P_DST_ADDR(&pOutFrame->mrfiPkt), MRFI_P_SRC_ADDR(frame), NET_ADDR_SIZE);
@@ -643,7 +643,7 @@ static uint8_t smpl_send_link_reply(mrfiPacket_t *frame)
 
     nwk_putNumObjectIntoMsg((void *)&pCInfo->connTxCTR, (void *)&msg[LR_CTR_OS], 4);
 #endif
-    if (pOutFrame = nwk_buildFrame(SMPL_PORT_LINK, msg, sizeof(msg), MAX_HOPS-(GET_FROM_FRAME(MRFI_P_PAYLOAD(frame),F_HOP_COUNT))))
+    if ( (pOutFrame = nwk_buildFrame(SMPL_PORT_LINK, msg, sizeof(msg), MAX_HOPS-(GET_FROM_FRAME(MRFI_P_PAYLOAD(frame),F_HOP_COUNT)))) )
     {
       /* destination address is the source adddress of the received frame. */
       memcpy(MRFI_P_DST_ADDR(&pOutFrame->mrfiPkt), MRFI_P_SRC_ADDR(frame), NET_ADDR_SIZE);

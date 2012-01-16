@@ -272,7 +272,7 @@ frameInfo_t *nwk_QfindOldest(uint8_t which, rcvContext_t *rcv, uint8_t fi_usage)
   bspIState_t  intState;
   frameInfo_t *fPtr = 0, *wPtr;
   connInfo_t  *pCInfo = 0;
-  uint8_t     *pAddr1, *pAddr2, *pAddr3 = 0;
+  uint8_t     *pAddr1 = 0, *pAddr2 = 0, *pAddr3 = 0;
 
   if (INQ == which)
   {
