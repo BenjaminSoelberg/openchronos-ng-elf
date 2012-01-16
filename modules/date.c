@@ -106,7 +106,7 @@ void date_event(rtca_tevent_ev_t ev)
 // *************************************************************************************************
 void mx_date(line_t line)
 {
-#ifdef CONFIG_USE_SYNC_TOSET_TIME
+#ifdef CONFIG_CLOCK_ONLY_SYNC
 	return;
 #else
 	uint8_t day;

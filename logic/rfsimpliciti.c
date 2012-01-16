@@ -178,7 +178,7 @@ void sx_ppt(uint8_t line)
 }
 #endif
 
-#ifndef CONFIG_USE_SYNC_TOSET_TIME
+#ifndef CONFIG_CLOCK_ONLY_SYNC
 // *************************************************************************************************
 // @fn          sx_sync
 // @brief       Start SimpliciTI. Button DOWN connects/disconnects to access point.
@@ -701,7 +701,7 @@ void simpliciti_sync_decode_ap_cmd_callback(void)
 			sync_sidereal();
 
 #endif
-#ifdef CONFIG_USE_SYNC_TOSET_TIME
+#ifdef CONFIG_CLOCK_ONLY_SYNC
 		simpliciti_flag |= SIMPLICITI_TRIGGER_STOP;
 #endif
 		break;

@@ -32,15 +32,9 @@
 //	  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 // *************************************************************************************************
-// Time functions.
-// *************************************************************************************************
-
-
-// *************************************************************************************************
-// Include section
 
 // system
-#include "project.h"
+#include <ezchronos.h>
 
 // driver
 #include "ports.h"
@@ -57,20 +51,9 @@
 
 #include "date.h"
 
-#ifdef CONFIG_USE_SYNC_TOSET_TIME
+#ifdef CONFIG_CLOCK_ONLY_SYNC
 #include "rfsimpliciti.h"
 #endif
-
-
-// *************************************************************************************************
-// Prototypes section
-void reset_clock(void);
-void mx_time(uint8_t line);
-void sx_time(uint8_t line);
-
-
-// *************************************************************************************************
-// Defines section
 
 
 // *************************************************************************************************
@@ -83,35 +66,6 @@ const uint8_t selection_Timeformat[][4] = {
 	"24H", "12H"
 };
 #endif
-
-
-// *************************************************************************************************
-// Extern section
-
-// *************************************************************************************************
-// @fn          reset_clock
-// @brief       Resets clock time to 00:00:00, 24H time format.
-// @param       none
-// @return      none
-// *************************************************************************************************
-void reset_clock(void)
-{
-	// Display style of both lines is default (HH:MM)
-	sTime.line1ViewStyle = DISPLAY_DEFAULT_VIEW;
-	sTime.line2ViewStyle = DISPLAY_DEFAULT_VIEW;
-
-	// Reset timeout detection
-	sTime.last_activity = 0;
-
-#ifdef CONFIG_SIDEREAL
-	sTime.UTCoffset  = 0;
-#endif
-
-	// The flag will be later updated by clock_event()
-	sTime.drawFlag = 0;
-
-	rtca_tevent_fn_register(&clock_event);
-}
 
 
 void clock_event(rtca_tevent_ev_t ev)
@@ -132,7 +86,7 @@ void clock_event(rtca_tevent_ev_t ev)
 // @return      uint8_t				Hour in 12H format
 // *************************************************************************************************
 #if (OPTION_TIME_DISPLAY > CLOCK_24HR)
-uint8_t convert_hour_to_12H_format(uint8_t hour)
+static uint8_t convert_hour_to_12H_format(uint8_t hour)
 {
 	// 00:00 .. 11:59 --> AM 12:00 .. 11:59
 	if (hour == 0)
@@ -151,7 +105,7 @@ uint8_t convert_hour_to_12H_format(uint8_t hour)
 // @param       uint8_t hour		Hour in 24H format
 // @return      uint8_t				1 = AM, 0 = PM
 // *************************************************************************************************
-uint8_t is_hour_am(uint8_t hour)
+static uint8_t is_hour_am(uint8_t hour)
 {
 	// 00:00 .. 11:59 --> AM 12:00 .. 11:59
 	if (hour < 12) return (1);
@@ -169,7 +123,7 @@ uint8_t is_hour_am(uint8_t hour)
 //				uint8_t blanks			Not used
 // @return      none
 // *************************************************************************************************
-void display_selection_Timeformat1(uint8_t segments, uint32_t index, uint8_t digits, uint8_t blanks, uint8_t dummy)
+static void display_selection_Timeformat1(uint8_t segments, uint32_t index, uint8_t digits, uint8_t blanks, uint8_t dummy)
 {
 	if (index < 2) display_chars(segments, (uint8_t *)selection_Timeformat[index], SEG_ON_BLINK_ON);
 }
@@ -184,7 +138,7 @@ void display_selection_Timeformat1(uint8_t segments, uint32_t index, uint8_t dig
 // @param       uint8_t line		LINE1, LINE2
 // @return      none
 // *************************************************************************************************
-void mx_time(uint8_t line)
+static void mx_time(uint8_t line)
 {
 	uint8_t select;
 	int32_t timeformat;
@@ -197,7 +151,7 @@ void mx_time(uint8_t line)
 	// Clear display
 	clear_display_all();
 
-#ifdef CONFIG_USE_SYNC_TOSET_TIME
+#ifdef CONFIG_CLOCK_ONLY_SYNC
 
 	if (sys.flag.low_battery) return;
 
@@ -323,7 +277,7 @@ void mx_time(uint8_t line)
 // @param       line		LINE1
 // @return      none
 // *************************************************************************************************
-void sx_time(uint8_t line)
+static void sx_time(uint8_t line)
 {
 	// Toggle display view style
 	if (sTime.line1ViewStyle == DISPLAY_DEFAULT_VIEW)
@@ -383,3 +337,24 @@ void display_time(uint8_t line, uint8_t update)
 	}
 }
 
+
+void clock_init()
+{
+	// Display style of both lines is default (HH:MM)
+	sTime.line1ViewStyle = DISPLAY_DEFAULT_VIEW;
+	sTime.line2ViewStyle = DISPLAY_DEFAULT_VIEW;
+
+	// Reset timeout detection
+	sTime.last_activity = 0;
+
+#ifdef CONFIG_SIDEREAL
+	sTime.UTCoffset  = 0;
+#endif
+
+	// The flag will be later updated by clock_event()
+	sTime.drawFlag = 0;
+
+	menu_add_entry(LINE1, &sx_time, &mx_time, &display_time);
+
+	rtca_tevent_fn_register(&clock_event);
+}

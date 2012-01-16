@@ -45,18 +45,10 @@
 #define TIMEFORMAT_24H					(0u)
 #define TIMEFORMAT_12H					(1u)
 
-// *************************************************************************************************
-// Prototypes section
-extern void reset_clock(void);
-extern void sx_time(uint8_t line);
-extern void mx_time(uint8_t line);
-extern void display_selection_Timeformat1(uint8_t segments, uint32_t index, uint8_t digits, uint8_t blanks, uint8_t dummy);
+/* TODO: display_time should be private scope! */
 extern void display_time(uint8_t line, uint8_t update);
 extern void clock_event(rtca_tevent_ev_t ev);
 
-// English units support
-extern uint8_t convert_hour_to_12H_format(uint8_t hour);
-extern uint8_t is_hour_am(uint8_t hour);
 
 
 // *************************************************************************************************

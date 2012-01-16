@@ -194,12 +194,6 @@ for key,field in modules.read_config():
 #	"depends": [],
 #	"default": True
 #}
-#DATA["CONFIG_CLOCK"] = {
-#	"name": "Clock",
-#	"depends": [],
-#	"default": True
-#}
-#}
 #DATA["CONFIG_STOP_WATCH"] = {
 #	"name": "Stop Watch (1202 bytes)",
 #	"depends": [],
@@ -217,12 +211,6 @@ for key,field in modules.read_config():
 #	"name": "Use PPT",
 #	"depends": [],
 #	"default": True
-#}
-#
-#DATA["CONFIG_USE_SYNC_TOSET_TIME"] = {
-#	"name": "Sync is the only way to set clocks data/time",
-#	"depends": [],
-#	"default": False
 #}
 #
 #DATA["CONFIG_USE_GPS"] = {

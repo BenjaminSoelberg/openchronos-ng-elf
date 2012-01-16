@@ -32,11 +32,7 @@
 #endif
 
 #include "date.h"
-/*
-#ifdef CONFIG_USE_SYNC_TOSET_TIME
-#include "rfsimpliciti.h"
-#endif
-*/
+
 // *************************************************************************************************
 // Prototypes section
 
