@@ -21,10 +21,12 @@ Applications/application/End_Device/xbuilt.o
 all: xbuilt.o
 
 xbuilt.o: $(SUBDIRS)
-	$(LD) -r $(OBJS) -o $@
+	@echo "LD $@"
+	@$(LD) -r $(OBJS) -o $@
 
 $(SUBDIRS):
-	$(MAKE) -C $@ $(MAKECMDGOALS)
+	@echo -e "\n>> Building simplicity/$@"
+	@$(MAKE) -C $@ $(MAKECMDGOALS)
 
 clean: $(SUBDIRS)
 	rm -f *.o

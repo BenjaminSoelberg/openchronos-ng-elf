@@ -27,7 +27,8 @@ even_in_range.o: even_in_range.s
 
 modinit.o: modinit.c
 	@echo "CC $<"
-	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+	@$(CC) $(CFLAGS) -Wno-implicit-function-declaration \
+		$(INCLUDES) -c $< -o $@
 
 modinit.c:
 	@echo "Please do a 'make config' first!" && false
