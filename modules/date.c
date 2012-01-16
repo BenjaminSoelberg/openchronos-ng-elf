@@ -86,9 +86,6 @@ void reset_date(void)
 	// Show default display
 	sDate.view = 0;
 
-#if (CONFIG_DST > 0)
-	dst_calculate_dates();
-#endif
 	rtca_tevent_fn_register(&date_event);
 }
 
@@ -112,21 +109,21 @@ void mx_date(line_t line)
 #ifdef CONFIG_USE_SYNC_TOSET_TIME
 	return;
 #else
-	u8 day;
-	u8 dow;
-	u8 month;
-	u16 year;
+	uint8_t day;
+	uint8_t dow;
+	uint8_t month;
+	uint16_t year;
 
-	u8 select;
-	u8 *str;
-	s32 val;
-	u8 max_days;
+	uint8_t select;
+	uint8_t *str;
+	int32_t val;
+	uint8_t max_days;
 
 	// Clear display
 	clear_display_all();
 
 	// Convert global to local variables
-	rtca_get_date( &year, &month, &day, &dow);
+	rtca_get_date(&year, &month, &day, &dow);
 
 	// Init value index
 	select = 0;
@@ -149,15 +146,12 @@ void mx_date(line_t line)
 		// Button STAR (short): save, then exit
 		if (button.flag.star) {
 			// Copy local variables to global variables
-		    rtca_set_date(year, month, day);
+			rtca_set_date(year, month, day);
 #ifdef CONFIG_SIDEREAL
 
 			if (sSidereal_time.sync > 0)
 				sync_sidereal();
 
-#endif
-#if (CONFIG_DST > 0)
-			dst_calculate_dates();
 #endif
 
 			// Full display update is done when returning from function
@@ -165,29 +159,31 @@ void mx_date(line_t line)
 		}
 
 		switch (select) {
-			case 0:		// Set year
-				val = year;
-				set_value(&val, 4, 0, 2008, 2100, SETVALUE_DISPLAY_VALUE + SETVALUE_NEXT_VALUE, LCD_SEG_L1_3_0, display_value1);
-				year = val;
-				select = 1;
-				break;
+		case 0:		// Set year
+			val = year;
+			set_value(&val, 4, 0, 2008, 2100, SETVALUE_DISPLAY_VALUE + SETVALUE_NEXT_VALUE, LCD_SEG_L1_3_0, display_value1);
+			year = val;
+			select = 1;
+			break;
 
-			case 1:		// Set month
-				val = month;
-				set_value(&val, 2, 1, 1, 12, SETVALUE_ROLLOVER_VALUE + SETVALUE_DISPLAY_VALUE + SETVALUE_NEXT_VALUE, LCD_SEG_L2_5_4, display_value1);
-				month = val;
-				select = 2;
-				break;
+		case 1:		// Set month
+			val = month;
+			set_value(&val, 2, 1, 1, 12, SETVALUE_ROLLOVER_VALUE + SETVALUE_DISPLAY_VALUE + SETVALUE_NEXT_VALUE, LCD_SEG_L2_5_4, display_value1);
+			month = val;
+			select = 2;
+			break;
 
-			case 2:		// Set day
-				val = day;
-				set_value(&val, 2, 1, 1, 31, SETVALUE_ROLLOVER_VALUE + SETVALUE_DISPLAY_VALUE + SETVALUE_NEXT_VALUE, LCD_SEG_L2_1_0, display_value1);
-				day = val;
-				select = 0;
-				break;
+		case 2:		// Set day
+			val = day;
+			set_value(&val, 2, 1, 1, 31, SETVALUE_ROLLOVER_VALUE + SETVALUE_DISPLAY_VALUE + SETVALUE_NEXT_VALUE, LCD_SEG_L2_1_0, display_value1);
+			day = val;
+			select = 0;
+			break;
 		}
+
 		// Check if day is still valid, if not clamp to last day of current month
 		max_days = rtca_get_max_days(month, year);
+
 		if (day > max_days) day = max_days;
 	}
 
@@ -222,7 +218,7 @@ void sx_date(line_t line)
 void display_date(line_t line, update_t update)
 {
 #ifdef CONFIG_DAY_OF_WEEK
-	const u8 weekDayStr[7][3] = {"SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"};
+	const uint8_t weekDayStr[7][3] = {"SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"};
 #endif
 	/* nothing to clear */
 	if (update == DISPLAY_LINE_CLEAR)
@@ -235,11 +231,11 @@ void display_date(line_t line, update_t update)
 
 	sDate.update_display = 0;
 
-	u8 *str;
-	u8 day;
-	u8 month;
-	u16 year;
-	u8 dow;
+	uint8_t *str;
+	uint8_t day;
+	uint8_t month;
+	uint16_t year;
+	uint8_t dow;
 
 	rtca_get_date(&year, &month, &day, &dow);
 
@@ -250,7 +246,7 @@ void display_date(line_t line, update_t update)
 		display_chars(switch_seg(line, LCD_SEG_L1_1_0, LCD_SEG_L2_1_0),
 								str, SEG_ON);
 		/* TODO:Get time from RTC */
-		str = (u8 *)weekDayStr[dow];
+		str = (uint8_t *)weekDayStr[dow];
 		display_chars(switch_seg(line, LCD_SEG_L1_3_2, LCD_SEG_L2_4_2),
 								str, SEG_ON);
 

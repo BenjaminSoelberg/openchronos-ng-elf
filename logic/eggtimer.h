@@ -1,34 +1,34 @@
 // *************************************************************************************************
 //
-//	Copyright (C) 2009 Texas Instruments Incorporated - http://www.ti.com/ 
-//	 
-//	 
-//	  Redistribution and use in source and binary forms, with or without 
-//	  modification, are permitted provided that the following conditions 
+//	Copyright (C) 2009 Texas Instruments Incorporated - http://www.ti.com/
+//
+//
+//	  Redistribution and use in source and binary forms, with or without
+//	  modification, are permitted provided that the following conditions
 //	  are met:
-//	
-//	    Redistributions of source code must retain the above copyright 
+//
+//	    Redistributions of source code must retain the above copyright
 //	    notice, this list of conditions and the following disclaimer.
-//	 
+//
 //	    Redistributions in binary form must reproduce the above copyright
-//	    notice, this list of conditions and the following disclaimer in the 
-//	    documentation and/or other materials provided with the   
+//	    notice, this list of conditions and the following disclaimer in the
+//	    documentation and/or other materials provided with the
 //	    distribution.
-//	 
+//
 //	    Neither the name of Texas Instruments Incorporated nor the names of
 //	    its contributors may be used to endorse or promote products derived
 //	    from this software without specific prior written permission.
-//	
-//	  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
-//	  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
+//
+//	  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+//	  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 //	  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-//	  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT 
-//	  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
-//	  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT 
+//	  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+//	  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+//	  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
 //	  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
 //	  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-//	  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT 
-//	  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
+//	  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+//	  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 //	  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 // *************************************************************************************************
@@ -49,10 +49,10 @@ extern void stop_eggtimer_alarm(void);
 extern void set_eggtimer_to_defaults(void);
 extern void set_eggtimer(void);
 extern void eggtimer_tick(void);
-extern void mx_eggtimer(u8 line);
-extern void sx_eggtimer(u8 line);
-extern void display_eggtimer(u8 line, u8 update);
-extern u8 eggtimer_visible(void);
+extern void mx_eggtimer(uint8_t line);
+extern void sx_eggtimer(uint8_t line);
+extern void display_eggtimer(uint8_t line, uint8_t update);
+extern uint8_t eggtimer_visible(void);
 
 
 // *************************************************************************************************
@@ -68,22 +68,21 @@ extern u8 eggtimer_visible(void);
 /* TODO: pack this stuff!! */
 struct eggtimer
 {
-        //NOTE: u8 means unsigned char
-	u8	state;
-	u8	drawFlag;
-	u8 update_display;
+	uint8_t	state;
+	uint8_t	drawFlag;
+	uint8_t update_display;
 	
 	// Values that are decremented each second
-	u8	hours;
-	u8	minutes;
-	u8	seconds;
-	
+	uint8_t	hours;
+	uint8_t	minutes;
+	uint8_t	seconds;
+
 	// Values to default to, after timer runs out and is cleared
-	u8	default_hours;
-	u8	default_minutes;
-	u8	default_seconds;
-	
-	u8	duration; //Number of times to request buzzer double-beep when time is up
+	uint8_t	default_hours;
+	uint8_t	default_minutes;
+	uint8_t	default_seconds;
+
+	uint8_t	duration; //Number of times to request buzzer double-beep when time is up
 };
 extern struct eggtimer sEggtimer;
 

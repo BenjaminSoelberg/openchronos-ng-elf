@@ -1,6 +1,6 @@
 /****
  * written by Lukas Middendorf
- * 
+ *
  * use as desired but do not remove this notice
  */
 
@@ -10,60 +10,59 @@
 #define INFOMEM_H_
 
 /*
- * This driver allows applications to store data in the information memory flash 
+ * This driver allows applications to store data in the information memory flash
  * without interfering with each other (except for the total available memory) or
  * having to care about the characteristics of flash memory.
- * 
+ *
  * infomem_ready() has to be called before any other function does work (except
  * infomem_init, but use infomem_ready to check if infomem_init is really needed).
- * 
+ *
  * Single applications should only use the infomem_app_*() functions ary infomem_space(),
  * the rest of the functions should be used only in the global part of the firmware
  * (or in a dedicated application which's function it is to do memory maintenance tasks).
- * 
+ *
  * Use infomem_app_replace() with count>0 to initialize memory for application. This has
  * to be redone if data of size zero was present and the application header was therefore
- * also removed (replace with zero count, clear, delete with zero offset or modify with 
+ * also removed (replace with zero count, clear, delete with zero offset or modify with
  * zero count and offset).
- * 
+ *
  * All pointers and addresses have to be word addresses (even numbers) and all counts
  * are given in units of words (two bytes).
  */
 
 
 //check if infomem is initialized and in sane state, return amount of data present
-extern s16 infomem_ready();
+extern int16_t infomem_ready();
 //write infomem data structure
-extern s16 infomem_init(u16 start, u16 end);
+extern int16_t infomem_init(uint16_t start, uint16_t end);
 //return amount of free space
-extern s16 infomem_space();
+extern int16_t infomem_space();
 //change start and end address of data storage (can change size)
-extern s16 infomem_relocate(u16 start, u16 end);
+extern int16_t infomem_relocate(uint16_t start, uint16_t end);
 //delete complete data storage (only managed space)
-extern s16 infomem_delete_all(void);
+extern int16_t infomem_delete_all(void);
 
 //return how much data for the application is available
-extern s16 infomem_app_amount(u8 identifier);
+extern int16_t infomem_app_amount(uint8_t identifier);
 //read count bytes of data with offset for given application into prepared memory
-extern s16 infomem_app_read(u8 identifier, u16* data, u8 count, u8 offset);
+extern int16_t infomem_app_read(uint8_t identifier, uint16_t *data, uint8_t count, uint8_t offset);
 //replace all memory content for application by new data
-extern s16 infomem_app_replace(u8 identifier, u16* data, u8 count);
+extern int16_t infomem_app_replace(uint8_t identifier, uint16_t *data, uint8_t count);
 //delete all memory content for application
-extern s16 infomem_app_clear(u8 identifier);
+extern int16_t infomem_app_clear(uint8_t identifier);
 //delete all memory content beginning with offset
-extern s16 infomem_app_delete(u8 identifier,u8 offset);
+extern int16_t infomem_app_delete(uint8_t identifier, uint8_t offset);
 //modify given bytes of data
-extern s16 infomem_app_modify(u8 identifier, u16* data, u8 count, u8 offset);
+extern int16_t infomem_app_modify(uint8_t identifier, uint16_t *data, uint8_t count, uint8_t offset);
 
 
 
-struct infomem
-{
-	u16*		startaddr; //starting address (position of header)
-	u8			size;  //size of payload in words
-	u8			maxsize;  //maximum size of payload in words
-	volatile u8	not_lock;  //memory is not locked for write
-	u8			sane;  //sanity check passed
+struct infomem {
+	uint16_t		*startaddr; //starting address (position of header)
+	uint8_t			size;  //size of payload in words
+	uint8_t			maxsize;  //maximum size of payload in words
+	volatile uint8_t	not_lock;  //memory is not locked for write
+	uint8_t			sane;  //sanity check passed
 };
 // extern struct infomem sInfomem;
 

@@ -1,34 +1,34 @@
 // *************************************************************************************************
 //
-//	Copyright (C) 2009 Texas Instruments Incorporated - http://www.ti.com/ 
-//	 
-//	 
-//	  Redistribution and use in source and binary forms, with or without 
-//	  modification, are permitted provided that the following conditions 
+//	Copyright (C) 2009 Texas Instruments Incorporated - http://www.ti.com/
+//
+//
+//	  Redistribution and use in source and binary forms, with or without
+//	  modification, are permitted provided that the following conditions
 //	  are met:
-//	
-//	    Redistributions of source code must retain the above copyright 
+//
+//	    Redistributions of source code must retain the above copyright
 //	    notice, this list of conditions and the following disclaimer.
-//	 
+//
 //	    Redistributions in binary form must reproduce the above copyright
-//	    notice, this list of conditions and the following disclaimer in the 
-//	    documentation and/or other materials provided with the   
+//	    notice, this list of conditions and the following disclaimer in the
+//	    documentation and/or other materials provided with the
 //	    distribution.
-//	 
+//
 //	    Neither the name of Texas Instruments Incorporated nor the names of
 //	    its contributors may be used to endorse or promote products derived
 //	    from this software without specific prior written permission.
-//	
-//	  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
-//	  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
+//
+//	  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+//	  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 //	  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-//	  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT 
-//	  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
-//	  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT 
+//	  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+//	  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+//	  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
 //	  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
 //	  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-//	  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT 
-//	  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
+//	  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+//	  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 //	  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 // *************************************************************************************************
@@ -64,11 +64,11 @@ void countdown_buzzer(void);
 // *************************************************************************************************
 // Global Variable section
 struct buzzer sBuzzer;
- 
+
 
 // *************************************************************************************************
 // Extern section
-//extern u16 timer0_A3_ticks_g;
+//extern uint16_t timer0_A3_ticks_g;
 
 
 
@@ -83,33 +83,32 @@ void reset_buzzer(void)
 	sBuzzer.time 	= 0;
 	sBuzzer.state 	= BUZZER_OFF;
 
-	sBuzzer.steps	= BUZZER_TIMER_STEPS;		
+	sBuzzer.steps	= BUZZER_TIMER_STEPS;
 }
 
 // *************************************************************************************************
 // @fn          start_buzzer
 // @brief       Start buzzer output for a number of cylces
-// @param       u8 cycles		Keep buzzer output for number of cycles
-//				u16 on_time	Output buzzer for "on_time" ACLK ticks
-//				u16 off_time	Do not output buzzer for "off_time" ACLK ticks
+// @param       uint8_t cycles		Keep buzzer output for number of cycles
+//				uint16_t on_time	Output buzzer for "on_time" ACLK ticks
+//				uint16_t off_time	Do not output buzzer for "off_time" ACLK ticks
 // @return      none
 // *************************************************************************************************
-void start_buzzer(u8 cycles, u16 on_time, u16 off_time)
+void start_buzzer(uint8_t cycles, uint16_t on_time, uint16_t off_time)
 {
 	// Store new buzzer duration while buzzer is off
-	if (sBuzzer.time == 0) 
-	{
+	if (sBuzzer.time == 0) {
 		sBuzzer.time 	 = cycles;
 		sBuzzer.on_time  = on_time;
 		sBuzzer.off_time = off_time;
 
 		// Need to init every time, because SimpliciTI claims same timer
-			
-		// Reset TA1R, set up mode, TA1 runs from 32768Hz ACLK 
+
+		// Reset TA1R, set up mode, TA1 runs from 32768Hz ACLK
 		TA1CTL = TACLR | MC_1 | TASSEL__ACLK;
 
-		// Set PWM frequency 
-                TA1CCR0 = sBuzzer.steps;
+		// Set PWM frequency
+		TA1CCR0 = sBuzzer.steps;
 
 		// Enable IRQ, set output mode "toggle"
 		TA1CCTL0 = OUTMOD_4;
@@ -129,10 +128,10 @@ void start_buzzer(u8 cycles, u16 on_time, u16 off_time)
 	}
 }
 
-void start_buzzer_steps(u8 cycles, u16 on_time, u16 off_time, u8 steps )
+void start_buzzer_steps(uint8_t cycles, uint16_t on_time, uint16_t off_time, uint8_t steps)
 {
-   sBuzzer.steps = steps;
-   start_buzzer( cycles, on_time, off_time );
+	sBuzzer.steps = steps;
+	start_buzzer(cycles, on_time, off_time);
 }
 
 // *************************************************************************************************
@@ -144,39 +143,35 @@ void start_buzzer_steps(u8 cycles, u16 on_time, u16 off_time, u8 steps )
 void toggle_buzzer(void)
 {
 	// Turn off buzzer
-	if (sBuzzer.state == BUZZER_ON_OUTPUT_ENABLED)
-	{
-		// Stop PWM timer 
+	if (sBuzzer.state == BUZZER_ON_OUTPUT_ENABLED) {
+		// Stop PWM timer
 		TA1CTL &= ~(BIT4 | BIT5);
 
 		// Reset and disable buzzer PWM output
 		P2OUT &= ~BIT7;
 		P2SEL &= ~BIT7;
-		
+
 		// Update buzzer state
 		sBuzzer.state = BUZZER_ON_OUTPUT_DISABLED;
-		
+
 		// Reload Timer0_A4 IRQ to restart output
 		sTimer.timer0_A3_ticks = sBuzzer.on_time;
-	}
-	else // Turn on buzzer
-	{
+	} else { // Turn on buzzer
 		// Decrement buzzer total cycles
 		countdown_buzzer();
-		
+
 		// Reload Timer0_A4 to stop output if sBuzzer.time > 0
-		if (sBuzzer.state != BUZZER_OFF) 
-		{
+		if (sBuzzer.state != BUZZER_OFF) {
 			// Reset timer TA1
 			TA1R = 0;
 			TA1CTL |= MC_1;
 
 			// Enable buzzer PWM output
 			P2SEL |= BIT7;
-	
+
 			// Update buzzer state
 			sBuzzer.state = BUZZER_ON_OUTPUT_ENABLED;
-	
+
 			// Reload Timer0_A4 IRQ to turn off output
 			sTimer.timer0_A3_ticks = sBuzzer.off_time;
 		}
@@ -192,15 +187,15 @@ void toggle_buzzer(void)
 // *************************************************************************************************
 void stop_buzzer(void)
 {
-	// Stop PWM timer 
+	// Stop PWM timer
 	TA1CTL &= ~(BIT4 | BIT5);
 
 	// Disable buzzer PWM output
 	P2OUT &= ~BIT7;
 	P2SEL &= ~BIT7;
-	
-	// Clear PWM timer interrupt    
-	TA1CCTL0 &= ~CCIE; 
+
+	// Clear PWM timer interrupt
+	TA1CCTL0 &= ~CCIE;
 
 	// Disable periodic start/stop interrupts
 	Timer0_A3_Stop();
@@ -215,9 +210,9 @@ void stop_buzzer(void)
 // @fn          is_buzzer
 // @brief       Check if buzzer is operating
 // @param       none
-// @return      u8		1 = Buzzer is operating, 0 = Buzzer is off
+// @return      uint8_t		1 = Buzzer is operating, 0 = Buzzer is off
 // *************************************************************************************************
-u8 is_buzzer(void)
+uint8_t is_buzzer(void)
 {
 	return (sBuzzer.state != BUZZER_OFF);
 }
@@ -233,8 +228,7 @@ u8 is_buzzer(void)
 void countdown_buzzer(void)
 {
 	// Stop buzzer when reaching 0 cycles
-	if (--sBuzzer.time == 0)
-	{
+	if (--sBuzzer.time == 0) {
 		stop_buzzer();
 	}
 }

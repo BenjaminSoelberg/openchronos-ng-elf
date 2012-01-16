@@ -20,12 +20,12 @@
 // @brief       Multiply and scale rounded by 16 bits
 // @param       a multiply operand 1
 // @param       b multiply operand 2
-// @return      (s16)((s32)a*b + 0x8000) >> 16
+// @return      (int16_t)((int32_t)a*b + 0x8000) >> 16
 // *************************************************************************************************
-s16 mult_scale16(s16 a, s16 b)
+int16_t mult_scale16(int16_t a, int16_t b)
 {
-	#define HALF ((s32)0x8000)
-	return (s16)(((s32)a*b + HALF) >> 16);
+#define HALF ((int32_t)0x8000)
+	return (int16_t)(((int32_t)a * b + HALF) >> 16);
 }
 
 // *************************************************************************************************
@@ -33,16 +33,16 @@ s16 mult_scale16(s16 a, s16 b)
 // @brief       Multiply and scale rounded by 15 bits
 // @param       a multiply operand 1
 // @param       b multiply operand 2
-// @return      (s16)(((s32)a*b << 1) + 0x8000) >> 16
+// @return      (int16_t)(((int32_t)a*b << 1) + 0x8000) >> 16
 // *************************************************************************************************
-s16 mult_scale15(s16 a, s16 b)
+int16_t mult_scale15(int16_t a, int16_t b)
 {
-	#define HALF ((s32)0x8000)
-	s32 ff;
-	ff = ((s32)a*b);
+#define HALF ((int32_t)0x8000)
+	int32_t ff;
+	ff = ((int32_t)a * b);
 	// Note 1: The sequence of a separate << 1 and >>16 operation produces
 	//         far more efficient compiled code than >> 15.
 	// Note 2: Combining the shift(s) with previous statement is not accepted by the compiler.
 	ff <<= 1;
-	return (s16)((ff + HALF) >> 16);
+	return (int16_t)((ff + HALF) >> 16);
 }

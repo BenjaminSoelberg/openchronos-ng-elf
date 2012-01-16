@@ -1,34 +1,34 @@
 // *************************************************************************************************
 //
-//	Copyright (C) 2009 Texas Instruments Incorporated - http://www.ti.com/ 
-//	 
-//	 
-//	  Redistribution and use in source and binary forms, with or without 
-//	  modification, are permitted provided that the following conditions 
+//	Copyright (C) 2009 Texas Instruments Incorporated - http://www.ti.com/
+//
+//
+//	  Redistribution and use in source and binary forms, with or without
+//	  modification, are permitted provided that the following conditions
 //	  are met:
-//	
-//	    Redistributions of source code must retain the above copyright 
+//
+//	    Redistributions of source code must retain the above copyright
 //	    notice, this list of conditions and the following disclaimer.
-//	 
+//
 //	    Redistributions in binary form must reproduce the above copyright
-//	    notice, this list of conditions and the following disclaimer in the 
-//	    documentation and/or other materials provided with the   
+//	    notice, this list of conditions and the following disclaimer in the
+//	    documentation and/or other materials provided with the
 //	    distribution.
-//	 
+//
 //	    Neither the name of Texas Instruments Incorporated nor the names of
 //	    its contributors may be used to endorse or promote products derived
 //	    from this software without specific prior written permission.
-//	
-//	  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
-//	  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
+//
+//	  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+//	  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 //	  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-//	  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT 
-//	  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
-//	  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT 
+//	  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+//	  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+//	  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
 //	  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
 //	  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-//	  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT 
-//	  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
+//	  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+//	  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 //	  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 // *************************************************************************************************
@@ -55,10 +55,6 @@
 #include "temperature.h"
 #include "altitude.h"
 #include "battery.h"
-//pfs
-#ifndef ELIMINATE_BLUEROBIN
-#include "bluerobin.h"
-#endif
 
 #include "rfsimpliciti.h"
 
@@ -104,15 +100,15 @@
 
 // *************************************************************************************************
 // Global Variable section
-const struct menu * ptrMenu_L1 = NULL;
-const struct menu * ptrMenu_L2 = NULL;
+const struct menu *ptrMenu_L1;
+const struct menu *ptrMenu_L2;
 
 // *************************************************************************************************
 // Extern section
 extern void menu_skip_next(line_t line); //ezchronos.c
 
 
-void display_nothing(u8 line, u8 update) {}
+void display_nothing(uint8_t line, uint8_t update) {}
 
 
 // *************************************************************************************************
@@ -124,8 +120,7 @@ void display_nothing(u8 line, u8 update) {}
 // *************************************************************************************************
 
 // Line1 - Time
-const struct menu menu_L1_Time =
-{
+const struct menu menu_L1_Time = {
 	FUNCTION(sx_time),			// direct function
 	FUNCTION(mx_time),			// sub menu function
 	FUNCTION(menu_skip_next),	// next item function
@@ -134,8 +129,7 @@ const struct menu menu_L1_Time =
 
 #ifdef CONFIG_SIDEREAL
 // Line1 - Sidereal Time
-const struct menu menu_L1_Sidereal =
-{
+const struct menu menu_L1_Sidereal = {
 	FUNCTION(sx_sidereal),		// direct function
 	FUNCTION(mx_sidereal),		// sub menu function
 	FUNCTION(menu_skip_next),	// next item function
@@ -145,8 +139,7 @@ const struct menu menu_L1_Sidereal =
 
 // Line1 - Alarm
 #ifdef CONFIG_ALARM
-const struct menu menu_L1_Alarm =
-{
+const struct menu menu_L1_Alarm = {
 	FUNCTION(sx_alarm),			// direct function
 	FUNCTION(mx_alarm),			// sub menu function
 	FUNCTION(menu_skip_next),	// next item function
@@ -154,8 +147,7 @@ const struct menu menu_L1_Alarm =
 };
 #endif
 // Line1 - Temperature
-const struct menu menu_L1_Temperature =
-{
+const struct menu menu_L1_Temperature = {
 	FUNCTION(dummy),					// direct function
 	FUNCTION(mx_temperature),			// sub menu function
 	FUNCTION(menu_skip_next),			// next item function
@@ -164,8 +156,7 @@ const struct menu menu_L1_Temperature =
 
 #ifdef CONFIG_ALTITUDE
 // Line1 - Altitude
-const struct menu menu_L1_Altitude =
-{
+const struct menu menu_L1_Altitude = {
 	FUNCTION(sx_altitude),				// direct function
 	FUNCTION(mx_altitude),				// sub menu function
 	FUNCTION(menu_skip_next),			// next item function
@@ -175,8 +166,7 @@ const struct menu menu_L1_Altitude =
 
 #ifdef CONFIG_ALTI_ACCUMULATOR
 // Line1 - Altitude Accumulator
-const struct menu menu_L1_AltAccum =
-{
+const struct menu menu_L1_AltAccum = {
 	FUNCTION(sx_alt_accumulator),		// direct function
 	FUNCTION(mx_alt_accumulator),		// sub menu function
 	FUNCTION(menu_skip_next),		// next item function
@@ -184,29 +174,9 @@ const struct menu menu_L1_AltAccum =
 };
 #endif
 
-//pfs
-#ifndef ELIMINATE_BLUEROBIN
-// Line1 - Heart Rate
-const struct menu menu_L1_Heartrate =
-{
-	FUNCTION(sx_bluerobin),				// direct function
-	FUNCTION(mx_bluerobin),				// sub menu function
-	FUNCTION(menu_skip_next),			// next item function
-	FUNCTION(display_heartrate),		// display function
-};
-// Line1 - Speed
-const struct menu menu_L1_Speed =
-{
-	FUNCTION(dummy),					// direct function
-	FUNCTION(dummy),					// sub menu function
-	FUNCTION(menu_skip_next),			// next item function
-	FUNCTION(display_speed),			// display function
-};
-#endif
 #ifdef CONFIG_ACCEL
 // Line1 - Acceleration
-const struct menu menu_L1_Acceleration =
-{
+const struct menu menu_L1_Acceleration = {
 	FUNCTION(sx_acceleration),			// direct function
 	FUNCTION(dummy),					// sub menu function
 	FUNCTION(menu_skip_next),			// next item function
@@ -215,8 +185,7 @@ const struct menu menu_L1_Acceleration =
 #endif
 
 // Line2 - Date
-const struct menu menu_L2_Date =
-{
+const struct menu menu_L2_Date = {
 	FUNCTION(sx_date),			// direct function
 	FUNCTION(mx_date),			// sub menu function
 	FUNCTION(menu_skip_next),	// next item function
@@ -224,8 +193,7 @@ const struct menu menu_L2_Date =
 };
 #ifdef CONFIG_VARIO
 //Line 2 - Vario
-const struct menu menu_L2_Vario = 
-  {
+const struct menu menu_L2_Vario = {
 	FUNCTION(sx_vario),		// direct function
 	FUNCTION(mx_vario),		// sub menu function
 	FUNCTION(menu_skip_next),	// next item function
@@ -235,8 +203,7 @@ const struct menu menu_L2_Vario =
 
 // Line2 - Stopwatch
 #ifdef CONFIG_STOP_WATCH
-const struct menu menu_L2_Stopwatch =
-{
+const struct menu menu_L2_Stopwatch = {
 	FUNCTION(sx_stopwatch),		// direct function
 	FUNCTION(mx_stopwatch),		// sub menu function
 	FUNCTION(menu_skip_next),	// next item function
@@ -253,27 +220,25 @@ const struct menu menu_L2_Eggtimer =
         FUNCTION(display_eggtimer),// display function
 };
 #endif
-// Line2 - Battery 
+// Line2 - Battery
 #ifdef CONFIG_BATTERY
-const struct menu menu_L2_Battery =
-{
-	#ifdef CONFIG_USE_DISCRET_RFBSL
+const struct menu menu_L2_Battery = {
+# ifdef CONFIG_USE_DISCRET_RFBSL
 	FUNCTION(sx_rfbsl), // sub menu function
 	FUNCTION(mx_rfbsl), // direct function
 	FUNCTION(nx_rfbsl), // next item function
 	FUNCTION(display_discret_rfbsl),
-	#else
+# else
 	FUNCTION(dummy), // sub menu function
 	FUNCTION(dummy), // direct function
 	FUNCTION(menu_skip_next), // next item function
 	FUNCTION(display_battery_V), // display function
-	#endif
+# endif
 };
 #endif
 #ifdef CONFIG_PHASE_CLOCK
 // Line2 - ACC (acceleration data + button events via SimpliciTI)
-const struct menu menu_L2_Phase =
-{
+const struct menu menu_L2_Phase = {
 	FUNCTION(sx_phase),				// direct function
 	FUNCTION(mx_phase),				// sub menu function
 	FUNCTION(menu_skip_next),		// next item function
@@ -282,8 +247,7 @@ const struct menu menu_L2_Phase =
 #endif
 #ifdef CONFIG_ACCEL
 // Line2 - ACC (acceleration data + button events via SimpliciTI)
-const struct menu menu_L2_Rf =
-{
+const struct menu menu_L2_Rf = {
 	FUNCTION(sx_rf),				// direct function
 	FUNCTION(dummy),				// sub menu function
 	FUNCTION(menu_skip_next),		// next item function
@@ -293,8 +257,7 @@ const struct menu menu_L2_Rf =
 
 #ifdef CONFIG_USEPPT
 // Line2 - PPT (button events via SimpliciTI)
-const struct menu menu_L2_Ppt =
-{
+const struct menu menu_L2_Ppt = {
 	FUNCTION(sx_ppt),				// direct function
 	FUNCTION(dummy),				// sub menu function
 	FUNCTION(menu_skip_next),		// next item function
@@ -304,8 +267,7 @@ const struct menu menu_L2_Ppt =
 
 #ifndef CONFIG_USE_SYNC_TOSET_TIME
 // Line2 - SXNC (synchronization/data download via SimpliciTI)
-const struct menu menu_L2_Sync =
-{
+const struct menu menu_L2_Sync = {
 	FUNCTION(sx_sync),				// direct function
 	FUNCTION(dummy),				// sub menu function
 	FUNCTION(menu_skip_next),		// next item function
@@ -328,8 +290,7 @@ const struct menu menu_L2_CalDist =
 // want the hidden RFBSL menu
 #if !defined(CONFIG_BATTERY) || !defined(CONFIG_USE_DISCRET_RFBSL)
 // Line2 - RFBSL
-const struct menu menu_L2_RFBSL =
-{
+const struct menu menu_L2_RFBSL = {
 	FUNCTION(sx_rfbsl),				// direct function
 	FUNCTION(mx_rfbsl),				// sub menu function
 	FUNCTION(nx_rfbsl),				// next item function
@@ -339,8 +300,7 @@ const struct menu menu_L2_RFBSL =
 
 #ifdef CONFIG_PROUT
 // Line2 - PROUT
-const struct menu menu_L2_Prout =
-{
+const struct menu menu_L2_Prout = {
 	FUNCTION(sx_prout),				// direct function
 	FUNCTION(mx_prout),				// sub menu function
 	FUNCTION(menu_skip_next),		// next item function
@@ -350,8 +310,7 @@ const struct menu menu_L2_Prout =
 
 #ifdef CONFIG_STRENGTH
 // Line1 - Kieser Training timer
-const struct menu menu_L1_Strength =
-{
+const struct menu menu_L1_Strength = {
 	FUNCTION(strength_sx),					// direct function
 	FUNCTION(dummy),					// sub menu function
 	FUNCTION(menu_skip_next),			// next item function
@@ -373,74 +332,68 @@ const struct menu menu_L2_Gps =
 // *************************************************************************************************
 // menu array
 
-const struct menu *menu_L1[]={
+const struct menu *menu_L1[] = {
 	&menu_L1_Time,
-	#ifdef CONFIG_STRENGTH
+#ifdef CONFIG_STRENGTH
 	&menu_L1_Strength,
-	#endif
-	#ifdef CONFIG_SIDEREAL
+#endif
+#ifdef CONFIG_SIDEREAL
 	&menu_L1_Sidereal,
-	#endif
-	#ifdef CONFIG_ALARM
+#endif
+#ifdef CONFIG_ALARM
 	&menu_L1_Alarm,
-	#endif
+#endif
 	&menu_L1_Temperature,
-	#ifdef CONFIG_ALTITUDE
+#ifdef CONFIG_ALTITUDE
 	&menu_L1_Altitude,
-	#endif
-	#ifdef CONFIG_ALTI_ACCUMULATOR
+#endif
+#ifdef CONFIG_ALTI_ACCUMULATOR
 	&menu_L1_AltAccum,
-	#endif
-	#ifndef ELIMINATE_BLUEROBIN
-	&menu_L1_Heartrate,
-	#endif
-	#ifdef CONFIG_ACCEL
+#endif
+#ifdef CONFIG_ACCEL
 	&menu_L1_Acceleration,
-	#endif
+#endif
 };
 
-const int menu_L1_size=sizeof(menu_L1)/sizeof(struct menu*);
-int menu_L1_position=0;
+const int menu_L1_size = sizeof(menu_L1) / sizeof(struct menu *);
+int menu_L1_position = 0;
 
-const struct menu *menu_L2[]={
+const struct menu *menu_L2[] = {
 	&menu_L2_Date,
-	#ifdef CONFIG_VARIO
+#ifdef CONFIG_VARIO
 	&menu_L2_Vario,
-	#endif
-	#ifdef CONFIG_STOP_WATCH
+#endif
+#ifdef CONFIG_STOP_WATCH
 	&menu_L2_Stopwatch,
-	#endif
-	#ifdef CONFIG_EGGTIMER
+#endif
+#ifdef CONFIG_EGGTIMER
 	&menu_L2_Eggtimer,
-	#endif
-	#ifdef CONFIG_BATTERY
+#endif
+#ifdef CONFIG_BATTERY
 	&menu_L2_Battery,
-	#endif
-	#ifdef CONFIG_PHASE_CLOCK
+#endif
+#ifdef CONFIG_PHASE_CLOCK
 	&menu_L2_Phase,
-	#endif
-	#ifdef CONFIG_ACCEL
+#endif
+#ifdef CONFIG_ACCEL
 	&menu_L2_Rf,
-	#endif
-	#ifdef CONFIG_USEPPT
+#endif
+#ifdef CONFIG_USEPPT
 	&menu_L2_Ppt,
-	#endif
-	#ifndef CONFIG_USE_SYNC_TOSET_TIME
+#endif
+#ifndef CONFIG_USE_SYNC_TOSET_TIME
 	&menu_L2_Sync,
-	#endif
-	#ifndef ELIMINATE_BLUEROBIN
-	&menu_L2_CalDist,
-	#endif
-	#if !defined(CONFIG_USE_DISCRET_RFBSL) || !defined(CONFIG_BATTERY)
+#endif
+#if !defined(CONFIG_USE_DISCRET_RFBSL) || !defined(CONFIG_BATTERY)
 	&menu_L2_RFBSL,
-	#endif
-	#ifdef CONFIG_PROUT
+#endif
+#ifdef CONFIG_PROUT
 	&menu_L2_Prout,
-	#endif	
-	#ifdef CONFIG_USE_GPS
+#endif
+#ifdef CONFIG_USE_GPS
 	&menu_L2_Gps,
-	#endif
+#endif
 };
 
-const int menu_L2_size=sizeof(menu_L2)/sizeof(struct menu*);
-int menu_L2_position=0;
+const int menu_L2_size = sizeof(menu_L2) / sizeof(struct menu *);
+int menu_L2_position = 0;

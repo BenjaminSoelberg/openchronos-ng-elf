@@ -22,6 +22,10 @@
 
 #include "rtca.h"
 
+#if (CONFIG_DST > 0)
+#include "dst.h"
+#endif
+
 #include <stdlib.h>
 
 /* 1. A year that is divisible by 4 is a leap year.
@@ -37,14 +41,14 @@
 static rtca_cblist_t *cblist;
 
 static struct {
-	u32 sys;   /* system time: number of seconds since power on */
-	u16 year;  /* cache of RTC year register */
-	u8 mon;    /* cache of RTC month register */
-	u8 day;    /* cache of RTC day register */
-	u8 dow;    /* cache of RTC day of week register */
-	u8 hour;   /* cache of RTC hour register */
-	u8 min;    /* cache of RTC minutes register */
-	u8 sec;    /* cache of RTC seconds register */
+	uint32_t sys;   /* system time: number of seconds since power on */
+	uint16_t year;  /* cache of RTC year register */
+	uint8_t mon;    /* cache of RTC month register */
+	uint8_t day;    /* cache of RTC day register */
+	uint8_t dow;    /* cache of RTC day of week register */
+	uint8_t hour;   /* cache of RTC hour register */
+	uint8_t min;    /* cache of RTC minutes register */
+	uint8_t sec;    /* cache of RTC seconds register */
 } rtca_time = { 0, 0, 1, 1, 0, 0, 0, 0 };
 
 void rtca_init(void)
@@ -102,7 +106,7 @@ void rtca_tevent_fn_unregister(rtca_tevent_fn_t fn)
 }
 
 /* returns number of days for a given month */
-u8 rtca_get_max_days(u8 month, u16 year)
+uint8_t rtca_get_max_days(uint8_t month, uint16_t year)
 {
 	switch (month) {
 	case 1:
@@ -113,33 +117,36 @@ u8 rtca_get_max_days(u8 month, u16 year)
 	case 10:
 	case 12:
 		return 31;
+
 	case 4:
 	case 6:
 	case 9:
 	case 11:
 		return 30;
+
 	case 2:
 		if (IS_LEAP_YEAR(year))
 			return 29;
 		else
 			return 28;
 	}
+
 	return 0;
 }
 
-u32 rtca_get_systime(void)
+uint32_t rtca_get_systime(void)
 {
 	return rtca_time.sys;
 }
 
-void rtca_get_time(u8 *hour, u8 *min, u8 *sec)
+void rtca_get_time(uint8_t *hour, uint8_t *min, uint8_t *sec)
 {
 	*sec = rtca_time.sec;
 	*min = rtca_time.min;
 	*hour = rtca_time.hour;
 }
 
-void rtca_set_time(u8 hour, u8 min, u8 sec)
+void rtca_set_time(uint8_t hour, uint8_t min, uint8_t sec)
 {
 	/* Stop RTC timekeeping for a while */
 	RTCCTL01 |= RTCHOLD;
@@ -153,13 +160,13 @@ void rtca_set_time(u8 hour, u8 min, u8 sec)
 	RTCCTL01 &= ~RTCHOLD;
 }
 
-void rtca_get_alarm(u8 *hour, u8 *min)
+void rtca_get_alarm(uint8_t *hour, uint8_t *min)
 {
 	*hour = RTCAHOUR & 0x7F;
 	*min  = RTCAMIN  & 0x7F;
 }
 
-void rtca_set_alarm(u8 hour, u8 min)
+void rtca_set_alarm(uint8_t hour, uint8_t min)
 {
 	RTCAHOUR = hour & 0x7F;
 	RTCAMIN  = min  & 0x7F;
@@ -180,7 +187,7 @@ void rtca_disable_alarm()
 	RTCCTL01 &= ~RTCAIE;
 }
 
-void rtca_get_date(u16 *year, u8 *mon, u8 *day, u8 *dow)
+void rtca_get_date(uint16_t *year, uint8_t *mon, uint8_t *day, uint8_t *dow)
 {
 	*dow = rtca_time.dow;
 	*day = rtca_time.day;
@@ -188,9 +195,9 @@ void rtca_get_date(u16 *year, u8 *mon, u8 *day, u8 *dow)
 	*year = rtca_time.year;
 }
 
-void rtca_set_date(u16 year, u8 mon, u8 day)
+void rtca_set_date(uint16_t year, uint8_t mon, uint8_t day)
 {
-	u8 dow;
+	uint8_t dow;
 
 	/* Stop RTC timekeeping for a while */
 	RTCCTL01 |= RTCHOLD;
@@ -208,17 +215,21 @@ void rtca_set_date(u16 year, u8 mon, u8 day)
 	case 5:
 		dow += 1;
 		break;
+
 	case 8:
 		dow += 2;
 		break;
+
 	case 2:
 	case 3:
 	case 11:
 		dow += 3;
 		break;
+
 	case 6:
 		dow += 4;
 		break;
+
 	case 9:
 	case 12:
 		dow += 5;
@@ -242,17 +253,18 @@ void rtca_set_date(u16 year, u8 mon, u8 day)
 
 	/* Resume RTC time keeping */
 	RTCCTL01 &= ~RTCHOLD;
+#if (CONFIG_DST > 0)
+	dst_calculate_dates(year, mon, day);	/* calculate new DST switch dates */
+#endif
 }
-
 #ifdef __GNUC__
-#include <legacymsp430.h>
-interrupt(RTC_A_VECTOR) RTC_A_ISR(void)
-{
+__attribute__((interrupt(RTC_A_VECTOR)))
 #else
 #pragma vector = RTC_A_VECTOR
-__interrupt void RTC_A_ISR(void)
-{
+__interrupt
 #endif
+void RTC_A_ISR(void)
+{
 	/* the IV is cleared after a read, so we store it */
 	uint16_t iv = RTCIV;
 

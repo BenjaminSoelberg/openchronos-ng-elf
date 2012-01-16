@@ -103,7 +103,7 @@ be realized as a mode.
 **** The sx_function Callback
 #<<sx_function>>
 #+BEGIN_SRC c
-     void (*sx_function)(u8 line);		 
+     void (*sx_function)(uint8_t line);		 
 #+END_SRC 
 
      When UP or DOWN is pressed, [[file:../ezchronos.c::fn%20wakeup_event][=wakeup_event=]] calls this callback of 
@@ -113,7 +113,7 @@ be realized as a mode.
 **** The mx_function Callback
 #<<mx_function>>
 #+BEGIN_SRC c
-     void (*mx_function)(u8 line);		 
+     void (*mx_function)(uint8_t line);		 
 #+END_SRC 
 
      When STAR or NUM is pressed for a long time, [[file:../ezchronos.c::fn%20wakeup_event][=wakeup_event=]] calls this callback of 
@@ -126,7 +126,7 @@ be realized as a mode.
 **** The nx_function Callback
 #<<nx_function>>
 #+BEGIN_SRC c
-     void (*nx_function)(u8 line);	
+     void (*nx_function)(uint8_t line);	
 #+END_SRC 
 
      When STAR or NUM is pressed, [[file:../ezchronos.c::fn%20wakeup_event][=wakeup_event=]] calls this callback of 
@@ -140,7 +140,7 @@ be realized as a mode.
 **** The display_function Callback
 #<<display_function>>
 #+BEGIN_SRC c
-     void (*display_function)(u8 line, u8 mode);		 
+     void (*display_function)(uint8_t line, uint8_t mode);		 
 #+END_SRC 
      
      When the main loop reaches the display-update phase
@@ -148,14 +148,14 @@ be realized as a mode.
      [[file:../ezchronos.c::fn%20display_update][=display_update=]] 
 
      The pointers to the two current display functions are cached in 
-     [[file:../ezchronos.c::void%20fptr_lcd_function_line1%20u8%20line%20u8%20update][=fptr_lcd_function_line1=]] and ..2. 
+     [[file:../ezchronos.c::void%20fptr_lcd_function_line1%20uint8_t%20line%20uint8_t%20update][=fptr_lcd_function_line1=]] and ..2. 
 
      
 
 **** The display_update Callback
 #<<display_update>>
 #+BEGIN_SRC c
-     u8 (*display_update)(void); 	 
+     uint8_t (*display_update)(void); 	 
 #+END_SRC 
      To be called in the beginning of the display-update phase. 
      Returns a true value iff the mode has something new to display.

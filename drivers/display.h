@@ -1,34 +1,34 @@
 // *************************************************************************************************
 //
-//	Copyright (C) 2009 Texas Instruments Incorporated - http://www.ti.com/ 
-//	 
-//	 
-//	  Redistribution and use in source and binary forms, with or without 
-//	  modification, are permitted provided that the following conditions 
+//	Copyright (C) 2009 Texas Instruments Incorporated - http://www.ti.com/
+//
+//
+//	  Redistribution and use in source and binary forms, with or without
+//	  modification, are permitted provided that the following conditions
 //	  are met:
-//	
-//	    Redistributions of source code must retain the above copyright 
+//
+//	    Redistributions of source code must retain the above copyright
 //	    notice, this list of conditions and the following disclaimer.
-//	 
+//
 //	    Redistributions in binary form must reproduce the above copyright
-//	    notice, this list of conditions and the following disclaimer in the 
-//	    documentation and/or other materials provided with the   
+//	    notice, this list of conditions and the following disclaimer in the
+//	    documentation and/or other materials provided with the
 //	    distribution.
-//	 
+//
 //	    Neither the name of Texas Instruments Incorporated nor the names of
 //	    its contributors may be used to endorse or promote products derived
 //	    from this software without specific prior written permission.
-//	
-//	  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
-//	  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
+//
+//	  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+//	  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 //	  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-//	  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT 
-//	  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
-//	  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT 
+//	  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+//	  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+//	  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
 //	  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
 //	  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-//	  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT 
-//	  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
+//	  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+//	  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 //	  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 // *************************************************************************************************
@@ -64,30 +64,28 @@
 // Extern section
 
 // Constants defined in library
-extern const u8 lcd_font[];
-extern const u8 * segments_lcdmem[];
-extern const u8 segments_bitmask[];
-extern const u8 itoa_conversion_table[][3];
+extern const uint8_t lcd_font[];
+extern const uint8_t *segments_lcdmem[];
+extern const uint8_t segments_bitmask[];
+extern const uint8_t itoa_conversion_table[][3];
 
 
 // *************************************************************************************************
 // Global Variable section
 
 // Set of display flags
-typedef union
-{
-  struct
-  {
-  	// Line1 + Line2 + Icons
-    u16 full_update      		: 1;    // 1 = Redraw all content
-    u16 partial_update      	: 1;    // 1 = Update changes
+typedef union {
+	struct {
+	// Line1 + Line2 + Icons
+	uint8_t full_update      		: 1;    // 1 = Redraw all content
+	uint8_t partial_update      	: 1;    // 1 = Update changes
   	
-  	// Line only
-    u16 line1_full_update     	: 1;    // 1 = Redraw Line1 content
-    u16 line2_full_update     	: 1;    // 1 = Redraw Line2 content
+	// Line only
+	uint8_t line1_full_update     	: 1;    // 1 = Redraw Line1 content
+	uint8_t line2_full_update     	: 1;    // 1 = Redraw Line2 content
 
   } flag;
-  u8 all_flags;            // Shortcut to all display flags (for reset)
+  uint8_t all_flags;            // Shortcut to all display flags (for reset)
 } s_display_flags;
 
 extern volatile s_display_flags display;
@@ -106,7 +104,7 @@ extern volatile s_display_flags display;
 #define DISPLAY_DEFAULT_VIEW			(0u)
 #define DISPLAY_ALTERNATIVE_VIEW		(1u)
 #define DISPLAY_ALTERNATIVE2_VIEW		(2u)
- 
+
 // Definitions for line access
 #define LINE1							(1u)
 #define LINE2							(2u)
@@ -131,10 +129,10 @@ extern volatile s_display_flags display;
 // LCD symbols for easier access
 //
 // xxx_SEG_xxx 		= Seven-segment character (sequence 5-4-3-2-1-0)
-// xxx_SYMB_xxx 	= Display symbol, e.g. "AM" for ante meridiem 
+// xxx_SYMB_xxx 	= Display symbol, e.g. "AM" for ante meridiem
 // xxx_UNIT_xxx 	= Display unit, e.g. "km/h" for kilometers per hour
 // xxx_ICON_xxx 	= Display icon, e.g. heart to indicate reception of heart rate data
-// xxx_L1_xxx 		= Item is part of Line1 information 
+// xxx_L1_xxx 		= Item is part of Line1 information
 // xxx_L2_xxx 		= Item is part of Line2 information
 
 // Symbols for Line1
@@ -215,18 +213,18 @@ extern volatile s_display_flags display;
 
 
 // LCD controller memory map
-#define LCD_MEM_1          			((u8*)0x0A20)
-#define LCD_MEM_2          			((u8*)0x0A21)
-#define LCD_MEM_3          			((u8*)0x0A22)
-#define LCD_MEM_4          			((u8*)0x0A23)
-#define LCD_MEM_5          			((u8*)0x0A24)
-#define LCD_MEM_6          			((u8*)0x0A25)
-#define LCD_MEM_7          			((u8*)0x0A26)
-#define LCD_MEM_8          	 		((u8*)0x0A27)
-#define LCD_MEM_9          			((u8*)0x0A28)
-#define LCD_MEM_10         			((u8*)0x0A29)
-#define LCD_MEM_11         			((u8*)0x0A2A)
-#define LCD_MEM_12         			((u8*)0x0A2B)
+#define LCD_MEM_1          			((uint8_t*)0x0A20)
+#define LCD_MEM_2          			((uint8_t*)0x0A21)
+#define LCD_MEM_3          			((uint8_t*)0x0A22)
+#define LCD_MEM_4          			((uint8_t*)0x0A23)
+#define LCD_MEM_5          			((uint8_t*)0x0A24)
+#define LCD_MEM_6          			((uint8_t*)0x0A25)
+#define LCD_MEM_7          			((uint8_t*)0x0A26)
+#define LCD_MEM_8          	 		((uint8_t*)0x0A27)
+#define LCD_MEM_9          			((uint8_t*)0x0A28)
+#define LCD_MEM_10         			((uint8_t*)0x0A29)
+#define LCD_MEM_11         			((uint8_t*)0x0A2A)
+#define LCD_MEM_12         			((uint8_t*)0x0A2B)
 
 
 // Memory assignment
@@ -323,38 +321,38 @@ extern volatile s_display_flags display;
 // API section
 
 // Physical LCD memory write
-extern void write_lcd_mem(u8 * lcdmem, u8 bits, u8 bitmask, u8 state);
+extern void write_lcd_mem(uint8_t *lcdmem, uint8_t bits, uint8_t bitmask, uint8_t state);
 
 // Display init / clear
 extern void lcd_init(void);
 extern void clear_display(void);
 extern void clear_display_all(void);
-extern void clear_line(u8 line);
+extern void clear_line(uint8_t line);
 
 // Blinking function
 extern void start_blink(void);
 extern void stop_blink(void);
 extern void clear_blink_mem(void);
-extern void set_blink_rate(u8 bits);
+extern void set_blink_rate(uint8_t bits);
 
 // Character / symbol draw functions
-extern void display_char(u8 segment, u8 chr, u8 mode);
-extern void display_chars(u8 segments, u8 * str, u8 mode);
-extern void display_symbol(u8 symbol, u8 mode);
+extern void display_char(uint8_t segment, uint8_t chr, uint8_t mode);
+extern void display_chars(uint8_t segments, uint8_t *str, uint8_t mode);
+extern void display_symbol(uint8_t symbol, uint8_t mode);
 
 // Time display function
-extern void DisplayTime(u8 updateMode);
-extern void display_am_pm_symbol(u8 timeAM);
+extern void DisplayTime(uint8_t updateMode);
+extern void display_am_pm_symbol(uint8_t timeAM);
 
 // Set_value display functions
-extern void display_value1(u8 segments, u32 value, u8 digits, u8 blanks, u8 disp_mode);
-extern void display_hours_12_or_24(u8 segments, u32 value, u8 digits, u8 blanks, u8 disp_mode);
+extern void display_value1(uint8_t segments, uint32_t value, uint8_t digits, uint8_t blanks, uint8_t disp_mode);
+extern void display_hours_12_or_24(uint8_t segments, uint32_t value, uint8_t digits, uint8_t blanks, uint8_t disp_mode);
 
-// Integer to string conversion 
-extern u8 * _itoa(u32 n, u8 digits, u8 blanks);
+// Integer to string conversion
+extern uint8_t *_itoa(uint32_t n, uint8_t digits, uint8_t blanks);
 
 // Segment index helper function
-extern u8 switch_seg(u8 line, u8 index1, u8 index2);
+extern uint8_t switch_seg(uint8_t line, uint8_t index1, uint8_t index2);
 
 void display_all_off(void);
 

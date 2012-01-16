@@ -45,17 +45,17 @@ void rtca_init(void);
 void rtca_tevent_fn_register(rtca_tevent_fn_t fn);
 void rtca_tevent_fn_unregister(rtca_tevent_fn_t fn);
 
-u8 rtca_get_max_days(u8 month, u16 year);
-u32 rtca_get_systime(void);
+uint8_t rtca_get_max_days(uint8_t month, uint16_t year);
+uint32_t rtca_get_systime(void);
 
-void rtca_get_time(u8 *hour, u8 *min, u8 *sec);
-void rtca_set_time(u8 hour, u8 min, u8 sec);
+void rtca_get_time(uint8_t *hour, uint8_t *min, uint8_t *sec);
+void rtca_set_time(uint8_t hour, uint8_t min, uint8_t sec);
 
-void rtca_get_date(u16 *year, u8 *mon, u8 *day, u8 *dow);
-void rtca_set_date(u16 year, u8 mon, u8 day);
+void rtca_get_date(uint16_t *year, uint8_t *mon, uint8_t *day, uint8_t *dow);
+void rtca_set_date(uint16_t year, uint8_t mon, uint8_t day);
 
-void rtca_get_alarm(u8 *hour, u8 *min);
-void rtca_set_alarm(u8 hour, u8 min);
+void rtca_get_alarm(uint8_t *hour, uint8_t *min);
+void rtca_set_alarm(uint8_t hour, uint8_t min);
 
 void rtca_enable_alarm();
 void rtca_disable_alarm();

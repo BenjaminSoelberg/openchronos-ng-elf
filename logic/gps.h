@@ -8,9 +8,9 @@
 #ifndef GPS_H_
 #define GPS_H_
 
-extern void sx_gps(u8 line);
-extern void mx_gps(u8 line);
-extern void display_gps(u8 line, u8 update);
+extern void sx_gps(uint8_t line);
+extern void mx_gps(uint8_t line);
+extern void display_gps(uint8_t line, uint8_t update);
 
 
 #endif /* GPS_H_ */

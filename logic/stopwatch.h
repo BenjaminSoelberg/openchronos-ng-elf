@@ -1,34 +1,34 @@
 // *************************************************************************************************
 //
-//	Copyright (C) 2009 Texas Instruments Incorporated - http://www.ti.com/ 
-//	 
-//	 
-//	  Redistribution and use in source and binary forms, with or without 
-//	  modification, are permitted provided that the following conditions 
+//	Copyright (C) 2009 Texas Instruments Incorporated - http://www.ti.com/
+//
+//
+//	  Redistribution and use in source and binary forms, with or without
+//	  modification, are permitted provided that the following conditions
 //	  are met:
-//	
-//	    Redistributions of source code must retain the above copyright 
+//
+//	    Redistributions of source code must retain the above copyright
 //	    notice, this list of conditions and the following disclaimer.
-//	 
+//
 //	    Redistributions in binary form must reproduce the above copyright
-//	    notice, this list of conditions and the following disclaimer in the 
-//	    documentation and/or other materials provided with the   
+//	    notice, this list of conditions and the following disclaimer in the
+//	    documentation and/or other materials provided with the
 //	    distribution.
-//	 
+//
 //	    Neither the name of Texas Instruments Incorporated nor the names of
 //	    its contributors may be used to endorse or promote products derived
 //	    from this software without specific prior written permission.
-//	
-//	  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
-//	  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
+//
+//	  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+//	  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 //	  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-//	  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT 
-//	  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
-//	  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT 
+//	  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+//	  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+//	  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
 //	  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
 //	  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-//	  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT 
-//	  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
+//	  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+//	  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 //	  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 // *************************************************************************************************
@@ -47,13 +47,13 @@ extern void start_stopwatch(void);
 extern void stop_stopwatch(void);
 extern void reset_stopwatch(void);
 extern void split_stopwatch(void);
-extern u8 is_stopwatch_run(void);
-extern u8 is_stopwatch_stop(void);
+extern uint8_t is_stopwatch_run(void);
+extern uint8_t is_stopwatch_stop(void);
 extern void stopwatch_tick(void);
 extern void update_stopwatch_timer(void);
-extern void mx_stopwatch(u8 line);
-extern void sx_stopwatch(u8 line);
-extern void display_stopwatch(u8 line, u8 update);
+extern void mx_stopwatch(uint8_t line);
+extern void sx_stopwatch(uint8_t line);
+extern void display_stopwatch(uint8_t line, uint8_t update);
 
 
 // *************************************************************************************************
@@ -77,10 +77,10 @@ extern void display_stopwatch(u8 line, u8 update);
 /* TODO: pack this stufffff!!!! */
 struct stopwatch
 {
-	u8 		state;
-	u8		drawFlag;
-	u8		swtIs1Hz;
-	u8		swtIs10Hz;
+	uint8_t 		state;
+	uint8_t		drawFlag;
+	uint8_t		swtIs1Hz;
+	uint8_t		swtIs10Hz;
 	
 	/* TODO: WTF is this?? */
 	//	time[0] 	hour H
@@ -89,17 +89,17 @@ struct stopwatch
 	//	time[3] 	minute L
 	//	time[4] 	second H
 	//	time[5] 	second L
-	//	time[6] 	1/10 sec 
+	//	time[6] 	1/10 sec
 	//	time[7] 	1/100 sec
-	u8		time[8]; //ASCII codes
-	u8		time_split[8];
-	
+	uint8_t		time[8]; //ASCII codes
+	uint8_t		time_split[8];
+
 	// Display style
-	u8 	viewStyle;
-	u8 	viewStyle_split;
+	uint8_t 	viewStyle;
+	uint8_t 	viewStyle_split;
 
 	/* does the display need an update? */
-	u8 update_display;
+	uint8_t update_display;
 };
 extern struct stopwatch sStopwatch;
 

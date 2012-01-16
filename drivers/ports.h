@@ -1,34 +1,34 @@
 // *************************************************************************************************
 //
-//	Copyright (C) 2009 Texas Instruments Incorporated - http://www.ti.com/ 
-//	 
-//	 
-//	  Redistribution and use in source and binary forms, with or without 
-//	  modification, are permitted provided that the following conditions 
+//	Copyright (C) 2009 Texas Instruments Incorporated - http://www.ti.com/
+//
+//
+//	  Redistribution and use in source and binary forms, with or without
+//	  modification, are permitted provided that the following conditions
 //	  are met:
-//	
-//	    Redistributions of source code must retain the above copyright 
+//
+//	    Redistributions of source code must retain the above copyright
 //	    notice, this list of conditions and the following disclaimer.
-//	 
+//
 //	    Redistributions in binary form must reproduce the above copyright
-//	    notice, this list of conditions and the following disclaimer in the 
-//	    documentation and/or other materials provided with the   
+//	    notice, this list of conditions and the following disclaimer in the
+//	    documentation and/or other materials provided with the
 //	    distribution.
-//	 
+//
 //	    Neither the name of Texas Instruments Incorporated nor the names of
 //	    its contributors may be used to endorse or promote products derived
 //	    from this software without specific prior written permission.
-//	
-//	  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
-//	  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
+//
+//	  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+//	  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 //	  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-//	  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT 
-//	  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
-//	  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT 
+//	  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+//	  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+//	  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
 //	  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
 //	  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-//	  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT 
-//	  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
+//	  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+//	  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 //	  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 // *************************************************************************************************
@@ -77,7 +77,7 @@
 #define BUTTONS_DEBOUNCE_TIME_OUT	(250u)
 #define BUTTONS_DEBOUNCE_TIME_LEFT	(50u)
 
-// Detect if STAR / NUM button is held low continuously  
+// Detect if STAR / NUM button is held low continuously
 #define LEFT_BUTTON_LONG_TIME		(1u)
 
 // Backlight time  (sec)
@@ -88,36 +88,33 @@
 
 
 // Set of button flags
-typedef union
-{
-  struct
-  {
-  	// Manual button events
-    u16 star    	: 1;    // Short STAR button press
-    u16 num     	: 1;    // Short NUM button press
-    u16 up      	: 1;    // Short UP button press
-    u16 down      	: 1;    // Short DOWN button press
-    u16 backlight  	: 1;    // Short BACKLIGHT button press
-    u16 star_long   : 1;    // Long STAR button press
-    u16 num_long   	: 1;    // Long NUM button press
-  } flag;
-  u16 all_flags;            // Shortcut to all display flags (for reset)
+typedef union {
+	struct {
+		// Manual button events
+		uint16_t star    	: 1;    // Short STAR button press
+		uint16_t num     	: 1;    // Short NUM button press
+		uint16_t up      	: 1;    // Short UP button press
+		uint16_t down      	: 1;    // Short DOWN button press
+		uint16_t backlight  	: 1;    // Short BACKLIGHT button press
+		uint16_t star_long   : 1;    // Long STAR button press
+		uint16_t num_long   	: 1;    // Long NUM button press
+	} flag;
+	uint16_t all_flags;            // Shortcut to all display flags (for reset)
 } s_button_flags;
 extern volatile s_button_flags button;
 
-struct struct_button
-{
-	u8  star_timeout;		 
-	u8  num_timeout;		 
-	u8 backlight_timeout;
-	u8 backlight_status;
-	s16 repeats;			
+struct struct_button {
+	uint8_t  star_timeout;
+	uint8_t  num_timeout;
+	uint8_t backlight_timeout;
+	uint8_t backlight_status;
+	int16_t repeats;
 };
 extern volatile struct struct_button sButton;
 
 // *************************************************************************************************
 // Extern section
-extern void button_repeat_on(u16 msec);
+extern void button_repeat_on(uint16_t msec);
 extern void button_repeat_off(void);
 extern void button_repeat_function(void);
 extern void init_buttons(void);
