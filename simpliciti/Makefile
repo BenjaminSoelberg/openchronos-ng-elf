@@ -12,8 +12,8 @@ include $(TOP)/Common.mk
 .PHONY: clean
 .PHONY: subdirs $(SUBDIRS)
 
-OBJS = Components/bsp/bsp.o \
-Components/mrfi/mrfi.o \
+OBJS = Components/bsp/xbuilt.o \
+Components/mrfi/xbuilt.o \
 Components/nwk/xbuilt.o \
 Components/nwk_applications/xbuilt.o \
 Applications/application/End_Device/xbuilt.o
@@ -26,7 +26,7 @@ xbuilt.o: $(SUBDIRS)
 
 $(SUBDIRS):
 	@echo -e "\n>> Building simplicity/$@"
-	@$(MAKE) -C $@ $(MAKECMDGOALS)
+	@$(MAKE) --no-print-directory -C $@ $(MAKECMDGOALS)
 
 clean: $(SUBDIRS)
 	rm -f *.o
