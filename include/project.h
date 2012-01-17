@@ -57,7 +57,6 @@
 // Include section
 #include <msp430.h>
 #include <stdint.h>
-#include <intrinsics.h>
 
 #include <config.h>
 

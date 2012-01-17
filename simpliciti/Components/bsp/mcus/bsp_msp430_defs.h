@@ -133,12 +133,10 @@
 
 //pfs
 #if (defined BSP_COMPILER_GCC)
-#include <intrinsics.h>
-  //pfs #include <io.h>
-  #include <legacymsp430.h>
+  #include <in430.h>
   
-  #define __bsp_ENABLE_INTERRUPTS__()       eint()
-  #define __bsp_DISABLE_INTERRUPTS__()      dint()
+  #define __bsp_ENABLE_INTERRUPTS__()       __eint()
+  #define __bsp_DISABLE_INTERRUPTS__()      __dint()
   #define __bsp_INTERRUPTS_ARE_ENABLED__()  (READ_SR&0x0008)
   
   #define __bsp_GET_ISTATE__()              (READ_SR&0x0008)

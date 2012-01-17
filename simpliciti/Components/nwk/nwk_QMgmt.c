@@ -37,7 +37,6 @@
 /******************************************************************************
  * INCLUDES
  */
-#include <intrinsics.h>
 #include <string.h>
 #include "bsp.h"
 #include "mrfi.h"
