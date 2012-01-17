@@ -38,7 +38,7 @@ include/config.h:
 
 $(SUBDIRS):
 	@echo -e "\n>> Building $@"
-	@$(MAKE) -C $@ $(MAKECMDGOALS)	
+	@$(MAKE) --no-print-directory -C $@ $(MAKECMDGOALS)	
 
 config:
 	$(PYTHON) tools/config.py
