@@ -32,4 +32,7 @@ void menu_add_entry(uint8_t const line,
 void menu_L1_skip_next(void);
 void menu_L2_skip_next(void);
 
+/* Include function defined in even_in_range.s TODO: do we even need this?? */
+unsigned short __even_in_range(unsigned short __value, unsigned short __bound);
+
 #endif /* __EZCHRONOS_H__ */
