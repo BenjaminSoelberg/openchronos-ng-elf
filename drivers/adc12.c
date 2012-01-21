@@ -41,6 +41,7 @@
 
 // system
 #include <project.h>
+#include "ezchronos.h"
 
 // driver
 #include "adc12.h"
