@@ -106,7 +106,11 @@
 
 #define __bsp_ISTATE_T__            unsigned short
 #define __bsp_ISR_FUNCTION__(f,v)   interrupt(v) f()
+#if (__CC430F6137__)
+#include <cc430x613x.h>
+#else
 #include <msp430.h>
+#endif
 
 
 /* ------------------ Unrecognized Compiler ------------------ */
@@ -129,11 +133,13 @@
 
 //pfs
 #if (defined BSP_COMPILER_GCC)
+  #include <in430.h>
+  
   #define __bsp_ENABLE_INTERRUPTS__()       __eint()
   #define __bsp_DISABLE_INTERRUPTS__()      __dint()
-  #define __bsp_INTERRUPTS_ARE_ENABLED__()  (__read_status_register()&0x0008)
+  #define __bsp_INTERRUPTS_ARE_ENABLED__()  (READ_SR&0x0008)
   
-  #define __bsp_GET_ISTATE__()              (__read_status_register()&0x0008)
+  #define __bsp_GET_ISTATE__()              (READ_SR&0x0008)
   #define __bsp_RESTORE_ISTATE__(x)         __asm__("bis %0,r2" : : "ir" ((uint16_t) x))
   #define __bsp_QUOTED_PRAGMA__(x)          _Pragma(#x)
 #endif
