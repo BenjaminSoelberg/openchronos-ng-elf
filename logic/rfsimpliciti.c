@@ -59,8 +59,6 @@
 #endif
 #include "rfsimpliciti.h"
 #include "simpliciti.h"
-#include "clock.h"
-#include "date.h"
 #include "alarm.h"
 #include "temperature.h"
 #include "vti_ps.h"
@@ -532,16 +530,6 @@ void simpliciti_get_ed_data_callback(void)
 			_BIS_SR(LPM3_bits + GIE);
 			__no_operation();
 		}
-	}
-
-	// Update clock every 1/1 second
-	/* TODO: WTF is this?? now we override main display routine? BAD BAD */
-	if (sTime.update_display) {
-		display_time(LINE1, DISPLAY_LINE_UPDATE_PARTIAL);
-		sTime.update_display = 0;
-
-		// Service watchdog
-		WDTCTL = WDTPW + WDTIS__512K + WDTSSEL__ACLK + WDTCNTCL;
 	}
 }
 
