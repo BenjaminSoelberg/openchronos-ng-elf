@@ -177,12 +177,16 @@ static void Bsp_SetClocks(void)
    * changed is n x 32 x 32 x f_MCLK / f_FLL_reference.
    * 32 x 32 x 12 MHz / 32,768 Hz = 375000 = MCLK cycles for DCO to settle
    */
+#if __GNUC_MINOR__ > 5 || __GNUC_PATCHLEVEL__ > 8
+  __delay_cycles(375000);
+#else
   __delay_cycles(62500);
   __delay_cycles(62500);
   __delay_cycles(62500);
   __delay_cycles(62500);
   __delay_cycles(62500);
   __delay_cycles(62500);
+#endif
 	
   /* Loop until XT1,XT2 & DCO fault flag is cleared */
   do
