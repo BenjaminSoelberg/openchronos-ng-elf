@@ -1,4 +1,3 @@
-// *************************************************************************************************
 //
 //	Copyright (C) 2009 Texas Instruments Incorporated - http://www.ti.com/
 //
@@ -54,7 +53,6 @@
 #include "rtca.h"
 
 // logic
-#include "clock.h"
 #include "alarm.h"
 #include "rfsimpliciti.h"
 #include "simpliciti.h"
@@ -190,9 +188,6 @@ void PORT2_ISR(void)
 
 			// Debounce delay 1
 			Timer0_A4_Delay(CONV_MS_TO_TICKS(BUTTONS_DEBOUNCE_TIME_IN));
-
-			// Reset inactivity detection
-			sTime.last_activity = rtca_get_systime();
 		}
 
 		// ---------------------------------------------------
@@ -403,9 +398,6 @@ void button_repeat_function(void)
 	if (repeat) {
 		// Increase repeat counter
 		sButton.repeats++;
-
-		// Reset inactivity detection counter
-		sTime.last_activity = rtca_get_systime();
 
 		// Disable blinking
 		stop_blink();

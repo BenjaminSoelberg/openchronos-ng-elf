@@ -49,7 +49,6 @@
 // logic
 #include "date.h"
 #include "user.h"
-#include "clock.h"
 
 #ifdef CONFIG_SIDEREAL
 #include "sidereal.h"
@@ -173,8 +172,6 @@ void sx_date(line_t line)
 {
 	// Rotate through 4 views
 	if (++sDate.view >= 4) sDate.view = 0;
-
-	if (sDate.view == 3) sTime.line2ViewStyle = DISPLAY_DEFAULT_VIEW;
 }
 
 
@@ -258,10 +255,6 @@ void display_date(line_t line, update_t update)
 								str, SEG_ON);
 		break;
 
-	default: /* TIME */
-		/* TODO: this doesnt belong here and should be moved
-		   to clock.c */
-		display_time(line, update);
 	}
 }
 

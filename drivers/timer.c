@@ -72,7 +72,6 @@
 #include "rtca.h"
 
 // logic
-#include "clock.h"
 #include "battery.h"
 #include "stopwatch.h"
 #include "altitude.h"
@@ -385,23 +384,6 @@ void TIMER0_A0_ISR(void)
 		return;
 	}
 
-	// -------------------------------------------------------------------
-	// Service modules that require 1/min processing
-	if (sTime.drawFlag >= 2) {
-#ifdef CONFIG_BATTERY
-		// Measure battery voltage to keep track of remaining battery life
-		request.flag.voltage_measurement = 1;
-#endif
-
-#ifdef CONFIG_ALTI_ACCUMULATOR
-
-		// Check if we need to do an altitude accumulation
-		if (alt_accum_enable)
-			request.flag.altitude_accumulator = 1;
-
-#endif
-	}
-
 	// ----------------------------------------------------
 	// Go through the callback queue and call the functions
 	struct cbList *p = sTimer.queue;
@@ -470,7 +452,7 @@ void TIMER0_A0_ISR(void)
 	// -------------------------------------------------------------------
 	// Check idle timeout, set timeout flag
 	if (sys.flag.idle_timeout_enabled) {
-		if (rtca_get_systime() - sTime.last_activity > INACTIVITY_TIME) sys.flag.idle_timeout = 1; //setFlag(sysFlag_g, SYS_TIMEOUT_IDLE);
+		/* TODO: THIS IS BROKEN! FIX ASAP */
 	}
 
 	// -------------------------------------------------------------------

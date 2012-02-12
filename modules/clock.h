@@ -46,7 +46,6 @@
 #define TIMEFORMAT_12H					(1u)
 
 /* TODO: display_time should be private scope! */
-extern void display_time(uint8_t line, uint8_t update);
 extern void clock_event(rtca_tevent_ev_t ev);
 
 
@@ -56,17 +55,19 @@ extern void clock_event(rtca_tevent_ev_t ev);
 /* TODO: pack this stuff!!!! */
 struct time
 {
-	// Flag to minimize display updates
-	uint8_t 		drawFlag;
+	enum {
+	    edit_state_hours = 0,
+	    edit_state_minutes = 1,
+	    edit_state_seconds = 2
+	} edit_state;
 
-	uint8_t update_display;
+	/* Temporary variables for editing */
+	uint8_t tmp_hour;
+	uint8_t tmp_min;
+	uint8_t tmp_sec;
 
-	// Viewing style
-	uint8_t		line1ViewStyle;
-	uint8_t		line2ViewStyle;
+	uint8_t active;
 
-	// Inactivity detection (exits set_value() function)
-	uint32_t 	last_activity;
 #ifdef CONFIG_SIDEREAL
 	// offset of local time from UTC (=1: set time is UTC+1 =CET)
 	int8_t		UTCoffset;

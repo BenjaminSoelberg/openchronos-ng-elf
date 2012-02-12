@@ -130,10 +130,6 @@ void clear_display_all(void)
 	clear_line(LINE1);
 	clear_line(LINE2);
 
-	// Clean up function-specific content
-	fptr_lcd_function_line1(LINE1, DISPLAY_LINE_CLEAR);
-	fptr_lcd_function_line2(LINE2, DISPLAY_LINE_CLEAR);
-
 }
 
 
