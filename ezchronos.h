@@ -21,6 +21,8 @@
 
 #include <project.h>
 
+#include <stdlib.h>
+
 void menu_add_entry(void (*up_btn_fn)(void),
 		    void (*down_btn_fn)(void),
 		    void (*num_btn_fn)(void),
