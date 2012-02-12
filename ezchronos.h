@@ -30,6 +30,11 @@ void menu_add_entry(void (*up_btn_fn)(void),
 
 void menu_item_next(void);
 
+void menu_editmode_start(void (* inc_value_fn)(void),
+			 void (* dec_value_fn)(void),
+			 void (* next_item_fn)(void),
+			 void (* complete_fn)(void));
+
 /* Include function defined in even_in_range.s TODO: do we even need this?? */
 unsigned short __even_in_range(unsigned short __value, unsigned short __bound);
 

@@ -142,6 +142,16 @@ static struct menu *menu_head;
 /* The currently active menu item */
 static struct menu *menu_item;
 
+/* Menu edit mode stuff */
+static struct {
+	uint8_t enabled;
+	void (* inc_value_fn)(void);
+	void (* dec_value_fn)(void);
+	void (* next_item_fn)(void);
+	void (* complete_fn)(void);
+} menu_editmode;
+
+
 // *************************************************************************************************
 // Extern section
 #ifdef CONFIG_ALTI_ACCUMULATOR
@@ -383,30 +393,47 @@ void wakeup_event(void)
 	// Enable idle timeout
 	sys.flag.idle_timeout_enabled = 1;
 
-	if (button.flag.star_long) {
-		button.flag.star_long = 0;
+	/* Are we in edit mode? */
+	if (menu_editmode.enabled) {
+		/* STAR button exits edit mode */
+		if (button.flag.star) {
+			button.flag.star = 0;
+			menu_editmode.complete_fn();
+			menu_editmode.enabled = 0;
 
-		if (menu_item->lstar_btn_fn)
-			menu_item->lstar_btn_fn();
+		} else if (button.flag.num) {
+			button.flag.num = 0;
+			menu_editmode.next_item_fn();
 
-	} else if (button.flag.num) {
-		button.flag.num = 0;
+		} else if (button.flag.up) {
+			button.flag.up = 0;
+			menu_editmode.inc_value_fn();
+
+		} else if (button.flag.down) {
+			button.flag.down = 0;
+			menu_editmode.dec_value_fn();
+		}
+	} else {
+		if (button.flag.star_long) {
+			button.flag.star_long = 0;
+			if (menu_item->lstar_btn_fn)
+				menu_item->lstar_btn_fn();
+
+		} else if (button.flag.num) {
+			button.flag.num = 0;
+			if (menu_item->num_btn_fn)
+				menu_item->num_btn_fn();
 		
-		if (menu_item->num_btn_fn)
-			menu_item->num_btn_fn();
-		
-	} else if (button.flag.up) {
-		button.flag.up = 0;
+		} else if (button.flag.up) {
+			button.flag.up = 0;
+			if (menu_item->up_btn_fn)
+				menu_item->up_btn_fn();
 
-		if (menu_item->up_btn_fn)
-			menu_item->up_btn_fn();
-
-	} else if (button.flag.down) {
-		button.flag.down = 0;
-		
-		if (menu_item->down_btn_fn)
-			menu_item->down_btn_fn();
-
+		} else if (button.flag.down) {
+			button.flag.down = 0;
+			if (menu_item->down_btn_fn)
+				menu_item->down_btn_fn();
+		}
 	}
 
 	// Process internal events
@@ -726,23 +753,39 @@ void menu_item_next(void)
 		return;
 
 	/* deactivate current menu item, and activate next one */
-	menu_item->deactivate_fn();
+	if (menu_item->deactivate_fn)
+		menu_item->deactivate_fn();
 	menu_item = menu_item->next;
-	menu_item->activate_fn();
+	clear_display();
+	if (menu_item->activate_fn)
+		menu_item->activate_fn();
 }
 
+
+void menu_editmode_start(void (* inc_value_fn)(void),
+			 void (* dec_value_fn)(void),
+			 void (* next_item_fn)(void),
+			 void (* complete_fn)(void))
+{
+	menu_editmode.inc_value_fn = inc_value_fn;
+	menu_editmode.dec_value_fn = dec_value_fn;
+	menu_editmode.next_item_fn = next_item_fn;
+	menu_editmode.complete_fn = complete_fn;
+
+	menu_editmode.enabled = 1;
+}
 
 /* Here be helpers */
 void inline helpers_loop_up(uint8_t *value, uint8_t lower, uint8_t upper)
 {
-    *value++;
-    if(*value == upper)
+    (*value)++;
+    if( *value == upper)
 	*value = lower;
 }
 
 void inline helpers_loop_down(uint8_t *value, uint8_t lower, uint8_t upper)
 {
-    *value--;
+    (*value)--;
     if(*value == lower)
 	*value = upper;
 }

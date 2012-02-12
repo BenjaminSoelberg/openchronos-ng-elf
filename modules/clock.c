@@ -190,7 +190,7 @@ static void star_long_pressed()
     /* Save the current time in edit_buffer */
     rtca_get_time(&sTime.tmp_hour, &sTime.tmp_min, &sTime.tmp_sec);
 
-    menu_edit_mode_start(&edit_next_value, &increment_value, &decrement_value);
+    menu_editmode_start(&increment_value, &decrement_value, &edit_next_value);
     
     /* Here we return from the edit mode, fill in the new values! */
     rtca_set_time(sTime.tmp_hour, sTime.tmp_min, sTime.tmp_sec);
