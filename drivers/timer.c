@@ -361,9 +361,6 @@ __interrupt
 #endif
 void TIMER0_A0_ISR(void)
 {
-	static uint8_t button_lock_counter = 0;
-	static uint8_t button_beep_counter = 0;
-
 	// Disable IE
 	TA0CCTL0 &= ~CCIE;
 	// Reset IRQ flag
@@ -469,31 +466,7 @@ void TIMER0_A0_ISR(void)
 	}
 
 #endif
-
-	// If a message has to be displayed, set display flag
-	if (message.all_flags) {
-		if (message.flag.prepare) {
-			message.flag.prepare = 0;
-			message.flag.show    = 1;
-		}
-
-		// tick timeout
-		if (message.flag.timeout > 0)
-			message.flag.timeout--;
-
-		// timeout! erase the screen
-		if (message.flag.timeout == 0)
-			message.flag.erase = 1;
-
-		// message cycle is over, so erase it
-		if (message.flag.erase) {
-			message.flag.erase       = 0;
-			message.flag.block_line1 = 0;
-			message.flag.block_line2 = 0;
-			display.flag.full_update = 1;
-		}
-	}
-
+	
 	// -------------------------------------------------------------------
 	// Check idle timeout, set timeout flag
 	if (sys.flag.idle_timeout_enabled) {
@@ -516,64 +489,28 @@ void TIMER0_A0_ISR(void)
 
 	// -------------------------------------------------------------------
 	// Detect continuous button high states
+	if (BUTTON_STAR_IS_PRESSED) {
+		sButton.star_timeout++;
 
-	if (BUTTON_STAR_IS_PRESSED && BUTTON_UP_IS_PRESSED) {
-		if (button_beep_counter++ > LEFT_BUTTON_LONG_TIME) {
-			// Toggle no_beep buttons flag
-			sys.flag.no_beep = ~sys.flag.no_beep;
-
-			// Show "beep / nobeep" message synchronously with next second tick
-			message.flag.prepare = 1;
-			message.flag.timeout = 1;
-
-			if (sys.flag.no_beep)	message.flag.type_no_beep_on   = 1;
-			else					message.flag.type_no_beep_off  = 1;
-
-			// Reset button beep counter
-			button_beep_counter = 0;
-		}
-	} else if (BUTTON_NUM_IS_PRESSED && BUTTON_DOWN_IS_PRESSED) { // Trying to lock/unlock buttons?
-		if (button_lock_counter++ > LEFT_BUTTON_LONG_TIME) {
-			// Toggle lock / unlock buttons flag
-			sys.flag.lock_buttons = ~sys.flag.lock_buttons;
-
-			// Show "buttons are locked/unlocked" message synchronously with next second tick
-			message.flag.prepare = 1;
-			message.flag.timeout = 1;
-
-			if (sys.flag.lock_buttons)	message.flag.type_locked   = 1;
-			else						message.flag.type_unlocked = 1;
-
-			// Reset button lock counter
-			button_lock_counter = 0;
-		}
-	} else { // Trying to create a long button press?
-		// Reset button lock counter
-		button_lock_counter = 0;
-
-		if (BUTTON_STAR_IS_PRESSED) {
-			sButton.star_timeout++;
-
-			// Check if button was held low for some seconds
-			if (sButton.star_timeout > LEFT_BUTTON_LONG_TIME) {
-				button.flag.star_long = 1;
-				sButton.star_timeout = 0;
-			}
-		} else {
+		// Check if button was held low for some seconds
+		if (sButton.star_timeout > LEFT_BUTTON_LONG_TIME) {
+			button.flag.star_long = 1;
 			sButton.star_timeout = 0;
 		}
+	} else {
+		sButton.star_timeout = 0;
+	}
 
-		if (BUTTON_NUM_IS_PRESSED) {
-			sButton.num_timeout++;
+	if (BUTTON_NUM_IS_PRESSED) {
+		sButton.num_timeout++;
 
-			// Check if button was held low for some seconds
-			if (sButton.num_timeout > LEFT_BUTTON_LONG_TIME) {
-				button.flag.num_long = 1;
-				sButton.num_timeout = 0;
-			}
-		} else {
+		// Check if button was held low for some seconds
+		if (sButton.num_timeout > LEFT_BUTTON_LONG_TIME) {
+			button.flag.num_long = 1;
 			sButton.num_timeout = 0;
 		}
+	} else {
+		sButton.num_timeout = 0;
 	}
 
 	// Exit from LPM3 on RETI

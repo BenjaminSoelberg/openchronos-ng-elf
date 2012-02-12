@@ -21,16 +21,14 @@
 
 #include <project.h>
 
-typedef void (*menu_item_fn_t)(uint8_t line);
-typedef void (*menu_disp_fn_t)(uint8_t line, uint8_t mode);
+void menu_add_entry(void (*up_btn_fn)(void),
+		    void (*down_btn_fn)(void),
+		    void (*num_btn_fn)(void),
+		    void (*lstar_btn_fn)(void),
+		    void (*activate_fn)(void),
+		    void (*deactivate_fn)(void));
 
-void menu_add_entry(uint8_t const line,
-		menu_item_fn_t const sx_fun,
-		menu_item_fn_t const mx_fun,
-		menu_disp_fn_t const disp_fun);
-
-void menu_L1_skip_next(void);
-void menu_L2_skip_next(void);
+void menu_item_next(void);
 
 /* Include function defined in even_in_range.s TODO: do we even need this?? */
 unsigned short __even_in_range(unsigned short __value, unsigned short __bound);

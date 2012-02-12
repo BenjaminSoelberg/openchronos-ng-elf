@@ -354,7 +354,8 @@ void clock_init()
 	// The flag will be later updated by clock_event()
 	sTime.drawFlag = 0;
 
-	menu_add_entry(LINE1, &sx_time, &mx_time, &display_time);
+	//TODO: fix to use new display function
+	//menu_add_entry(LINE1, &sx_time, &mx_time, &display_time);
 
 	rtca_tevent_fn_register(&clock_event);
 }

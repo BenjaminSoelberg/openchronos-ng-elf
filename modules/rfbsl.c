@@ -50,9 +50,6 @@
 // Entry point of of the Flash Updater in BSL memory
 #define CALL_RFSBL()   ((void (*)())0x1000)()
 
-// Global Variable section
-static uint8_t locked = 1;
-
 // *************************************************************************************************
 // @fn          mx_rfbsl
 // @brief       This functions starts the RFBSL
@@ -62,12 +59,6 @@ static uint8_t locked = 1;
 static void mx_rfbsl(uint8_t line)
 {
 	if (sys.flag.low_battery) return;
-
-	if (locked) {
-		message.flag.prepare = 1;
-		message.flag.type_locked = 1;
-		return;
-	}
 
 	// Exit if SimpliciTI stack is active
 	if (is_rf()) return;
@@ -82,47 +73,6 @@ static void mx_rfbsl(uint8_t line)
 
 	// Call RFBSL
 	CALL_RFSBL();
-
-
-}
-
-
-// *************************************************************************************************
-// @fn          sx_rfbsl
-// @brief       This functions locks/unlocks the RFBSL (or toggles between battery and rfbsl)
-// @param       line		LINE1, LINE2
-// @return      none
-// *************************************************************************************************
-static void sx_rfbsl(uint8_t line)
-{
-#if defined(CONFIG_RFBSL_DISCRET) && defined(CONFIG_BATTERY)
-
-	if (locked) { // Was in battery mode, toggle to rfbsl mode
-		locked = 0;
-
-		// The next bit is a little crude, but it works
-		clear_line(LINE2);
-		display_battery_V(LINE2, DISPLAY_LINE_CLEAR);
-		display_rfbsl(LINE2, DISPLAY_LINE_UPDATE_FULL);
-	} else { // Was in rfbsl mode, toggle to battery mode
-		locked = 1;
-		clear_line(LINE2);
-		display_rfbsl(LINE2, DISPLAY_LINE_CLEAR); // Currently doesn't do anything
-		display_battery_V(LINE2, DISPLAY_LINE_UPDATE_FULL);
-	}
-
-#else
-	message.flag.prepare = 1;
-
-	if (locked) {
-		message.flag.type_unlocked = 1;
-		locked = 0;
-	} else {
-		message.flag.type_locked = 1;
-		locked = 1;
-	}
-
-#endif
 }
 
 
@@ -162,5 +112,7 @@ static void display_discret_rfbsl(uint8_t line, uint8_t update)
 
 void rfbsl_init(void)
 {
-	menu_add_entry(LINE2, &sx_rfbsl, &mx_rfbsl, &display_rfbsl);
+	/* WTF is going on here? NULLs are borken, blame simpliciti */
+	/* TODO: fix to use new function */
+	//menu_add_entry(LINE2, (void *)0, &mx_rfbsl, &display_rfbsl);
 }

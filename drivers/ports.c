@@ -215,19 +215,6 @@ void PORT2_ISR(void)
 
 				// Generate button click
 				buzzer = 1;
-
-				if (!sys.flag.lock_buttons) {
-#ifdef CONFIG_STOP_WATCH
-
-					// Faster reaction for stopwatch split button press
-					if (is_stopwatch_run()) {
-						split_stopwatch();
-						button.flag.num = 0;
-
-					}
-
-#endif
-				}
 			}
 		}
 		// ---------------------------------------------------
@@ -250,23 +237,6 @@ void PORT2_ISR(void)
 
 				// Generate button click
 				buzzer = 1;
-
-				if (!sys.flag.lock_buttons) {
-#ifdef CONFIG_STOP_WATCH
-
-					// Faster reaction for stopwatch stop button press
-					if (is_stopwatch_run()) {
-						stop_stopwatch();
-						button.flag.down = 0;
-					}
-					// Faster reaction for stopwatch start button press
-					else if (is_stopwatch_stop()) {
-						start_stopwatch();
-						button.flag.down = 0;
-					}
-
-#endif
-				}
 			}
 		}
 		// ---------------------------------------------------
@@ -307,7 +277,7 @@ void PORT2_ISR(void)
 			} else
 #endif
 
-				if (!sys.flag.up_down_repeat_enabled && !sys.flag.no_beep) {
+				if (!sys.flag.up_down_repeat_enabled) {
 					start_buzzer(1, CONV_MS_TO_TICKS(20), CONV_MS_TO_TICKS(150));
 				}
 

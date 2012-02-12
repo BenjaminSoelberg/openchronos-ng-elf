@@ -4,6 +4,7 @@
       - Merged with menu.c;
       - Full modularization of menu code;
       - Integration with build system.
+      - New display system.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -93,7 +94,6 @@ void init_application(void);
 void init_global_variables(void);
 void wakeup_event(void);
 void process_requests(void);
-void display_update(void);
 void idle_loop(void);
 void configure_ports(void);
 void read_calibration_values(void);
@@ -114,34 +114,33 @@ volatile s_system_flags sys;
 // Variable holding flags set by logic modules
 volatile s_request_flags request;
 
-// Variable holding message flags
-volatile s_message_flags message;
-
 // Global radio frequency offset taken from calibration memory
 // Compensates crystal deviation from 26MHz nominal value
 uint8_t rf_frequoffset;
 
-// Function pointers for LINE1 and LINE2 display function
-void (*fptr_lcd_function_line1)(uint8_t line, uint8_t update);
-void (*fptr_lcd_function_line2)(uint8_t line, uint8_t update);
-
 /* Menu definitions and declarations */
 struct menu {
-	/* Pointer to direct function (up/down buttons) */
-	menu_item_fn_t sx_function;
-	/* Pointer to sub menu function (long star/number buttons) */
-	menu_item_fn_t mx_function;
-	/* Pointer to display function */
-	menu_disp_fn_t display_function;
+	/* Pointer to up button handler */
+	void (*up_btn_fn)(void);
+	/* Pointer to down button handler */
+	void (*down_btn_fn)(void);
+	/* Pointer to function button (NUM) */
+	void (*num_btn_fn)(void);
+	/* Pointer to settings button (long STAR) */
+	void (*lstar_btn_fn)(void);
+	/* Pointer to activate function */
+	void (*activate_fn)(void);
+	/* Pointer to deactivate function */
+	void (*deactivate_fn)(void);
 	/* pointer to next menu item */
 	struct menu *next;
 };
 
-static struct menu *menu_L1_head;
-static struct menu *menu_L1;
+/* The head of the linked list holding menu items */
+static struct menu *menu_head;
 
-static struct menu *menu_L2_head;
-static struct menu *menu_L2;
+/* The currently active menu item */
+static struct menu *menu_item;
 
 // *************************************************************************************************
 // Extern section
@@ -187,9 +186,6 @@ int main(void)
 
 		// Process actions requested by logic modules
 		if (request.all_flags) process_requests();
-
-		// Before going to LPM3, update display
-		if (display.all_flags) display_update();
 	}
 }
 
@@ -342,11 +338,6 @@ void init_global_variables(void)
 	button.all_flags 	= 0;
 	sys.all_flags 		= 0;
 	request.all_flags 	= 0;
-	display.all_flags 	= 0;
-	message.all_flags	= 0;
-
-	// Force full display update when starting up
-	display.flag.full_update = 1;
 
 #ifndef ISM_US
 	// Use metric units when displaying values
@@ -392,91 +383,30 @@ void wakeup_event(void)
 	// Enable idle timeout
 	sys.flag.idle_timeout_enabled = 1;
 
-	// If buttons are locked, only display "buttons are locked" message
-	if (button.all_flags && sys.flag.lock_buttons) {
-		// Show "buttons are locked" message synchronously with next second tick
-		if (!((BUTTON_NUM_IS_PRESSED && BUTTON_DOWN_IS_PRESSED) || BUTTON_BACKLIGHT_IS_PRESSED)) {
-			message.flag.prepare     = 1;
-			message.flag.type_locked = 1;
-		}
-
-		// Clear buttons
-		button.all_flags = 0;
-	}
-	// Process long button press event (while button is held)
-	else if (button.flag.star_long) {
-		// Clear button event
+	if (button.flag.star_long) {
 		button.flag.star_long = 0;
 
-		// Call sub menu function
-		if (menu_L1->mx_function)
-			menu_L1->mx_function(LINE1);
+		if (menu_item->lstar_btn_fn)
+			menu_item->lstar_btn_fn();
 
-		// Set display update flag
-		display.flag.full_update = 1;
-	} else if (button.flag.num_long) {
-		// Clear button event
-		button.flag.num_long = 0;
+	} else if (button.flag.num) {
+		button.flag.num = 0;
+		
+		if (menu_item->num_btn_fn)
+			menu_item->num_btn_fn();
+		
+	} else if (button.flag.up) {
+		button.flag.up = 0;
 
-		// Call sub menu function
-		if (menu_L2->mx_function)
-			menu_L2->mx_function(LINE2);
+		if (menu_item->up_btn_fn)
+			menu_item->up_btn_fn();
 
-		// Set display update flag
-		display.flag.full_update = 1;
-	}
-	// Process single button press event (after button was released)
-	else if (button.all_flags) {
-		// M1 button event ---------------------------------------------------------------------
-		// (Short) Advance to next menu item
-		if (button.flag.star) {
-			//skip to next menu item
-			menu_L1_skip_next();
+	} else if (button.flag.down) {
+		button.flag.down = 0;
+		
+		if (menu_item->down_btn_fn)
+			menu_item->down_btn_fn();
 
-			// Set Line1 display update flag
-			display.flag.line1_full_update = 1;
-
-			// Clear button flag
-			button.flag.star = 0;
-		}
-		// NUM button event ---------------------------------------------------------------------
-		// (Short) Advance to next menu item
-		else if (button.flag.num) {
-			//skip to next menu item
-			menu_L2_skip_next();
-
-			// Set Line2 display update flag
-			display.flag.line2_full_update = 1;
-
-			// Clear button flag
-			button.flag.num = 0;
-		}
-		// UP button event ---------------------------------------------------------------------
-		// Activate user function for Line1 menu item
-		else if (button.flag.up) {
-			// Call direct function
-			if (menu_L1->sx_function)
-				menu_L1->sx_function(LINE1);
-
-			// Set Line1 display update flag
-			display.flag.line1_full_update = 1;
-
-			// Clear button flag
-			button.flag.up = 0;
-		}
-		// DOWN button event ---------------------------------------------------------------------
-		// Activate user function for Line2 menu item
-		else if (button.flag.down) {
-			// Call direct function
-			if (menu_L2->sx_function)
-				menu_L2->sx_function(LINE2);
-
-			// Set Line1 display update flag
-			display.flag.line2_full_update = 1;
-
-			// Clear button flag
-			button.flag.down = 0;
-		}
 	}
 
 	// Process internal events
@@ -488,9 +418,6 @@ void wakeup_event(void)
 
 			// Clear display
 			clear_display();
-
-			// Set display update flags
-			display.flag.full_update = 1;
 		}
 	}
 
@@ -564,88 +491,6 @@ void process_requests(void)
 
 	// Reset request flag
 	request.all_flags = 0;
-}
-
-
-// *************************************************************************************************
-// @fn          display_update
-// @brief       Process display flags and call LCD update routines.
-// @param       none
-// @return      none
-// *************************************************************************************************
-void display_update(void)
-{
-	uint8_t string[8];
-
-	// ---------------------------------------------------------------------
-	// Call Line1 display function
-	if (fptr_lcd_function_line1) {
-		if (display.flag.full_update || display.flag.line1_full_update) {
-			clear_line(LINE1);
-			fptr_lcd_function_line1(LINE1, DISPLAY_LINE_UPDATE_FULL);
-		} else if (!message.flag.block_line1) {
-			fptr_lcd_function_line1(LINE1, DISPLAY_LINE_UPDATE_PARTIAL);
-		}
-	}
-
-	// ---------------------------------------------------------------------
-	// Call Line2 display function
-	if (fptr_lcd_function_line2) {
-		if (display.flag.full_update || display.flag.line2_full_update) {
-			clear_line(LINE2);
-			fptr_lcd_function_line2(LINE2, DISPLAY_LINE_UPDATE_FULL);
-		} else if (!message.flag.block_line2) {
-			fptr_lcd_function_line2(LINE2, DISPLAY_LINE_UPDATE_PARTIAL);
-		}
-	}
-
-	// ---------------------------------------------------------------------
-	// If message text should be displayed
-	if (message.flag.show) {
-		// Select message to display (system only)
-		if (message.flag.type_locked)			memcpy(string, "  LOCT", 6);
-		else if (message.flag.type_unlocked)	memcpy(string, "  OPEN", 6);
-		else if (message.flag.type_lobatt)		memcpy(string, "LOBATT", 6);
-		else if (message.flag.type_no_beep_on)  memcpy(string, " SILNT", 6);
-		else if (message.flag.type_no_beep_off) memcpy(string, "  BEEP", 6);
-
-		// Clear previous content
-		if (message.flag.line1) {
-			clear_line(LINE1);
-			fptr_lcd_function_line1(LINE1, DISPLAY_LINE_CLEAR);
-		} else {
-			clear_line(LINE2);
-			fptr_lcd_function_line2(LINE2, DISPLAY_LINE_CLEAR);
-		}
-
-		// modular applications should set prepare=1, and user = 1 and chose the line with
-		// line1 (1 for LINE1, 0 for LINE2) and then handle their display function
-		// with a DISPLAY_LINE_MESSAGE update.
-		if (message.flag.user) {
-			if (message.flag.line1)
-				fptr_lcd_function_line1(LINE1, DISPLAY_LINE_MESSAGE);
-			else
-				fptr_lcd_function_line2(LINE2, DISPLAY_LINE_MESSAGE);
-		} else {
-			if (message.flag.line1)
-				display_chars(LCD_SEG_L1_3_0, string, SEG_ON);
-			else
-				display_chars(LCD_SEG_L2_5_0, string, SEG_ON);
-		}
-
-		uint8_t timeout = message.flag.timeout;
-		message.all_flags = 0;
-
-		if (message.flag.line1)
-			message.flag.block_line1 = 1;
-		else
-			message.flag.block_line2 = 1;
-
-		message.flag.timeout = timeout;
-	}
-
-	// Clear display flag
-	display.all_flags = 0;
 }
 
 
@@ -842,12 +687,14 @@ void read_calibration_values(void)
 	}
 }
 
-void menu_add_entry(uint8_t const line,
-             menu_item_fn_t const sx_fun,
-             menu_item_fn_t const mx_fun,
-             menu_disp_fn_t const disp_fun)
+void menu_add_entry(void (*up_btn_fn)(void),
+		    void (*down_btn_fn)(void),
+		    void (*num_btn_fn)(void),
+		    void (*lstar_btn_fn)(void),
+		    void (*activate_fn)(void),
+		    void (*deactivate_fn)(void))
 {
-	struct menu **menu_hd = (line == LINE1? &menu_L1_head : &menu_L2_head);
+	struct menu **menu_hd = &menu_head;
 	struct menu *menu_p;
 
 	if (! *menu_hd) {
@@ -855,49 +702,33 @@ void menu_add_entry(uint8_t const line,
 		menu_p = (struct menu *) malloc(sizeof(struct menu));
 		menu_p->next = menu_p;
 		*menu_hd = menu_p;
-		if (line == LINE1) {
-			menu_L1 = menu_p;
-			fptr_lcd_function_line1 = disp_fun;
-		} else {
-			menu_L2 = menu_p;
-			fptr_lcd_function_line2 = disp_fun;
-		}
+		
+		/* There wasnt any menu active, so we activate this one */
+		menu_item = menu_p;
 	} else {
 		/* insert new item after the head */
 		menu_p = (struct menu *) malloc(sizeof(struct menu));
 		menu_p->next = (*menu_hd)->next;
 		(*menu_hd)->next = menu_p;
 	}
-	menu_p->sx_function = sx_fun;
-	menu_p->mx_function = mx_fun;
-	menu_p->display_function = disp_fun;
+	
+	menu_p->up_btn_fn = up_btn_fn;
+	menu_p->down_btn_fn = down_btn_fn;
+	menu_p->num_btn_fn = num_btn_fn;
+	menu_p->lstar_btn_fn = lstar_btn_fn;
+	menu_p->activate_fn = activate_fn;
+	menu_p->deactivate_fn = deactivate_fn;
 }
 
-void menu_L1_skip_next(void)
+void menu_item_next(void)
 {
-	if (! menu_L1)
+	if (! menu_item)
 		return;
 
-	/* clean up display before activating next menu item */
-	fptr_lcd_function_line1(LINE1, DISPLAY_LINE_CLEAR);
-
-	menu_L1 = menu_L1->next;
-
-	/* Assign new display function */
-	fptr_lcd_function_line1 = menu_L1->display_function;
+	/* deactivate current menu item, and activate next one */
+	menu_item->deactivate_fn();
+	menu_item = menu_item->next;
+	menu_item->activate_fn();
 }
 
-void menu_L2_skip_next(void)
-{
-	if (! menu_L2)
-		return;
-
-	/* Clean up display before activating next menu item */
-	fptr_lcd_function_line2(LINE2, DISPLAY_LINE_CLEAR);
-
-	menu_L2 = menu_L2->next;
-
-	/* Assign new display function */
-	fptr_lcd_function_line2 = menu_L2->display_function;
-}
 

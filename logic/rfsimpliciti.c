@@ -629,7 +629,7 @@ void start_simpliciti_sync(void)
 	display_symbol(LCD_ICON_BEEPER3, SEG_OFF_BLINK_OFF);
 
 	// Force full display update
-	display.flag.full_update = 1;
+	//display.flag.full_update = 1;
 }
 
 

@@ -71,9 +71,7 @@ void display_chars(uint8_t segments, uint8_t *str, uint8_t mode);
 // *************************************************************************************************
 // Global Variable section
 
-// Display flags
-volatile s_display_flags display;
-
+// TODO: WTF is this?
 // Global return string for itoa function
 uint8_t itoa_str[8];
 

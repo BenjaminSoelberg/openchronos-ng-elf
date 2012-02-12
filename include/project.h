@@ -105,14 +105,12 @@ typedef union {
 	struct {
 		uint16_t idle_timeout		: 1;    // Timeout after inactivity
 		uint16_t idle_timeout_enabled   : 1;    // When in set mode, timeout after a given period
-		uint16_t lock_buttons	        : 1;    // Lock buttons
 		uint16_t mask_buzzer		: 1;	// Do not output buzz for next button event
 		uint16_t up_down_repeat_enabled : 1;    // While in set_value(), create virtual UP/DOWN button events
 		uint16_t low_battery		: 1;    // 1 = Battery is low
 		uint16_t use_metric_units	: 1;    // 1 = Use metric units, 0 = use English units
 		uint16_t am_pm_time		: 1;    // 1 = Display times as AM/PM else 24Hr
 		uint16_t delay_over		: 1;    // 1 = Timer delay over
-		uint16_t no_beep                : 1;    // Don't beep on key press
 	} flag;
 	uint16_t all_flags;            // Shortcut to all display flags (for reset)
 } s_system_flags;
@@ -140,35 +138,6 @@ typedef union {
 	uint16_t all_flags;            // Shortcut to all display flags (for reset)
 } s_request_flags;
 extern volatile s_request_flags request;
-
-
-// Set of message flags
-typedef union {
-	struct {
-		uint16_t prepare			: 1;	// 1 = Wait for clock tick, then set display.flag.show flag
-		uint16_t show				: 1;	// 1 = Display message now
-		uint16_t erase				: 1;	// 1 = Erase message
-		uint16_t timeout			: 4;  // [1..7] message timeout (1-7 seconds)
-		uint16_t line1				: 1;  // 1 = call message handler with line1, line2 otherwise
-		uint16_t user				: 1;  // 1 = is user message, system message otherwise
-		uint16_t type_locked			: 1;	// 1 = Show "buttons are locked" in Line2
-		uint16_t type_unlocked			: 1;	// 1 = Show "buttons are unlocked" in Line2
-		uint16_t type_lobatt			: 1;	// 1 = Show "lobatt" text in Line2
-		uint16_t type_no_beep_on		: 1;	// 1 = Show " beep" text in Line2
-		uint16_t type_no_beep_off		: 1;	// 1 = Show "nobeep" text in Line2
-		uint16_t block_line1			: 1;	// 1 = block Line1 from updating until message erase
-		uint16_t block_line2			: 1;	// 1 = block Line2 from updating until message erase
-	} flag;
-	uint16_t all_flags;            // Shortcut to all message flags (for reset)
-} s_message_flags;
-extern volatile s_message_flags message;
-
-#define show_message(LINE1, TIMEOUT) \
-	message.flag.prepare = 1; \
-	message.flag.timeout = (TIMEOUT); \
-	message.flag.line1 = (LINE1); \
-	message.flag.user = 1;
-
 
 // *************************************************************************************************
 // Global Variable section

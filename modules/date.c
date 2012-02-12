@@ -270,7 +270,8 @@ void date_init(void)
 	// Show default display
 	sDate.view = 0;
 
-	menu_add_entry(LINE2, &sx_date, &mx_date, &display_date);
+	// TODO: use new menu function
+	//menu_add_entry(LINE2, &sx_date, &mx_date, &display_date);
 
 	rtca_tevent_fn_register(&date_event);
 }

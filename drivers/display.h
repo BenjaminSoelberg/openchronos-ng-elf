@@ -71,27 +71,6 @@ extern const uint8_t itoa_conversion_table[][3];
 
 
 // *************************************************************************************************
-// Global Variable section
-
-// Set of display flags
-typedef union {
-	struct {
-	// Line1 + Line2 + Icons
-	uint8_t full_update      		: 1;    // 1 = Redraw all content
-	uint8_t partial_update      	: 1;    // 1 = Update changes
-  	
-	// Line only
-	uint8_t line1_full_update     	: 1;    // 1 = Redraw Line1 content
-	uint8_t line2_full_update     	: 1;    // 1 = Redraw Line2 content
-
-  } flag;
-  uint8_t all_flags;            // Shortcut to all display flags (for reset)
-} s_display_flags;
-
-extern volatile s_display_flags display;
-
-
-// *************************************************************************************************
 // Defines section
 
 // Display function modes

@@ -240,7 +240,7 @@ void mx_temperature(uint8_t line)
 			sTemp.degrees = temperature1;
 
 			// Set display update flag
-			display.flag.line1_full_update = 1;
+			//display.flag.line1_full_update = 1;
 
 			break;
 		}
