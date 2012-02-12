@@ -56,17 +56,12 @@
 // @param       line		LINE1, LINE2
 // @return      none
 // *************************************************************************************************
-static void mx_rfbsl(uint8_t line)
+static void long_star_press()
 {
 	if (sys.flag.low_battery) return;
 
 	// Exit if SimpliciTI stack is active
 	if (is_rf()) return;
-
-	// Before entering RFBSL clear the LINE1 Symbols
-	display_symbol(LCD_SYMB_AM, SEG_OFF);
-
-	clear_line(LINE1);
 
 	// Write RAM to indicate we will be downloading the RAM Updater first
 	display_chars(LCD_SEG_L1_3_0, (uint8_t *)" RAM", SEG_ON);
@@ -83,36 +78,12 @@ static void mx_rfbsl(uint8_t line)
 //				uint8_t update		DISPLAY_LINE_UPDATE_FULL
 // @return      none
 // *************************************************************************************************
-static void display_rfbsl(uint8_t line, uint8_t update)
+static void rfbsl_activate()
 {
-	if (update == DISPLAY_LINE_UPDATE_FULL) {
-		display_chars(LCD_SEG_L2_5_0, (uint8_t *)" RFBSL", SEG_ON);
-	}
+	display_chars(LCD_SEG_L2_5_0, (uint8_t *)" RFBSL", SEG_ON);
 }
-
-
-// *************************************************************************************************
-// @fn          display_discret_rfbsl
-// @brief       Discrete RFBSL display routine: auto selects battery or rfbsl, based on current menu
-// @param       uint8_t line			LINE2
-//		uint8_t update		DISPLAY_LINE_UPDATE_FULL
-// @return      none
-// *************************************************************************************************
-#if defined(CONFIG_RFBSL_DISCRET) && defined(CONFIG_BATTERY)
-static void display_discret_rfbsl(uint8_t line, uint8_t update)
-{
-	if (locked) { // battery mode
-		display_battery_V(line, update);
-	} else { // rfbsl mode
-		display_rfbsl(line, update);
-	}
-}
-#endif
-
 
 void rfbsl_init(void)
 {
-	/* WTF is going on here? NULLs are borken, blame simpliciti */
-	/* TODO: fix to use new function */
-	//menu_add_entry(LINE2, (void *)0, &mx_rfbsl, &display_rfbsl);
+	menu_add_entry(NULL, &down_pressed, NULL, &long_star_pressed, &rfbsl_activate, NULL);
 }
