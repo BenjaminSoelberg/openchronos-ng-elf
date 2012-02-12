@@ -33,4 +33,7 @@ void menu_item_next(void);
 /* Include function defined in even_in_range.s TODO: do we even need this?? */
 unsigned short __even_in_range(unsigned short __value, unsigned short __bound);
 
+/* Helpers here */
+void inline helpers_loop_up(uint8_t *value, uint8_t lower, uint8_t upper);
+void inline helpers_loop_down(uint8_t *value, uint8_t lower, uint8_t upper);
 #endif /* __EZCHRONOS_H__ */

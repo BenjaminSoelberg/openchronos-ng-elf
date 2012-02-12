@@ -732,3 +732,17 @@ void menu_item_next(void)
 }
 
 
+/* Here be helpers */
+void inline helpers_loop_up(uint8_t *value, uint8_t lower, uint8_t upper)
+{
+    *value++;
+    if(*value == upper)
+	*value = lower;
+}
+
+void inline helpers_loop_down(uint8_t *value, uint8_t lower, uint8_t upper)
+{
+    *value--;
+    if(*value == lower)
+	*value = upper;
+}
