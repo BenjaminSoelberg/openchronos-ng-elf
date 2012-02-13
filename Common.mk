@@ -6,7 +6,7 @@ CC_DMACH	= -D__MSP430_6137__ -DMRFI_CC430 -D__CC430F6137__
 #
 CFLAGS		+= $(CC_CMACH) $(CC_DMACH) -Os -Wall -fomit-frame-pointer
 CFLAGS		+= -fno-force-addr -finline-limit=1 -fno-schedule-insns
-CFLAGS		+= -fshort-enums -Wl,-Map=output.map
+CFLAGS		+= -fshort-enums -ffunction-sections -Wl,-Map=output.map
 CFLAGS		+= -DELIMINATE_BLUEROBIN
 LDFLAGS		=
 INCLUDES	+= -I$(TOP)/
