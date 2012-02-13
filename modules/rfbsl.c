@@ -85,5 +85,5 @@ static void rfbsl_activate()
 
 void rfbsl_init(void)
 {
-	menu_add_entry(NULL, &down_pressed, NULL, &long_star_pressed, &rfbsl_activate, NULL);
+	menu_add_entry(NULL, NULL, NULL, &long_star_press, &rfbsl_activate, NULL);
 }
