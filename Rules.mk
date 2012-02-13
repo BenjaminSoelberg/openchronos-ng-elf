@@ -8,15 +8,15 @@ include $(TOP)/Common.mk
 SRCS = $(wildcard *.c)
 OBJS = $(patsubst %.c, %.o, $(SRCS))
 
-all: xbuilt.o
+all: xbuilt.a
 
-xbuilt.o: $(OBJS)
-	@echo "LD $@"
-	@$(LD) -r $(OBJS) -o $@
+xbuilt.a: $(OBJS)
+	@echo "AR $@"
+	@$(AR) rcuos $@ $(OBJS)
 
 %.o: %.c
 	@echo "CC $<"
 	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
 clean:
-	rm -f *.o
+	rm -f *.o xbuilt.a
