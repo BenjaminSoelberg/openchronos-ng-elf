@@ -56,17 +56,16 @@ extern void clock_event(rtca_tevent_ev_t ev);
 struct time
 {
 	enum {
-	    edit_state_hours = 0,
-	    edit_state_minutes = 1,
-	    edit_state_seconds = 2
+       EDIT_STATE_OFF		= 0,
+	    EDIT_STATE_HH			= 1,
+	    EDIT_STATE_MM			= 2,
+	    EDIT_STATE_SS			= 3
 	} edit_state;
 
 	/* Temporary variables for editing */
 	uint8_t tmp_hour;
 	uint8_t tmp_min;
 	uint8_t tmp_sec;
-
-	uint8_t active;
 
 #ifdef CONFIG_SIDEREAL
 	// offset of local time from UTC (=1: set time is UTC+1 =CET)

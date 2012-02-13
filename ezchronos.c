@@ -414,7 +414,10 @@ void wakeup_event(void)
 			menu_editmode.dec_value_fn();
 		}
 	} else {
-		if (button.flag.star_long) {
+		if (button.flag.star) {
+			button.flag.star = 0;
+			menu_item_next();
+		} else if (button.flag.star_long) {
 			button.flag.star_long = 0;
 			if (menu_item->lstar_btn_fn)
 				menu_item->lstar_btn_fn();
@@ -732,6 +735,7 @@ void menu_add_entry(void (*up_btn_fn)(void),
 		
 		/* There wasnt any menu active, so we activate this one */
 		menu_item = menu_p;
+		activate_fn();
 	} else {
 		/* insert new item after the head */
 		menu_p = (struct menu *) malloc(sizeof(struct menu));
@@ -756,7 +760,6 @@ void menu_item_next(void)
 	if (menu_item->deactivate_fn)
 		menu_item->deactivate_fn();
 	menu_item = menu_item->next;
-	clear_display();
 	if (menu_item->activate_fn)
 		menu_item->activate_fn();
 }

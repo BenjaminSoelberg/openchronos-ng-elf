@@ -62,7 +62,7 @@ struct time sTime;
 void clock_event(rtca_tevent_ev_t ev)
 {
 	/* Exit if we are not active! */
-	if (!sTime.active)
+	if (sTime.edit_state != EDIT_STATE_OFF)
 		return;
 
 	uint8_t hour, min, sec;
@@ -82,32 +82,32 @@ void clock_event(rtca_tevent_ev_t ev)
 
 void clock_activated()
 {
-	sTime.active = 1;
 	rtca_tevent_fn_register(&clock_event);
 }
 
 void clock_deactivated()
 {
-	sTime.active = 0;
 	rtca_tevent_fn_unregister(&clock_event);
 }
 
 static void increment_value()
 {
 	switch (sTime.edit_state) {
-	case edit_state_seconds:
+	case EDIT_STATE_SS:
 		helpers_loop_up(&sTime.tmp_sec , 0, 60);
 		display_chars(LCD_SEG_L2_1_0, _itoa(sTime.tmp_sec, 2, 0), SEG_ON_BLINK_ON);
 		break;
 
-	case edit_state_minutes:
+	case EDIT_STATE_MM:
 		helpers_loop_up(&sTime.tmp_min , 0, 60);
 		display_chars(LCD_SEG_L1_1_0, _itoa(sTime.tmp_min, 2, 0), SEG_ON_BLINK_ON);
 		break;
 
-	case edit_state_hours:
+	case EDIT_STATE_HH:
 		helpers_loop_up(&sTime.tmp_hour, 0, 24);  /* TODO: fix for 12/24 hr! */
 		display_chars(LCD_SEG_L1_3_2, _itoa(sTime.tmp_hour, 2, 0), SEG_ON_BLINK_ON);
+		break;
+	default:
 		break;
 	}
 }
@@ -115,19 +115,21 @@ static void increment_value()
 static void decrement_value()
 {
 	switch (sTime.edit_state) {
-	case edit_state_seconds:
+	case EDIT_STATE_SS:
 		helpers_loop_down(&sTime.tmp_sec , 0, 60);
 		display_chars(LCD_SEG_L2_1_0, _itoa(sTime.tmp_sec, 2, 0), SEG_ON_BLINK_ON);
 		break;
 
-	case edit_state_minutes:
+	case EDIT_STATE_MM:
 		helpers_loop_down(&sTime.tmp_min , 0, 60);
 		display_chars(LCD_SEG_L1_1_0, _itoa(sTime.tmp_min, 2, 0), SEG_ON_BLINK_ON);
 		break;
 
-	case edit_state_hours:
+	case EDIT_STATE_HH:
 		helpers_loop_down(&sTime.tmp_hour, 0, 24);  /* TODO: fix for 12/24 hr! */
 		display_chars(LCD_SEG_L1_3_2, _itoa(sTime.tmp_hour, 2, 0), SEG_ON_BLINK_ON);
+		break;
+	default:
 		break;
 	}
 }
@@ -144,6 +146,8 @@ static void save_value()
 
 	/* And stop the blinking! */
 	clear_blink_mem();
+
+	sTime.edit_state = EDIT_STATE_OFF;
 }
 
 
@@ -151,7 +155,7 @@ static void save_value()
 static void star_long_pressed()
 {
 	/* We go into edit mode  */
-	sTime.edit_state = edit_state_hours;
+	sTime.edit_state = EDIT_STATE_HH;
 
 	/* Save the current time in edit_buffer */
 	rtca_get_time(&sTime.tmp_hour, &sTime.tmp_min, &sTime.tmp_sec);
@@ -162,8 +166,7 @@ static void star_long_pressed()
 
 void clock_init()
 {
-	/* The module is not enabled by default. */
-	sTime.active = 0;
+	sTime.edit_state = EDIT_STATE_OFF;
 
 #ifdef CONFIG_SIDEREAL
 	sTime.UTCoffset  = 0;
