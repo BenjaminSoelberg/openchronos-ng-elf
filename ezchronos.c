@@ -128,6 +128,8 @@ struct menu {
 	void (*num_btn_fn)(void);
 	/* Pointer to settings button (long STAR) */
 	void (*lstar_btn_fn)(void);
+	/* Pointer to function button (long NUM) */
+	void (*lnum_btn_fn)(void);
 	/* Pointer to activate function */
 	void (*activate_fn)(void);
 	/* Pointer to deactivate function */
@@ -185,6 +187,9 @@ int main(void)
 #else
 	display_all_off();
 #endif
+
+	/* Init modules */
+	mod_init();
 
 	// Main control loop: wait in low power mode until some event needs to be processed
 	while (1) {
@@ -376,9 +381,6 @@ void init_global_variables(void)
 
 	// Reset temperature measurement
 	reset_temp_measurement();
-
-	/* Init modules */
-	mod_init();
 }
 
 
@@ -421,6 +423,11 @@ void wakeup_event(void)
 			button.flag.star_long = 0;
 			if (menu_item->lstar_btn_fn)
 				menu_item->lstar_btn_fn();
+
+		} else if (button.flag.num_long) {
+			button.flag.num_long = 0;
+			if (menu_item->lnum_btn_fn)
+				menu_item->lnum_btn_fn();
 
 		} else if (button.flag.num) {
 			button.flag.num = 0;
@@ -721,6 +728,7 @@ void menu_add_entry(void (*up_btn_fn)(void),
 		    void (*down_btn_fn)(void),
 		    void (*num_btn_fn)(void),
 		    void (*lstar_btn_fn)(void),
+			 void (*lnum_btn_fn)(void),
 		    void (*activate_fn)(void),
 		    void (*deactivate_fn)(void))
 {
@@ -747,6 +755,7 @@ void menu_add_entry(void (*up_btn_fn)(void),
 	menu_p->down_btn_fn = down_btn_fn;
 	menu_p->num_btn_fn = num_btn_fn;
 	menu_p->lstar_btn_fn = lstar_btn_fn;
+	menu_p->lnum_btn_fn = lnum_btn_fn;
 	menu_p->activate_fn = activate_fn;
 	menu_p->deactivate_fn = deactivate_fn;
 }

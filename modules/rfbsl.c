@@ -56,7 +56,7 @@
 // @param       line		LINE1, LINE2
 // @return      none
 // *************************************************************************************************
-static void long_star_press()
+static void long_num_press()
 {
 	if (sys.flag.low_battery) return;
 
@@ -80,10 +80,20 @@ static void long_star_press()
 // *************************************************************************************************
 static void rfbsl_activate()
 {
+	/* update screen */
 	display_chars(LCD_SEG_L2_5_0, (uint8_t *)" RFBSL", SEG_ON);
+}
+
+static void rfbsl_deactivate()
+{
+	/* cleanup screen */
+	clear_line(LINE2);
 }
 
 void rfbsl_init(void)
 {
-	menu_add_entry(NULL, NULL, NULL, &long_star_press, &rfbsl_activate, NULL);
+	menu_add_entry(NULL, NULL, NULL, NULL,
+						&long_num_press,
+						&rfbsl_activate,
+						&rfbsl_deactivate);
 }

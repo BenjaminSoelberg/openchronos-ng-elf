@@ -27,6 +27,7 @@ void menu_add_entry(void (*up_btn_fn)(void),
 		    void (*down_btn_fn)(void),
 		    void (*num_btn_fn)(void),
 		    void (*lstar_btn_fn)(void),
+		    void (*lnum_btn_fn)(void),
 		    void (*activate_fn)(void),
 		    void (*deactivate_fn)(void));
 

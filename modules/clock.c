@@ -61,7 +61,7 @@ struct time sTime;
 
 void clock_event(rtca_tevent_ev_t ev)
 {
-	/* Exit if we are not active! */
+	/* Exit if we are in edit mode */
 	if (sTime.edit_state != EDIT_STATE_OFF)
 		return;
 
@@ -74,20 +74,26 @@ void clock_event(rtca_tevent_ev_t ev)
 
 	case RTCA_EV_MINUTE:
 		display_chars(LCD_SEG_L1_1_0, _itoa(min, 2, 0), SEG_ON);
-
-	default: /* Only seconds are changes */
-		display_chars(LCD_SEG_L2_1_0, _itoa(sec, 2, 0), SEG_ON);
+	default:
+		break;
 	}
 }
 
 void clock_activated()
 {
 	rtca_tevent_fn_register(&clock_event);
+
+	/* Force redraw of the screen */
+	display_symbol(LCD_SEG_L1_COL, SEG_ON);
+	clock_event(RTCA_EV_HOUR);
 }
 
 void clock_deactivated()
 {
 	rtca_tevent_fn_unregister(&clock_event);
+
+	/* clean up screen */
+	clear_line(LINE1);
 }
 
 static void increment_value()
@@ -173,6 +179,7 @@ void clock_init()
 #endif
 	menu_add_entry(NULL, NULL, NULL,
 		       &star_long_pressed,
+				 NULL,
 		       &clock_activated,
 		       &clock_deactivated
 		      );
