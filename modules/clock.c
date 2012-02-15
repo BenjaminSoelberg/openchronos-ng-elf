@@ -84,7 +84,11 @@ void clock_activated()
 	rtca_tevent_fn_register(&clock_event);
 
 	/* Force redraw of the screen */
+#ifdef CONFIG_CLOCK_BLINKCOL
+	display_symbol(LCD_SEG_L1_COL, SEG_ON_BLINK_ON);
+#else
 	display_symbol(LCD_SEG_L1_COL, SEG_ON);
+#endif
 	clock_event(RTCA_EV_HOUR);
 }
 
