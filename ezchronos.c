@@ -786,19 +786,22 @@ void menu_editmode_start(void (* inc_value_fn)(void),
 	menu_editmode.complete_fn = complete_fn;
 
 	menu_editmode.enabled = 1;
+
+	/* now call next_item to give control back to the module */
+	next_item_fn();
 }
 
 /* Here be helpers */
 void inline helpers_loop_up(uint8_t *value, uint8_t lower, uint8_t upper)
 {
-    (*value)++;
-    if( *value == upper)
-	*value = lower;
+	(*value)++;
+	if(*value == 255 || *value == upper + 1)
+		*value = lower;
 }
 
 void inline helpers_loop_down(uint8_t *value, uint8_t lower, uint8_t upper)
 {
-    (*value)--;
-    if(*value == lower)
-	*value = upper;
+	(*value)--;
+	if(*value == 0 || *value == lower - 1)
+		*value = upper;
 }

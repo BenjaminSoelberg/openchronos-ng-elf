@@ -59,7 +59,6 @@ struct time
        EDIT_STATE_OFF		= 0,
 	    EDIT_STATE_HH			= 1,
 	    EDIT_STATE_MM			= 2,
-	    EDIT_STATE_SS			= 3
 	} edit_state;
 
 	/* Temporary variables for editing */
