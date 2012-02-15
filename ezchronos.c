@@ -416,13 +416,14 @@ void wakeup_event(void)
 			menu_editmode.dec_value_fn();
 		}
 	} else {
-		if (button.flag.star) {
-			button.flag.star = 0;
-			menu_item_next();
-		} else if (button.flag.star_long) {
+		if (button.flag.star_long) {
 			button.flag.star_long = 0;
 			if (menu_item->lstar_btn_fn)
 				menu_item->lstar_btn_fn();
+
+		} else if (button.flag.star) {
+			button.flag.star = 0;
+			menu_item_next();
 
 		} else if (button.flag.num_long) {
 			button.flag.num_long = 0;
