@@ -61,8 +61,8 @@ struct time sTime;
 
 void clock_event(rtca_tevent_ev_t ev)
 {
-	/* Exit if we are not active! */
-	if (!sTime.active)
+	/* Exit if we are in edit mode */
+	if (sTime.edit_state != EDIT_STATE_OFF)
 		return;
 
 	uint8_t hour, min, sec;
@@ -74,76 +74,94 @@ void clock_event(rtca_tevent_ev_t ev)
 
 	case RTCA_EV_MINUTE:
 		display_chars(LCD_SEG_L1_1_0, _itoa(min, 2, 0), SEG_ON);
-
-	default: /* Only seconds are changes */
-		display_chars(LCD_SEG_L2_1_0, _itoa(sec, 2, 0), SEG_ON);
+	default:
+		break;
 	}
 }
 
 void clock_activated()
 {
-	sTime.active = 1;
 	rtca_tevent_fn_register(&clock_event);
+
+	/* Force redraw of the screen */
+#ifdef CONFIG_CLOCK_BLINKCOL
+	display_symbol(LCD_SEG_L1_COL, SEG_ON_BLINK_ON);
+#else
+	display_symbol(LCD_SEG_L1_COL, SEG_ON);
+#endif
+	clock_event(RTCA_EV_HOUR);
 }
 
 void clock_deactivated()
 {
-	sTime.active = 0;
 	rtca_tevent_fn_unregister(&clock_event);
+
+	/* clean up screen */
+	clear_line(LINE1);
 }
 
-static void increment_value()
+static void edit_inc()
 {
 	switch (sTime.edit_state) {
-	case edit_state_seconds:
-		helpers_loop_up(&sTime.tmp_sec , 0, 60);
-		display_chars(LCD_SEG_L2_1_0, _itoa(sTime.tmp_sec, 2, 0), SEG_ON_BLINK_ON);
-		break;
-
-	case edit_state_minutes:
+	case EDIT_STATE_MM:
 		helpers_loop_up(&sTime.tmp_min , 0, 60);
-		display_chars(LCD_SEG_L1_1_0, _itoa(sTime.tmp_min, 2, 0), SEG_ON_BLINK_ON);
+		display_chars(LCD_SEG_L1_1_0, _itoa(sTime.tmp_min, 2, 0),
+																				SEG_ON_BLINK_ON);
 		break;
 
-	case edit_state_hours:
+	case EDIT_STATE_HH:
 		helpers_loop_up(&sTime.tmp_hour, 0, 24);  /* TODO: fix for 12/24 hr! */
-		display_chars(LCD_SEG_L1_3_2, _itoa(sTime.tmp_hour, 2, 0), SEG_ON_BLINK_ON);
+		display_chars(LCD_SEG_L1_3_2, _itoa(sTime.tmp_hour, 2, 0),
+																				SEG_ON_BLINK_ON);
+		break;
+	default:
 		break;
 	}
 }
 
-static void decrement_value()
+static void edit_dec()
 {
 	switch (sTime.edit_state) {
-	case edit_state_seconds:
-		helpers_loop_down(&sTime.tmp_sec , 0, 60);
-		display_chars(LCD_SEG_L2_1_0, _itoa(sTime.tmp_sec, 2, 0), SEG_ON_BLINK_ON);
-		break;
-
-	case edit_state_minutes:
+	case EDIT_STATE_MM:
 		helpers_loop_down(&sTime.tmp_min , 0, 60);
-		display_chars(LCD_SEG_L1_1_0, _itoa(sTime.tmp_min, 2, 0), SEG_ON_BLINK_ON);
+		display_chars(LCD_SEG_L1_1_0, _itoa(sTime.tmp_min, 2, 0),
+																				SEG_ON_BLINK_ON);
 		break;
 
-	case edit_state_hours:
+	case EDIT_STATE_HH:
 		helpers_loop_down(&sTime.tmp_hour, 0, 24);  /* TODO: fix for 12/24 hr! */
-		display_chars(LCD_SEG_L1_3_2, _itoa(sTime.tmp_hour, 2, 0), SEG_ON_BLINK_ON);
+		display_chars(LCD_SEG_L1_3_2, _itoa(sTime.tmp_hour, 2, 0),
+																				SEG_ON_BLINK_ON);
+		break;
+	default:
 		break;
 	}
 }
 
-static void edit_next_value()
+static void edit_next()
 {
-	helpers_loop_up(&sTime.edit_state, 0, 3);
+	helpers_loop_up(&sTime.edit_state, EDIT_STATE_HH, EDIT_STATE_MM);
+
+	display_chars(LCD_SEG_L1_1_0, _itoa(sTime.tmp_min, 2, 0),
+		(sTime.edit_state==EDIT_STATE_MM? SEG_ON_BLINK_ON : SEG_ON_BLINK_OFF));
+	display_chars(LCD_SEG_L1_3_2, _itoa(sTime.tmp_hour, 2, 0),
+		(sTime.edit_state==EDIT_STATE_HH? SEG_ON_BLINK_ON : SEG_ON_BLINK_OFF));
 }
 
-static void save_value()
+static void edit_save()
 {
 	/* Here we return from the edit mode, fill in the new values! */
 	rtca_set_time(sTime.tmp_hour, sTime.tmp_min, sTime.tmp_sec);
 
-	/* And stop the blinking! */
-	clear_blink_mem();
+	/* hack to only turn off SOME blinking segments */
+	display_chars(LCD_SEG_L1_1_0, _itoa(88, 2, 0), SEG_ON_BLINK_OFF);
+	display_chars(LCD_SEG_L1_3_2, _itoa(88, 2, 0), SEG_ON_BLINK_OFF);
+
+	/* set edit mode state to off */
+	sTime.edit_state = EDIT_STATE_OFF;
+
+	/* force redraw of the screen */
+	clock_event(RTCA_EV_HOUR);
 }
 
 
@@ -151,25 +169,25 @@ static void save_value()
 static void star_long_pressed()
 {
 	/* We go into edit mode  */
-	sTime.edit_state = edit_state_hours;
+	sTime.edit_state = EDIT_STATE_HH;
 
 	/* Save the current time in edit_buffer */
 	rtca_get_time(&sTime.tmp_hour, &sTime.tmp_min, &sTime.tmp_sec);
 
-	menu_editmode_start(&increment_value, &decrement_value, &edit_next_value, &save_value);
+	menu_editmode_start(&edit_inc, &edit_dec, &edit_next, &edit_save);
 
 }
 
 void clock_init()
 {
-	/* The module is not enabled by default. */
-	sTime.active = 0;
+	sTime.edit_state = EDIT_STATE_OFF;
 
 #ifdef CONFIG_SIDEREAL
 	sTime.UTCoffset  = 0;
 #endif
 	menu_add_entry(NULL, NULL, NULL,
 		       &star_long_pressed,
+				 NULL,
 		       &clock_activated,
 		       &clock_deactivated
 		      );

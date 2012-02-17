@@ -128,6 +128,8 @@ struct menu {
 	void (*num_btn_fn)(void);
 	/* Pointer to settings button (long STAR) */
 	void (*lstar_btn_fn)(void);
+	/* Pointer to function button (long NUM) */
+	void (*lnum_btn_fn)(void);
 	/* Pointer to activate function */
 	void (*activate_fn)(void);
 	/* Pointer to deactivate function */
@@ -185,6 +187,9 @@ int main(void)
 #else
 	display_all_off();
 #endif
+
+	/* Init modules */
+	mod_init();
 
 	// Main control loop: wait in low power mode until some event needs to be processed
 	while (1) {
@@ -376,9 +381,6 @@ void init_global_variables(void)
 
 	// Reset temperature measurement
 	reset_temp_measurement();
-
-	/* Init modules */
-	mod_init();
 }
 
 
@@ -418,6 +420,15 @@ void wakeup_event(void)
 			button.flag.star_long = 0;
 			if (menu_item->lstar_btn_fn)
 				menu_item->lstar_btn_fn();
+
+		} else if (button.flag.star) {
+			button.flag.star = 0;
+			menu_item_next();
+
+		} else if (button.flag.num_long) {
+			button.flag.num_long = 0;
+			if (menu_item->lnum_btn_fn)
+				menu_item->lnum_btn_fn();
 
 		} else if (button.flag.num) {
 			button.flag.num = 0;
@@ -718,6 +729,7 @@ void menu_add_entry(void (*up_btn_fn)(void),
 		    void (*down_btn_fn)(void),
 		    void (*num_btn_fn)(void),
 		    void (*lstar_btn_fn)(void),
+			 void (*lnum_btn_fn)(void),
 		    void (*activate_fn)(void),
 		    void (*deactivate_fn)(void))
 {
@@ -732,6 +744,7 @@ void menu_add_entry(void (*up_btn_fn)(void),
 		
 		/* There wasnt any menu active, so we activate this one */
 		menu_item = menu_p;
+		activate_fn();
 	} else {
 		/* insert new item after the head */
 		menu_p = (struct menu *) malloc(sizeof(struct menu));
@@ -743,6 +756,7 @@ void menu_add_entry(void (*up_btn_fn)(void),
 	menu_p->down_btn_fn = down_btn_fn;
 	menu_p->num_btn_fn = num_btn_fn;
 	menu_p->lstar_btn_fn = lstar_btn_fn;
+	menu_p->lnum_btn_fn = lnum_btn_fn;
 	menu_p->activate_fn = activate_fn;
 	menu_p->deactivate_fn = deactivate_fn;
 }
@@ -756,7 +770,6 @@ void menu_item_next(void)
 	if (menu_item->deactivate_fn)
 		menu_item->deactivate_fn();
 	menu_item = menu_item->next;
-	clear_display();
 	if (menu_item->activate_fn)
 		menu_item->activate_fn();
 }
@@ -773,19 +786,22 @@ void menu_editmode_start(void (* inc_value_fn)(void),
 	menu_editmode.complete_fn = complete_fn;
 
 	menu_editmode.enabled = 1;
+
+	/* now call next_item to give control back to the module */
+	next_item_fn();
 }
 
 /* Here be helpers */
 void inline helpers_loop_up(uint8_t *value, uint8_t lower, uint8_t upper)
 {
-    (*value)++;
-    if( *value == upper)
-	*value = lower;
+	(*value)++;
+	if(*value == 255 || *value == upper + 1)
+		*value = lower;
 }
 
 void inline helpers_loop_down(uint8_t *value, uint8_t lower, uint8_t upper)
 {
-    (*value)--;
-    if(*value == lower)
-	*value = upper;
+	(*value)--;
+	if(*value == 0 || *value == lower - 1)
+		*value = upper;
 }

@@ -1,5 +1,10 @@
 TOP=.
-SUBDIRS = drivers modules logic simpliciti
+SUBDIRS = drivers modules logic \
+simpliciti/Applications/application/End_Device \
+simpliciti/Components/nwk \
+simpliciti/Components/bsp \
+simpliciti/Components/nwk_applications \
+simpliciti/Components/mrfi
 
 include $(TOP)/Common.mk
 
@@ -16,8 +21,13 @@ all: include/config.h eZChronos.txt
 eZChronos.elf: even_in_range.o modinit.o $(SUBDIRS)
 	@echo -e "\n>> Building $@"
 	@$(CC) $(CFLAGS) $(LDFLAGS) $(INCLUDES) -o eZChronos.elf \
-		ezchronos.c even_in_range.o modinit.o drivers/xbuilt.o \
-		modules/xbuilt.o logic/xbuilt.o simpliciti/xbuilt.o
+		ezchronos.c even_in_range.o modinit.o \
+		modules/xbuilt.a logic/xbuilt.a drivers/xbuilt.a \
+		simpliciti/Applications/application/End_Device/xbuilt.a \
+		simpliciti/Components/nwk/xbuilt.a \
+		simpliciti/Components/bsp/xbuilt.a \
+		simpliciti/Components/nwk_applications/xbuilt.a \
+		simpliciti/Components/mrfi/xbuilt.a
 
 eZChronos.txt: eZChronos.elf
 	$(PYTHON) tools/memory.py -i eZChronos.elf -o eZChronos.txt
