@@ -794,14 +794,26 @@ void menu_editmode_start(void (* inc_value_fn)(void),
 /* Here be helpers */
 void inline helpers_loop_up(uint8_t *value, uint8_t lower, uint8_t upper)
 {
+	/* prevent overflow */
+	if (*value == 255) {
+		*value = lower;
+		return;
+	}
+
 	(*value)++;
-	if(*value == 255 || *value == upper + 1)
+	if(*value -1 == upper)
 		*value = lower;
 }
 
 void inline helpers_loop_down(uint8_t *value, uint8_t lower, uint8_t upper)
 {
+	/* prevent overflow */
+	if (*value == 0) {
+		*value = upper;
+		return;
+	}
+
 	(*value)--;
-	if(*value == 0 || *value == lower - 1)
+	if(*value +1 == lower)
 		*value = upper;
 }

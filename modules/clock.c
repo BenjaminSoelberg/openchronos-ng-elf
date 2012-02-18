@@ -85,7 +85,7 @@ static void edit_inc()
 {
 	switch (sTime.edit_state) {
 	case EDIT_STATE_MM:
-		helpers_loop_up(&sTime.tmp_min , 0, 60);
+		helpers_loop_up(&sTime.tmp_min , 0, 59);
 
 		display_chars(LCD_SEG_L1_1_0, _itoa(sTime.tmp_min, 2, 0),
 							SEG_ON_BLINK_ON);
@@ -93,7 +93,7 @@ static void edit_inc()
 
 	case EDIT_STATE_HH:
 		/* TODO: fix for 12/24 hr! */
-		helpers_loop_up(&sTime.tmp_hour, 0, 24);
+		helpers_loop_up(&sTime.tmp_hour, 0, 23);
 
 		display_chars(LCD_SEG_L1_3_2, _itoa(sTime.tmp_hour, 2, 0),
 							SEG_ON_BLINK_ON);
@@ -107,7 +107,7 @@ static void edit_dec()
 {
 	switch (sTime.edit_state) {
 	case EDIT_STATE_MM:
-		helpers_loop_down(&sTime.tmp_min , 0, 60);
+		helpers_loop_down(&sTime.tmp_min , 0, 59);
 
 		display_chars(LCD_SEG_L1_1_0, _itoa(sTime.tmp_min, 2, 0),
 							SEG_ON_BLINK_ON);
@@ -115,7 +115,7 @@ static void edit_dec()
 
 	case EDIT_STATE_HH:
 		/* TODO: fix for 12/24 hr! */
-		helpers_loop_down(&sTime.tmp_hour, 0, 24);
+		helpers_loop_down(&sTime.tmp_hour, 0, 23);
 
 		display_chars(LCD_SEG_L1_3_2, _itoa(sTime.tmp_hour, 2, 0),
 							SEG_ON_BLINK_ON);
