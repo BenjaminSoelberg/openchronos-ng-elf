@@ -30,18 +30,36 @@ static enum {
 	EDIT_STATE_MM,
 } edit_state;
 
+static union {
+	struct {
+		// one shot alarm
+		uint8_t alarm: 1;
+		// hourly chime
+		uint8_t chime: 1;
+	};
+	uint8_t state: 2;
+} alarm_state;
+
 static uint8_t tmp_hh, tmp_mm;
 
 static void refresh_screen()
 {
+	rtca_get_alarm(&tmp_hh, &tmp_mm);
+
 	display_chars(LCD_SEG_L1_1_0, _itoa(tmp_mm, 2, 0), SEG_ON);
 	display_chars(LCD_SEG_L1_3_2, _itoa(tmp_hh, 2, 0), SEG_ON);
-	display_symbol(LCD_SEG_L1_COL, SEG_ON);
 }
+
+static void alarm_event(rtca_tevent_ev_t ev)
+{
+	/* TODO: */
+}
+
 
 static void alarm_activated()
 {
 	/* Force redraw of the screen */
+	display_symbol(LCD_SEG_L1_COL, SEG_ON);
 	refresh_screen();
 }
 
@@ -100,6 +118,35 @@ static void edit_save()
 	refresh_screen();
 }
 
+/* NUM (#) button pressed callback */
+static void num_pressed()
+{
+	/* this cycles between all alarm/chime combinations and overflow */
+	alarm_state.state++;
+
+	/* Register RTC only if needed, saving CPU cycles.. */
+	if (alarm_state.state)
+		rtca_tevent_fn_register(alarm_event);	
+	else
+		rtca_tevent_fn_unregister(alarm_event);
+
+	if (alarm_state.alarm) {
+		display_symbol(LCD_ICON_ALARM, SEG_ON);
+		rtca_enable_alarm();
+	} else {
+		display_symbol(LCD_ICON_ALARM, SEG_OFF);
+		rtca_disable_alarm();
+	}
+
+	if (alarm_state.chime) {
+		display_symbol(LCD_ICON_BEEPER2, SEG_ON);
+		display_symbol(LCD_ICON_BEEPER3, SEG_ON);
+	} else {
+		display_symbol(LCD_ICON_BEEPER2, SEG_OFF);
+		display_symbol(LCD_ICON_BEEPER3, SEG_OFF);
+	}
+
+}
 
 /* Star button long press callback. */
 static void star_long_pressed()
@@ -117,7 +164,8 @@ static void star_long_pressed()
 
 void alarm_init()
 {
-	menu_add_entry(NULL, NULL, NULL,
+	menu_add_entry(NULL, NULL,
+			&num_pressed,
 			&star_long_pressed,
 			NULL,
 			&alarm_activated,
