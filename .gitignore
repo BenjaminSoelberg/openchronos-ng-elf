@@ -5,6 +5,7 @@ eZChronos.elf
 *.pyc
 *.*~
 *.s
+*.swp
 include/config.h
 .pida-metadata
 TAGS
