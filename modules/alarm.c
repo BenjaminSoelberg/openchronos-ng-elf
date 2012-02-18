@@ -67,7 +67,7 @@ static void alarm_activated()
 static void alarm_deactivated()
 {
 	/* clean up screen */
-	clear_line(LINE1);
+	display_clear(1);
 }
 
 

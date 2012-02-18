@@ -116,22 +116,32 @@ void lcd_init(void)
 
 // *************************************************************************************************
 // @fn          clear_line
-// @brief       Erase segments of a given line.
-// @param      	uint8_t line	LINE1, LINE2
+// @brief       Erase segments of a given line or the entire screen
+// @param      	uint8_t line:	0 - ALL THE SCREEN
+// 				1 - LINE 1
+// 				2 - LINE 2
 // @return      none
 // *************************************************************************************************
-void clear_line(uint8_t line)
+void display_clear(uint8_t line)
 {
-	display_chars(switch_seg(line, LCD_SEG_L1_3_0, LCD_SEG_L2_5_0), NULL, SEG_OFF);
-
-	if (line == LINE1) {
+	if (line == 1) {
+		display_chars(LCD_SEG_L1_3_0, NULL, SEG_OFF);
 		display_symbol(LCD_SEG_L1_DP1, SEG_OFF);
 		display_symbol(LCD_SEG_L1_DP0, SEG_OFF);
 		display_symbol(LCD_SEG_L1_COL, SEG_OFF);
-	} else { // line == LINE2
+	} else if (line == 2) {
+		display_chars(LCD_SEG_L2_5_0, NULL, SEG_OFF);
 		display_symbol(LCD_SEG_L2_DP, SEG_OFF);
 		display_symbol(LCD_SEG_L2_COL1, SEG_OFF);
 		display_symbol(LCD_SEG_L2_COL0, SEG_OFF);
+	} else {
+		uint8_t *lcdptr = (uint8_t *)0x0A20;
+		uint8_t i;
+
+		for (i = 1; i <= 12; i++) {
+			*lcdptr = 0x00;
+			lcdptr++;
+		}
 	}
 }
 
@@ -509,26 +519,6 @@ void display_chars(uint8_t segments, uint8_t *str, uint8_t mode)
 	}
 }
 
-
-// *************************************************************************************************
-// @fn          switch_seg
-// @brief       Returns index of 7-segment character. Required for display routines that can draw
-//				information on both lines.
-// @param       uint8_t line		LINE1, LINE2
-//				uint8_t index1		Index of LINE1
-//				uint8_t index2		Index of LINE2
-// @return      uint8
-// *************************************************************************************************
-uint8_t switch_seg(uint8_t line, uint8_t index1, uint8_t index2)
-{
-	if (line == LINE1) {
-		return index1;
-	} else { // line == LINE2
-		return index2;
-	}
-}
-
-
 // *************************************************************************************************
 // @fn          start_blink
 // @brief       Start blinking.
@@ -578,19 +568,3 @@ void set_blink_rate(uint8_t bits)
 }
 
 
-// *************************************************************************************************
-// @fn          display_all_off
-// @brief       Sets everything of on the display
-// @param       none
-// @return      none
-// *************************************************************************************************
-void display_all_off(void)
-{
-	uint8_t *lcdptr = (uint8_t *)0x0A20;
-	uint8_t i;
-
-	for (i = 1; i <= 12; i++) {
-		*lcdptr = 0x00;
-		lcdptr++;
-	}
-}

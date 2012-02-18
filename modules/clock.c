@@ -85,8 +85,8 @@ static void clock_deactivated()
 
 	/* clean up screen */
 	display_symbol(LCD_SEG_L1_COL, SEG_ON_BLINK_OFF);
-	clear_line(LINE1);
-	clear_line(LINE2);
+	display_clear(1);
+	display_clear(2);
 }
 
 static void edit(int8_t step)

@@ -184,7 +184,8 @@ int main(void)
 	// Branch to welcome screen
 	test_mode();
 #else
-	display_all_off();
+	/* clear whole scren */
+	display_clear(0);
 #endif
 
 	/* Init modules */
@@ -455,8 +456,8 @@ void wakeup_event(void)
 			sys.flag.idle_timeout = 0;
 
 			// Clear display
-			clear_line(LINE1);
-			clear_line(LINE2);
+			display_clear(1);
+			display_clear(2);
 		}
 	}
 

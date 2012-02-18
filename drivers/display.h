@@ -84,10 +84,6 @@ extern const uint8_t itoa_conversion_table[][3];
 #define DISPLAY_ALTERNATIVE_VIEW		(1u)
 #define DISPLAY_ALTERNATIVE2_VIEW		(2u)
 
-// Definitions for line access
-#define LINE1							(1u)
-#define LINE2							(2u)
-
 // LCD display modes
 #define SEG_OFF					(0u)
 #define	SEG_ON					(1u)
@@ -301,7 +297,7 @@ extern const uint8_t itoa_conversion_table[][3];
 
 // Display init / clear
 extern void lcd_init(void);
-extern void clear_line(uint8_t line);
+extern void display_clear(uint8_t line);
 
 // Blinking function
 extern void start_blink(void);
@@ -324,10 +320,5 @@ extern void display_hours_12_or_24(uint8_t segments, uint32_t value, uint8_t dig
 
 // Integer to string conversion
 extern uint8_t *_itoa(uint32_t n, uint8_t digits, uint8_t blanks);
-
-// Segment index helper function
-extern uint8_t switch_seg(uint8_t line, uint8_t index1, uint8_t index2);
-
-void display_all_off(void);
 
 #endif // __DISPLAY_
