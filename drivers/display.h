@@ -299,9 +299,6 @@ extern const uint8_t itoa_conversion_table[][3];
 // *************************************************************************************************
 // API section
 
-// Physical LCD memory write
-extern void write_lcd_mem(uint8_t *lcdmem, uint8_t bits, uint8_t bitmask, uint8_t state);
-
 // Display init / clear
 extern void lcd_init(void);
 extern void clear_line(uint8_t line);

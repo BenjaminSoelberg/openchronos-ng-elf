@@ -53,7 +53,6 @@
 
 // *************************************************************************************************
 // Prototypes section
-void write_lcd_mem(uint8_t *lcdmem, uint8_t bits, uint8_t bitmask, uint8_t state);
 void clear_line(uint8_t line);
 void display_symbol(uint8_t symbol, uint8_t mode);
 void display_char(uint8_t segment, uint8_t chr, uint8_t mode);
@@ -146,7 +145,8 @@ void clear_line(uint8_t line)
 //				mode		On, off or blink segments
 // @return
 // *************************************************************************************************
-void write_lcd_mem(uint8_t *lcdmem, uint8_t bits, uint8_t bitmask, uint8_t state)
+static void write_lcd_mem(uint8_t *lcdmem, uint8_t bits,
+						uint8_t bitmask, uint8_t state)
 {
 	if (state == SEG_ON) {
 		// Clear segments before writing
