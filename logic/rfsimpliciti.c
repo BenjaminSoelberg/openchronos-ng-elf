@@ -59,7 +59,6 @@
 #endif
 #include "rfsimpliciti.h"
 #include "simpliciti.h"
-#include "alarm.h"
 #include "temperature.h"
 #include "vti_ps.h"
 #include "altitude.h"

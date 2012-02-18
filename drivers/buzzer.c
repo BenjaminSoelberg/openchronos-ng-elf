@@ -47,9 +47,6 @@
 #include "timer.h"
 #include "display.h"
 
-// logic
-#include "alarm.h"
-
 
 // *************************************************************************************************
 // Prototypes section

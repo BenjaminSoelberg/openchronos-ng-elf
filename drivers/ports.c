@@ -53,7 +53,6 @@
 #include "rtca.h"
 
 // logic
-#include "alarm.h"
 #include "rfsimpliciti.h"
 #include "simpliciti.h"
 #include "altitude.h"
@@ -257,14 +256,6 @@ void PORT2_ISR(void)
 
 	// Generate button click when button was activated
 	if (buzzer) {
-		// Any button event stops active alarm
-#ifdef CONFIG_ALARM
-		if (sAlarm.running) {
-			stop_alarm();
-			button.all_flags = 0;
-		} else
-#endif
-
 #ifdef CONFIG_EGGTIMER
 			if (sEggtimer.state == EGGTIMER_ALARM) {
 				stop_eggtimer_alarm();
