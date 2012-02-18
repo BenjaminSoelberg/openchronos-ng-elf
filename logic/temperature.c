@@ -49,10 +49,6 @@
 #include "adc12.h"
 #include "timer.h"
 
-// logic
-#include "user.h"
-
-
 // *************************************************************************************************
 // Prototypes section
 uint8_t is_temp_measurement(void);
@@ -254,7 +250,8 @@ void mx_temperature(uint8_t line)
 		display_symbol(LCD_UNIT_L1_DEGREE, SEG_ON);
 
 		// Set current temperature - offset is set when leaving function
-		set_value(&temperature, 3, 1, -999, 999, SETVALUE_DISPLAY_VALUE + SETVALUE_DISPLAY_ARROWS, LCD_SEG_L1_3_1, display_value1);
+		/* TODO: set_value is gone, please port this to new API */
+		//set_value(&temperature, 3, 1, -999, 999, SETVALUE_DISPLAY_VALUE + SETVALUE_DISPLAY_ARROWS, LCD_SEG_L1_3_1, display_value1);
 	}
 
 	// Clear button flags
