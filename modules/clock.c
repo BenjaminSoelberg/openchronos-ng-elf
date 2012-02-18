@@ -93,11 +93,14 @@ void clock_deactivated()
 	clear_line(LINE2);
 }
 
-static void edit_inc()
+static void edit(int8_t step)
 {
+	helpers_loop_fn_t loop_fn = (step > 0 ?
+					&helpers_loop_up : &helpers_loop_down);
+
 	switch (sTime.edit_state) {
 	case EDIT_STATE_MO:
-		helpers_loop_up(&sTime.tmp_mo, 1, 12);
+		loop_fn(&sTime.tmp_mo, 1, 12);
 
 		display_chars(LCD_SEG_L2_1_0, _itoa(sTime.tmp_mo, 2, 0),
 							SEG_ON_BLINK_ON);
@@ -105,7 +108,7 @@ static void edit_inc()
 
 	case EDIT_STATE_DD:
 		/* TODO: Fix this, decide where to display year.. */
-		helpers_loop_up(&sTime.tmp_dd, 1,
+		loop_fn(&sTime.tmp_dd, 1,
 				rtca_get_max_days(sTime.tmp_mo, sTime.tmp_yy));
 
 		display_chars(LCD_SEG_L2_4_3, _itoa(sTime.tmp_dd, 2, 0),
@@ -113,7 +116,7 @@ static void edit_inc()
 		break;
 
 	case EDIT_STATE_MM:
-		helpers_loop_up(&sTime.tmp_mm, 0, 59);
+		loop_fn(&sTime.tmp_mm, 0, 59);
 
 		display_chars(LCD_SEG_L1_1_0, _itoa(sTime.tmp_mm, 2, 0),
 							SEG_ON_BLINK_ON);
@@ -121,7 +124,7 @@ static void edit_inc()
 
 	case EDIT_STATE_HH:
 		/* TODO: fix for 12/24 hr! */
-		helpers_loop_up(&sTime.tmp_hh, 0, 23);
+		loop_fn(&sTime.tmp_hh, 0, 23);
 
 		display_chars(LCD_SEG_L1_3_2, _itoa(sTime.tmp_hh, 2, 0),
 							SEG_ON_BLINK_ON);
@@ -131,43 +134,6 @@ static void edit_inc()
 	}
 }
 
-static void edit_dec()
-{
-	switch (sTime.edit_state) {
-	case EDIT_STATE_MO:
-		helpers_loop_down(&sTime.tmp_mo, 1, 12);
-
-		display_chars(LCD_SEG_L2_1_0, _itoa(sTime.tmp_mo, 2, 0),
-							SEG_ON_BLINK_ON);
-		break;
-
-	case EDIT_STATE_DD:
-		/* TODO: Fix this, decide where to display year.. */
-		helpers_loop_down(&sTime.tmp_dd, 1,
-				rtca_get_max_days(sTime.tmp_mo, sTime.tmp_yy));
-
-		display_chars(LCD_SEG_L2_4_3, _itoa(sTime.tmp_dd, 2, 0),
-							SEG_ON_BLINK_ON);
-		break;
-
-	case EDIT_STATE_MM:
-		helpers_loop_down(&sTime.tmp_mm, 0, 59);
-
-		display_chars(LCD_SEG_L1_1_0, _itoa(sTime.tmp_mm, 2, 0),
-							SEG_ON_BLINK_ON);
-		break;
-
-	case EDIT_STATE_HH:
-		/* TODO: fix for 12/24 hr! */
-		helpers_loop_down(&sTime.tmp_hh, 0, 23);
-
-		display_chars(LCD_SEG_L1_3_2, _itoa(sTime.tmp_hh, 2, 0),
-							SEG_ON_BLINK_ON);
-		break;
-	default:
-		break;
-	}
-}
 
 static void edit_next()
 {
@@ -199,12 +165,14 @@ static void edit_save()
 	/* hack to only turn off SOME blinking segments */
 	display_chars(LCD_SEG_L1_1_0, _itoa(88, 2, 0), SEG_ON_BLINK_OFF);
 	display_chars(LCD_SEG_L1_3_2, _itoa(88, 2, 0), SEG_ON_BLINK_OFF);
+	display_chars(LCD_SEG_L2_1_0, _itoa(88, 2, 0), SEG_ON_BLINK_OFF);
+	display_chars(LCD_SEG_L2_4_3, _itoa(88, 2, 0), SEG_ON_BLINK_OFF);
 
 	/* set edit mode state to off */
 	sTime.edit_state = EDIT_STATE_OFF;
 
 	/* force redraw of the screen */
-	clock_event(RTCA_EV_HOUR);
+	clock_event(RTCA_EV_MONTH);
 }
 
 
@@ -219,7 +187,7 @@ static void star_long_pressed()
 	rtca_get_time(&sTime.tmp_hh, &sTime.tmp_mm, &tmp);
 	rtca_get_date(&sTime.tmp_yy, &sTime.tmp_mo, &sTime.tmp_dd, &tmp);
 
-	menu_editmode_start(&edit_inc, &edit_dec, &edit_next, &edit_save);
+	menu_editmode_start(&edit, &edit_next, &edit_save);
 
 }
 

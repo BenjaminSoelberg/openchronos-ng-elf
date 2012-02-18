@@ -147,8 +147,7 @@ static struct menu *menu_item;
 /* Menu edit mode stuff */
 static struct {
 	uint8_t enabled;
-	void (* inc_value_fn)(void);
-	void (* dec_value_fn)(void);
+	void (* value_fn)(int8_t step);
 	void (* next_item_fn)(void);
 	void (* complete_fn)(void);
 } menu_editmode;
@@ -409,11 +408,11 @@ void wakeup_event(void)
 
 		} else if (button.flag.up) {
 			button.flag.up = 0;
-			menu_editmode.inc_value_fn();
+			menu_editmode.value_fn(1);
 
 		} else if (button.flag.down) {
 			button.flag.down = 0;
-			menu_editmode.dec_value_fn();
+			menu_editmode.value_fn(-1);
 		}
 	} else {
 		if (button.flag.star_long) {
@@ -777,13 +776,11 @@ void menu_item_next(void)
 }
 
 
-void menu_editmode_start(void (* inc_value_fn)(void),
-			 void (* dec_value_fn)(void),
+void menu_editmode_start(void (* value_fn)(int8_t),
 			 void (* next_item_fn)(void),
 			 void (* complete_fn)(void))
 {
-	menu_editmode.inc_value_fn = inc_value_fn;
-	menu_editmode.dec_value_fn = dec_value_fn;
+	menu_editmode.value_fn = value_fn;
 	menu_editmode.next_item_fn = next_item_fn;
 	menu_editmode.complete_fn = complete_fn;
 
@@ -794,7 +791,7 @@ void menu_editmode_start(void (* inc_value_fn)(void),
 }
 
 /* Here be helpers */
-void inline helpers_loop_up(uint8_t *value, uint8_t lower, uint8_t upper)
+void helpers_loop_up(uint8_t *value, uint8_t lower, uint8_t upper)
 {
 	/* prevent overflow */
 	if (*value == 255) {
@@ -807,7 +804,7 @@ void inline helpers_loop_up(uint8_t *value, uint8_t lower, uint8_t upper)
 		*value = lower;
 }
 
-void inline helpers_loop_down(uint8_t *value, uint8_t lower, uint8_t upper)
+void helpers_loop_down(uint8_t *value, uint8_t lower, uint8_t upper)
 {
 	/* prevent overflow */
 	if (*value == 0) {

@@ -23,6 +23,8 @@
 
 #include <stdlib.h>
 
+/* main menu */
+
 void menu_add_entry(void (*up_btn_fn)(void),
 		    void (*down_btn_fn)(void),
 		    void (*num_btn_fn)(void),
@@ -33,8 +35,8 @@ void menu_add_entry(void (*up_btn_fn)(void),
 
 void menu_item_next(void);
 
-void menu_editmode_start(void (* inc_value_fn)(void),
-			 void (* dec_value_fn)(void),
+/* edit mode */
+void menu_editmode_start(void (* value_fn)(int8_t),
 			 void (* next_item_fn)(void),
 			 void (* complete_fn)(void));
 
@@ -42,6 +44,7 @@ void menu_editmode_start(void (* inc_value_fn)(void),
 unsigned short __even_in_range(unsigned short __value, unsigned short __bound);
 
 /* Helpers here */
-void inline helpers_loop_up(uint8_t *value, uint8_t lower, uint8_t upper);
-void inline helpers_loop_down(uint8_t *value, uint8_t lower, uint8_t upper);
+typedef void(* helpers_loop_fn_t)(uint8_t *, uint8_t, uint8_t);
+void helpers_loop_up(uint8_t *value, uint8_t lower, uint8_t upper);
+void helpers_loop_down(uint8_t *value, uint8_t lower, uint8_t upper);
 #endif /* __EZCHRONOS_H__ */
