@@ -119,34 +119,6 @@ void lcd_init(void)
 
 
 // *************************************************************************************************
-// @fn          clear_display_all
-// @brief       Erase LINE1 and LINE2 segments. Clear also function-specific content.
-// @param      	none
-// @return      none
-// *************************************************************************************************
-void clear_display_all(void)
-{
-	// Clear generic content
-	clear_line(LINE1);
-	clear_line(LINE2);
-
-}
-
-
-// *************************************************************************************************
-// @fn          clear_display
-// @brief       Erase LINE1 and LINE2 segments. Keep icons.
-// @param      	none
-// @return      none
-// *************************************************************************************************
-void clear_display(void)
-{
-	clear_line(LINE1);
-	clear_line(LINE2);
-}
-
-
-// *************************************************************************************************
 // @fn          clear_line
 // @brief       Erase segments of a given line.
 // @param      	uint8_t line	LINE1, LINE2

@@ -448,6 +448,7 @@ void wakeup_event(void)
 	}
 
 	// Process internal events
+	/* TODO: What is this?? Maybe we can remove it ? */
 	if (sys.all_flags) {
 		// Idle timeout ---------------------------------------------------------------------
 		if (sys.flag.idle_timeout) {
@@ -455,7 +456,8 @@ void wakeup_event(void)
 			sys.flag.idle_timeout = 0;
 
 			// Clear display
-			clear_display();
+			clear_line(LINE1);
+			clear_line(LINE2);
 		}
 	}
 

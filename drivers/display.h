@@ -304,8 +304,6 @@ extern void write_lcd_mem(uint8_t *lcdmem, uint8_t bits, uint8_t bitmask, uint8_
 
 // Display init / clear
 extern void lcd_init(void);
-extern void clear_display(void);
-extern void clear_display_all(void);
 extern void clear_line(uint8_t line);
 
 // Blinking function

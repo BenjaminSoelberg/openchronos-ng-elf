@@ -193,7 +193,8 @@ void mx_temperature(uint8_t line)
 	volatile int16_t offset;
 
 	// Clear display
-	clear_display_all();
+	clear_line(LINE1);
+	clear_line(LINE2);
 
 	// When using English units, convert internal °C to °F before handing over value to set_value function
 #ifdef CONFIG_METRIC_ONLY
