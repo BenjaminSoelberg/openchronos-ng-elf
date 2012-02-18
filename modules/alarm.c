@@ -32,12 +32,12 @@ static enum {
 
 static union {
 	struct {
-		// one shot alarm
-		uint8_t alarm: 1;
-		// hourly chime
-		uint8_t chime: 1;
+		/* one shot alarm */
+		uint8_t alarm:1;
+		/* hourly chime */
+		uint8_t chime:1;
 	};
-	uint8_t state: 2;
+	uint8_t state:2;
 } alarm_state;
 
 static uint8_t tmp_hh, tmp_mm;
@@ -126,7 +126,7 @@ static void num_pressed()
 
 	/* Register RTC only if needed, saving CPU cycles.. */
 	if (alarm_state.state)
-		rtca_tevent_fn_register(alarm_event);	
+		rtca_tevent_fn_register(alarm_event);
 	else
 		rtca_tevent_fn_unregister(alarm_event);
 
