@@ -40,16 +40,11 @@
 // Include section
 
 // system
-#include <project.h>
+#include "ezchronos.h"
 #include <string.h>
 
 // driver
 #include "display.h"
-
-// logic
-#include "stopwatch.h"
-#include "temperature.h"
-
 
 // *************************************************************************************************
 // Prototypes section
@@ -256,6 +251,7 @@ uint8_t *_itoa(uint32_t n, uint8_t digits, uint8_t blanks)
 //				uint8_t blanks			Number of leadings blanks in itoa result string
 // @return      none
 // *************************************************************************************************
+/* TODO: This function is marked for deletion */
 void display_value1(uint8_t segments, uint32_t value, uint8_t digits, uint8_t blanks, uint8_t disp_mode)
 {
 	uint8_t *str;

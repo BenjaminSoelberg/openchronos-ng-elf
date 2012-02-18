@@ -40,8 +40,6 @@
 // *************************************************************************************************
 // Include section
 
-#include <project.h>
-
 /*
  * Set some options at compile time for how the time is displayed
  * The options are, in order of code space used-
