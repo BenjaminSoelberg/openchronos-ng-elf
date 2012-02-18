@@ -134,8 +134,7 @@ void display_clear(uint8_t line)
 		uint8_t i;
 
 		for (i = 1; i <= 12; i++) {
-			*lcdptr = 0x00;
-			lcdptr++;
+			*(lcdptr++) = 0x00;
 		}
 	}
 }
