@@ -171,9 +171,6 @@ void clock_init()
 {
 	sTime.edit_state = EDIT_STATE_OFF;
 
-#ifdef CONFIG_SIDEREAL
-	sTime.UTCoffset  = 0;
-#endif
 	menu_add_entry(NULL, NULL, NULL,
 		       &star_long_pressed,
 				 NULL,
