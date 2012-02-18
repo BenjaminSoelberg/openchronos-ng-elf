@@ -42,15 +42,19 @@
 
 struct time {
 	enum {
-		EDIT_STATE_OFF	= 0,
-		EDIT_STATE_HH	= 1,
-		EDIT_STATE_MM	= 2,
+		EDIT_STATE_OFF = 0,
+		EDIT_STATE_HH,
+		EDIT_STATE_MM,
+		EDIT_STATE_MO,
+		EDIT_STATE_DD,	
 	} edit_state;
 
-	/* Temporary variables for edit mode */
-	uint8_t tmp_hour;
-	uint8_t tmp_min;
-	uint8_t tmp_sec;
+	/* used on edit mode */
+	uint16_t tmp_yy;
+	uint8_t tmp_mo;
+	uint8_t tmp_dd;
+	uint8_t tmp_hh;
+	uint8_t tmp_mm;
 };
 
 /* TODO: make this struct private */

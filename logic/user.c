@@ -48,7 +48,6 @@
 #include "ports.h"
 
 // logic
-#include "date.h"
 #include "clock.h"
 #include "user.h"
 #include "stopwatch.h"

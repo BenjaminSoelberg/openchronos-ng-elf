@@ -49,7 +49,6 @@
 // logic
 #include "clock.h"
 #include "user.h"
-#include "date.h"
 #include "stopwatch.h"
 #include "temperature.h"
 
