@@ -84,6 +84,7 @@ static void clock_deactivated()
 	rtca_tevent_fn_unregister(&clock_event);
 
 	/* clean up screen */
+	display_symbol(LCD_SEG_L1_COL, SEG_ON_BLINK_OFF);
 	clear_line(LINE1);
 	clear_line(LINE2);
 }
