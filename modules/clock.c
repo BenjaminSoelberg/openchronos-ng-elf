@@ -1,49 +1,44 @@
-/******************************************************************************
-    Copyright (C) 2009 Texas Instruments Incorporated - http://www.ti.com/
+/*
+    modules/clock.c: Openchronos clock module
+
+    Copyright (C) 2012 Angelo Arrifano <miknix@gmail.com>
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions
-    are met:
-
-      Redistributions of source code must retain the above copyright
-      notice, this list of conditions and the following disclaimer.
-
-      Redistributions in binary form must reproduce the above copyright
-      notice, this list of conditions and the following disclaimer in the
-      documentation and/or other materials provided with the
-      distribution.
-
-      Neither the name of Texas Instruments Incorporated nor the names of
-      its contributors may be used to endorse or promote products derived
-      from this software without specific prior written permission.
-
-    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-    "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-    LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-    A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-    OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-    SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-    LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-    DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-    THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-    OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-******************************************************************************/
-
-#include "clock.h"
+#include "ezchronos.h"
 
 /* driver */
-#include "ports.h"
 #include "display.h"
 #include "rtca.h"
 
-struct time sTime;
+enum {
+	EDIT_STATE_OFF = 0,
+	EDIT_STATE_HH,
+	EDIT_STATE_MM,
+	EDIT_STATE_MO,
+	EDIT_STATE_DD,
+} edit_state;
 
-void clock_event(rtca_tevent_ev_t ev)
+static uint16_t tmp_yy;
+static uint8_t tmp_mo, tmp_dd, tmp_hh, tmp_mm;
+
+static void clock_event(rtca_tevent_ev_t ev)
 {
 	/* Exit if we are in edit mode */
-	if (sTime.edit_state != EDIT_STATE_OFF)
+	if (edit_state != EDIT_STATE_OFF)
 		return;
 
 	uint16_t yy;
@@ -69,7 +64,7 @@ void clock_event(rtca_tevent_ev_t ev)
 	}
 }
 
-void clock_activated()
+static void clock_activated()
 {
 	rtca_tevent_fn_register(&clock_event);
 
@@ -84,7 +79,7 @@ void clock_activated()
 	clock_event(RTCA_EV_MONTH);
 }
 
-void clock_deactivated()
+static void clock_deactivated()
 {
 	rtca_tevent_fn_unregister(&clock_event);
 
@@ -98,35 +93,35 @@ static void edit(int8_t step)
 	helpers_loop_fn_t loop_fn = (step > 0 ?
 					&helpers_loop_up : &helpers_loop_down);
 
-	switch (sTime.edit_state) {
+	switch (edit_state) {
 	case EDIT_STATE_MO:
-		loop_fn(&sTime.tmp_mo, 1, 12);
+		loop_fn(&tmp_mo, 1, 12);
 
-		display_chars(LCD_SEG_L2_1_0, _itoa(sTime.tmp_mo, 2, 0),
+		display_chars(LCD_SEG_L2_1_0, _itoa(tmp_mo, 2, 0),
 							SEG_ON_BLINK_ON);
 		break;
 
 	case EDIT_STATE_DD:
 		/* TODO: Fix this, decide where to display year.. */
-		loop_fn(&sTime.tmp_dd, 1,
-				rtca_get_max_days(sTime.tmp_mo, sTime.tmp_yy));
+		loop_fn(&tmp_dd, 1,
+				rtca_get_max_days(tmp_mo, tmp_yy));
 
-		display_chars(LCD_SEG_L2_4_3, _itoa(sTime.tmp_dd, 2, 0),
+		display_chars(LCD_SEG_L2_4_3, _itoa(tmp_dd, 2, 0),
 							SEG_ON_BLINK_ON);
 		break;
 
 	case EDIT_STATE_MM:
-		loop_fn(&sTime.tmp_mm, 0, 59);
+		loop_fn(&tmp_mm, 0, 59);
 
-		display_chars(LCD_SEG_L1_1_0, _itoa(sTime.tmp_mm, 2, 0),
+		display_chars(LCD_SEG_L1_1_0, _itoa(tmp_mm, 2, 0),
 							SEG_ON_BLINK_ON);
 		break;
 
 	case EDIT_STATE_HH:
 		/* TODO: fix for 12/24 hr! */
-		loop_fn(&sTime.tmp_hh, 0, 23);
+		loop_fn(&tmp_hh, 0, 23);
 
-		display_chars(LCD_SEG_L1_3_2, _itoa(sTime.tmp_hh, 2, 0),
+		display_chars(LCD_SEG_L1_3_2, _itoa(tmp_hh, 2, 0),
 							SEG_ON_BLINK_ON);
 		break;
 	default:
@@ -137,30 +132,30 @@ static void edit(int8_t step)
 
 static void edit_next()
 {
-	helpers_loop_up(&sTime.edit_state, EDIT_STATE_HH, EDIT_STATE_DD);
+	helpers_loop_up(&edit_state, EDIT_STATE_HH, EDIT_STATE_DD);
 
-	display_chars(LCD_SEG_L2_1_0, _itoa(sTime.tmp_mo, 2, 0),
-		(sTime.edit_state == EDIT_STATE_MO ?
+	display_chars(LCD_SEG_L2_1_0, _itoa(tmp_mo, 2, 0),
+		(edit_state == EDIT_STATE_MO ?
 					SEG_ON_BLINK_ON : SEG_ON_BLINK_OFF));
 
-	display_chars(LCD_SEG_L2_4_3, _itoa(sTime.tmp_dd, 2, 0),
-		(sTime.edit_state == EDIT_STATE_DD ?
+	display_chars(LCD_SEG_L2_4_3, _itoa(tmp_dd, 2, 0),
+		(edit_state == EDIT_STATE_DD ?
 					SEG_ON_BLINK_ON : SEG_ON_BLINK_OFF));
 
-	display_chars(LCD_SEG_L1_1_0, _itoa(sTime.tmp_mm, 2, 0),
-		(sTime.edit_state == EDIT_STATE_MM ?
+	display_chars(LCD_SEG_L1_1_0, _itoa(tmp_mm, 2, 0),
+		(edit_state == EDIT_STATE_MM ?
 					SEG_ON_BLINK_ON : SEG_ON_BLINK_OFF));
 
-	display_chars(LCD_SEG_L1_3_2, _itoa(sTime.tmp_hh, 2, 0),
-		(sTime.edit_state == EDIT_STATE_HH ?
+	display_chars(LCD_SEG_L1_3_2, _itoa(tmp_hh, 2, 0),
+		(edit_state == EDIT_STATE_HH ?
 					SEG_ON_BLINK_ON : SEG_ON_BLINK_OFF));
 }
 
 static void edit_save()
 {
 	/* Here we return from the edit mode, fill in the new values! */
-	rtca_set_time(sTime.tmp_hh, sTime.tmp_mm, 0);
-	rtca_set_date(sTime.tmp_yy, sTime.tmp_mo, sTime.tmp_dd);
+	rtca_set_time(tmp_hh, tmp_mm, 0);
+	rtca_set_date(tmp_yy, tmp_mo, tmp_dd);
 
 	/* hack to only turn off SOME blinking segments */
 	display_chars(LCD_SEG_L1_1_0, _itoa(88, 2, 0), SEG_ON_BLINK_OFF);
@@ -169,7 +164,7 @@ static void edit_save()
 	display_chars(LCD_SEG_L2_4_3, _itoa(88, 2, 0), SEG_ON_BLINK_OFF);
 
 	/* set edit mode state to off */
-	sTime.edit_state = EDIT_STATE_OFF;
+	edit_state = EDIT_STATE_OFF;
 
 	/* force redraw of the screen */
 	clock_event(RTCA_EV_MONTH);
@@ -180,12 +175,12 @@ static void edit_save()
 static void star_long_pressed()
 {
 	/* We go into edit mode  */
-	sTime.edit_state = EDIT_STATE_DD;
+	edit_state = EDIT_STATE_DD;
 
 	/* Save the current time in edit_buffer */
 	uint8_t tmp;
-	rtca_get_time(&sTime.tmp_hh, &sTime.tmp_mm, &tmp);
-	rtca_get_date(&sTime.tmp_yy, &sTime.tmp_mo, &sTime.tmp_dd, &tmp);
+	rtca_get_time(&tmp_hh, &tmp_mm, &tmp);
+	rtca_get_date(&tmp_yy, &tmp_mo, &tmp_dd, &tmp);
 
 	menu_editmode_start(&edit, &edit_next, &edit_save);
 
@@ -193,13 +188,12 @@ static void star_long_pressed()
 
 void clock_init()
 {
-	sTime.edit_state = EDIT_STATE_OFF;
+	edit_state = EDIT_STATE_OFF;
 
 	menu_add_entry(NULL, NULL, NULL,
-		       &star_long_pressed,
-				 NULL,
-		       &clock_activated,
-		       &clock_deactivated
-		      );
+			&star_long_pressed,
+			NULL,
+			&clock_activated,
+			&clock_deactivated);
 
 }
