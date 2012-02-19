@@ -152,38 +152,24 @@ void display_clear(uint8_t line)
 static void write_lcd_mem(uint8_t *lcdmem, uint8_t bits,
 						uint8_t bitmask, uint8_t state)
 {
-	if (state == SEG_ON) {
-		// Clear segments before writing
+	if ( (state | SEG_OFF) == state) {
+		// Clear all segments
 		*lcdmem = (uint8_t)(*lcdmem & ~bitmask);
+	}
 
+	if ( (state | SEG_ON) == state) {
 		// Set visible segments
 		*lcdmem = (uint8_t)(*lcdmem | bits);
-	} else if (state == SEG_OFF) {
-		// Clear segments
-		*lcdmem = (uint8_t)(*lcdmem & ~bitmask);
-	} else if (state == SEG_ON_BLINK_ON) {
-		// Clear visible / blink segments before writing
-		*lcdmem 		= (uint8_t)(*lcdmem & ~bitmask);
-		*(lcdmem + 0x20) 	= (uint8_t)(*(lcdmem + 0x20) & ~bitmask);
+	}
 
-		// Set visible / blink segments
-		*lcdmem 		= (uint8_t)(*lcdmem | bits);
-		*(lcdmem + 0x20) 	= (uint8_t)(*(lcdmem + 0x20) | bits);
-	} else if (state == SEG_ON_BLINK_OFF) {
-		// Clear visible segments before writing
-		*lcdmem = (uint8_t)(*lcdmem & ~bitmask);
-
-		// Set visible segments
-		*lcdmem = (uint8_t)(*lcdmem | bits);
-
+	if ( (state | BLINK_OFF) == state) {
 		// Clear blink segments
-		*(lcdmem + 0x20) 	= (uint8_t)(*(lcdmem + 0x20) & ~bitmask);
-	} else if (state == SEG_OFF_BLINK_OFF) {
-		// Clear segments
-		*lcdmem = (uint8_t)(*lcdmem & ~bitmask);
+		*(lcdmem + 0x20) = (uint8_t)(*(lcdmem + 0x20) & ~bitmask);
+	}
 
-		// Clear blink segments
-		*(lcdmem + 0x20) 	= (uint8_t)(*(lcdmem + 0x20) & ~bitmask);
+	if ( (state | BLINK_ON) == state) {
+		// Set blink segments
+		*(lcdmem + 0x20) = (uint8_t)(*(lcdmem + 0x20) | bits);
 	}
 }
 
@@ -336,7 +322,6 @@ void display_symbol(uint8_t symbol, uint8_t mode)
 {
 	uint8_t *lcdmem;
 	uint8_t bits;
-	uint8_t bitmask;
 
 	if (symbol <= LCD_SEG_L2_DP) {
 		// Get LCD memory address for symbol from table
@@ -345,11 +330,9 @@ void display_symbol(uint8_t symbol, uint8_t mode)
 		// Get bits for symbol from table
 		bits 	= segments_bitmask[symbol];
 
-		// Bitmask for symbols equals bits
-		bitmask = bits;
-
 		// Write LCD memory
-		write_lcd_mem(lcdmem, bits, bitmask, mode);
+		// (bitmask for symbols equals bits)
+		write_lcd_mem(lcdmem, bits, bits, mode);
 	}
 }
 
@@ -510,7 +493,7 @@ void display_chars(uint8_t segments, uint8_t *str, uint8_t mode)
 	// Write to consecutive digits
 	for (i = 0; i < length; i++) {
 		// Use single character routine to write display memory
-		display_char(char_start + i, *(str + i), mode);
+		display_char(char_start + i, (str ? *(str + i) : '8'), mode);
 	}
 }
 

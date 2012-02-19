@@ -83,11 +83,12 @@ extern const uint8_t itoa_conversion_table[][3];
 #define DISPLAY_ALTERNATIVE2_VIEW		(2u)
 
 // LCD display modes
-#define SEG_OFF					(0u)
-#define	SEG_ON					(1u)
-#define SEG_ON_BLINK_ON			(2u)
-#define SEG_ON_BLINK_OFF		(3u)
-#define SEG_OFF_BLINK_OFF		(4u)
+#define SEG_OFF		(1u)
+#define SEG_ON		(2u)
+#define SEG_SET		(3u)
+#define BLINK_OFF	(4u)
+#define BLINK_ON	(8u)
+#define BLINK_SET	(12u)
 
 // 7-segment character bit assignments
 #define SEG_A                	(BIT4)
