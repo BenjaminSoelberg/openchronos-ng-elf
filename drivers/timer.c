@@ -510,7 +510,6 @@ void TIMER0_A0_ISR(void)
 // @param       none
 // @return      none
 // *************************************************************************************************
-//pfs
 #ifdef __GNUC__
 __attribute__((interrupt(TIMER0_A1_VECTOR)))
 #else
@@ -520,81 +519,33 @@ __interrupt
 void TIMER0_A1_5_ISR(void)
 {
 	uint16_t value;
-	// Disable IE
+	/* Disable IE */
 	TA0CCTL1 &= ~CCIE;
-	// IRQ flag automatically resetted when TA0IV is read.
+	/* IRQ flag automatically resetted when TA0IV is read. */
 
+	/* Priority is highest first. */
 	switch (TA0IV) {
-#ifdef CONFIG_SIDEREAL
+	case 0x02:  /* Timer0_A1 handler */
+	    break;
+	case 0x04:  /* Timer0_A2 handler */
+	    break;
+	case 0x06:  /* Timer0_A3 handler */
+	    /* Store new value in CCR */
+	    value = TA0R + sTimer.timer0_A3_ticks; //timer0_A3_ticks_g;
+	    /* Load CCR register with next capture point */
+	    TA0CCR3 = value;
+	    /* Enable timer interrupt */
+	    TA0CCTL3 |= CCIE;
+	    /* Call function handler */
+	    fptr_Timer0_A3_function();
+	    break;
 
-		// Timer0_A1	Used for sidereal time until CCR0 becomes free
-	case 0x02:  // Timer0_A1 handler
-
-		//for sidereal time we need 32768/1.00273790935=32678.529149 clock cycles for one second
-		//32678.5 clock cycles gives a deviation of ~0.9e-7~0.1s/day which is likely less than the ozillator deviation
-		if (sSidereal_time.second & 1) {
-			TA0CCR1 += 32678;
-		} else {
-			TA0CCR1 += 32679;
-		}
-
-		// Enable IE
-		TA0CCTL1 |= CCIE;
-
-		// Add 1 second to global time
-		sidereal_clock_tick();
-
-		// Set clock update flag
-		display.flag.update_sidereal_time = 1;
-		break;
-#endif
-#ifdef CONFIG_USE_GPS
-
-	case 0x02:
-		// Store new value in CCR
-		value = TA0R + sTimer.timer0_A1_ticks; //timer0_A1_ticks_g;
-		// Load CCR register with next capture point
-		TA0CCR1 = value;
-		// Enable timer interrupt
-		TA0CCTL1 |= CCIE;
-		// Call function handler
-		fptr_Timer0_A1_function();
-		break;
-#endif
-
-		// Timer0_A2	1/1 or 1/100 sec Stopwatch
-	case 0x04:	// Timer0_A2 handler
-		// Load CCR register with next capture point
-#ifdef CONFIG_STOP_WATCH
-		update_stopwatch_timer();
-#endif
-		// Enable timer interrupt
-		TA0CCTL2 |= CCIE;
-		// Increase stopwatch counter
-#ifdef CONFIG_STOP_WATCH
-		stopwatch_tick();
-#endif
-		break;
-
-		// Timer0_A3	Configurable periodic IRQ (used by button_repeat and buzzer)
-	case 0x06:
-		// Store new value in CCR
-		value = TA0R + sTimer.timer0_A3_ticks; //timer0_A3_ticks_g;
-		// Load CCR register with next capture point
-		TA0CCR3 = value;
-		// Enable timer interrupt
-		TA0CCTL3 |= CCIE;
-		// Call function handler
-		fptr_Timer0_A3_function();
-		break;
-
-		// Timer0_A4	One-time delay
-	case 0x08:
-		// Set delay over flag
+	case 0x08:  /* Timer0_A4 handler - Used for one-time delay */
+		/* Set delay over flag */
 		sys.flag.delay_over = 1;
 		break;
 	}
 
-	// Exit from LPM3 on RETI
+	/* Exit from LPM3 on RETI */
 	_BIC_SR_IRQ(LPM3_bits);
 }
