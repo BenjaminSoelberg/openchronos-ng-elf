@@ -45,7 +45,7 @@
 // Prototypes section
 extern void	reset_buzzer(void);
 extern void	start_buzzer(uint8_t cycles, uint16_t on_time, uint16_t off_time);
-extern void	start_buzzer_steps(uint8_t cycles, uint16_t on_time, uint16_t off_time, uint8_t steps);
+extern void	start_buzzer_steps(uint8_t cycles, uint16_t on_time, uint16_t off_time, uint16_t steps);
 extern void	stop_buzzer(void);
 extern void	toggle_buzzer(void);
 extern uint8_t	is_buzzer(void);
@@ -69,7 +69,6 @@ typedef enum {
 // Buzzer off time
 #define BUZZER_OFF_TICKS	(CONV_MS_TO_TICKS(200))
 
-
 // *************************************************************************************************
 // Global Variable section
 struct buzzer {
@@ -85,7 +84,7 @@ struct buzzer {
 
 	// Current steps (~freq)
 	// Frequency = f_ACLK/((steps+1) * 2)
-	uint8_t steps;
+	uint16_t steps;
 
 };
 

@@ -97,8 +97,6 @@ void start_buzzer(uint8_t cycles, uint16_t on_time, uint16_t off_time)
 		sBuzzer.on_time  = on_time;
 		sBuzzer.off_time = off_time;
 
-		// Need to init every time, because SimpliciTI claims same timer
-
 		// Reset TA1R, set up mode, TA1 runs from 32768Hz ACLK
 		TA1CTL = TACLR | MC_1 | TASSEL__ACLK;
 
@@ -123,7 +121,7 @@ void start_buzzer(uint8_t cycles, uint16_t on_time, uint16_t off_time)
 	}
 }
 
-void start_buzzer_steps(uint8_t cycles, uint16_t on_time, uint16_t off_time, uint8_t steps)
+void start_buzzer_steps(uint8_t cycles, uint16_t on_time, uint16_t off_time, uint16_t steps)
 {
 	sBuzzer.steps = steps;
 	start_buzzer(cycles, on_time, off_time);
@@ -158,7 +156,7 @@ void toggle_buzzer(void)
 			stop_buzzer();
 		}
 
-		// Reload Timer0_A4 to stop output if sBuzzer.time > 0
+		// Reload Timer0_A3 to stop output if sBuzzer.time > 0
 		if (sBuzzer.state != BUZZER_OFF) {
 			// Reset timer TA1
 			TA1R = 0;
@@ -170,7 +168,7 @@ void toggle_buzzer(void)
 			// Update buzzer state
 			sBuzzer.state = BUZZER_ON_OUTPUT_ENABLED;
 
-			// Reload Timer0_A4 IRQ to turn off output
+			// Reload Timer0_A3 IRQ to turn off output
 			sTimer.timer0_A3_ticks = sBuzzer.off_time;
 		}
 	}
@@ -210,7 +208,7 @@ void stop_buzzer(void)
 // @param       none
 // @return      uint8_t		1 = Buzzer is operating, 0 = Buzzer is off
 // *************************************************************************************************
-uint8_t is_buzzer(void)
+inline uint8_t is_buzzer(void)
 {
 	return (sBuzzer.state != BUZZER_OFF);
 }
