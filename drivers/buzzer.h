@@ -52,23 +52,22 @@ extern uint8_t	is_buzzer(void);
 
 // Buzzer states
 typedef enum {
-    BUZZER_OFF,
-    BUZZER_ON_OUTPUT_DISABLED,
-    BUZZER_ON_OUTPUT_ENABLED
+	BUZZER_OFF,
+	BUZZER_ON_OUTPUT_DISABLED,
+	BUZZER_ON_OUTPUT_ENABLED
 } buzzer_state;
 
 // *************************************************************************************************
 // Defines section
 
-
 // Buzzer output signal frequency = 32,768kHz/(BUZZER_TIMER_STEPS+1)/2 = 2.7kHz
-#define BUZZER_TIMER_STEPS			(5u)
+#define BUZZER_TIMER_STEPS	(5u)
 
 // Buzzer on time
-#define BUZZER_ON_TICKS				(CONV_MS_TO_TICKS(20))
+#define BUZZER_ON_TICKS		(CONV_MS_TO_TICKS(20))
 
 // Buzzer off time
-#define BUZZER_OFF_TICKS			(CONV_MS_TO_TICKS(200))
+#define BUZZER_OFF_TICKS	(CONV_MS_TO_TICKS(200))
 
 
 // *************************************************************************************************
