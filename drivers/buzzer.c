@@ -65,7 +65,6 @@ struct buzzer sBuzzer;
 
 // *************************************************************************************************
 // Extern section
-//extern uint16_t timer0_A3_ticks_g;
 
 
 
@@ -87,8 +86,8 @@ void reset_buzzer(void)
 // @fn          start_buzzer
 // @brief       Start buzzer output for a number of cylces
 // @param       uint8_t cycles		Keep buzzer output for number of cycles
-//				uint16_t on_time	Output buzzer for "on_time" ACLK ticks
-//				uint16_t off_time	Do not output buzzer for "off_time" ACLK ticks
+//		uint16_t on_time	Output buzzer for "on_time" ACLK ticks
+//		uint16_t off_time	Do not output buzzer for "off_time" ACLK ticks
 // @return      none
 // *************************************************************************************************
 void start_buzzer(uint8_t cycles, uint16_t on_time, uint16_t off_time)
