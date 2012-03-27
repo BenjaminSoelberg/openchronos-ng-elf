@@ -368,10 +368,9 @@ void TIMER0_A0_ISR(void)
 	TA0CCR0 += 32768;
 	// Enable IE
 	TA0CCTL0 |= CCIE;
-	
+
 	// While SimpliciTI stack operates, freeze system state
-	if (is_rf())
-	{
+	if (is_rf()) {
 		// SimpliciTI automatic timeout
 		if (sRFsmpl.timeout == 0) {
 			simpliciti_flag |= SIMPLICITI_TRIGGER_STOP;
@@ -448,7 +447,7 @@ void TIMER0_A0_ISR(void)
 	}
 
 #endif
-	
+
 	// -------------------------------------------------------------------
 	// Check idle timeout, set timeout flag
 	if (sys.flag.idle_timeout_enabled) {
@@ -521,16 +520,15 @@ __interrupt
 void TIMER0_A1_5_ISR(void)
 {
 	uint16_t value;
+	// Disable IE
+	TA0CCTL1 &= ~CCIE;
+	// IRQ flag automatically resetted when TA0IV is read.
 
 	switch (TA0IV) {
 #ifdef CONFIG_SIDEREAL
 
 		// Timer0_A1	Used for sidereal time until CCR0 becomes free
 	case 0x02:  // Timer0_A1 handler
-		// Disable IE
-		TA0CCTL1 &= ~CCIE;
-		// Reset IRQ flag
-		TA0CCTL1 &= ~CCIFG;
 
 		//for sidereal time we need 32768/1.00273790935=32678.529149 clock cycles for one second
 		//32678.5 clock cycles gives a deviation of ~0.9e-7~0.1s/day which is likely less than the ozillator deviation
@@ -552,10 +550,7 @@ void TIMER0_A1_5_ISR(void)
 #endif
 #ifdef CONFIG_USE_GPS
 
-	case 0x02: // Disable IE
-		TA0CCTL1 &= ~CCIE;
-		// Reset IRQ flag
-		TA0CCTL1 &= ~CCIFG;
+	case 0x02:
 		// Store new value in CCR
 		value = TA0R + sTimer.timer0_A1_ticks; //timer0_A1_ticks_g;
 		// Load CCR register with next capture point
@@ -569,10 +564,6 @@ void TIMER0_A1_5_ISR(void)
 
 		// Timer0_A2	1/1 or 1/100 sec Stopwatch
 	case 0x04:	// Timer0_A2 handler
-		// Disable IE
-		TA0CCTL2 &= ~CCIE;
-		// Reset IRQ flag
-		TA0CCTL2 &= ~CCIFG;
 		// Load CCR register with next capture point
 #ifdef CONFIG_STOP_WATCH
 		update_stopwatch_timer();
@@ -586,10 +577,7 @@ void TIMER0_A1_5_ISR(void)
 		break;
 
 		// Timer0_A3	Configurable periodic IRQ (used by button_repeat and buzzer)
-	case 0x06:	// Disable IE
-		TA0CCTL3 &= ~CCIE;
-		// Reset IRQ flag
-		TA0CCTL3 &= ~CCIFG;
+	case 0x06:
 		// Store new value in CCR
 		value = TA0R + sTimer.timer0_A3_ticks; //timer0_A3_ticks_g;
 		// Load CCR register with next capture point
@@ -601,10 +589,7 @@ void TIMER0_A1_5_ISR(void)
 		break;
 
 		// Timer0_A4	One-time delay
-	case 0x08:	// Disable IE
-		TA0CCTL4 &= ~CCIE;
-		// Reset IRQ flag
-		TA0CCTL4 &= ~CCIFG;
+	case 0x08:
 		// Set delay over flag
 		sys.flag.delay_over = 1;
 		break;
