@@ -55,23 +55,23 @@ extern uint8_t is_buzzer(void);
 // Defines section
 
 // Buzzer states
-#define BUZZER_OFF							(0u)
-#define BUZZER_ON_OUTPUT_DISABLED			(1u)
-#define BUZZER_ON_OUTPUT_ENABLED			(2u)
+#define BUZZER_OFF				(0u)
+#define BUZZER_ON_OUTPUT_DISABLED		(1u)
+#define BUZZER_ON_OUTPUT_ENABLED		(2u)
 
 // Buzzer modes
-#define BUZZER_MODE_SINGLE					(0u)
+#define BUZZER_MODE_SINGLE			(0u)
 #define BUZZER_MODE_SINGLE_CONTINUOUS		(1u)
 #define BUZZER_MODE_DOUBLE_CONTINUOUS		(2u)
 
 // Buzzer output signal frequency = 32,768kHz/(BUZZER_TIMER_STEPS+1)/2 = 2.7kHz
-#define BUZZER_TIMER_STEPS					(5u)
+#define BUZZER_TIMER_STEPS			(5u)
 
 // Buzzer on time
-#define BUZZER_ON_TICKS						(CONV_MS_TO_TICKS(20))
+#define BUZZER_ON_TICKS				(CONV_MS_TO_TICKS(20))
 
 // Buzzer off time
-#define BUZZER_OFF_TICKS					(CONV_MS_TO_TICKS(200))
+#define BUZZER_OFF_TICKS			(CONV_MS_TO_TICKS(200))
 
 
 // *************************************************************************************************
