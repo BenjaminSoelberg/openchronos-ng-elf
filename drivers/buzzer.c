@@ -45,7 +45,6 @@
 // driver
 #include "buzzer.h"
 #include "timer.h"
-#include "display.h"
 
 
 // *************************************************************************************************
@@ -154,7 +153,10 @@ void toggle_buzzer(void)
 		sTimer.timer0_A3_ticks = sBuzzer.on_time;
 	} else { // Turn on buzzer
 		// Decrement buzzer total cycles
-		countdown_buzzer();
+		// Stop buzzer when reaching 0 cycles
+		if (--sBuzzer.time == 0) {
+			stop_buzzer();
+		}
 
 		// Reload Timer0_A4 to stop output if sBuzzer.time > 0
 		if (sBuzzer.state != BUZZER_OFF) {
@@ -211,20 +213,4 @@ void stop_buzzer(void)
 uint8_t is_buzzer(void)
 {
 	return (sBuzzer.state != BUZZER_OFF);
-}
-
-
-
-// *************************************************************************************************
-// @fn          countdown_buzzer
-// @brief       Decrement active buzzer time. Turn off buzzer if cycle end reached.
-// @param       none
-// @return      none
-// *************************************************************************************************
-void countdown_buzzer(void)
-{
-	// Stop buzzer when reaching 0 cycles
-	if (--sBuzzer.time == 0) {
-		stop_buzzer();
-	}
 }

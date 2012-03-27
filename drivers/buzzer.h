@@ -49,7 +49,6 @@ extern void start_buzzer_steps(uint8_t cycles, uint16_t on_time, uint16_t off_ti
 extern void stop_buzzer(void);
 extern void toggle_buzzer(void);
 extern uint8_t is_buzzer(void);
-extern void countdown_buzzer(void);
 
 
 // *************************************************************************************************
