@@ -48,16 +48,16 @@ static void clock_event(rtca_tevent_ev_t ev)
 
 	switch (ev) {
 	case RTCA_EV_MONTH:
-		display_chars(LCD_SEG_L2_1_0, _itoa(mo, 2, 0), SEG_ON);
+		display_chars(LCD_SEG_L2_1_0, _itoa(mo, 2, 0), SEG_SET);
 
 	case RTCA_EV_DAY:
-		display_chars(LCD_SEG_L2_4_3, _itoa(dd, 2, 0), SEG_ON);
+		display_chars(LCD_SEG_L2_4_3, _itoa(dd, 2, 0), SEG_SET);
 
 	case RTCA_EV_HOUR:
-		display_chars(LCD_SEG_L1_3_2, _itoa(hh, 2, 0), SEG_ON);
+		display_chars(LCD_SEG_L1_3_2, _itoa(hh, 2, 0), SEG_SET);
 
 	case RTCA_EV_MINUTE:
-		display_chars(LCD_SEG_L1_1_0, _itoa(mm, 2, 0), SEG_ON);
+		display_chars(LCD_SEG_L1_1_0, _itoa(mm, 2, 0), SEG_SET);
 
 	default:
 		break;
@@ -70,7 +70,7 @@ static void clock_activated()
 
 	/* Force redraw of the screen */
 #ifdef CONFIG_CLOCK_BLINKCOL
-	display_symbol(LCD_SEG_L1_COL, SEG_ON_BLINK_ON);
+	display_symbol(LCD_SEG_L1_COL, SEG_ON | BLINK_ON);
 #else
 	display_symbol(LCD_SEG_L1_COL, SEG_ON);
 #endif
@@ -84,9 +84,9 @@ static void clock_deactivated()
 	rtca_tevent_fn_unregister(&clock_event);
 
 	/* clean up screen */
-	display_symbol(LCD_SEG_L1_COL, SEG_ON_BLINK_OFF);
-	clear_line(LINE1);
-	clear_line(LINE2);
+	display_symbol(LCD_SEG_L1_COL, BLINK_OFF);
+	display_clear(1);
+	display_clear(2);
 }
 
 static void edit(int8_t step)
@@ -98,32 +98,27 @@ static void edit(int8_t step)
 	case EDIT_STATE_MO:
 		loop_fn(&tmp_mo, 1, 12);
 
-		display_chars(LCD_SEG_L2_1_0, _itoa(tmp_mo, 2, 0),
-							SEG_ON_BLINK_ON);
+		display_chars(LCD_SEG_L2_1_0, _itoa(tmp_mo, 2, 0), SEG_SET);
 		break;
 
 	case EDIT_STATE_DD:
 		/* TODO: Fix this, decide where to display year.. */
-		loop_fn(&tmp_dd, 1,
-				rtca_get_max_days(tmp_mo, tmp_yy));
+		loop_fn(&tmp_dd, 1, rtca_get_max_days(tmp_mo, tmp_yy));
 
-		display_chars(LCD_SEG_L2_4_3, _itoa(tmp_dd, 2, 0),
-							SEG_ON_BLINK_ON);
+		display_chars(LCD_SEG_L2_4_3, _itoa(tmp_dd, 2, 0), SEG_SET);
 		break;
 
 	case EDIT_STATE_MM:
 		loop_fn(&tmp_mm, 0, 59);
 
-		display_chars(LCD_SEG_L1_1_0, _itoa(tmp_mm, 2, 0),
-							SEG_ON_BLINK_ON);
+		display_chars(LCD_SEG_L1_1_0, _itoa(tmp_mm, 2, 0), SEG_SET);
 		break;
 
 	case EDIT_STATE_HH:
 		/* TODO: fix for 12/24 hr! */
 		loop_fn(&tmp_hh, 0, 23);
 
-		display_chars(LCD_SEG_L1_3_2, _itoa(tmp_hh, 2, 0),
-							SEG_ON_BLINK_ON);
+		display_chars(LCD_SEG_L1_3_2, _itoa(tmp_hh, 2, 0), SEG_SET);
 		break;
 	default:
 		break;
@@ -135,21 +130,17 @@ static void edit_next()
 {
 	helpers_loop_up(&edit_state, EDIT_STATE_HH, EDIT_STATE_DD);
 
-	display_chars(LCD_SEG_L2_1_0, _itoa(tmp_mo, 2, 0),
-		(edit_state == EDIT_STATE_MO ?
-					SEG_ON_BLINK_ON : SEG_ON_BLINK_OFF));
+	display_chars(LCD_SEG_L2_1_0, NULL,
+			(edit_state == EDIT_STATE_MO ? BLINK_ON : BLINK_OFF));
 
-	display_chars(LCD_SEG_L2_4_3, _itoa(tmp_dd, 2, 0),
-		(edit_state == EDIT_STATE_DD ?
-					SEG_ON_BLINK_ON : SEG_ON_BLINK_OFF));
+	display_chars(LCD_SEG_L2_4_3, NULL,
+			(edit_state == EDIT_STATE_DD ? BLINK_ON : BLINK_OFF));
 
-	display_chars(LCD_SEG_L1_1_0, _itoa(tmp_mm, 2, 0),
-		(edit_state == EDIT_STATE_MM ?
-					SEG_ON_BLINK_ON : SEG_ON_BLINK_OFF));
+	display_chars(LCD_SEG_L1_1_0, NULL,
+			(edit_state == EDIT_STATE_MM ? BLINK_ON : BLINK_OFF));
 
-	display_chars(LCD_SEG_L1_3_2, _itoa(tmp_hh, 2, 0),
-		(edit_state == EDIT_STATE_HH ?
-					SEG_ON_BLINK_ON : SEG_ON_BLINK_OFF));
+	display_chars(LCD_SEG_L1_3_2, NULL,
+			(edit_state == EDIT_STATE_HH ? BLINK_ON : BLINK_OFF));
 }
 
 static void edit_save()
@@ -158,17 +149,12 @@ static void edit_save()
 	rtca_set_time(tmp_hh, tmp_mm, 0);
 	rtca_set_date(tmp_yy, tmp_mo, tmp_dd);
 
-	/* hack to only turn off SOME blinking segments */
-	display_chars(LCD_SEG_L1_1_0, _itoa(88, 2, 0), SEG_ON_BLINK_OFF);
-	display_chars(LCD_SEG_L1_3_2, _itoa(88, 2, 0), SEG_ON_BLINK_OFF);
-	display_chars(LCD_SEG_L2_1_0, _itoa(88, 2, 0), SEG_ON_BLINK_OFF);
-	display_chars(LCD_SEG_L2_4_3, _itoa(88, 2, 0), SEG_ON_BLINK_OFF);
+	/* turn off only SOME blinking segments */
+	display_chars(LCD_SEG_L1_3_0, NULL, BLINK_OFF);
+	display_chars(LCD_SEG_L2_4_0, NULL, BLINK_OFF);
 
 	/* set edit mode state to off */
 	edit_state = EDIT_STATE_OFF;
-
-	/* force redraw of the screen */
-	clock_event(RTCA_EV_MONTH);
 }
 
 

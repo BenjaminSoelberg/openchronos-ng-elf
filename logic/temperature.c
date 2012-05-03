@@ -189,8 +189,8 @@ void mx_temperature(uint8_t line)
 	volatile int16_t offset;
 
 	// Clear display
-	clear_line(LINE1);
-	clear_line(LINE2);
+	display_clear(1);
+	display_clear(2);
 
 	// When using English units, convert internal °C to °F before handing over value to set_value function
 #ifdef CONFIG_METRIC_ONLY
@@ -292,7 +292,7 @@ void display_temperature(uint8_t line, uint8_t update)
 		temperature_measurement(FILTER_OFF);
 
 		// Display temperature
-		display_temperature(LINE1, DISPLAY_LINE_UPDATE_PARTIAL);
+		display_temperature(1, DISPLAY_LINE_UPDATE_PARTIAL);
 	}
 	else if (update == DISPLAY_LINE_UPDATE_PARTIAL && sTemp.update_display)
 	{

@@ -87,7 +87,7 @@ static void rfbsl_activate()
 static void rfbsl_deactivate()
 {
 	/* cleanup screen */
-	clear_line(LINE2);
+	display_clear(2);
 }
 
 void rfbsl_init(void)

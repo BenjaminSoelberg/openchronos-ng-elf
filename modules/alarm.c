@@ -46,8 +46,8 @@ static void refresh_screen()
 {
 	rtca_get_alarm(&tmp_hh, &tmp_mm);
 
-	display_chars(LCD_SEG_L1_1_0, _itoa(tmp_mm, 2, 0), SEG_ON);
-	display_chars(LCD_SEG_L1_3_2, _itoa(tmp_hh, 2, 0), SEG_ON);
+	display_chars(LCD_SEG_L1_1_0, _itoa(tmp_mm, 2, 0), SEG_SET);
+	display_chars(LCD_SEG_L1_3_2, _itoa(tmp_hh, 2, 0), SEG_SET);
 }
 
 static void alarm_event(rtca_tevent_ev_t ev)
@@ -67,7 +67,7 @@ static void alarm_activated()
 static void alarm_deactivated()
 {
 	/* clean up screen */
-	clear_line(LINE1);
+	display_clear(1);
 }
 
 
@@ -79,14 +79,12 @@ static void edit(int8_t step)
 	if (edit_state == EDIT_STATE_MM) {
 		loop_fn(&tmp_mm, 0, 59);
 
-		display_chars(LCD_SEG_L1_1_0, _itoa(tmp_mm, 2, 0),
-							SEG_ON_BLINK_ON);
+		display_chars(LCD_SEG_L1_1_0, _itoa(tmp_mm, 2, 0), SEG_SET);
 	} else {
 		/* TODO: fix for 12/24 hr! */
 		loop_fn(&tmp_hh, 0, 23);
 
-		display_chars(LCD_SEG_L1_3_2, _itoa(tmp_hh, 2, 0),
-							SEG_ON_BLINK_ON);
+		display_chars(LCD_SEG_L1_3_2, _itoa(tmp_hh, 2, 0), SEG_SET);
 	}
 }
 
@@ -95,13 +93,11 @@ static void edit_next()
 {
 	helpers_loop_up(&edit_state, EDIT_STATE_HH, EDIT_STATE_MM);
 
-	display_chars(LCD_SEG_L1_1_0, _itoa(tmp_mm, 2, 0),
-		(edit_state == EDIT_STATE_MM ?
-					SEG_ON_BLINK_ON : SEG_ON_BLINK_OFF));
+	display_chars(LCD_SEG_L1_1_0, NULL,
+			(edit_state == EDIT_STATE_MM ? BLINK_ON : BLINK_OFF));
 
 	display_chars(LCD_SEG_L1_3_2, _itoa(tmp_hh, 2, 0),
-		(edit_state == EDIT_STATE_HH ?
-					SEG_ON_BLINK_ON : SEG_ON_BLINK_OFF));
+			(edit_state == EDIT_STATE_HH ? BLINK_ON : BLINK_OFF));
 }
 
 
@@ -110,12 +106,8 @@ static void edit_save()
 	/* Here we return from the edit mode, fill in the new values! */
 	rtca_set_alarm(tmp_hh, tmp_mm);
 
-	/* hack to only turn off SOME blinking segments */
-	display_chars(LCD_SEG_L1_1_0, _itoa(88, 2, 0), SEG_ON_BLINK_OFF);
-	display_chars(LCD_SEG_L1_3_2, _itoa(88, 2, 0), SEG_ON_BLINK_OFF);
-
-	/* force redraw of the screen */
-	refresh_screen();
+	/* only turn off SOME blinking segments */
+	display_chars(LCD_SEG_L1_3_0, NULL, BLINK_OFF);
 }
 
 /* NUM (#) button pressed callback */

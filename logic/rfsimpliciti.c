@@ -223,7 +223,7 @@ void start_simpliciti_tx_only(simpliciti_mode_t mode)
 		if (mode == SIMPLICITI_PHASE_CLOCK)
 			start_as = 1;
 
-		display_symbol(LCD_ICON_RECORD, SEG_ON_BLINK_ON);
+		display_symbol(LCD_ICON_RECORD, SEG_ON | BLINK_ON);
 	}
 
 #endif
@@ -237,9 +237,9 @@ void start_simpliciti_tx_only(simpliciti_mode_t mode)
 	simpliciti_data[3] = 0;
 
 	// Turn on beeper icon to show activity
-	display_symbol(LCD_ICON_BEEPER1, SEG_ON_BLINK_ON);
-	display_symbol(LCD_ICON_BEEPER2, SEG_ON_BLINK_ON);
-	display_symbol(LCD_ICON_BEEPER3, SEG_ON_BLINK_ON);
+	display_symbol(LCD_ICON_BEEPER1, SEG_ON | BLINK_ON);
+	display_symbol(LCD_ICON_BEEPER2, SEG_ON | BLINK_ON);
+	display_symbol(LCD_ICON_BEEPER3, SEG_ON | BLINK_ON);
 
 	// Debounce button event
 	Timer0_A4_Delay(CONV_MS_TO_TICKS(BUTTONS_DEBOUNCE_TIME_OUT));
@@ -587,9 +587,9 @@ void start_simpliciti_sync(void)
 	temperature_measurement(FILTER_OFF);
 
 	// Turn on beeper icon to show activity
-	display_symbol(LCD_ICON_BEEPER1, SEG_ON_BLINK_ON);
-	display_symbol(LCD_ICON_BEEPER2, SEG_ON_BLINK_ON);
-	display_symbol(LCD_ICON_BEEPER3, SEG_ON_BLINK_ON);
+	display_symbol(LCD_ICON_BEEPER1, SEG_ON | BLINK_ON);
+	display_symbol(LCD_ICON_BEEPER2, SEG_ON | BLINK_ON);
+	display_symbol(LCD_ICON_BEEPER3, SEG_ON | BLINK_ON);
 
 	// Debounce button event
 	Timer0_A4_Delay(CONV_MS_TO_TICKS(BUTTONS_DEBOUNCE_TIME_OUT));
@@ -623,9 +623,9 @@ void start_simpliciti_sync(void)
 	button.all_flags = 0;
 
 	// Clear icons
-	display_symbol(LCD_ICON_BEEPER1, SEG_OFF_BLINK_OFF);
-	display_symbol(LCD_ICON_BEEPER2, SEG_OFF_BLINK_OFF);
-	display_symbol(LCD_ICON_BEEPER3, SEG_OFF_BLINK_OFF);
+	display_symbol(LCD_ICON_BEEPER1, SEG_OFF | BLINK_OFF);
+	display_symbol(LCD_ICON_BEEPER2, SEG_OFF | BLINK_OFF);
+	display_symbol(LCD_ICON_BEEPER3, SEG_OFF | BLINK_OFF);
 
 	// Force full display update
 	//display.flag.full_update = 1;

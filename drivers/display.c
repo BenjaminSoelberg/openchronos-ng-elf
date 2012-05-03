@@ -40,20 +40,14 @@
 // Include section
 
 // system
-#include <project.h>
+#include "ezchronos.h"
 #include <string.h>
 
 // driver
 #include "display.h"
 
-// logic
-#include "stopwatch.h"
-#include "temperature.h"
-
-
 // *************************************************************************************************
 // Prototypes section
-void write_lcd_mem(uint8_t *lcdmem, uint8_t bits, uint8_t bitmask, uint8_t state);
 void clear_line(uint8_t line);
 void display_symbol(uint8_t symbol, uint8_t mode);
 void display_char(uint8_t segment, uint8_t chr, uint8_t mode);
@@ -117,22 +111,31 @@ void lcd_init(void)
 
 // *************************************************************************************************
 // @fn          clear_line
-// @brief       Erase segments of a given line.
-// @param      	uint8_t line	LINE1, LINE2
+// @brief       Erase segments of a given line or the entire screen
+// @param      	uint8_t line:	0 - ALL THE SCREEN
+// 				1 - LINE 1
+// 				2 - LINE 2
 // @return      none
 // *************************************************************************************************
-void clear_line(uint8_t line)
+void display_clear(uint8_t line)
 {
-	display_chars(switch_seg(line, LCD_SEG_L1_3_0, LCD_SEG_L2_5_0), NULL, SEG_OFF);
-
-	if (line == LINE1) {
+	if (line == 1) {
+		display_chars(LCD_SEG_L1_3_0, NULL, SEG_OFF);
 		display_symbol(LCD_SEG_L1_DP1, SEG_OFF);
 		display_symbol(LCD_SEG_L1_DP0, SEG_OFF);
 		display_symbol(LCD_SEG_L1_COL, SEG_OFF);
-	} else { // line == LINE2
+	} else if (line == 2) {
+		display_chars(LCD_SEG_L2_5_0, NULL, SEG_OFF);
 		display_symbol(LCD_SEG_L2_DP, SEG_OFF);
 		display_symbol(LCD_SEG_L2_COL1, SEG_OFF);
 		display_symbol(LCD_SEG_L2_COL0, SEG_OFF);
+	} else {
+		uint8_t *lcdptr = (uint8_t *)0x0A20;
+		uint8_t i;
+
+		for (i = 1; i <= 12; i++) {
+			*(lcdptr++) = 0x00;
+		}
 	}
 }
 
@@ -146,40 +149,27 @@ void clear_line(uint8_t line)
 //				mode		On, off or blink segments
 // @return
 // *************************************************************************************************
-void write_lcd_mem(uint8_t *lcdmem, uint8_t bits, uint8_t bitmask, uint8_t state)
+static void write_lcd_mem(uint8_t *lcdmem, uint8_t bits,
+						uint8_t bitmask, uint8_t state)
 {
-	if (state == SEG_ON) {
-		// Clear segments before writing
+	if ( (state | SEG_OFF) == state) {
+		// Clear all segments
 		*lcdmem = (uint8_t)(*lcdmem & ~bitmask);
+	}
 
+	if ( (state | SEG_ON) == state) {
 		// Set visible segments
 		*lcdmem = (uint8_t)(*lcdmem | bits);
-	} else if (state == SEG_OFF) {
-		// Clear segments
-		*lcdmem = (uint8_t)(*lcdmem & ~bitmask);
-	} else if (state == SEG_ON_BLINK_ON) {
-		// Clear visible / blink segments before writing
-		*lcdmem 		= (uint8_t)(*lcdmem & ~bitmask);
-		*(lcdmem + 0x20) 	= (uint8_t)(*(lcdmem + 0x20) & ~bitmask);
+	}
 
-		// Set visible / blink segments
-		*lcdmem 		= (uint8_t)(*lcdmem | bits);
-		*(lcdmem + 0x20) 	= (uint8_t)(*(lcdmem + 0x20) | bits);
-	} else if (state == SEG_ON_BLINK_OFF) {
-		// Clear visible segments before writing
-		*lcdmem = (uint8_t)(*lcdmem & ~bitmask);
-
-		// Set visible segments
-		*lcdmem = (uint8_t)(*lcdmem | bits);
-
+	if ( (state | BLINK_OFF) == state) {
 		// Clear blink segments
-		*(lcdmem + 0x20) 	= (uint8_t)(*(lcdmem + 0x20) & ~bitmask);
-	} else if (state == SEG_OFF_BLINK_OFF) {
-		// Clear segments
-		*lcdmem = (uint8_t)(*lcdmem & ~bitmask);
+		*(lcdmem + 0x20) = (uint8_t)(*(lcdmem + 0x20) & ~bitmask);
+	}
 
-		// Clear blink segments
-		*(lcdmem + 0x20) 	= (uint8_t)(*(lcdmem + 0x20) & ~bitmask);
+	if ( (state | BLINK_ON) == state) {
+		// Set blink segments
+		*(lcdmem + 0x20) = (uint8_t)(*(lcdmem + 0x20) | bits);
 	}
 }
 
@@ -246,6 +236,7 @@ uint8_t *_itoa(uint32_t n, uint8_t digits, uint8_t blanks)
 //				uint8_t blanks			Number of leadings blanks in itoa result string
 // @return      none
 // *************************************************************************************************
+/* TODO: This function is marked for deletion */
 void display_value1(uint8_t segments, uint32_t value, uint8_t digits, uint8_t blanks, uint8_t disp_mode)
 {
 	uint8_t *str;
@@ -331,7 +322,6 @@ void display_symbol(uint8_t symbol, uint8_t mode)
 {
 	uint8_t *lcdmem;
 	uint8_t bits;
-	uint8_t bitmask;
 
 	if (symbol <= LCD_SEG_L2_DP) {
 		// Get LCD memory address for symbol from table
@@ -340,11 +330,9 @@ void display_symbol(uint8_t symbol, uint8_t mode)
 		// Get bits for symbol from table
 		bits 	= segments_bitmask[symbol];
 
-		// Bitmask for symbols equals bits
-		bitmask = bits;
-
 		// Write LCD memory
-		write_lcd_mem(lcdmem, bits, bitmask, mode);
+		// (bitmask for symbols equals bits)
+		write_lcd_mem(lcdmem, bits, bits, mode);
 	}
 }
 
@@ -505,29 +493,9 @@ void display_chars(uint8_t segments, uint8_t *str, uint8_t mode)
 	// Write to consecutive digits
 	for (i = 0; i < length; i++) {
 		// Use single character routine to write display memory
-		display_char(char_start + i, *(str + i), mode);
+		display_char(char_start + i, (str ? *(str + i) : '8'), mode);
 	}
 }
-
-
-// *************************************************************************************************
-// @fn          switch_seg
-// @brief       Returns index of 7-segment character. Required for display routines that can draw
-//				information on both lines.
-// @param       uint8_t line		LINE1, LINE2
-//				uint8_t index1		Index of LINE1
-//				uint8_t index2		Index of LINE2
-// @return      uint8
-// *************************************************************************************************
-uint8_t switch_seg(uint8_t line, uint8_t index1, uint8_t index2)
-{
-	if (line == LINE1) {
-		return index1;
-	} else { // line == LINE2
-		return index2;
-	}
-}
-
 
 // *************************************************************************************************
 // @fn          start_blink
@@ -578,19 +546,3 @@ void set_blink_rate(uint8_t bits)
 }
 
 
-// *************************************************************************************************
-// @fn          display_all_off
-// @brief       Sets everything of on the display
-// @param       none
-// @return      none
-// *************************************************************************************************
-void display_all_off(void)
-{
-	uint8_t *lcdptr = (uint8_t *)0x0A20;
-	uint8_t i;
-
-	for (i = 1; i <= 12; i++) {
-		*lcdptr = 0x00;
-		lcdptr++;
-	}
-}

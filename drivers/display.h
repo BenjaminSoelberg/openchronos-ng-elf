@@ -40,8 +40,6 @@
 // *************************************************************************************************
 // Include section
 
-#include <project.h>
-
 /*
  * Set some options at compile time for how the time is displayed
  * The options are, in order of code space used-
@@ -84,16 +82,13 @@ extern const uint8_t itoa_conversion_table[][3];
 #define DISPLAY_ALTERNATIVE_VIEW		(1u)
 #define DISPLAY_ALTERNATIVE2_VIEW		(2u)
 
-// Definitions for line access
-#define LINE1							(1u)
-#define LINE2							(2u)
-
 // LCD display modes
-#define SEG_OFF					(0u)
-#define	SEG_ON					(1u)
-#define SEG_ON_BLINK_ON			(2u)
-#define SEG_ON_BLINK_OFF		(3u)
-#define SEG_OFF_BLINK_OFF		(4u)
+#define SEG_OFF		(1u)
+#define SEG_ON		(2u)
+#define SEG_SET		(3u)
+#define BLINK_OFF	(4u)
+#define BLINK_ON	(8u)
+#define BLINK_SET	(12u)
 
 // 7-segment character bit assignments
 #define SEG_A                	(BIT4)
@@ -299,12 +294,9 @@ extern const uint8_t itoa_conversion_table[][3];
 // *************************************************************************************************
 // API section
 
-// Physical LCD memory write
-extern void write_lcd_mem(uint8_t *lcdmem, uint8_t bits, uint8_t bitmask, uint8_t state);
-
 // Display init / clear
 extern void lcd_init(void);
-extern void clear_line(uint8_t line);
+extern void display_clear(uint8_t line);
 
 // Blinking function
 extern void start_blink(void);
@@ -327,10 +319,5 @@ extern void display_hours_12_or_24(uint8_t segments, uint32_t value, uint8_t dig
 
 // Integer to string conversion
 extern uint8_t *_itoa(uint32_t n, uint8_t digits, uint8_t blanks);
-
-// Segment index helper function
-extern uint8_t switch_seg(uint8_t line, uint8_t index1, uint8_t index2);
-
-void display_all_off(void);
 
 #endif // __DISPLAY_
