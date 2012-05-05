@@ -77,7 +77,6 @@ void reset_buzzer(void)
 {
 	sBuzzer.time 	= 0;
 	sBuzzer.state 	= BUZZER_OFF;
-
 	sBuzzer.steps	= BUZZER_TIMER_STEPS;
 }
 
@@ -121,7 +120,7 @@ void start_buzzer(uint8_t cycles, uint16_t on_time, uint16_t off_time)
 	}
 }
 
-void start_buzzer_steps(uint8_t cycles, uint16_t on_time, uint16_t off_time, uint16_t steps)
+inline void start_buzzer_steps(uint8_t cycles, uint16_t on_time, uint16_t off_time, uint16_t steps)
 {
 	sBuzzer.steps = steps;
 	start_buzzer(cycles, on_time, off_time);
