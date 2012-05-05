@@ -49,7 +49,7 @@
 #include "vti_as.h"
 #endif
 #include "ports.h"
-#include "timer.h"
+//#include "timer.h"
 #include "radio.h"
 #include "rtca.h"
 
@@ -242,7 +242,7 @@ void start_simpliciti_tx_only(simpliciti_mode_t mode)
 	display_symbol(LCD_ICON_BEEPER3, SEG_ON | BLINK_ON);
 
 	// Debounce button event
-	Timer0_A4_Delay(CONV_MS_TO_TICKS(BUTTONS_DEBOUNCE_TIME_OUT));
+	//Timer0_A4_Delay(CONV_MS_TO_TICKS(BUTTONS_DEBOUNCE_TIME_OUT));
 
 	// Prepare radio for RF communication
 	open_radio();
@@ -521,7 +521,7 @@ void simpliciti_get_ed_data_callback(void)
 				simpliciti_data[0] &= ~0xF0;
 			} else {
 				// Trigger packet sending in regular intervals
-				Timer0_A4_Delay(CONV_MS_TO_TICKS(30));
+				//Timer0_A4_Delay(CONV_MS_TO_TICKS(30));
 				simpliciti_flag |= SIMPLICITI_TRIGGER_SEND_DATA;
 			}
 		} else {
@@ -592,7 +592,7 @@ void start_simpliciti_sync(void)
 	display_symbol(LCD_ICON_BEEPER3, SEG_ON | BLINK_ON);
 
 	// Debounce button event
-	Timer0_A4_Delay(CONV_MS_TO_TICKS(BUTTONS_DEBOUNCE_TIME_OUT));
+	//Timer0_A4_Delay(CONV_MS_TO_TICKS(BUTTONS_DEBOUNCE_TIME_OUT));
 
 	// Prepare radio for RF communication
 	open_radio();
@@ -618,7 +618,7 @@ void start_simpliciti_sync(void)
 	close_radio();
 
 	// Clear last button events
-	Timer0_A4_Delay(CONV_MS_TO_TICKS(BUTTONS_DEBOUNCE_TIME_OUT));
+	//Timer0_A4_Delay(CONV_MS_TO_TICKS(BUTTONS_DEBOUNCE_TIME_OUT));
 	BUTTONS_IFG = 0x00;
 	button.all_flags = 0;
 

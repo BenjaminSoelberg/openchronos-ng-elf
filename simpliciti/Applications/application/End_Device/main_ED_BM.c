@@ -62,7 +62,7 @@
 extern uint8_t sInit_done;
 
 // SimpliciTI has no low power delay function, so we have to use ours
-extern void Timer0_A4_Delay(uint16_t ticks);
+//extern void Timer0_A4_Delay(uint16_t ticks);
 
 extern unsigned char simpliciti_payload_length;
 //extern txOpt_t  simpliciti_options;
@@ -331,7 +331,7 @@ void simpliciti_main_sync(void)
 		}
 		// Sleep 0.5sec between ready-to-receive packets
 		// SimpliciTI has no low power delay function, so we have to use ours
-		Timer0_A4_Delay(CONV_MS_TO_TICKS(500));
+		//Timer0_A4_Delay(CONV_MS_TO_TICKS(500));
 		
 		// Get radio ready. Radio wakes up in IDLE state.
 		SMPL_Ioctl( IOCTL_OBJ_RADIO, IOCTL_ACT_RADIO_AWAKE, 0);

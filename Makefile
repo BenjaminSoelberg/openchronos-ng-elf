@@ -65,11 +65,11 @@ config:
 	$(PYTHON) tools/make_modinit.py
 	@echo "Don't forget to do a make clean!" && true
 
-install: eZChronos.txt
-	contrib/ChronosTool.py rfbsl eZChronos.txt
+install: ezchronos.txt
+	contrib/ChronosTool.py rfbsl $<
 
 clean: $(SUBDIRS)
 	@for subdir in $(SUBDIRS); do \
 		echo "Cleaning $$subdir .."; rm -f $$subdir/*.{o,.a}; \
 	done
-	@rm -f *.o ezChronos.elf ezChronos.txt
+	@rm -f *.o ezchronos.elf ezchronos.txt

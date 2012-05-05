@@ -40,7 +40,6 @@
 
 // driver
 #include "rf1a.h"
-#include "timer.h"
 
 // logic
 #include "rfsimpliciti.h"
