@@ -39,10 +39,9 @@ static struct {
 } timer0_timers[5];
 
 
+/* this function setups a 1Hz timer ticked every overflow interrupt */
 void timer0_init(void)
 {
-	/* the following code setups a 1Hz timer ticked by overflow interrupts */
-
 	/* enable overflow interrupts */
 	TA0CCTL0 |= CCIE;
 
@@ -59,7 +58,7 @@ static int8_t timer0_find_free_timer(void)
 {
 	int8_t i = -1;
 	while (++i < sizeof(timer0_timers)) {
-		if (! timer0_timers[i].inuse)
+		if (!timer0_timers[i].inuse)
 			return i;
 	}
 	return -1;
@@ -76,7 +75,7 @@ int8_t timer0_create_timer(uint16_t duration, void (*callback_fn)(void))
 	/* no cookie for you */
 	if (tid < 0)
 		return -1;
-	
+
 	timer0_timers[tid].inuse = 1;
 	timer0_timers[tid].ticks = (TIMER0_FREQ / 1000) * duration;
 	timer0_timers[tid].callback_fn = callback_fn;
@@ -118,7 +117,7 @@ static void timer0_ISR(enum timer0_IS source)
 {
 	/* TODO: this might expand into a lot of code,
 	   figure out a better way to do it */
-	switch(source) {
+	switch (source) {
 	case TIMER0_IS_CCR0:
 		/* reset flag */
 		TA0CCTL0 &= ~CCIFG;
