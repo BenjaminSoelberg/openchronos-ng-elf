@@ -44,24 +44,11 @@
 // driver
 #include "ports.h"
 #include "buzzer.h"
-#ifdef FEATURE_PROVIDE_ACCEL
+
 #include "vti_as.h"
-#endif
 #include "vti_ps.h"
-//#include "timer.h"
+
 #include "display.h"
-#include "rtca.h"
-
-// logic
-#include "rfsimpliciti.h"
-#include "simpliciti.h"
-#include "altitude.h"
-#include "stopwatch.h"
-
-#ifdef CONFIG_EGGTIMER
-#include "eggtimer.h"
-#endif
-
 
 // *************************************************************************************************
 // Prototypes section
@@ -81,11 +68,6 @@ void button_repeat_function(void);
 // Global Variable section
 volatile s_button_flags button;
 volatile struct struct_button sButton;
-
-
-// *************************************************************************************************
-// Extern section
-//extern void (*fptr_Timer0_A3_function)(void);
 
 
 // *************************************************************************************************
@@ -125,19 +107,11 @@ void init_buttons(void)
 // @param       none
 // @return      none
 // *************************************************************************************************
-//pfs
-#ifdef __GNUC__
 __attribute__((interrupt(PORT2_VECTOR)))
-#else
-#pragma vector = PORT2_VECTOR
-__interrupt
-#endif
 void PORT2_ISR(void)
 {
 	uint8_t int_flag, int_enable;
 	uint8_t buzzer = 0;
-	uint8_t simpliciti_button_event = 0;
-	static uint8_t simpliciti_button_repeat = 0;
 
 	// Clear button flags
 	button.all_flags = 0;
@@ -148,102 +122,71 @@ void PORT2_ISR(void)
 	// Store valid button interrupt flag
 	int_flag = BUTTONS_IFG & int_enable;
 
+	// Debounce buttons
+	if ((int_flag & ALL_BUTTONS) != 0) {
+		// Disable PORT2 IRQ
+		__disable_interrupt();
+		BUTTONS_IE = 0x00;
+		__enable_interrupt();
+
+		// Debounce delay 1
+		//Timer0_A4_Delay(CONV_MS_TO_TICKS(BUTTONS_DEBOUNCE_TIME_IN));
+	}
+
 	// ---------------------------------------------------
-	// While SimpliciTI stack is active, buttons behave differently:
-	//  - Store button events in SimpliciTI packet data
-	//  - Exit SimpliciTI when button DOWN was pressed
-	if (is_rf()) {
-		// Erase previous button press after a number of resends (increase number if link quality is low)
-		// This will create a series of packets containing the same button press
-		// Necessary because we have no acknowledge
-		// Filtering (edge detection) will be done by receiver software
-		if (simpliciti_button_repeat++ > 6) {
-			simpliciti_data[0] &= ~0xF0;
-			simpliciti_button_repeat = 0;
+	// STAR button IRQ
+	if (IRQ_TRIGGERED(int_flag, BUTTON_STAR_PIN)) {
+		// Filter bouncing noise
+		if (BUTTON_STAR_IS_PRESSED) {
+			button.flag.star = 1;
+
+			// Generate button click
+			buzzer = 1;
 		}
+	}
+	// ---------------------------------------------------
+	// NUM button IRQ
+	else if (IRQ_TRIGGERED(int_flag, BUTTON_NUM_PIN)) {
+		// Filter bouncing noise
+		if (BUTTON_NUM_IS_PRESSED) {
+			button.flag.num = 1;
 
-		if ((int_flag & BUTTON_STAR_PIN) == BUTTON_STAR_PIN) {
-			simpliciti_data[0] |= SIMPLICITI_BUTTON_STAR;
-			simpliciti_button_event = 1;
-		} else if ((int_flag & BUTTON_NUM_PIN) == BUTTON_NUM_PIN) {
-			simpliciti_data[0] |= SIMPLICITI_BUTTON_NUM;
-			simpliciti_button_event = 1;
-		} else if ((int_flag & BUTTON_UP_PIN) == BUTTON_UP_PIN) {
-			simpliciti_data[0] |= SIMPLICITI_BUTTON_UP;
-			simpliciti_button_event = 1;
-		} else if ((int_flag & BUTTON_DOWN_PIN) == BUTTON_DOWN_PIN) {
-			simpliciti_flag |= SIMPLICITI_TRIGGER_STOP;
+			// Generate button click
+			buzzer = 1;
 		}
+	}
+	// ---------------------------------------------------
+	// UP button IRQ
+	else if (IRQ_TRIGGERED(int_flag, BUTTON_UP_PIN)) {
+		// Filter bouncing noise
+		if (BUTTON_UP_IS_PRESSED) {
+			button.flag.up = 1;
 
-		// Trigger packet sending inside SimpliciTI stack
-		if (simpliciti_button_event) simpliciti_flag |= SIMPLICITI_TRIGGER_SEND_DATA;
-	} else { // Normal operation
-		// Debounce buttons
-		if ((int_flag & ALL_BUTTONS) != 0) {
-			// Disable PORT2 IRQ
-			__disable_interrupt();
-			BUTTONS_IE = 0x00;
-			__enable_interrupt();
-
-			// Debounce delay 1
-			//Timer0_A4_Delay(CONV_MS_TO_TICKS(BUTTONS_DEBOUNCE_TIME_IN));
+			// Generate button click
+			buzzer = 1;
 		}
+	}
+	// ---------------------------------------------------
+	// DOWN button IRQ
+	else if (IRQ_TRIGGERED(int_flag, BUTTON_DOWN_PIN)) {
+		// Filter bouncing noise
+		if (BUTTON_DOWN_IS_PRESSED) {
+			button.flag.down = 1;
 
-		// ---------------------------------------------------
-		// STAR button IRQ
-		if (IRQ_TRIGGERED(int_flag, BUTTON_STAR_PIN)) {
-			// Filter bouncing noise
-			if (BUTTON_STAR_IS_PRESSED) {
-				button.flag.star = 1;
-
-				// Generate button click
-				buzzer = 1;
-			}
+			// Generate button click
+			buzzer = 1;
 		}
-		// ---------------------------------------------------
-		// NUM button IRQ
-		else if (IRQ_TRIGGERED(int_flag, BUTTON_NUM_PIN)) {
-			// Filter bouncing noise
-			if (BUTTON_NUM_IS_PRESSED) {
-				button.flag.num = 1;
-
-				// Generate button click
-				buzzer = 1;
-			}
-		}
-		// ---------------------------------------------------
-		// UP button IRQ
-		else if (IRQ_TRIGGERED(int_flag, BUTTON_UP_PIN)) {
-			// Filter bouncing noise
-			if (BUTTON_UP_IS_PRESSED) {
-				button.flag.up = 1;
-
-				// Generate button click
-				buzzer = 1;
-			}
-		}
-		// ---------------------------------------------------
-		// DOWN button IRQ
-		else if (IRQ_TRIGGERED(int_flag, BUTTON_DOWN_PIN)) {
-			// Filter bouncing noise
-			if (BUTTON_DOWN_IS_PRESSED) {
-				button.flag.down = 1;
-
-				// Generate button click
-				buzzer = 1;
-			}
-		}
-		// ---------------------------------------------------
-		// B/L button IRQ
-		else if (IRQ_TRIGGERED(int_flag, BUTTON_BACKLIGHT_PIN)) {
-			// Filter bouncing noise
-			if (BUTTON_BACKLIGHT_IS_PRESSED) {
-				sButton.backlight_status = 1;
-				sButton.backlight_timeout = 0;
-				P2OUT |= BUTTON_BACKLIGHT_PIN;
-				P2DIR |= BUTTON_BACKLIGHT_PIN;
-				button.flag.backlight = 1;
-			}
+	}
+	// ---------------------------------------------------
+	// B/L button IRQ
+	else if (IRQ_TRIGGERED(int_flag, BUTTON_BACKLIGHT_PIN)) {
+		// Filter bouncing noise
+		if (BUTTON_BACKLIGHT_IS_PRESSED) {
+			sButton.backlight_status = 1;
+			sButton.backlight_timeout = 0;
+			P2OUT |= BUTTON_BACKLIGHT_PIN;
+			P2DIR |= BUTTON_BACKLIGHT_PIN;
+			button.flag.backlight = 1;
 		}
 	}
 
@@ -256,22 +199,13 @@ void PORT2_ISR(void)
 
 	// Generate button click when button was activated
 	if (buzzer) {
-#ifdef CONFIG_EGGTIMER
-			if (sEggtimer.state == EGGTIMER_ALARM) {
-				stop_eggtimer_alarm();
-				button.all_flags = 0;
-			} else
-#endif
-
-				if (!sys.flag.up_down_repeat_enabled) {
-					start_buzzer(1, CONV_MS_TO_TICKS(20), CONV_MS_TO_TICKS(150));
-				}
+		if (!sys.flag.up_down_repeat_enabled) {
+			start_buzzer(1, CONV_MS_TO_TICKS(20), CONV_MS_TO_TICKS(150));
+		}
 
 		// Debounce delay 2
 		//Timer0_A4_Delay(CONV_MS_TO_TICKS(BUTTONS_DEBOUNCE_TIME_OUT));
 	}
-
-#ifdef FEATURE_PROVIDE_ACCEL
 
 	// ---------------------------------------------------
 	// Acceleration sensor IRQ
@@ -279,8 +213,6 @@ void PORT2_ISR(void)
 		// Get data from sensor
 		request.flag.acceleration_measurement = 1;
 	}
-
-#endif
 
 	// ---------------------------------------------------
 	// Pressure sensor IRQ
