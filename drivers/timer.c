@@ -52,13 +52,13 @@ void timer0_init(void)
 	/* init timers vector */
 	uint8_t i = 0;
 	while (i < sizeof(timer0_timers))
-		timer0_timers[i].inuse = 0;
+		timer0_timers[i++].inuse = 0;
 }
 
 static int8_t timer0_find_free_timer(void)
 {
-	uint8_t i = 0;
-	while (i < sizeof(timer0_timers)) {
+	int8_t i = -1;
+	while (++i < sizeof(timer0_timers)) {
 		if (! timer0_timers[i].inuse)
 			return i;
 	}

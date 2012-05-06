@@ -70,7 +70,7 @@
 #include "radio.h"
 #include "buzzer.h"
 #include "ports.h"
-//#include "timer.h"
+#include "timer.h"
 #include "pmm.h"
 #include "rf1a.h"
 #include "rtca.h"
@@ -333,7 +333,7 @@ void init_application(void)
 
 	// ---------------------------------------------------------------------
 	// Configure Timer0 for use by the clock and delay functions
-	//Timer0_Init();
+	timer0_init();
 
 	// ---------------------------------------------------------------------
 	// Init pressure sensor
