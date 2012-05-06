@@ -65,8 +65,8 @@ config:
 	$(PYTHON) tools/make_modinit.py
 	@echo "Don't forget to do a make clean!" && true
 
-install: eZChronos.txt
-	contrib/ChronosTool.py rfbsl eZChronos.txt
+install: ezchronos.txt
+	contrib/ChronosTool.py rfbsl $<
 
 clean: $(SUBDIRS)
 	@for subdir in $(SUBDIRS); do \
