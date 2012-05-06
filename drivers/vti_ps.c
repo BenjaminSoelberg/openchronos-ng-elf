@@ -44,7 +44,7 @@
 
 // driver
 #include "vti_ps.h"
-#include "timer.h"
+//#include "timer.h"
 #ifdef FIXEDPOINT
 #include "dsp.h"
 #endif
@@ -107,13 +107,13 @@ void ps_init(void)
 	ps_ok = 0;
 
 	// 100msec delay to allow VDD stabilisation
-	Timer0_A4_Delay(CONV_MS_TO_TICKS(100));
+	//Timer0_A4_Delay(CONV_MS_TO_TICKS(100));
 
 	// Reset pressure sensor -> powerdown sensor
 	success = ps_write_register(0x06, 0x01);
 
 	// 100msec delay
-	Timer0_A4_Delay(CONV_MS_TO_TICKS(100));
+	//Timer0_A4_Delay(CONV_MS_TO_TICKS(100));
 
 	// Check if STATUS register BIT0 is cleared
 	status = ps_read_register(0x07, PS_TWI_8BIT_ACCESS);

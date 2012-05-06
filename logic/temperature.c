@@ -47,7 +47,7 @@
 #include "ports.h"
 #include "display.h"
 #include "adc12.h"
-#include "timer.h"
+//#include "timer.h"
 
 // *************************************************************************************************
 // Prototypes section
@@ -99,7 +99,7 @@ void temperature_measurement(uint8_t filter)
 	volatile int32_t temperature;
 
 	// Convert internal temperature diode voltage
-	adc_result = adc12_single_conversion(REFVSEL_0, ADC12SHT0_8, ADC12INCH_10);
+	//adc_result = adc12_single_conversion(REFVSEL_0, ADC12SHT0_8, ADC12INCH_10);
 
 	// Convert ADC value to "xx.x °C"
 	// Temperature in Celsius

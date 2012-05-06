@@ -44,7 +44,7 @@
 
 // driver
 #include "buzzer.h"
-#include "timer.h"
+//#include "timer.h"
 #include "display.h"
 
 
@@ -114,11 +114,11 @@ void start_buzzer(uint8_t cycles, uint16_t on_time, uint16_t off_time)
 		P2SEL |= BIT7;
 
 		// Activate Timer0_A3 periodic interrupts
-		fptr_Timer0_A3_function = toggle_buzzer;
-		Timer0_A3_Start(sBuzzer.on_time);
+		//fptr_Timer0_A3_function = toggle_buzzer;
+		//Timer0_A3_Start(sBuzzer.on_time);
 
 		// Preload timer advance variable
-		sTimer.timer0_A3_ticks = sBuzzer.off_time;
+		//sTimer.timer0_A3_ticks = sBuzzer.off_time;
 
 		// Start with buzzer output on
 		sBuzzer.state 	 	= BUZZER_ON_OUTPUT_ENABLED;
@@ -152,7 +152,7 @@ void toggle_buzzer(void)
 		sBuzzer.state = BUZZER_ON_OUTPUT_DISABLED;
 
 		// Reload Timer0_A4 IRQ to restart output
-		sTimer.timer0_A3_ticks = sBuzzer.on_time;
+		//sTimer.timer0_A3_ticks = sBuzzer.on_time;
 	} else { // Turn on buzzer
 		// Decrement buzzer total cycles
 		countdown_buzzer();
@@ -170,7 +170,7 @@ void toggle_buzzer(void)
 			sBuzzer.state = BUZZER_ON_OUTPUT_ENABLED;
 
 			// Reload Timer0_A4 IRQ to turn off output
-			sTimer.timer0_A3_ticks = sBuzzer.off_time;
+			//sTimer.timer0_A3_ticks = sBuzzer.off_time;
 		}
 	}
 }
@@ -195,7 +195,7 @@ void stop_buzzer(void)
 	TA1CCTL0 &= ~CCIE;
 
 	// Disable periodic start/stop interrupts
-	Timer0_A3_Stop();
+	//Timer0_A3_Stop();
 
 	// Clear variables
 	reset_buzzer();

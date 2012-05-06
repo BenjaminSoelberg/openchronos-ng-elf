@@ -48,7 +48,7 @@
 #include "vti_as.h"
 #endif
 #include "vti_ps.h"
-#include "timer.h"
+//#include "timer.h"
 #include "display.h"
 #include "rtca.h"
 
@@ -85,7 +85,7 @@ volatile struct struct_button sButton;
 
 // *************************************************************************************************
 // Extern section
-extern void (*fptr_Timer0_A3_function)(void);
+//extern void (*fptr_Timer0_A3_function)(void);
 
 
 // *************************************************************************************************
@@ -186,7 +186,7 @@ void PORT2_ISR(void)
 			__enable_interrupt();
 
 			// Debounce delay 1
-			Timer0_A4_Delay(CONV_MS_TO_TICKS(BUTTONS_DEBOUNCE_TIME_IN));
+			//Timer0_A4_Delay(CONV_MS_TO_TICKS(BUTTONS_DEBOUNCE_TIME_IN));
 		}
 
 		// ---------------------------------------------------
@@ -268,7 +268,7 @@ void PORT2_ISR(void)
 				}
 
 		// Debounce delay 2
-		Timer0_A4_Delay(CONV_MS_TO_TICKS(BUTTONS_DEBOUNCE_TIME_OUT));
+		//Timer0_A4_Delay(CONV_MS_TO_TICKS(BUTTONS_DEBOUNCE_TIME_OUT));
 	}
 
 #ifdef FEATURE_PROVIDE_ACCEL
@@ -293,7 +293,7 @@ void PORT2_ISR(void)
 	// Safe long button event detection
 	if (button.flag.star || button.flag.num) {
 		// Additional debounce delay to enable safe high detection
-		Timer0_A4_Delay(CONV_MS_TO_TICKS(BUTTONS_DEBOUNCE_TIME_LEFT));
+		//Timer0_A4_Delay(CONV_MS_TO_TICKS(BUTTONS_DEBOUNCE_TIME_LEFT));
 
 		// Check if this button event is short enough
 		if (BUTTON_STAR_IS_PRESSED) button.flag.star = 0;
@@ -324,10 +324,10 @@ void button_repeat_on(uint16_t msec)
 	sys.flag.up_down_repeat_enabled = 1;
 
 	// Set Timer0_A3 function pointer to button repeat function
-	fptr_Timer0_A3_function = button_repeat_function;
+	//fptr_Timer0_A3_function = button_repeat_function;
 
 	// Timer0_A3 IRQ triggers every 200ms
-	Timer0_A3_Start(CONV_MS_TO_TICKS(msec));
+	//Timer0_A3_Start(CONV_MS_TO_TICKS(msec));
 }
 
 
@@ -343,7 +343,7 @@ void button_repeat_off(void)
 	sys.flag.up_down_repeat_enabled = 0;
 
 	// Timer0_A3 IRQ repeats with 4Hz
-	Timer0_A3_Stop();
+	//Timer0_A3_Stop();
 }
 
 

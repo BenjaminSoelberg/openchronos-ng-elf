@@ -16,7 +16,7 @@
 
 // driver
 #include "display.h"
-#include "timer.h"
+//#include "timer.h"
 
 // logic
 #include "strength.h"

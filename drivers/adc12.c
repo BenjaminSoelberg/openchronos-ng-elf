@@ -45,7 +45,7 @@
 
 // driver
 #include "adc12.h"
-#include "timer.h"
+//#include "timer.h"
 
 
 // *************************************************************************************************
@@ -130,7 +130,7 @@ uint16_t adc12_single_conversion(uint16_t ref, uint16_t sht, uint16_t channel)
 	ADC12IE = 0x001;                          	// ADC_IFG upon conv result-ADCMEMO
 
 	// Wait 2 ticks (66us) to allow internal reference to settle
-	Timer0_A4_Delay(2);
+	//Timer0_A4_Delay(2);
 
 	// Start ADC12
 	ADC12CTL0 |= ADC12ENC;
@@ -142,7 +142,7 @@ uint16_t adc12_single_conversion(uint16_t ref, uint16_t sht, uint16_t channel)
 	ADC12CTL0 |= ADC12SC;
 
 	// Wait until ADC12 has finished
-	Timer0_A4_Delay(5);
+	//Timer0_A4_Delay(5);
 
 	while (!adc12_data_ready);
 
