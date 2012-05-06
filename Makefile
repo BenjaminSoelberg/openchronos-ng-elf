@@ -72,4 +72,4 @@ clean: $(SUBDIRS)
 	@for subdir in $(SUBDIRS); do \
 		echo "Cleaning $$subdir .."; rm -f $$subdir/*.{o,.a}; \
 	done
-	@rm -f *.o ezChronos.elf ezChronos.txt
+	@rm -f *.o ezchronos.elf ezchronos.txt

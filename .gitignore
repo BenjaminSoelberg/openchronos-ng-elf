@@ -1,6 +1,6 @@
 modinit.c
-eZChronos.txt
-eZChronos.elf
+ezchronos.txt
+ezchronos.elf
 *.[oa]
 *.pyc
 *.*~
