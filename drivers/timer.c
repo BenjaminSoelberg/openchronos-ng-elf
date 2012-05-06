@@ -32,8 +32,10 @@ enum timer0_IS {
 	TIMER0_IS_OVERFLOW = TA0IV_TA0IFG
 };
 
+
 static struct {
-	uint8_t inuse;
+	uint8_t inuse:1;
+	uint8_t mode:1; /* 0: timer, 1: delay */
 	uint16_t ticks;
 	void (*callback_fn)(void);
 } timer0_timers[5];
@@ -64,11 +66,48 @@ static int8_t timer0_find_free_timer(void)
 	return -1;
 }
 
+/* This function was based on original Texas Instruments implementation,
+   see LICENSE-TI for more information. */
+int8_t timer0_delay(uint16_t duration)
+{
+	int8_t tid = timer0_create_timer(duration, NULL);
+	
+	/* no cookie for you */
+	if (tid < 0)
+		return -1;
+
+	timer0_timers[tid].mode = 1;
+
+	timer0_start_timer(tid);
+
+	/* Wait for interrupt */
+	while (1) {
+		/* enter low power mode */
+		// Go to LPM3
+		_BIS_SR(LPM3_bits + GIE);
+		__no_operation();
+
+#ifdef USE_WATCHDOG
+		/* Service watchdog */
+		WDTCTL = WDTPW + WDTIS__512K + WDTSSEL__ACLK + WDTCNTCL;
+#endif
+
+		/* The interrupt routine sets ticks to zero to signal us
+		   that a interrupt happened */
+		if (timer0_timers[tid].ticks == 0)
+			break;
+	}
+
+	timer0_destroy_timer(tid);
+
+	return tid;
+}
+
 /* create a timer:
  * duration is in miliseconds, min=1, max=1000 */
 int8_t timer0_create_timer(uint16_t duration, void (*callback_fn)(void))
 {
-	/* TODO: we need to prevent race conditions here! */
+	__disable_interrupt();
 	int8_t tid = timer0_find_free_timer();
 
 	/* no cookie for you */
@@ -76,6 +115,9 @@ int8_t timer0_create_timer(uint16_t duration, void (*callback_fn)(void))
 		return -1;
 
 	timer0_timers[tid].inuse = 1;
+	__enable_interrupt();
+
+	timer0_timers[tid].mode = 0;
 	timer0_timers[tid].ticks = (TIMER0_FREQ / 1000) * duration;
 	timer0_timers[tid].callback_fn = callback_fn;
 
@@ -121,46 +163,66 @@ static void timer0_ISR(enum timer0_IS source)
 		/* reset flag */
 		TA0CCTL0 &= ~CCIFG;
 
-		/* update CCR for next match */
-		TA0CCR0 += timer0_timers[0].ticks;
+		if (timer0_timers[0].mode == 0) {
+			/* update CCR for next match */
+			TA0CCR0 += timer0_timers[0].ticks;
 
-		timer0_timers[0].callback_fn();
+			timer0_timers[0].callback_fn();
+		} else
+			timer0_timers[0].ticks = 0;
+
 		break;
 	case TIMER0_IS_CCR1:
 		/* reset flag */
 		TA0CCTL1 &= ~CCIFG;
 
-		/* update CCR for next match */
-		TA0CCR1 += timer0_timers[1].ticks;
+		if (timer0_timers[1].mode == 0) {
+			/* update CCR for next match */
+			TA0CCR1 += timer0_timers[1].ticks;
 
-		timer0_timers[1].callback_fn();
+			timer0_timers[1].callback_fn();
+		} else
+			timer0_timers[1].ticks = 0;
+
 		break;
 	case TIMER0_IS_CCR2:
 		/* reset flag */
 		TA0CCTL1 &= ~CCIFG;
 
-		/* update CCR for next match */
-		TA0CCR2 += timer0_timers[2].ticks;
+		if (timer0_timers[2].mode == 0) {
+			/* update CCR for next match */
+			TA0CCR2 += timer0_timers[2].ticks;
 
-		timer0_timers[2].callback_fn();
+			timer0_timers[2].callback_fn();
+		} else
+			timer0_timers[2].ticks = 0;
+
 		break;
 	case TIMER0_IS_CCR3:
 		/* reset flag */
 		TA0CCTL3 &= ~CCIFG;
 
-		/* update CCR for next match */
-		TA0CCR3 += timer0_timers[3].ticks;
+		if (timer0_timers[3].mode == 0) {
+			/* update CCR for next match */
+			TA0CCR3 += timer0_timers[3].ticks;
 
-		timer0_timers[3].callback_fn();
+			timer0_timers[3].callback_fn();
+		} else
+			timer0_timers[3].ticks = 0;
+
 		break;
 	case TIMER0_IS_CCR4:
 		/* reset flag */
 		TA0CCTL4 &= ~CCIFG;
 
-		/* update CCR for next match */
-		TA0CCR4 += timer0_timers[4].ticks;
+		if (timer0_timers[4].mode == 0) {
+			/* update CCR for next match */
+			TA0CCR4 += timer0_timers[4].ticks;
 
-		timer0_timers[4].callback_fn();
+			timer0_timers[4].callback_fn();
+		} else
+			timer0_timers[4].ticks = 0;
+
 		break;
 	default:
 		/* place for 1Hz timer */

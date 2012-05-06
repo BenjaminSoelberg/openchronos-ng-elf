@@ -35,6 +35,7 @@
 /* drivers */
 #include "ports.h"
 #include "buzzer.h"
+#include "timer.h"
 
 #include "vti_as.h"
 #include "vti_ps.h"
@@ -105,7 +106,7 @@ void PORT2_ISR(void)
 		__enable_interrupt();
 
 		/* Debounce delay 1 */
-		/* Timer0_A4_Delay(CONV_MS_TO_TICKS(BUTTONS_DEBOUNCE_TIME_IN)); */
+		timer0_delay(BUTTONS_DEBOUNCE_TIME_IN);
 	}
 
 	if (IRQ_TRIGGERED(int_flag, BUTTON_STAR_PIN)) {
@@ -175,7 +176,7 @@ void PORT2_ISR(void)
 			start_buzzer(1, CONV_MS_TO_TICKS(20), CONV_MS_TO_TICKS(150));
 
 		/* Debounce delay 2 */
-		/* Timer0_A4_Delay(CONV_MS_TO_TICKS(BUTTONS_DEBOUNCE_TIME_OUT)); */
+		timer0_delay(BUTTONS_DEBOUNCE_TIME_OUT);
 	}
 
 	/* Acceleration sensor IRQ */
@@ -193,7 +194,7 @@ void PORT2_ISR(void)
 	/* Safe long button event detection */
 	if (button.flag.star || button.flag.num) {
 		/* Additional debounce delay to enable safe high detection */
-		/* Timer0_A4_Delay(CONV_MS_TO_TICKS(BUTTONS_DEBOUNCE_TIME_LEFT)); */
+		timer0_delay(BUTTONS_DEBOUNCE_TIME_LEFT);
 
 		/* Check if this button event is short enough */
 		if (BUTTON_STAR_IS_PRESSED)
