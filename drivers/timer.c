@@ -36,6 +36,7 @@ enum timer0_IS {
 static struct {
 	uint8_t inuse:1;
 	uint8_t mode:1; /* 0: timer, 1: delay */
+	volatile uint8_t intr:1;
 	uint16_t ticks;
 	void (*callback_fn)(void);
 } timer0_timers[5];
@@ -77,6 +78,7 @@ int8_t timer0_delay(uint16_t duration)
 		return -1;
 
 	timer0_timers[tid].mode = 1;
+	timer0_timers[tid].intr = 0;
 
 	timer0_start_timer(tid);
 
@@ -94,7 +96,7 @@ int8_t timer0_delay(uint16_t duration)
 
 		/* The interrupt routine sets ticks to zero to signal us
 		   that a interrupt happened */
-		if (timer0_timers[tid].ticks == 0)
+		if (timer0_timers[tid].intr == 1)
 			break;
 	}
 
@@ -175,7 +177,7 @@ static void timer0_ISR(enum timer0_IS source)
 
 		timer0_timers[tid].callback_fn();
 	} else
-		timer0_timers[tid].ticks = 0;
+		timer0_timers[tid].intr = 1;
 }
 
 /* interrupt vector for CCR0 */
