@@ -45,7 +45,6 @@
 // driver
 #include "buzzer.h"
 //#include "timer.h"
-#include "display.h"
 
 
 // *************************************************************************************************
@@ -65,7 +64,6 @@ struct buzzer sBuzzer;
 
 // *************************************************************************************************
 // Extern section
-//extern uint16_t timer0_A3_ticks_g;
 
 
 
@@ -79,7 +77,6 @@ void reset_buzzer(void)
 {
 	sBuzzer.time 	= 0;
 	sBuzzer.state 	= BUZZER_OFF;
-
 	sBuzzer.steps	= BUZZER_TIMER_STEPS;
 }
 
@@ -87,8 +84,8 @@ void reset_buzzer(void)
 // @fn          start_buzzer
 // @brief       Start buzzer output for a number of cylces
 // @param       uint8_t cycles		Keep buzzer output for number of cycles
-//				uint16_t on_time	Output buzzer for "on_time" ACLK ticks
-//				uint16_t off_time	Do not output buzzer for "off_time" ACLK ticks
+//		uint16_t on_time	Output buzzer for "on_time" ACLK ticks
+//		uint16_t off_time	Do not output buzzer for "off_time" ACLK ticks
 // @return      none
 // *************************************************************************************************
 void start_buzzer(uint8_t cycles, uint16_t on_time, uint16_t off_time)
@@ -98,8 +95,6 @@ void start_buzzer(uint8_t cycles, uint16_t on_time, uint16_t off_time)
 		sBuzzer.time 	 = cycles;
 		sBuzzer.on_time  = on_time;
 		sBuzzer.off_time = off_time;
-
-		// Need to init every time, because SimpliciTI claims same timer
 
 		// Reset TA1R, set up mode, TA1 runs from 32768Hz ACLK
 		TA1CTL = TACLR | MC_1 | TASSEL__ACLK;
@@ -125,7 +120,7 @@ void start_buzzer(uint8_t cycles, uint16_t on_time, uint16_t off_time)
 	}
 }
 
-void start_buzzer_steps(uint8_t cycles, uint16_t on_time, uint16_t off_time, uint8_t steps)
+inline void start_buzzer_steps(uint8_t cycles, uint16_t on_time, uint16_t off_time, uint16_t steps)
 {
 	sBuzzer.steps = steps;
 	start_buzzer(cycles, on_time, off_time);
@@ -155,9 +150,12 @@ void toggle_buzzer(void)
 		//sTimer.timer0_A3_ticks = sBuzzer.on_time;
 	} else { // Turn on buzzer
 		// Decrement buzzer total cycles
-		countdown_buzzer();
+		// Stop buzzer when reaching 0 cycles
+		if (--sBuzzer.time == 0) {
+			stop_buzzer();
+		}
 
-		// Reload Timer0_A4 to stop output if sBuzzer.time > 0
+		// Reload Timer0_A3 to stop output if sBuzzer.time > 0
 		if (sBuzzer.state != BUZZER_OFF) {
 			// Reset timer TA1
 			TA1R = 0;
@@ -209,23 +207,7 @@ void stop_buzzer(void)
 // @param       none
 // @return      uint8_t		1 = Buzzer is operating, 0 = Buzzer is off
 // *************************************************************************************************
-uint8_t is_buzzer(void)
+inline uint8_t is_buzzer(void)
 {
 	return (sBuzzer.state != BUZZER_OFF);
-}
-
-
-
-// *************************************************************************************************
-// @fn          countdown_buzzer
-// @brief       Decrement active buzzer time. Turn off buzzer if cycle end reached.
-// @param       none
-// @return      none
-// *************************************************************************************************
-void countdown_buzzer(void)
-{
-	// Stop buzzer when reaching 0 cycles
-	if (--sBuzzer.time == 0) {
-		stop_buzzer();
-	}
 }
