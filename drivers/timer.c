@@ -44,8 +44,8 @@ static struct {
 /* this function setups a 1Hz timer ticked every overflow interrupt */
 void timer0_init(void)
 {
-	/* enable overflow interrupts */
-	TA0CCTL0 |= CCIE;
+	/* disable overflow interrupts */
+	TA0CCTL0 &= ~CCIE;
 
 	/* select external 32kHz source, /2 divider, continous mode */
 	TA0CTL |= TASSEL__ACLK | ID__2 | MC__CONTINOUS;
@@ -156,78 +156,26 @@ void timer0_stop_timer(int8_t tid)
 /* unified interrupt vector A0 + A1 */
 static void timer0_ISR(enum timer0_IS source)
 {
-	/* TODO: this might expand into a lot of code,
-	   figure out a better way to do it */
-	switch (source) {
-	case TIMER0_IS_CCR0:
-		/* reset flag */
-		TA0CCTL0 &= ~CCIFG;
-
-		if (timer0_timers[0].mode == 0) {
-			/* update CCR for next match */
-			TA0CCR0 += timer0_timers[0].ticks;
-
-			timer0_timers[0].callback_fn();
-		} else
-			timer0_timers[0].ticks = 0;
-
-		break;
-	case TIMER0_IS_CCR1:
-		/* reset flag */
-		TA0CCTL1 &= ~CCIFG;
-
-		if (timer0_timers[1].mode == 0) {
-			/* update CCR for next match */
-			TA0CCR1 += timer0_timers[1].ticks;
-
-			timer0_timers[1].callback_fn();
-		} else
-			timer0_timers[1].ticks = 0;
-
-		break;
-	case TIMER0_IS_CCR2:
-		/* reset flag */
-		TA0CCTL1 &= ~CCIFG;
-
-		if (timer0_timers[2].mode == 0) {
-			/* update CCR for next match */
-			TA0CCR2 += timer0_timers[2].ticks;
-
-			timer0_timers[2].callback_fn();
-		} else
-			timer0_timers[2].ticks = 0;
-
-		break;
-	case TIMER0_IS_CCR3:
-		/* reset flag */
-		TA0CCTL3 &= ~CCIFG;
-
-		if (timer0_timers[3].mode == 0) {
-			/* update CCR for next match */
-			TA0CCR3 += timer0_timers[3].ticks;
-
-			timer0_timers[3].callback_fn();
-		} else
-			timer0_timers[3].ticks = 0;
-
-		break;
-	case TIMER0_IS_CCR4:
-		/* reset flag */
-		TA0CCTL4 &= ~CCIFG;
-
-		if (timer0_timers[4].mode == 0) {
-			/* update CCR for next match */
-			TA0CCR4 += timer0_timers[4].ticks;
-
-			timer0_timers[4].callback_fn();
-		} else
-			timer0_timers[4].ticks = 0;
-
-		break;
-	default:
-		/* place for 1Hz timer */
+	if (source == TIMER0_IS_OVERFLOW) {
+		/* 1Hz timer, nothing to do yet */
 		return;
 	}
+	
+	int8_t tid = source >> 1;
+
+	uint16_t *ta0ccrn = (uint16_t *)TA0CCR0 + tid*2;
+	uint16_t *ta0cctln = (uint16_t *)TA0CCTL0 + tid*2;
+
+	/* reset flag */
+	*ta0cctln &= ~CCIFG;
+
+	if (timer0_timers[tid].mode == 0) {
+		/* update CCR for next match */
+		*ta0ccrn += timer0_timers[tid].ticks;
+
+		timer0_timers[tid].callback_fn();
+	} else
+		timer0_timers[tid].ticks = 0;
 }
 
 /* interrupt vector for CCR0 */
