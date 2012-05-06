@@ -64,7 +64,6 @@ static int8_t timer0_find_free_timer(void)
 	return -1;
 }
 
-
 /* create a timer:
  * duration is in miliseconds, min=1, max=1000 */
 int8_t timer0_create_timer(uint16_t duration, void (*callback_fn)(void))
@@ -97,8 +96,8 @@ void timer0_start_timer(int8_t tid)
 	uint16_t *ta0ccrn = (uint16_t *)TA0CCR0 + tid*2;
 	uint16_t *ta0cctln = (uint16_t *)TA0CCTL0 + tid*2;
 
-	/* Set ticking frequency */
-	*ta0ccrn = timer0_timers[tid].ticks;
+	/* Set next CCR match */
+	*ta0ccrn = TA0R + timer0_timers[tid].ticks;
 
 	/* enable interrupt */
 	*ta0cctln |= CCIE;
