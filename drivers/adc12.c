@@ -66,52 +66,6 @@ uint8_t  adc12_data_ready;
 // Extern section
 
 
-//
-//
-//// *************************************************************************************************
-//// @fn          adc12_single_conversion
-//// @brief       Init ADC12. Do single conversion. Turn off ADC12.
-//// @param       none
-//// @return      none
-//// *************************************************************************************************
-//uint16_t adc12_single_conversion(uint16_t ref_v, uint16_t adc12_sht, uint16_t adc12_ssel, uint16_t adc12_vref, uint16_t adc12_channel, uint16_t adc12_conv_delay)
-//{
-//	uint16_t adc12_result;
-//
-//	// Set REF reference voltage to 1.5V (temperature) or 2.5V (battery)
-//	REFCTL0 |= REFMSTR + REFON + ref_v;
-//
-//	// Initialize ADC12
-//	ADC12CTL0 = ADC12ON +  adc12_sht;
-//	ADC12CTL1 = ADC12SHP + adc12_ssel;        	// Use sampling timer, ADC12CLK = ACLK
-//	ADC12CTL2 = ADC12RES_2 + ADC12SR;       	// 12-bit mode, 50ksps
-//	ADC12MCTL0 = adc12_vref + adc12_channel; 	// Set reference, set input channel
-//
-//	// Wait until ADC12 reference voltage has settled
-//	Timer0_A4_Delay(CONV_US_TO_TICKS(ADC12_REFERENCE_SETTLING_TIME_USEC));
-//
-//	// Start conversion
-//	ADC12CTL0 |= ADC12ENC | ADC12SC;
-//
-//	// Wait until ADC12 has finished
-//	Timer0_A4_Delay(CONV_US_TO_TICKS(adc12_conv_delay));
-//	while ((ADC12CTL1 & ADC12BUSY) == ADC12BUSY);
-//
-//	// Store measurement result
-//	adc12_result = ADC12MEM0;
-//
-//	// Shut down ADC12
-//	ADC12CTL0 &= ~(ADC12ENC | ADC12SC);
-//	ADC12CTL0 &= ~ADC12ON;
-//
-//	// Shut down reference voltage
-//	REFCTL0 &= ~(REFMSTR + REFVSEL_2 + REFON);
-//
-//	// Return ADC result
-//	return (adc12_result);
-//}
-
-
 // *************************************************************************************************
 // @fn          adc12_single_conversion
 // @brief       Init ADC12. Do single conversion. Turn off ADC12.
