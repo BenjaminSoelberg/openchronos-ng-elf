@@ -70,6 +70,6 @@ install: ezchronos.txt
 
 clean: $(SUBDIRS)
 	@for subdir in $(SUBDIRS); do \
-		echo "Cleaning $$subdir .."; rm -f $$subdir/*.{o,.a}; \
+		echo "Cleaning $$subdir .."; rm -f $$subdir/*.{o,a}; \
 	done
 	@rm -f *.o ezchronos.elf ezchronos.txt
