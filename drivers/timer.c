@@ -56,12 +56,19 @@
 	 TA0CCR2: Unused
 	 TA0CCR3: programable timer (TODO)
 	 TA0CCR4: delay timer
-	OVERFLOW: 1Hz timer (TODO) */
+	OVERFLOW: 1Hz timer */
 
 /* source is 32kHz with /2 divider */
 #define TIMER0_FREQ 16000
 
 static volatile uint8_t delay_finished;
+
+/* The callback list for 1Hz timer */
+struct cbList {
+	void (*fn)(void);
+	struct cbList *next;
+};
+static struct cbList *timer0_1hz_queue;
 
 /* this function setups a 1Hz timer ticked every overflow interrupt */
 void timer0_init(void)
@@ -71,6 +78,9 @@ void timer0_init(void)
 
 	/* select external 32kHz source, /2 divider, continous mode */
 	TA0CTL |= TASSEL__ACLK | ID__2 | MC__CONTINOUS;
+
+	/* Set queue to empty */
+	timer0_1hz_queue = NULL;
 }
 
 /* This function was based on original Texas Instruments implementation,
@@ -108,6 +118,37 @@ void timer0_delay(uint16_t duration)
 	TA0CCTL4 |= CCIE;
 }
 
+void timer0_1hz_register(void (*callback)(void))
+{
+	struct cbList **p = &timer0_1hz_queue;
+
+	while (*p) {
+		p = &(*p)->next;
+	}
+
+	*p = malloc(sizeof(struct cbList));
+	(*p)->next = NULL;
+	(*p)->fn = callback;
+}
+
+void timer0_1hz_unregister(void (*callback)(void))
+{
+	struct cbList *p = timer0_1hz_queue, *pp = NULL;
+
+	while (p) {
+		if (p->fn == callback) {
+			if (!pp)
+				timer0_1hz_queue = p->next;
+			else
+				pp->next = p->next;
+
+			free(p);
+		}
+
+		pp = p;
+		p = p->next;
+	}
+}
 
 /* interrupt vector for CCR0 */
 __attribute__((interrupt(TIMER0_A0_VECTOR)))
@@ -122,16 +163,22 @@ void timer0_A1_ISR(void)
 {
 	/* reading TA0IV automatically resets the interrupt flag */
 	uint8_t flag = TA0IV;
-
-	/* 1Hz timer, nothing to do yet */
-	if (flag == TA0IV_TA0IFG) {
-		return;
-	}
 	
 	/* delay timer */
 	if (flag == TA0IV_TA0CCR4) {
 		delay_finished = 1;
 		return;
+	}
+
+	/* 1Hz timer, nothing to do yet */
+	if (flag == TA0IV_TA0IFG) {
+		/* go through the callback queue and call the functions */
+		struct cbList *p = timer0_1hz_queue;
+
+		while (p) {
+			p->fn();
+			p = p->next;
+		}
 	}
 }
 
