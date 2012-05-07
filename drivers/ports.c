@@ -58,6 +58,35 @@ static volatile struct struct_button {
 	int16_t repeats;
 } sButton;
 
+
+void buttons_pooling_fn(void)
+{
+	/* Detect continuous button high states */
+	if (BUTTON_STAR_IS_PRESSED) {
+		sButton.star_timeout++;
+
+		/* Check if button was held low for some seconds */
+		if (sButton.star_timeout > LEFT_BUTTON_LONG_TIME) {
+			button.flag.star_long = 1;
+			sButton.star_timeout = 0;
+		}
+	} else {
+		sButton.star_timeout = 0;
+	}
+
+	if (BUTTON_NUM_IS_PRESSED) {
+		sButton.num_timeout++;
+
+		/* Check if button was held low for some seconds */
+		if (sButton.num_timeout > LEFT_BUTTON_LONG_TIME) {
+			button.flag.num_long = 1;
+			sButton.num_timeout = 0;
+		}
+	} else {
+		sButton.num_timeout = 0;
+	}
+}
+
 void init_buttons(void)
 {
 	/* Set button ports to input */
@@ -75,6 +104,9 @@ void init_buttons(void)
 
 	/* Enable button interrupts */
 	BUTTONS_IE |= ALL_BUTTONS;
+
+	/* register on 1Hz timer */
+	timer0_1hz_register(&buttons_pooling_fn);
 }
 
 /*
@@ -214,70 +246,4 @@ void PORT2_ISR(void)
 	__bic_SR_register_on_exit(LPM4_bits);
 }
 
-
-void button_repeat_on(uint16_t msec)
-{
-	/* Set button repeat flag */
-	sys.flag.up_down_repeat_enabled = 1;
-
-	/* Set Timer0_A3 function pointer to button repeat function */
-	/* fptr_Timer0_A3_function = button_repeat_function; */
-
-	/* Timer0_A3 IRQ triggers every 200ms */
-	/* Timer0_A3_Start(CONV_MS_TO_TICKS(msec)); */
-}
-
-
-void button_repeat_off(void)
-{
-	/* Clear button repeat flag */
-	sys.flag.up_down_repeat_enabled = 0;
-
-	/* Timer0_A3 IRQ repeats with 4Hz */
-	/* Timer0_A3_Stop(); */
-}
-
-static void button_repeat_function(void)
-{
-	/* Wait for 2 seconds before starting auto up/down */
-	static uint8_t start_delay = 10;
-	uint8_t repeat = 0;
-
-	/* If buttons UP or DOWN are continuously high,
-		repeatedly set button flag */
-	if (BUTTON_UP_IS_PRESSED) {
-		if (start_delay == 0) {
-			/* Generate a virtual button event */
-			button.flag.up = 1;
-			repeat = 1;
-		} else {
-			start_delay--;
-		}
-	} else if (BUTTON_DOWN_IS_PRESSED) {
-		if (start_delay == 0) {
-			/* Generate a virtual button event */
-			button.flag.down = 1;
-			repeat = 1;
-		} else {
-			start_delay--;
-		}
-	} else {
-		/* Reset repeat counter */
-		sButton.repeats = 0;
-		start_delay = 10;
-
-		/* Enable blinking */
-		start_blink();
-	}
-
-	/* If virtual button event is generated,
-		stop blinking and reset timeout counter */
-	if (repeat) {
-		/* Increase repeat counter */
-		sButton.repeats++;
-
-		/* Disable blinking */
-		stop_blink();
-	}
-}
 
