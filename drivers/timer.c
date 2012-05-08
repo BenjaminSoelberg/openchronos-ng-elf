@@ -157,6 +157,10 @@ void timer0_A1_ISR(void)
 			((void (*)(void))p->fn)();
 			p = p->next;
 		}
+
+		/* Exit from LPM3 on RETI */
+		/* let execution exit from LPM and continue the mainloop */
+		_BIC_SR_IRQ(LPM3_bits);
 	}
 }
 
