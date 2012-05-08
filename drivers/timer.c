@@ -66,6 +66,9 @@
 
 static volatile uint8_t delay_finished;
 
+/* 10hz timer */
+static uint16_t timer0_10hz_ticks;
+
 /* programable timer */
 static void (*timer0_prog_cb_fn)(void);
 static uint16_t timer0_prog_ticks;
@@ -84,8 +87,9 @@ void timer0_init(void)
 	/* select external 32kHz source, /2 divider, continous mode */
 	TA0CTL |= TASSEL__ACLK | ID__2 | MC__CONTINOUS;
 
-	/* enable 100ms (10Hz) timer */
-	TA0CCR0 = TIMER0_TICKS_FROM_MS(100);
+	/* setup and enable 100ms (10Hz) timer */
+	timer0_10hz_ticks = TIMER0_TICKS_FROM_MS(100);
+	TA0CCR0 = TA0R + timer0_10hz_ticks;
 	TA0CCTL0 |= CCIE;
 }
 
@@ -153,6 +157,9 @@ void timer0_destroy_prog_timer()
 __attribute__((interrupt(TIMER0_A0_VECTOR)))
 void timer0_A0_ISR(void)
 {
+	/* setup timer for next time */
+	TA0CCR0 = TA0R + timer0_10hz_ticks;
+
 	/* 10hz timer */
 	/* go through the callback queue and call the functions */
 	struct cblist *p = timer0_10hz_queue;
