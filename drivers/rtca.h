@@ -20,30 +20,22 @@
 #ifndef __RTCA_H__
 #define __RTCA_H__
 
-#include "project.h"
+#include <ezchronos.h>
 
-typedef enum {
+enum rtca_tevent{
 	RTCA_EV_ALARM,
 	RTCA_EV_MINUTE,
 	RTCA_EV_HOUR,
 	RTCA_EV_DAY,
 	RTCA_EV_MONTH,
 	RTCA_EV_YEAR
-} rtca_tevent_ev_t;
+};
 
 /* the ev variable holds the time event, see rtca_tevent_ev_t for more info.
 please add -fshort-enums to CFLAGS to store rtca_tevent_ev_t as only a byte */
-typedef void (*rtca_tevent_fn_t)(rtca_tevent_ev_t ev);
-
-/* list of time event callback functions */
-typedef struct rtca_cblist {
-	rtca_tevent_fn_t fn;
-	struct rtca_cblist *next;
-} rtca_cblist_t;
-
 void rtca_init(void);
-void rtca_tevent_fn_register(rtca_tevent_fn_t fn);
-void rtca_tevent_fn_unregister(rtca_tevent_fn_t fn);
+void rtca_tevent_fn_register(void (*fn)(enum rtca_tevent));
+void rtca_tevent_fn_unregister(void (*fn)(enum rtca_tevent));
 
 uint8_t rtca_get_max_days(uint8_t month, uint16_t year);
 uint32_t rtca_get_systime(void);

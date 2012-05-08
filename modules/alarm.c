@@ -50,7 +50,7 @@ static void refresh_screen()
 	display_chars(LCD_SEG_L1_3_2, _itoa(tmp_hh, 2, 0), SEG_SET);
 }
 
-static void alarm_event(rtca_tevent_ev_t ev)
+static void alarm_event(enum rtca_tevent ev)
 {
 	/* TODO: */
 }

@@ -817,3 +817,37 @@ void helpers_loop_down(uint8_t *value, uint8_t lower, uint8_t upper)
 	if(*value +1 == lower)
 		*value = upper;
 }
+
+/* callback list helpers */
+void cblist_register(struct cblist **queue, void *callback)
+{
+	struct cblist **p = queue;
+
+	while (*p) {
+		p = &(*p)->next;
+	}
+
+	*p = malloc(sizeof(struct cblist));
+	(*p)->next = NULL;
+	(*p)->fn = callback;
+}
+
+void cblist_unregister(struct cblist **queue, void *callback)
+{
+	struct cblist *p = *queue, *pp = NULL;
+
+	while (p) {
+		if (p->fn == callback) {
+			if (!pp)
+				*queue = p->next;
+			else
+				pp->next = p->next;
+
+			free(p);
+		}
+
+		pp = p;
+		p = p->next;
+	}
+}
+

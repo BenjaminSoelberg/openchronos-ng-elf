@@ -6,6 +6,7 @@ void timer0_init(void);
 /* Delay timers */
 void timer0_delay(uint16_t duration);
 
-/* Fixed frequency timers */
-void timer0_1hz_register(void (*callback)(void));
-void timer0_1hz_unregister(void (*callback)(void));
+/* Fixed frequency timer queues */
+struct cblist *timer0_1hz_queue;
+struct cblist *timer0_10hz_queue;
+

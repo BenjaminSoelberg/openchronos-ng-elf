@@ -61,33 +61,34 @@
 /* source is 32kHz with /2 divider */
 #define TIMER0_FREQ 16000
 
-static volatile uint8_t delay_finished;
+/* converts microseconds to clock ticks */
+#define TIMER0_TICKS_FROM_MS(T) (TIMER0_FREQ / 1000) * (T)
 
-/* The callback list for 1Hz timer */
-struct cbList {
-	void (*fn)(void);
-	struct cbList *next;
-};
-static struct cbList *timer0_1hz_queue;
+static volatile uint8_t delay_finished;
 
 /* this function setups a 1Hz timer ticked every overflow interrupt */
 void timer0_init(void)
 {
+	/* Set queues to empty */
+	timer0_1hz_queue = NULL;
+	timer0_10hz_queue = NULL;
+
 	/* Enable overflow interrupts */
 	TA0CTL |= TAIE;
 
 	/* select external 32kHz source, /2 divider, continous mode */
 	TA0CTL |= TASSEL__ACLK | ID__2 | MC__CONTINOUS;
 
-	/* Set queue to empty */
-	timer0_1hz_queue = NULL;
+	/* enable 100ms (10Hz) timer */
+	TA0CCR0 = TIMER0_TICKS_FROM_MS(100);
+	TA0CCTL0 |= CCIE;
 }
 
 /* This function was based on original Texas Instruments implementation,
    see LICENSE-TI for more information. */
 void timer0_delay(uint16_t duration)
 {
-	uint16_t ticks = (TIMER0_FREQ / 1000) * duration;
+	uint16_t ticks = TIMER0_TICKS_FROM_MS(duration);
 	
 	delay_finished = 0;
 
@@ -118,43 +119,20 @@ void timer0_delay(uint16_t duration)
 	TA0CCTL4 |= CCIE;
 }
 
-void timer0_1hz_register(void (*callback)(void))
-{
-	struct cbList **p = &timer0_1hz_queue;
 
-	while (*p) {
-		p = &(*p)->next;
-	}
-
-	*p = malloc(sizeof(struct cbList));
-	(*p)->next = NULL;
-	(*p)->fn = callback;
-}
-
-void timer0_1hz_unregister(void (*callback)(void))
-{
-	struct cbList *p = timer0_1hz_queue, *pp = NULL;
-
-	while (p) {
-		if (p->fn == callback) {
-			if (!pp)
-				timer0_1hz_queue = p->next;
-			else
-				pp->next = p->next;
-
-			free(p);
-		}
-
-		pp = p;
-		p = p->next;
-	}
-}
 
 /* interrupt vector for CCR0 */
 __attribute__((interrupt(TIMER0_A0_VECTOR)))
 void timer0_A0_ISR(void)
 {
-	
+	/* 10hz timer */
+	/* go through the callback queue and call the functions */
+	struct cblist *p = timer0_10hz_queue;
+
+	while (p) {
+		((void (*)(void))p->fn)();
+		p = p->next;
+	}
 }
 
 /* interrupt vector for CCR1-4 and overflow */
@@ -173,10 +151,10 @@ void timer0_A1_ISR(void)
 	/* 1Hz timer, nothing to do yet */
 	if (flag == TA0IV_TA0IFG) {
 		/* go through the callback queue and call the functions */
-		struct cbList *p = timer0_1hz_queue;
+		struct cblist *p = timer0_1hz_queue;
 
 		while (p) {
-			p->fn();
+			((void (*)(void))p->fn)();
 			p = p->next;
 		}
 	}

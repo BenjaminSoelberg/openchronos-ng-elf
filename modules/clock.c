@@ -35,7 +35,7 @@ enum {
 static uint16_t tmp_yy;
 static uint8_t tmp_mo, tmp_dd, tmp_hh, tmp_mm;
 
-static void clock_event(rtca_tevent_ev_t ev)
+static void clock_event(enum rtca_tevent ev)
 {
 	/* Exit if we are in edit mode */
 	if (edit_state != EDIT_STATE_OFF)

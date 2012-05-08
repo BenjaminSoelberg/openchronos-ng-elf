@@ -38,7 +38,7 @@
 #define LEAPS_SINCE_YEAR(Y) (((Y) - BASE_YEAR) + ((Y) - BASE_YEAR) / 4);
 
 /* stores callback list of functions to call when a time event occurrs */
-static rtca_cblist_t *cblist;
+static struct cblist *rtca_queue;
 
 static struct {
 	uint32_t sys;   /* system time: number of seconds since power on */
@@ -63,45 +63,23 @@ void rtca_init(void)
 	RTCCTL01 &= ~RTCHOLD;
 }
 
-void rtca_tevent_fn_register(rtca_tevent_fn_t fn)
+void rtca_tevent_fn_register(void (*fn)(enum rtca_tevent))
 {
-	rtca_cblist_t **p = &cblist;
-
-	while (*p)
-		p = &(*p)->next;
-
 	/* disable interrupts for critical section */
 	RTCCTL01 &= ~RTCTEVIE;
 
-	/* add new node to list */
-	*p = malloc(sizeof(rtca_cblist_t));
-	(*p)->next = NULL;
-	(*p)->fn = fn;
+	cblist_register(&rtca_queue, (void *)fn);
 
 	/* re-enable minutes interrupts */
 	RTCCTL01 |= RTCTEVIE;
 }
 
-void rtca_tevent_fn_unregister(rtca_tevent_fn_t fn)
+void rtca_tevent_fn_unregister(void (*fn)(enum rtca_tevent))
 {
-	rtca_cblist_t *p = cblist, *pp = NULL;
-
-	while (p) {
-		if (p->fn == fn) {
-			if (!pp)
-				cblist = p->next;
-			else
-				pp->next = p->next;
-
-			free(p);
-		}
-
-		pp = p;
-		p = p->next;
-	}
+	cblist_unregister(&rtca_queue, (void *)fn);
 
 	/* disable interrupts if callback list is empty */
-	if (!cblist)
+	if (!rtca_queue)
 		RTCCTL01 &= ~RTCTEVIE;
 }
 
@@ -278,7 +256,7 @@ void RTC_A_ISR(void)
 	if (iv != RTCIV_RTCTEVIFG && iv != RTCIV_RTCAIFG)
 		return;
 
-	rtca_tevent_ev_t ev = RTCA_EV_ALARM;
+	enum rtca_tevent ev = RTCA_EV_ALARM;
 	{
 		if (iv != RTCIV_RTCTEVIFG)	/* Minute changed! */
 			goto call_handlers;
@@ -316,10 +294,10 @@ void RTC_A_ISR(void)
 call_handlers:
 	/* call event handlers in list */
 	{
-		rtca_cblist_t *p = cblist;
+		struct cblist *p = rtca_queue;
 
 		while (p) {
-			p->fn(ev);
+			((void (*)(enum rtca_tevent))p->fn)(ev);
 			p = p->next;
 		}
 	}

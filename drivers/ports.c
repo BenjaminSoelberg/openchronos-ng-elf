@@ -106,7 +106,7 @@ void init_buttons(void)
 	BUTTONS_IE |= ALL_BUTTONS;
 
 	/* register on 1Hz timer */
-	timer0_1hz_register(&buttons_pooling_fn);
+	cblist_register(&timer0_1hz_queue, &buttons_pooling_fn);
 }
 
 /*

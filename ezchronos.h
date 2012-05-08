@@ -47,4 +47,14 @@ unsigned short __even_in_range(unsigned short __value, unsigned short __bound);
 typedef void(* helpers_loop_fn_t)(uint8_t *, uint8_t, uint8_t);
 void helpers_loop_up(uint8_t *value, uint8_t lower, uint8_t upper);
 void helpers_loop_down(uint8_t *value, uint8_t lower, uint8_t upper);
+
+/* callback list functionality */
+struct cblist {
+	void *fn;
+	struct cblist *next;
+};
+
+void cblist_register(struct cblist **queue, void *callback);
+void cblist_unregister(struct cblist **queue, void *callback);
+
 #endif /* __EZCHRONOS_H__ */
