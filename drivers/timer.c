@@ -65,7 +65,10 @@
 #define TIMER0_TICKS_FROM_MS(T) (TIMER0_FREQ / 1000) * (T)
 
 static volatile uint8_t delay_finished;
+
+/* programable timer */
 static void (*timer0_prog_cb_fn)(void);
+static uint16_t timer0_prog_ticks;
 
 /* this function setups a 1Hz timer ticked every overflow interrupt */
 void timer0_init(void)
@@ -125,8 +128,12 @@ void timer0_delay(uint16_t duration)
 	duration is in miliseconds, min=1, max=1000 */
 void timer0_create_prog_timer(uint16_t duration, void (*callback_fn)(void))
 {
+	timer0_prog_ticks = TIMER0_TICKS_FROM_MS(duration);
+
+	/* set timer to start as soon as possible */
+	TA0CCR3 = TA0R + timer0_prog_ticks;
+	
 	/* enable timer */
-	TA0CCR3 = TIMER0_TICKS_FROM_MS(duration);
 	TA0CCTL3 |= CCIE;
 
 	timer0_prog_cb_fn = callback_fn;
@@ -165,6 +172,9 @@ void timer0_A1_ISR(void)
 	
 	/* programable timer */
 	if (flag == TA0IV_TA0CCR3 && timer0_prog_cb_fn) {
+		/* setup timer for next time */
+		TA0CCR3 = TA0R + timer0_prog_ticks;
+
 		timer0_prog_cb_fn();
 		return;
 	}
