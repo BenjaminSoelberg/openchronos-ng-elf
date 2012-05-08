@@ -51,10 +51,10 @@
 #include "timer.h"
 
 /* HARDWARE TIMER ASSIGNMENT:
-	 TA0CCR0: 100ms timer (TODO)
+	 TA0CCR0: 100ms timer
 	 TA0CCR1: Unused
 	 TA0CCR2: Unused
-	 TA0CCR3: programable timer (TODO)
+	 TA0CCR3: programable timer
 	 TA0CCR4: delay timer
 	OVERFLOW: 1Hz timer */
 
@@ -65,6 +65,7 @@
 #define TIMER0_TICKS_FROM_MS(T) (TIMER0_FREQ / 1000) * (T)
 
 static volatile uint8_t delay_finished;
+static void (*timer0_prog_cb_fn)(void);
 
 /* this function setups a 1Hz timer ticked every overflow interrupt */
 void timer0_init(void)
@@ -72,6 +73,7 @@ void timer0_init(void)
 	/* Set queues to empty */
 	timer0_1hz_queue = NULL;
 	timer0_10hz_queue = NULL;
+	timer0_prog_cb_fn = NULL;
 
 	/* Enable overflow interrupts */
 	TA0CTL |= TAIE;
@@ -119,6 +121,25 @@ void timer0_delay(uint16_t duration)
 	TA0CCTL4 |= CCIE;
 }
 
+/* programable timer:
+	duration is in miliseconds, min=1, max=1000 */
+void timer0_create_prog_timer(uint16_t duration, void (*callback_fn)(void))
+{
+	/* enable timer */
+	TA0CCR3 = TIMER0_TICKS_FROM_MS(duration);
+	TA0CCTL3 |= CCIE;
+
+	timer0_prog_cb_fn = callback_fn;
+}
+
+void timer0_destroy_prog_timer()
+{
+	/* disable timer */
+	TA0CCTL3 &= ~CCIE;
+
+	timer0_prog_cb_fn = NULL;
+}
+
 
 
 /* interrupt vector for CCR0 */
@@ -142,6 +163,12 @@ void timer0_A1_ISR(void)
 	/* reading TA0IV automatically resets the interrupt flag */
 	uint8_t flag = TA0IV;
 	
+	/* programable timer */
+	if (flag == TA0IV_TA0CCR3 && timer0_prog_cb_fn) {
+		timer0_prog_cb_fn();
+		return;
+	}
+
 	/* delay timer */
 	if (flag == TA0IV_TA0CCR4) {
 		delay_finished = 1;
