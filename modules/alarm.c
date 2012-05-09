@@ -1,9 +1,7 @@
 /*
+    modules/alarm.c: Alarm module for Openchronos
+
     Copyright (C) 2011-2012 Angelo Arrifano <miknix@gmail.com>
-	   - Simplified code, allow simultaneous chime and alarm
-	   - Updated to use RTC_A, the realtime clock driver
-	   - Ported to new menu display API.
-	   18/02/2012: Rewritten to adhere to new modular system
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -50,7 +48,7 @@ static void refresh_screen()
 	display_chars(LCD_SEG_L1_3_2, _itoa(tmp_hh, 2, 0), SEG_SET);
 }
 
-static void alarm_event(enum rtca_tevent ev)
+static void alarm_event(enum sys_message msg)
 {
 	/* TODO: */
 }
@@ -118,9 +116,9 @@ static void num_pressed()
 
 	/* Register RTC only if needed, saving CPU cycles.. */
 	if (alarm_state.state)
-		rtca_tevent_fn_register(alarm_event);
+		sys_messagebus_register(alarm_event, SYS_MSG_RTC_ALARM);
 	else
-		rtca_tevent_fn_unregister(alarm_event);
+		sys_messagebus_unregister(alarm_event);
 
 	if (alarm_state.alarm) {
 		display_symbol(LCD_ICON_ALARM, SEG_ON);

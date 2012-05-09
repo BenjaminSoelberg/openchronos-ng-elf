@@ -216,7 +216,8 @@ void mx_temperature(uint8_t line)
 		if (sys.flag.idle_timeout) break;
 
 		// Button STAR (short): save, then exit
-		if (button.flag.star) {
+		//if (button.flag.star) {
+		if (0) {
 			// For English units, convert set °F to °C
 #ifdef CONFIG_METRIC_ONLY
 			temperature1 = temperature;
@@ -255,7 +256,7 @@ void mx_temperature(uint8_t line)
 	}
 
 	// Clear button flags
-	button.all_flags = 0;
+	//button.all_flags = 0;
 }
 
 

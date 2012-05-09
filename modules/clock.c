@@ -18,11 +18,11 @@
  */
 
 
-#include "ezchronos.h"
+#include <ezchronos.h>
 
 /* driver */
-#include "display.h"
 #include "rtca.h"
+#include "display.h"
 
 enum {
 	EDIT_STATE_OFF = 0,
@@ -35,7 +35,7 @@ enum {
 static uint16_t tmp_yy;
 static uint8_t tmp_mo, tmp_dd, tmp_hh, tmp_mm;
 
-static void clock_event(enum rtca_tevent ev)
+static void clock_event(enum sys_message msg)
 {
 	/* Exit if we are in edit mode */
 	if (edit_state != EDIT_STATE_OFF)
@@ -46,27 +46,22 @@ static void clock_event(enum rtca_tevent ev)
 	rtca_get_time(&hh, &mm, &ss);
 	rtca_get_date(&yy, &mo, &dd, &dw);
 
-	switch (ev) {
-	case RTCA_EV_MONTH:
+	if (msg | SYS_MSG_RTC_MONTH)
 		display_chars(LCD_SEG_L2_1_0, _itoa(mo, 2, 0), SEG_SET);
-
-	case RTCA_EV_DAY:
+	if (msg | SYS_MSG_RTC_DAY)
 		display_chars(LCD_SEG_L2_4_3, _itoa(dd, 2, 0), SEG_SET);
-
-	case RTCA_EV_HOUR:
+	if (msg | SYS_MSG_RTC_HOUR)
 		display_chars(LCD_SEG_L1_3_2, _itoa(hh, 2, 0), SEG_SET);
-
-	case RTCA_EV_MINUTE:
+	if (msg | SYS_MSG_RTC_MINUTE)
 		display_chars(LCD_SEG_L1_1_0, _itoa(mm, 2, 0), SEG_SET);
-
-	default:
-		break;
-	}
 }
 
 static void clock_activated()
 {
-	rtca_tevent_fn_register(&clock_event);
+	sys_messagebus_register(&clock_event, SYS_MSG_RTC_MINUTE \
+													| SYS_MSG_RTC_HOUR \
+													| SYS_MSG_RTC_DAY \
+													| SYS_MSG_RTC_MONTH);
 
 	/* Force redraw of the screen */
 #ifdef CONFIG_CLOCK_BLINKCOL
@@ -81,7 +76,7 @@ static void clock_activated()
 
 static void clock_deactivated()
 {
-	rtca_tevent_fn_unregister(&clock_event);
+	sys_messagebus_unregister(&clock_event);
 
 	/* clean up screen */
 	display_symbol(LCD_SEG_L1_COL, BLINK_OFF);

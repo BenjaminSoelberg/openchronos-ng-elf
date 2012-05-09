@@ -37,9 +37,6 @@
 #define BASE_YEAR 1984 /* not a leap year, so no need to add 1 */
 #define LEAPS_SINCE_YEAR(Y) (((Y) - BASE_YEAR) + ((Y) - BASE_YEAR) / 4);
 
-/* stores callback list of functions to call when a time event occurrs */
-static struct cblist *rtca_queue;
-
 static struct {
 	uint32_t sys;   /* system time: number of seconds since power on */
 	uint16_t year;  /* cache of RTC year register */
@@ -61,27 +58,11 @@ void rtca_init(void)
 
 	/* Enable the RTC */
 	RTCCTL01 &= ~RTCHOLD;
-}
 
-void rtca_tevent_fn_register(void (*fn)(enum rtca_tevent))
-{
-	/* disable interrupts for critical section */
-	RTCCTL01 &= ~RTCTEVIE;
-
-	cblist_register(&rtca_queue, (void *)fn);
-
-	/* re-enable minutes interrupts */
+	/* Enable minutes interrupts */
 	RTCCTL01 |= RTCTEVIE;
 }
 
-void rtca_tevent_fn_unregister(void (*fn)(enum rtca_tevent))
-{
-	cblist_unregister(&rtca_queue, (void *)fn);
-
-	/* disable interrupts if callback list is empty */
-	if (!rtca_queue)
-		RTCCTL01 &= ~RTCTEVIE;
-}
 
 /* returns number of days for a given month */
 uint8_t rtca_get_max_days(uint8_t month, uint16_t year)
@@ -235,12 +216,7 @@ void rtca_set_date(uint16_t year, uint8_t mon, uint8_t day)
 	dst_calculate_dates(year, mon, day);	/* calculate new DST switch dates */
 #endif
 }
-#ifdef __GNUC__
 __attribute__((interrupt(RTC_A_VECTOR)))
-#else
-#pragma vector = RTC_A_VECTOR
-__interrupt
-#endif
 void RTC_A_ISR(void)
 {
 	/* the IV is cleared after a read, so we store it */
@@ -256,50 +232,46 @@ void RTC_A_ISR(void)
 	if (iv != RTCIV_RTCTEVIFG && iv != RTCIV_RTCAIFG)
 		return;
 
-	enum rtca_tevent ev = RTCA_EV_ALARM;
+	enum rtca_tevent ev = 0;
 	{
 		if (iv != RTCIV_RTCTEVIFG)	/* Minute changed! */
-			goto call_handlers;
+			goto finish;
 
 
-		ev = RTCA_EV_MINUTE;
+		ev |= RTCA_EV_MINUTE;
 		rtca_time.min = RTCMIN;
 
 		if (rtca_time.min != 0)		/* Hour changed */
-			goto call_handlers;
+			goto finish;
 
-		ev++;
+		ev |= RTCA_EV_HOUR;
 		rtca_time.hour = RTCHOUR;
 
 		if (rtca_time.hour != 0)	/* Day changed */
-			goto call_handlers;
+			goto finish;
 
-		ev++;
+		ev |= RTCA_EV_DAY;
 		rtca_time.day = RTCDAY;
 		rtca_time.dow = RTCDOW;
 
 		if (rtca_time.day != 1)		/* Month changed */
-			goto call_handlers;
+			goto finish;
 
-		ev++;
+		ev |= RTCA_EV_MONTH;
 		rtca_time.mon = RTCMON;
 
 		if (rtca_time.mon != 1)		/* Year changed */
-			goto call_handlers;
+			goto finish;
 
-		ev++;
+		ev |= RTCA_EV_YEAR;
 		rtca_time.year = RTCYEARL | (RTCYEARH << 8);
 	}
 
-call_handlers:
-	/* call event handlers in list */
-	{
-		struct cblist *p = rtca_queue;
-
-		while (p) {
-			((void (*)(enum rtca_tevent))p->fn)(ev);
-			p = p->next;
-		}
-	}
+finish:
+	/* store event */
+	rtca_last_event = ev;
+	
+	/* exit from LPM3, give execution back to mainloop */
+	_BIC_SR_IRQ(LPM3_bits);
 }
 

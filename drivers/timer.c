@@ -70,17 +70,11 @@ static volatile uint8_t delay_finished;
 static uint16_t timer0_10hz_ticks;
 
 /* programable timer */
-static void (*timer0_prog_cb_fn)(void);
 static uint16_t timer0_prog_ticks;
 
 /* this function setups a 1Hz timer ticked every overflow interrupt */
 void timer0_init(void)
 {
-	/* Set queues to empty */
-	timer0_1hz_queue = NULL;
-	timer0_10hz_queue = NULL;
-	timer0_prog_cb_fn = NULL;
-
 	/* Enable overflow interrupts */
 	TA0CTL |= TAIE;
 
@@ -130,7 +124,7 @@ void timer0_delay(uint16_t duration)
 
 /* programable timer:
 	duration is in miliseconds, min=1, max=1000 */
-void timer0_create_prog_timer(uint16_t duration, void (*callback_fn)(void))
+void timer0_create_prog_timer(uint16_t duration)
 {
 	timer0_prog_ticks = TIMER0_TICKS_FROM_MS(duration);
 
@@ -139,16 +133,12 @@ void timer0_create_prog_timer(uint16_t duration, void (*callback_fn)(void))
 	
 	/* enable timer */
 	TA0CCTL3 |= CCIE;
-
-	timer0_prog_cb_fn = callback_fn;
 }
 
 void timer0_destroy_prog_timer()
 {
 	/* disable timer */
 	TA0CCTL3 &= ~CCIE;
-
-	timer0_prog_cb_fn = NULL;
 }
 
 
@@ -157,17 +147,16 @@ void timer0_destroy_prog_timer()
 __attribute__((interrupt(TIMER0_A0_VECTOR)))
 void timer0_A0_ISR(void)
 {
+	/* TODO: Do we need to reset the interrupt flag ? */
+
 	/* setup timer for next time */
 	TA0CCR0 = TA0R + timer0_10hz_ticks;
 
-	/* 10hz timer */
-	/* go through the callback queue and call the functions */
-	struct cblist *p = timer0_10hz_queue;
+	/* store 10hz timer event */
+	timer0_last_event |= TIMER0_EVENT_10HZ;
 
-	while (p) {
-		((void (*)(void))p->fn)();
-		p = p->next;
-	}
+	/* exit from LPM3, give execution back to mainloop */
+	_BIC_SR_IRQ(LPM3_bits);
 }
 
 /* interrupt vector for CCR1-4 and overflow */
@@ -178,12 +167,14 @@ void timer0_A1_ISR(void)
 	uint8_t flag = TA0IV;
 	
 	/* programable timer */
-	if (flag == TA0IV_TA0CCR3 && timer0_prog_cb_fn) {
+	if (flag == TA0IV_TA0CCR3) {
 		/* setup timer for next time */
 		TA0CCR3 = TA0R + timer0_prog_ticks;
 
-		timer0_prog_cb_fn();
-		return;
+		/* store event */
+		timer0_last_event |= TIMER0_EVENT_PROG;
+		
+		goto exit_lpm3;
 	}
 
 	/* delay timer */
@@ -194,18 +185,17 @@ void timer0_A1_ISR(void)
 
 	/* 1Hz timer, nothing to do yet */
 	if (flag == TA0IV_TA0IFG) {
-		/* go through the callback queue and call the functions */
-		struct cblist *p = timer0_1hz_queue;
-
-		while (p) {
-			((void (*)(void))p->fn)();
-			p = p->next;
-		}
-
-		/* Exit from LPM3 on RETI */
-		/* let execution exit from LPM and continue the mainloop */
-		_BIC_SR_IRQ(LPM3_bits);
+		/* store event */
+		timer0_last_event |= TIMER0_EVENT_PROG;
+		
+		goto exit_lpm3;
 	}
+
+	return;
+
+exit_lpm3:
+	/* exit from LPM3, give execution back to mainloop */
+	_BIC_SR_IRQ(LPM3_bits);
 }
 
 

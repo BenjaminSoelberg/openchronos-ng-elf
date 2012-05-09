@@ -23,16 +23,16 @@
 #include <ezchronos.h>
 
 enum rtca_tevent{
-	RTCA_EV_ALARM,
-	RTCA_EV_MINUTE,
-	RTCA_EV_HOUR,
-	RTCA_EV_DAY,
-	RTCA_EV_MONTH,
-	RTCA_EV_YEAR
+	RTCA_EV_ALARM	= 0x01,
+	RTCA_EV_MINUTE	= 0x02,
+	RTCA_EV_HOUR	= 0x04,
+	RTCA_EV_DAY		= 0x08,
+	RTCA_EV_MONTH	= 0x10,
+	RTCA_EV_YEAR	= 0x20
 };
 
-/* the ev variable holds the time event, see rtca_tevent_ev_t for more info.
-please add -fshort-enums to CFLAGS to store rtca_tevent_ev_t as only a byte */
+/* the ev variable holds the time event, see enum rtca_tevent for more info.
+please add -fshort-enums to CFLAGS to store rtca_tevent as only a byte */
 void rtca_init(void);
 void rtca_tevent_fn_register(void (*fn)(enum rtca_tevent));
 void rtca_tevent_fn_unregister(void (*fn)(enum rtca_tevent));
@@ -51,5 +51,8 @@ void rtca_set_alarm(uint8_t hour, uint8_t min);
 
 void rtca_enable_alarm();
 void rtca_disable_alarm();
+
+/* exclusive use by openchronos system */
+volatile enum rtca_tevent rtca_last_event;
 
 #endif /* __RTCA_H__ */

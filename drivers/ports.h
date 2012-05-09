@@ -94,26 +94,23 @@
 /* Leave set_value() function after some seconds of user inactivity */
 #define INACTIVITY_TIME			(30u)
 
-
-/* Set of button flags */
-typedef union {
+union ports_buttons {
 	struct {
 		/* Manual button events */
-		uint16_t star:1;			/* Short STAR button press */
-		uint16_t num:1;			/* Short NUM button press */
-		uint16_t up:1;				/* Short UP button press */
-		uint16_t down:1;			/* Short DOWN button press */
-		uint16_t backlight:1;	/* Short BACKLIGHT button press */
-		uint16_t star_long:1;	/* Long STAR button press */
-		uint16_t num_long:1;		/* Long NUM button press */
+		uint8_t star:1;			/* Short STAR button press */
+		uint8_t num:1;			/* Short NUM button press */
+		uint8_t up:1;				/* Short UP button press */
+		uint8_t down:1;			/* Short DOWN button press */
+		uint8_t backlight:1;	/* Short BACKLIGHT button press */
+		uint8_t star_long:1;	/* Long STAR button press */
+		uint8_t num_long:1;		/* Long NUM button press */
 	} flag;
-	uint16_t all_flags; /* Shortcut to all display flags (for reset) */
-} s_button_flags;
-volatile s_button_flags button;
+	uint8_t all_flags; /* Shortcut to all display flags (for reset) */
+};
 
-void button_repeat_on(uint16_t msec);
-void button_repeat_off(void);
+/* exclusive for ezchronos.c, modules should NOT use this directly */
+volatile union ports_buttons ports_buttons;
+
 void init_buttons(void);
-
 
 #endif /* __PORTS_H__ */

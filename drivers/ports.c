@@ -30,7 +30,7 @@
 	  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "project.h"
+#include <ezchronos.h>
 
 /* drivers */
 #include "ports.h"
@@ -46,44 +46,37 @@
 /* Macro for button IRQ */
 #define IRQ_TRIGGERED(flags, bit)		((flags & bit) == bit)
 
+/* check which one of those need volatile */
+static uint8_t star_timeout;
+static uint8_t num_timeout;
+static uint8_t backlight_timeout;
+static uint8_t backlight_status;
 
-/* Global Variable section */
-volatile s_button_flags button;
-
-static volatile struct struct_button {
-	uint8_t  star_timeout;
-	uint8_t  num_timeout;
-	uint8_t backlight_timeout;
-	uint8_t backlight_status;
-	int16_t repeats;
-} sButton;
-
-
-void buttons_pooling_fn(void)
+void buttons_pooling_fn(enum sys_message msg)
 {
 	/* Detect continuous button high states */
 	if (BUTTON_STAR_IS_PRESSED) {
-		sButton.star_timeout++;
+		star_timeout++;
 
 		/* Check if button was held low for some seconds */
-		if (sButton.star_timeout > LEFT_BUTTON_LONG_TIME) {
-			button.flag.star_long = 1;
-			sButton.star_timeout = 0;
+		if (star_timeout > LEFT_BUTTON_LONG_TIME) {
+			ports_buttons.flag.star_long = 1;
+			star_timeout = 0;
 		}
 	} else {
-		sButton.star_timeout = 0;
+		star_timeout = 0;
 	}
 
 	if (BUTTON_NUM_IS_PRESSED) {
-		sButton.num_timeout++;
+		num_timeout++;
 
 		/* Check if button was held low for some seconds */
-		if (sButton.num_timeout > LEFT_BUTTON_LONG_TIME) {
-			button.flag.num_long = 1;
-			sButton.num_timeout = 0;
+		if (num_timeout > LEFT_BUTTON_LONG_TIME) {
+			ports_buttons.flag.num_long = 1;
+			num_timeout = 0;
 		}
 	} else {
-		sButton.num_timeout = 0;
+		num_timeout = 0;
 	}
 }
 
@@ -106,7 +99,7 @@ void init_buttons(void)
 	BUTTONS_IE |= ALL_BUTTONS;
 
 	/* register on 1Hz timer */
-	cblist_register(&timer0_1hz_queue, &buttons_pooling_fn);
+	sys_messagebus_register(&buttons_pooling_fn, SYS_MSG_TIMER_1HZ);
 }
 
 /*
@@ -122,7 +115,7 @@ void PORT2_ISR(void)
 	uint8_t buzzer = 0;
 
 	/* Clear button flags */
-	button.all_flags = 0;
+	ports_buttons.all_flags = 0;
 
 	/* Remember interrupt enable bits */
 	int_enable = BUTTONS_IE;
@@ -146,7 +139,7 @@ void PORT2_ISR(void)
 
 		/* Filter bouncing noise */
 		if (BUTTON_STAR_IS_PRESSED) {
-			button.flag.star = 1;
+			ports_buttons.flag.star = 1;
 
 			/* Generate button click */
 			buzzer = 1;
@@ -156,7 +149,7 @@ void PORT2_ISR(void)
 
 		/* Filter bouncing noise */
 		if (BUTTON_NUM_IS_PRESSED) {
-			button.flag.num = 1;
+			ports_buttons.flag.num = 1;
 
 			/* Generate button click */
 			buzzer = 1;
@@ -166,7 +159,7 @@ void PORT2_ISR(void)
 
 		/* Filter bouncing noise */
 		if (BUTTON_UP_IS_PRESSED) {
-			button.flag.up = 1;
+			ports_buttons.flag.up = 1;
 
 			/* Generate button click */
 			buzzer = 1;
@@ -176,7 +169,7 @@ void PORT2_ISR(void)
 
 		/* Filter bouncing noise */
 		if (BUTTON_DOWN_IS_PRESSED) {
-			button.flag.down = 1;
+			ports_buttons.flag.down = 1;
 
 			/* Generate button click */
 			buzzer = 1;
@@ -186,20 +179,20 @@ void PORT2_ISR(void)
 
 		/* Filter bouncing noise */
 		if (BUTTON_BACKLIGHT_IS_PRESSED) {
-			sButton.backlight_status = 1;
-			sButton.backlight_timeout = 0;
+			backlight_status = 1;
+			backlight_timeout = 0;
 			P2OUT |= BUTTON_BACKLIGHT_PIN;
 			P2DIR |= BUTTON_BACKLIGHT_PIN;
-			button.flag.backlight = 1;
+			ports_buttons.flag.backlight = 1;
 		}
 	}
 
 	/* Trying to lock/unlock buttons? */
-	if ((button.flag.num && button.flag.down)
-	  || (button.flag.star && button.flag.up)) {
+	if ((ports_buttons.flag.num && ports_buttons.flag.down)
+	  || (ports_buttons.flag.star && ports_buttons.flag.up)) {
 		/* No buzzer output */
 		buzzer = 0;
-		button.all_flags = 0;
+		ports_buttons.all_flags = 0;
 	}
 
 	/* Generate button click when button was activated */
@@ -224,16 +217,16 @@ void PORT2_ISR(void)
 	}
 
 	/* Safe long button event detection */
-	if (button.flag.star || button.flag.num) {
+	if (ports_buttons.flag.star || ports_buttons.flag.num) {
 		/* Additional debounce delay to enable safe high detection */
 		timer0_delay(BUTTONS_DEBOUNCE_TIME_LEFT);
 
 		/* Check if this button event is short enough */
 		if (BUTTON_STAR_IS_PRESSED)
-			button.flag.star = 0;
+			ports_buttons.flag.star = 0;
 
 		if (BUTTON_NUM_IS_PRESSED)
-			button.flag.num = 0;
+			ports_buttons.flag.num = 0;
 	}
 
 	/* Reenable PORT2 IRQ */
@@ -242,8 +235,8 @@ void PORT2_ISR(void)
 	BUTTONS_IE  = int_enable;
 	__enable_interrupt();
 
-	/* Exit from LPM3/LPM4 on RETI */
-	__bic_SR_register_on_exit(LPM4_bits);
+	/* Exit from LPM3 on RETI */
+	_BIC_SR_IRQ(LPM3_bits);
 }
 
 

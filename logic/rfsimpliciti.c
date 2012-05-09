@@ -620,7 +620,7 @@ void start_simpliciti_sync(void)
 	// Clear last button events
 	//Timer0_A4_Delay(CONV_MS_TO_TICKS(BUTTONS_DEBOUNCE_TIME_OUT));
 	BUTTONS_IFG = 0x00;
-	button.all_flags = 0;
+	//button.all_flags = 0;
 
 	// Clear icons
 	display_symbol(LCD_ICON_BEEPER1, SEG_OFF | BLINK_OFF);

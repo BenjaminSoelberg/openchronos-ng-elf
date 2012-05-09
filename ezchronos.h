@@ -1,21 +1,3 @@
-/*
-    Copyright (C) 2012 Angelo Arrifano <miknix@gmail.com>
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
-
 #ifndef __EZCHRONOS_H__
 #define __EZCHRONOS_H__
 
@@ -48,13 +30,31 @@ typedef void(* helpers_loop_fn_t)(uint8_t *, uint8_t, uint8_t);
 void helpers_loop_up(uint8_t *value, uint8_t lower, uint8_t upper);
 void helpers_loop_down(uint8_t *value, uint8_t lower, uint8_t upper);
 
-/* callback list functionality */
-struct cblist {
-	void *fn;
-	struct cblist *next;
+/* system message bus */
+/* WARNING: the enum values are optimized to work with some drivers.
+	If you need to add a new entry, append it to the end! */
+enum sys_message {
+	/* drivers/rtca */
+	SYS_MSG_RTC_ALARM		= 0x001,
+	SYS_MSG_RTC_MINUTE	= 0x002,
+	SYS_MSG_RTC_HOUR		= 0x004,
+	SYS_MSG_RTC_DAY		= 0x008,
+	SYS_MSG_RTC_MONTH		= 0x010,
+	SYS_MSG_RTC_YEAR		= 0x020,
+	/* drivers/timer */
+	SYS_MSG_TIMER_1HZ		= 0x040,
+	SYS_MSG_TIMER_10HZ	= 0x080,
+	SYS_MSG_TIMER_PROG	= 0x100,
 };
 
-void cblist_register(struct cblist **queue, void *callback);
-void cblist_unregister(struct cblist **queue, void *callback);
+struct sys_messagebus {
+	void (*fn)(enum sys_message);
+	enum sys_message listens;
+	struct sys_messagebus *next;
+};
+
+void sys_messagebus_register(void (*callback)(enum sys_message),
+                             enum sys_message listens);
+void sys_messagebus_unregister(void (*callback)(enum sys_message));
 
 #endif /* __EZCHRONOS_H__ */

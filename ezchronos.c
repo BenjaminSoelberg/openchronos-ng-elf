@@ -1,10 +1,7 @@
 /*
-    Copyright (C) 2011 Angelo Arrifano <miknix@gmail.com>
-      - Improve message display API, with timeout feature.
-      - Merged with menu.c;
-      - Full modularization of menu code;
-      - Integration with build system.
-      - New display system.
+    ezchronos.c: Openchronos main loop & user interface
+	 
+	 Copyright (C) 2012 Angelo Arrifano <miknix@gmail.com>
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -152,6 +149,8 @@ static struct {
 	void (* complete_fn)(void);
 } menu_editmode;
 
+/* the message bus */
+static struct sys_messagebus *messagebus;
 
 // *************************************************************************************************
 // Extern section
@@ -166,12 +165,202 @@ extern uint8_t ps_write_register(uint8_t address, uint8_t data);
 // rf hardware address
 static const addr_t   sMyROMAddress = {THIS_DEVICE_ADDRESS};
 
-// *************************************************************************************************
-// @fn          main
-// @brief       Main routine
-// @param       none
-// @return      none
-// *************************************************************************************************
+
+/***************************************************************************
+ ************************* THE SYSTEM MESSAGE BUS **************************
+ **************************************************************************/
+void sys_messagebus_register(void (*callback)(enum sys_message),
+                             enum sys_message listens)
+{
+	struct sys_messagebus **p = &messagebus;
+
+	while (*p) {
+		p = &(*p)->next;
+	}
+
+	*p = malloc(sizeof(struct sys_messagebus));
+	(*p)->next = NULL;
+	(*p)->fn = callback;
+	(*p)->listens = listens;
+}
+
+void sys_messagebus_unregister(void (*callback)(enum sys_message))
+{
+	struct sys_messagebus *p = messagebus, *pp = NULL;
+
+	while (p) {
+		if (p->fn == callback) {
+			if (!pp)
+				messagebus = p->next;
+			else
+				pp->next = p->next;
+
+			free(p);
+		}
+
+		pp = p;
+		p = p->next;
+	}
+}
+
+void check_events(void)
+{
+	enum sys_message msg = 0;
+
+	/* drivers/rtca */
+	if (rtca_last_event) {
+		msg |= rtca_last_event;
+		rtca_last_event = 0;
+	}
+
+	/* drivers/timer */
+	if (timer0_last_event) {
+		msg |= timer0_last_event << 6;
+		timer0_last_event = 0;
+	}
+
+	{
+		struct sys_messagebus *p = messagebus;
+
+		while (p) {
+			/* notify listener if he registered for any of these messages */
+			if (msg & p->listens) {
+				p->fn(msg);
+			}
+
+			/* move to next */
+			p = p->next;
+		}
+	}
+}
+
+/***************************************************************************
+ ************************ USER INPUT / MAIN MENU ***************************
+ **************************************************************************/
+
+void check_buttons(void)
+{
+	/* Are we in edit mode? */
+	if (menu_editmode.enabled) {
+		/* STAR button exits edit mode */
+		if (ports_buttons.flag.star) {
+			ports_buttons.flag.star = 0;
+			menu_editmode.complete_fn();
+			menu_editmode.enabled = 0;
+
+		} else if (ports_buttons.flag.num) {
+			ports_buttons.flag.num = 0;
+			menu_editmode.next_item_fn();
+
+		} else if (ports_buttons.flag.up) {
+			ports_buttons.flag.up = 0;
+			menu_editmode.value_fn(1);
+
+		} else if (ports_buttons.flag.down) {
+			ports_buttons.flag.down = 0;
+			menu_editmode.value_fn(-1);
+		}
+	} else { /* not in edit mode */	
+		if (ports_buttons.flag.star_long) {
+			ports_buttons.flag.star_long = 0;
+			if (menu_item->lstar_btn_fn)
+				menu_item->lstar_btn_fn();
+
+		} else if (ports_buttons.flag.star) {
+			ports_buttons.flag.star = 0;
+			menu_item_next();
+
+		} else if (ports_buttons.flag.num_long) {
+			ports_buttons.flag.num_long = 0;
+			if (menu_item->lnum_btn_fn)
+				menu_item->lnum_btn_fn();
+
+		} else if (ports_buttons.flag.num) {
+			ports_buttons.flag.num = 0;
+			if (menu_item->num_btn_fn)
+				menu_item->num_btn_fn();
+		
+		} else if (ports_buttons.flag.up) {
+			ports_buttons.flag.up = 0;
+			if (menu_item->up_btn_fn)
+				menu_item->up_btn_fn();
+
+		} else if (ports_buttons.flag.down) {
+			ports_buttons.flag.down = 0;
+			if (menu_item->down_btn_fn)
+				menu_item->down_btn_fn();
+		}
+	}
+}
+
+void menu_add_entry(void (*up_btn_fn)(void),
+		    void (*down_btn_fn)(void),
+		    void (*num_btn_fn)(void),
+		    void (*lstar_btn_fn)(void),
+			 void (*lnum_btn_fn)(void),
+		    void (*activate_fn)(void),
+		    void (*deactivate_fn)(void))
+{
+	struct menu **menu_hd = &menu_head;
+	struct menu *menu_p;
+
+	if (! *menu_hd) {
+		/* Head is empty, create new menu item linked to itself */
+		menu_p = (struct menu *) malloc(sizeof(struct menu));
+		menu_p->next = menu_p;
+		*menu_hd = menu_p;
+		
+		/* There wasnt any menu active, so we activate this one */
+		menu_item = menu_p;
+		activate_fn();
+	} else {
+		/* insert new item after the head */
+		menu_p = (struct menu *) malloc(sizeof(struct menu));
+		menu_p->next = (*menu_hd)->next;
+		(*menu_hd)->next = menu_p;
+	}
+	
+	menu_p->up_btn_fn = up_btn_fn;
+	menu_p->down_btn_fn = down_btn_fn;
+	menu_p->num_btn_fn = num_btn_fn;
+	menu_p->lstar_btn_fn = lstar_btn_fn;
+	menu_p->lnum_btn_fn = lnum_btn_fn;
+	menu_p->activate_fn = activate_fn;
+	menu_p->deactivate_fn = deactivate_fn;
+}
+
+void menu_item_next(void)
+{
+	if (! menu_item)
+		return;
+
+	/* deactivate current menu item, and activate next one */
+	if (menu_item->deactivate_fn)
+		menu_item->deactivate_fn();
+	menu_item = menu_item->next;
+	if (menu_item->activate_fn)
+		menu_item->activate_fn();
+}
+
+
+void menu_editmode_start(void (* value_fn)(int8_t),
+			 void (* next_item_fn)(void),
+			 void (* complete_fn)(void))
+{
+	menu_editmode.value_fn = value_fn;
+	menu_editmode.next_item_fn = next_item_fn;
+	menu_editmode.complete_fn = complete_fn;
+
+	menu_editmode.enabled = 1;
+
+	/* now call next_item to give control back to the module */
+	next_item_fn();
+}
+
+
+/***************************************************************************
+ ************************ ENTRYPOINT AND MAIN LOOP *************************
+ **************************************************************************/
 int main(void)
 {
 	// Init MCU
@@ -193,14 +382,14 @@ int main(void)
 
 	// Main control loop: wait in low power mode until some event needs to be processed
 	while (1) {
-		// When idle go to LPM3
+		/* wait for interrupts on LPM3 */
 		idle_loop();
 
-		// Process wake-up events
-		if (button.all_flags || sys.all_flags) wakeup_event();
+		/* check if any driver has events pending */
+		check_events();
 
-		// Process actions requested by logic modules
-		if (request.all_flags) process_requests();
+		/* check for button presses, drive the menu */
+		check_buttons();
 	}
 }
 
@@ -350,7 +539,6 @@ void init_application(void)
 void init_global_variables(void)
 {
 	// Init system flags
-	button.all_flags 	= 0;
 	sys.all_flags 		= 0;
 	request.all_flags 	= 0;
 
@@ -381,88 +569,6 @@ void init_global_variables(void)
 
 	// Reset temperature measurement
 	reset_temp_measurement();
-}
-
-
-// *************************************************************************************************
-// @fn          wakeup_event
-// @brief       Process external / internal wakeup events.
-// @param       none
-// @return      none
-// *************************************************************************************************
-void wakeup_event(void)
-{
-	// Enable idle timeout
-	sys.flag.idle_timeout_enabled = 1;
-
-	/* Are we in edit mode? */
-	if (menu_editmode.enabled) {
-		/* STAR button exits edit mode */
-		if (button.flag.star) {
-			button.flag.star = 0;
-			menu_editmode.complete_fn();
-			menu_editmode.enabled = 0;
-
-		} else if (button.flag.num) {
-			button.flag.num = 0;
-			menu_editmode.next_item_fn();
-
-		} else if (button.flag.up) {
-			button.flag.up = 0;
-			menu_editmode.value_fn(1);
-
-		} else if (button.flag.down) {
-			button.flag.down = 0;
-			menu_editmode.value_fn(-1);
-		}
-	} else {
-		if (button.flag.star_long) {
-			button.flag.star_long = 0;
-			if (menu_item->lstar_btn_fn)
-				menu_item->lstar_btn_fn();
-
-		} else if (button.flag.star) {
-			button.flag.star = 0;
-			menu_item_next();
-
-		} else if (button.flag.num_long) {
-			button.flag.num_long = 0;
-			if (menu_item->lnum_btn_fn)
-				menu_item->lnum_btn_fn();
-
-		} else if (button.flag.num) {
-			button.flag.num = 0;
-			if (menu_item->num_btn_fn)
-				menu_item->num_btn_fn();
-		
-		} else if (button.flag.up) {
-			button.flag.up = 0;
-			if (menu_item->up_btn_fn)
-				menu_item->up_btn_fn();
-
-		} else if (button.flag.down) {
-			button.flag.down = 0;
-			if (menu_item->down_btn_fn)
-				menu_item->down_btn_fn();
-		}
-	}
-
-	// Process internal events
-	/* TODO: What is this?? Maybe we can remove it ? */
-	if (sys.all_flags) {
-		// Idle timeout ---------------------------------------------------------------------
-		if (sys.flag.idle_timeout) {
-			// Clear timeout flag
-			sys.flag.idle_timeout = 0;
-
-			// Clear display
-			display_clear(1);
-			display_clear(2);
-		}
-	}
-
-	// Disable idle timeout
-	sys.flag.idle_timeout_enabled = 0;
 }
 
 
@@ -727,69 +833,6 @@ void read_calibration_values(void)
 	}
 }
 
-void menu_add_entry(void (*up_btn_fn)(void),
-		    void (*down_btn_fn)(void),
-		    void (*num_btn_fn)(void),
-		    void (*lstar_btn_fn)(void),
-			 void (*lnum_btn_fn)(void),
-		    void (*activate_fn)(void),
-		    void (*deactivate_fn)(void))
-{
-	struct menu **menu_hd = &menu_head;
-	struct menu *menu_p;
-
-	if (! *menu_hd) {
-		/* Head is empty, create new menu item linked to itself */
-		menu_p = (struct menu *) malloc(sizeof(struct menu));
-		menu_p->next = menu_p;
-		*menu_hd = menu_p;
-		
-		/* There wasnt any menu active, so we activate this one */
-		menu_item = menu_p;
-		activate_fn();
-	} else {
-		/* insert new item after the head */
-		menu_p = (struct menu *) malloc(sizeof(struct menu));
-		menu_p->next = (*menu_hd)->next;
-		(*menu_hd)->next = menu_p;
-	}
-	
-	menu_p->up_btn_fn = up_btn_fn;
-	menu_p->down_btn_fn = down_btn_fn;
-	menu_p->num_btn_fn = num_btn_fn;
-	menu_p->lstar_btn_fn = lstar_btn_fn;
-	menu_p->lnum_btn_fn = lnum_btn_fn;
-	menu_p->activate_fn = activate_fn;
-	menu_p->deactivate_fn = deactivate_fn;
-}
-
-void menu_item_next(void)
-{
-	if (! menu_item)
-		return;
-
-	/* deactivate current menu item, and activate next one */
-	if (menu_item->deactivate_fn)
-		menu_item->deactivate_fn();
-	menu_item = menu_item->next;
-	if (menu_item->activate_fn)
-		menu_item->activate_fn();
-}
-
-
-void menu_editmode_start(void (* value_fn)(int8_t),
-			 void (* next_item_fn)(void),
-			 void (* complete_fn)(void))
-{
-	menu_editmode.value_fn = value_fn;
-	menu_editmode.next_item_fn = next_item_fn;
-	menu_editmode.complete_fn = complete_fn;
-
-	menu_editmode.enabled = 1;
-
-	/* now call next_item to give control back to the module */
-	next_item_fn();
-}
 
 /* Here be helpers */
 void helpers_loop_up(uint8_t *value, uint8_t lower, uint8_t upper)
@@ -818,36 +861,4 @@ void helpers_loop_down(uint8_t *value, uint8_t lower, uint8_t upper)
 		*value = upper;
 }
 
-/* callback list helpers */
-void cblist_register(struct cblist **queue, void *callback)
-{
-	struct cblist **p = queue;
-
-	while (*p) {
-		p = &(*p)->next;
-	}
-
-	*p = malloc(sizeof(struct cblist));
-	(*p)->next = NULL;
-	(*p)->fn = callback;
-}
-
-void cblist_unregister(struct cblist **queue, void *callback)
-{
-	struct cblist *p = *queue, *pp = NULL;
-
-	while (p) {
-		if (p->fn == callback) {
-			if (!pp)
-				*queue = p->next;
-			else
-				pp->next = p->next;
-
-			free(p);
-		}
-
-		pp = p;
-		p = p->next;
-	}
-}
 
