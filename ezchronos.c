@@ -56,7 +56,7 @@
 // *************************************************************************************************
 // Include section
 
-#include <ezchronos.h>
+#include "ezchronos.h"
 
 #include "modinit.h"
 
@@ -71,49 +71,6 @@
 #include "pmm.h"
 #include "rf1a.h"
 #include "rtca.h"
-
-/* Simpliciti */
-#include "mrfi.h"
-#include "nwk_types.h"
-#include <simpliciti.h>
-
-/* Logic??? TODO: Try to remove remaining */
-#include <temperature.h>
-#include <rfsimpliciti.h>
-
-/* System */
-#include <stdlib.h>
-#include <string.h>
-
-// *************************************************************************************************
-// Prototypes section
-void init_application(void);
-void init_global_variables(void);
-void wakeup_event(void);
-void process_requests(void);
-void idle_loop(void);
-void configure_ports(void);
-void read_calibration_values(void);
-
-// *************************************************************************************************
-// Defines section
-
-// Number of calibration data bytes in INFOA memory
-#define CALIBRATION_DATA_LENGTH		(13u)
-
-
-// *************************************************************************************************
-// Global Variable section
-
-// Variable holding system internal flags
-volatile s_system_flags sys;
-
-// Variable holding flags set by logic modules
-volatile s_request_flags request;
-
-// Global radio frequency offset taken from calibration memory
-// Compensates crystal deviation from 26MHz nominal value
-uint8_t rf_frequoffset;
 
 /* Menu definitions and declarations */
 struct menu {
@@ -151,20 +108,6 @@ static struct {
 
 /* the message bus */
 static struct sys_messagebus *messagebus;
-
-// *************************************************************************************************
-// Extern section
-#ifdef CONFIG_ALTI_ACCUMULATOR
-extern uint8_t alt_accum_enable;	// used by altitude accumulator function
-#endif
-extern void start_simpliciti_sync(void);
-
-extern uint16_t ps_read_register(uint8_t address, uint8_t mode);
-extern uint8_t ps_write_register(uint8_t address, uint8_t data);
-
-// rf hardware address
-static const addr_t   sMyROMAddress = {THIS_DEVICE_ADDRESS};
-
 
 /***************************************************************************
  ************************* THE SYSTEM MESSAGE BUS **************************
@@ -357,49 +300,10 @@ void menu_editmode_start(void (* value_fn)(int8_t),
 	next_item_fn();
 }
 
-
 /***************************************************************************
- ************************ ENTRYPOINT AND MAIN LOOP *************************
+ ************************ INITIALIZATION ROUTINE ***************************
  **************************************************************************/
-int main(void)
-{
-	// Init MCU
-	init_application();
 
-	// Assign initial value to global variables
-	init_global_variables();
-
-#ifdef CONFIG_TEST
-	// Branch to welcome screen
-	test_mode();
-#else
-	/* clear whole scren */
-	display_clear(0);
-#endif
-
-	/* Init modules */
-	mod_init();
-
-	// Main control loop: wait in low power mode until some event needs to be processed
-	while (1) {
-		/* wait for interrupts on LPM3 */
-		idle_loop();
-
-		/* check if any driver has events pending */
-		check_events();
-
-		/* check for button presses, drive the menu */
-		check_buttons();
-	}
-}
-
-
-// *************************************************************************************************
-// @fn          init_application
-// @brief       Initialize the microcontroller.
-// @param       none
-// @return      none
-// *************************************************************************************************
 void init_application(void)
 {
 	volatile unsigned char *ptr;
@@ -527,314 +431,61 @@ void init_application(void)
 	// ---------------------------------------------------------------------
 	// Init pressure sensor
 	ps_init();
-}
 
-
-// *************************************************************************************************
-// @fn          init_global_variables
-// @brief       Initialize global variables.
-// @param       none
-// @return      none
-// *************************************************************************************************
-void init_global_variables(void)
-{
-	// Init system flags
-	sys.all_flags 		= 0;
-	request.all_flags 	= 0;
-
-#ifndef ISM_US
-	// Use metric units when displaying values
-	sys.flag.use_metric_units = 1;
-#else
-#ifdef CONFIG_METRIC_ONLY
-	sys.flag.use_metric_units = 1;
-#endif
-#endif
-
-	// Read calibration values from info memory
-	read_calibration_values();
-	#ifdef CONFIG_INFOMEM
-
+#ifdef CONFIG_INFOMEM
 	if (infomem_ready() == -2) {
 		infomem_init(INFOMEM_C, INFOMEM_C + 2 * INFOMEM_SEGMENT_SIZE);
 	}
-
 #endif
 
 	// Set buzzer to default value
 	reset_buzzer();
-
-	// Reset SimpliciTI stack
-	reset_rf();
-
-	// Reset temperature measurement
-	reset_temp_measurement();
 }
 
 
-// *************************************************************************************************
-// @fn          process_requests
-// @brief       Process requested actions outside ISR context.
-// @param       none
-// @return      none
-// *************************************************************************************************
-void process_requests(void)
+/***************************************************************************
+ ************************ ENTRYPOINT AND MAIN LOOP *************************
+ **************************************************************************/
+int main(void)
 {
-	// Do temperature measurement
-	if (request.flag.temperature_measurement) temperature_measurement(FILTER_ON);
+	// Init MCU
+	init_application();	
 
-	// Do pressure measurement
-#ifdef CONFIG_ALTITUDE
-
-	if (request.flag.altitude_measurement) do_altitude_measurement(FILTER_ON);
-
-#endif
-#ifdef CONFIG_ALTI_ACCUMULATOR
-
-	if (request.flag.altitude_accumulator) altitude_accumulator_periodic();
-
+#ifdef CONFIG_TEST
+	// Branch to welcome screen
+	test_mode();
+#else
+	/* clear whole scren */
+	display_clear(0);
 #endif
 
-#ifdef FEATURE_PROVIDE_ACCEL
+	/* Init modules */
+	mod_init();
 
-	// Do acceleration measurement
-	if (request.flag.acceleration_measurement) do_acceleration_measurement();
+	/* main loop */
+	while (1) {
+		/* Go to LPM3, wait for interrupts */
+		_BIS_SR(LPM3_bits + GIE);
+		__no_operation();
 
-#endif
+		/* service watchdog on wakeup */
+		#ifdef USE_WATCHDOG
+			// Service watchdog (reset counter)
+			WDTCTL = (WDTCTL & 0xff) | WDTPW | WDTCNTCL;
+		#endif
 
-#ifdef CONFIG_BATTERY
+		/* check if any driver has events pending */
+		check_events();
 
-	// Do voltage measurement
-	if (request.flag.voltage_measurement) battery_measurement();
-
-#endif
-
-#ifdef CONFIG_ALARM
-
-	// Generate alarm (two signals every second)
-	if (request.flag.alarm_buzzer) start_buzzer(2, BUZZER_ON_TICKS, BUZZER_OFF_TICKS);
-
-#endif
-
-#ifdef CONFIG_EGGTIMER
-
-	// Generate alarm (two signals every second)
-	if (request.flag.eggtimer_buzzer) start_buzzer(2, BUZZER_ON_TICKS, BUZZER_OFF_TICKS);
-
-#endif
-
-
-#ifdef CONFIG_STRENGTH
-
-	if (request.flag.strength_buzzer && strength_data.num_beeps != 0) {
-		start_buzzer(strength_data.num_beeps,
-			     STRENGTH_BUZZER_ON_TICKS,
-			     STRENGTH_BUZZER_OFF_TICKS);
-		strength_data.num_beeps = 0;
-	}
-
-#endif
-
-	// Reset request flag
-	request.all_flags = 0;
-}
-
-
-// *************************************************************************************************
-// @fn          to_lpm
-// @brief       Go to LPM0/3.
-// @param       none
-// @return      none
-// *************************************************************************************************
-void to_lpm(void)
-{
-	// Go to LPM3
-	_BIS_SR(LPM3_bits + GIE);
-	__no_operation();
-}
-
-
-// *************************************************************************************************
-// @fn          idle_loop
-// @brief       Go to LPM. Service watchdog timer when waking up.
-// @param       none
-// @return      none
-// *************************************************************************************************
-void idle_loop(void)
-{
-#ifdef CONFIG_CW_TIME
-	// what I'd like to do here is set a morsepos variable
-	// if non-zero it is how many digits we have left to go
-	// on sending the time.
-	// we also would have a morse var that would only get set
-	// the first send and reset when not in view so we'd only
-	// send the time once
-
-#define CW_DIT_LEN CONV_MS_TO_TICKS(50)    // basic element size (100mS)
-
-	static int morse = 0;     // should send morse == 1
-	static int morsepos = 0; // position in morse time (10 hour =1, hour=2, etc.)
-	static uint8_t morsehr; // cached hour for morse code
-	static uint8_t morsemin;  // cached minute for morse code
-	static uint8_t morsesec;
-	static int morsedig = -1; // current digit
-	static int morseel; // current element in digit (always 5 elements max)
-	static unsigned int morseinitdelay; // start up delay
-
-	// We only send the time in morse code if the seconds display is active, and then only
-	// once per activation
-
-	if (sTime.line1ViewStyle == DISPLAY_ALTERNATIVE_VIEW) {
-		if (!morse) { // this means its the first time (we reset this to zero in the else)
-
-			morse = 1; // mark that we are sending
-			morsepos = 1; // initialize pointer
-
-			rtca_get_time(&morsehr, &morsemin, &morsesec);
-
-			morsedig = -1; // not currently sending digit
-			morseinitdelay = 45000; // delay for a bit before starting so the key beep can quiet down
-
-		}
-
-		if (morseinitdelay) { // this handles the initial delay
-			morseinitdelay--;
-			return;  // do not sleep yet or no event will get scheduled and we'll hang for a very long time
-		}
-
-		if (!is_buzzer() && morsedig == -1) { // if not sending anything
-
-			morseel = 0;                   // start a new character
-
-			switch (morsepos++) {          // get the right digit
-			case 1:
-				morsedig = morsehr / 10;
-				break;
-
-			case 2:
-				morsedig = morsehr % 10;
-				break;
-
-			case 3:
-				morsedig = morsemin / 10;
-				break;
-
-			case 4:
-				morsedig = morsemin % 10;
-				break;
-
-			default:
-				morsepos = 5; // done for now
-			}
-
-			if (morsedig == 0)
-				morsedig = 10; // treat zero as 10 for code algorithm
-		}
-
-		// now we have a digit and we need to send element
-		if (!is_buzzer() && morsedig != -1) {
-
-			int digit = morsedig;
-			// assume we are sending dit for 1-5 or dah for 6-10 (zero is 10)
-			int ditdah = (morsedig > 5) ? 1 : 0;
-			int dit = CW_DIT_LEN;
-
-			if (digit >= 6)
-				digit -= 5; // fold digits 6-10 to 1-5
-
-			if (digit >= ++morseel)
-				ditdah = ditdah ? 0 : 1; // flip dits and dahs at the right point
-
-			// send the code
-			start_buzzer(1, ditdah ? dit : (3 * dit), (morseel >= 5) ? 10 * dit : dit);
-
-			// all digits have 5 elements
-			if (morseel == 5)
-				morsedig = -1;
-
-		}
-
-	} else {
-		morse = 0; // no morse code right now
-	}
-
-#endif
-	// To low power mode
-	to_lpm();
-
-#ifdef USE_WATCHDOG
-	// Service watchdog (reset counter)
-	WDTCTL = (WDTCTL & 0xff) | WDTPW | WDTCNTCL;
-#endif
-}
-
-
-// *************************************************************************************************
-// @fn          read_calibration_values
-// @brief       Read calibration values for temperature measurement, voltage measurement
-//				and radio from INFO memory.
-// @param       none
-// @return      none
-// *************************************************************************************************
-void read_calibration_values(void)
-{
-	uint8_t cal_data[CALIBRATION_DATA_LENGTH];		// Temporary storage for constants
-	uint8_t i;
-	uint8_t *flash_mem;         					// Memory pointer
-
-	// Read calibration data from Info D memory
-	flash_mem = (uint8_t *)0x1800;
-
-	for (i = 0; i < CALIBRATION_DATA_LENGTH; i++) {
-		cal_data[i] = *flash_mem++;
-	}
-
-	if (cal_data[0] == 0xFF) {
-		// If no values are available (i.e. INFO D memory has been erased by user), assign experimentally derived values
-		rf_frequoffset	= 4;
-		sTemp.offset 	= -250;
-#ifdef CONFIG_BATTERY
-		sBatt.offset 	= -10;
-#endif
-		simpliciti_ed_address[0] = sMyROMAddress.addr[0];
-		simpliciti_ed_address[1] = sMyROMAddress.addr[1];
-		simpliciti_ed_address[2] = sMyROMAddress.addr[2];
-		simpliciti_ed_address[3] = sMyROMAddress.addr[3];
-#ifdef CONFIG_ALTITUDE
-		sAlt.altitude_offset	 = 0;
-#endif
-	} else {
-		// Assign calibration data to global variables
-		rf_frequoffset	= cal_data[1];
-
-		// Range check for calibrated FREQEST value (-20 .. + 20 is ok, else use default value)
-		if ((rf_frequoffset > 20) && (rf_frequoffset < (256 - 20))) {
-			rf_frequoffset = 0;
-		}
-
-		sTemp.offset 	= (int16_t)((cal_data[2] << 8) + cal_data[3]);
-#ifdef CONFIG_BATTERY
-		sBatt.offset 	= (int16_t)((cal_data[4] << 8) + cal_data[5]);
-#endif
-		simpliciti_ed_address[0] = cal_data[6];
-		simpliciti_ed_address[1] = cal_data[7];
-		simpliciti_ed_address[2] = cal_data[8];
-		simpliciti_ed_address[3] = cal_data[9];
-		// S/W version byte set during calibration?
-#ifdef CONFIG_ALTITUDE
-
-		if (cal_data[12] != 0xFF) {
-			sAlt.altitude_offset = (int16_t)((cal_data[10] << 8) + cal_data[11]);;
-		} else {
-			sAlt.altitude_offset = 0;
-		}
-
-#endif
+		/* check for button presses, drive the menu */
+		check_buttons();
 	}
 }
 
 
-/* Here be helpers */
+/***************************************************************************
+ **************************** HERE BE HELPERS ******************************
+ **************************************************************************/
 void helpers_loop_up(uint8_t *value, uint8_t lower, uint8_t upper)
 {
 	/* prevent overflow */

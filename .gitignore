@@ -6,7 +6,7 @@ ezchronos.elf
 *.*~
 *.s
 *.swp
-include/config.h
+config.h
 .pida-metadata
 TAGS
 doc/*.html

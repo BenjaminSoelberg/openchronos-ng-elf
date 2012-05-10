@@ -1,9 +1,4 @@
-SUBDIRS = drivers modules logic \
-simpliciti/Applications/application/End_Device \
-simpliciti/Components/nwk \
-simpliciti/Components/bsp \
-simpliciti/Components/nwk_applications \
-simpliciti/Components/mrfi
+SUBDIRS = drivers modules
 
 include Common.mk
 
@@ -14,7 +9,7 @@ PYTHON := $(shell which python2 || which python)
 .PHONY: install
 .PHONY: config
 
-all: include/config.h ezchronos.txt
+all: config.h ezchronos.txt
 
 #
 # Build list of archives to be built in
@@ -57,7 +52,7 @@ modinit.o: modinit.c
 modinit.c:
 	@echo "Please do a 'make config' first!" && false
 
-include/config.h:
+config.h:
 	@echo "Please do a 'make config' first!" && false
 
 config:

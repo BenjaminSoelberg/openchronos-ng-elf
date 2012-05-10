@@ -34,17 +34,11 @@
 // *************************************************************************************************
 
 // system
-#include "project.h"
 #include <ezchronos.h>
 
 // driver
 #include "display.h"
 #include "ports.h"
-
-// logic
-#include "battery.h"
-#include "rfsimpliciti.h"
-
 
 // Entry point of of the Flash Updater in BSL memory
 #define CALL_RFSBL()   ((void (*)())0x1000)()
@@ -57,10 +51,11 @@
 // *************************************************************************************************
 static void long_num_press()
 {
-	if (sys.flag.low_battery) return;
+	/* TODO: we need to reimplement this */
+	//if (sys.flag.low_battery) return;
 
 	// Exit if SimpliciTI stack is active
-	if (is_rf()) return;
+	/*if (is_rf()) return;*/
 
 	// Write RAM to indicate we will be downloading the RAM Updater first
 	display_chars(LCD_SEG_L1_3_0, (uint8_t *)" RAM", SEG_ON);

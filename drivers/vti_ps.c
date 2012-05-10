@@ -40,7 +40,7 @@
 // Include section
 
 // system
-#include "project.h"
+#include <ezchronos.h>
 
 // driver
 #include "vti_ps.h"
@@ -567,11 +567,11 @@ void update_pressure_table(int16_t href, uint32_t p_meas, uint16_t t_meas)
 	pLast = (int16_t)((p_meas + 2) >> 2);
 
 	// Convert reference altitude to normalized units:
-	if (sys.flag.use_metric_units) { // user_altitude in m
+	/*if (sys.flag.use_metric_units) { // user_altitude in m
 		hLast = 4 * href - mult_scale16(href, 7536);
 	} else { // user_altitude in ft
 		hLast = href + mult_scale16(href, 12068);
-	}
+	}*/
 
 	int32_t f = (int32_t)0x8000 - conv_altitude_to_fraction(hLast);
 	// pRef = p_meas*2^15/f:
@@ -706,12 +706,12 @@ int16_t conv_pa_to_altitude(uint32_t p_meas, uint16_t t_meas)
 	// but even the big initial jump when the altimeter is switched on converges
 	// in some 5 or 6 steps to about 1m accuracy.
 
-	if (sys.flag.use_metric_units) {
+	/*if (sys.flag.use_metric_units) {*/
 		// Altitude in meters (correct within about 0.7m):
 		return mult_scale16(hLast, 16869);
-	} else {
+/*	} else {
 		// Altitude in feet (correct within 1.5ft):
 		return mult_scale15(hLast, 27672);
-	}
+	}*/
 }
 #endif // FIXEDPOINT

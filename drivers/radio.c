@@ -36,14 +36,10 @@
 // *************************************************************************************************
 
 // system
-#include "project.h"
+#include <ezchronos.h>
 
 // driver
 #include "rf1a.h"
-
-// logic
-#include "rfsimpliciti.h"
-
 
 // *************************************************************************************************
 // Extern section
@@ -172,11 +168,11 @@ void radio_ISR(void)
 	uint8_t rf1aivec = RF1AIV;
 
 	// Forward to SimpliciTI interrupt service routine
-	if (is_rf()) {
+	/*if (is_rf()) {
 		MRFI_RadioIsr();
-	} else {
+	} else {*/
 		if (rf1aivec == RF1AIV_NONE) { // RF1A interface interrupt (error etc.)
 			asm("	nop"); // break here
 		}
-	}
+	/*}*/
 }

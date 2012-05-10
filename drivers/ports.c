@@ -195,25 +195,16 @@ void PORT2_ISR(void)
 		ports_buttons.all_flags = 0;
 	}
 
-	/* Generate button click when button was activated */
-	if (buzzer) {
-		if (!sys.flag.up_down_repeat_enabled)
-			start_buzzer(1, CONV_MS_TO_TICKS(20), CONV_MS_TO_TICKS(150));
-
-		/* Debounce delay 2 */
-		timer0_delay(BUTTONS_DEBOUNCE_TIME_OUT);
-	}
-
 	/* Acceleration sensor IRQ */
 	if (IRQ_TRIGGERED(int_flag, AS_INT_PIN)) {
 		/* Get data from sensor */
-		request.flag.acceleration_measurement = 1;
+		/* TODO: we should do something here */
 	}
 
 	/* Pressure sensor IRQ */
 	if (IRQ_TRIGGERED(int_flag, PS_INT_PIN)) {
 		/* Get data from sensor */
-		request.flag.altitude_measurement = 1;
+		/* TODO: we should do something here */
 	}
 
 	/* Safe long button event detection */

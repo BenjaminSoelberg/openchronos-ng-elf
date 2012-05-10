@@ -5,7 +5,7 @@
  */
 
 
-#include "project.h"
+#include <ezchronos.h>
 
 #ifdef CONFIG_INFOMEM
 

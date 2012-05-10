@@ -10,7 +10,7 @@
 #define DSP_H_
 
 // Include section
-#include "project.h"
+#include <ezchronos.h>
 
 // *************************************************************************************************
 // Prototypes section

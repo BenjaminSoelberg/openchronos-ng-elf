@@ -1,9 +1,11 @@
 #ifndef __EZCHRONOS_H__
 #define __EZCHRONOS_H__
 
-#include <project.h>
+#include <msp430.h>
 
 #include <stdlib.h>
+
+#include "config.h"
 
 /* main menu */
 
