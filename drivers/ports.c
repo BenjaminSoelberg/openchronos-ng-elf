@@ -34,7 +34,6 @@
 
 /* drivers */
 #include "ports.h"
-#include "buzzer.h"
 #include "timer.h"
 
 #include "vti_as.h"
@@ -112,7 +111,6 @@ __attribute__((interrupt(PORT2_VECTOR)))
 void PORT2_ISR(void)
 {
 	uint8_t int_flag, int_enable;
-	uint8_t buzzer = 0;
 
 	/* Clear button flags */
 	ports_buttons.all_flags = 0;
@@ -138,42 +136,30 @@ void PORT2_ISR(void)
 		/* STAR button IRQ */
 
 		/* Filter bouncing noise */
-		if (BUTTON_STAR_IS_PRESSED) {
+		if (BUTTON_STAR_IS_PRESSED)
 			ports_buttons.flag.star = 1;
 
-			/* Generate button click */
-			buzzer = 1;
-		}
 	} else if (IRQ_TRIGGERED(int_flag, BUTTON_NUM_PIN)) {
 		/* NUM button IRQ */
 
 		/* Filter bouncing noise */
-		if (BUTTON_NUM_IS_PRESSED) {
+		if (BUTTON_NUM_IS_PRESSED)
 			ports_buttons.flag.num = 1;
 
-			/* Generate button click */
-			buzzer = 1;
-		}
 	} else if (IRQ_TRIGGERED(int_flag, BUTTON_UP_PIN)) {
 		/* UP button IRQ */
 
 		/* Filter bouncing noise */
-		if (BUTTON_UP_IS_PRESSED) {
+		if (BUTTON_UP_IS_PRESSED)
 			ports_buttons.flag.up = 1;
-
-			/* Generate button click */
-			buzzer = 1;
-		}
+	
 	} else if (IRQ_TRIGGERED(int_flag, BUTTON_DOWN_PIN)) {
 		/* DOWN button IRQ */
 
 		/* Filter bouncing noise */
-		if (BUTTON_DOWN_IS_PRESSED) {
+		if (BUTTON_DOWN_IS_PRESSED)
 			ports_buttons.flag.down = 1;
 
-			/* Generate button click */
-			buzzer = 1;
-		}
 	} else if (IRQ_TRIGGERED(int_flag, BUTTON_BACKLIGHT_PIN)) {
 		/* BACKLIGHT button IRQ */
 
@@ -190,8 +176,6 @@ void PORT2_ISR(void)
 	/* Trying to lock/unlock buttons? */
 	if ((ports_buttons.flag.num && ports_buttons.flag.down)
 	  || (ports_buttons.flag.star && ports_buttons.flag.up)) {
-		/* No buzzer output */
-		buzzer = 0;
 		ports_buttons.all_flags = 0;
 	}
 
