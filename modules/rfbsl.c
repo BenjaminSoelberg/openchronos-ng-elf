@@ -37,8 +37,7 @@
 #include <ezchronos.h>
 
 // driver
-#include "display.h"
-#include "ports.h"
+#include <drivers/display.h>
 
 // Entry point of of the Flash Updater in BSL memory
 #define CALL_RFSBL()   ((void (*)())0x1000)()

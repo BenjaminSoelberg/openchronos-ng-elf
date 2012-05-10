@@ -21,8 +21,8 @@
 #include <ezchronos.h>
 
 /* driver */
-#include "rtca.h"
-#include "display.h"
+#include <drivers/rtca.h>
+#include <drivers/display.h>
 
 enum {
 	EDIT_STATE_OFF = 0,

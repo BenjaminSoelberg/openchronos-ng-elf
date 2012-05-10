@@ -20,8 +20,8 @@
 #include "ezchronos.h"
 
 /* driver */
-#include "display.h"
-#include "rtca.h"
+#include <drivers/display.h>
+#include <drivers/rtca.h>
 
 static enum {
 	EDIT_STATE_HH = 0,

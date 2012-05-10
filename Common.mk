@@ -8,8 +8,7 @@ CFLAGS		+= $(CC_CMACH) $(CC_DMACH) -Os -Wall -fomit-frame-pointer
 CFLAGS		+= -fno-force-addr -finline-limit=1 -fno-schedule-insns
 CFLAGS		+= -fshort-enums -ffunction-sections -Wl,-Map=output.map
 LDFLAGS		=
-INCLUDES	+= -I./
-INCLUDES	+= -Igcc/ -Idrivers/
+INCLUDES	+= -I./ -Igcc/
 ### Build tools
 # 
 CC		= msp430-gcc

@@ -61,16 +61,16 @@
 #include "modinit.h"
 
 /* Driver */
-#include "display.h"
-#include "vti_as.h"
-#include "vti_ps.h"
-#include "radio.h"
-#include "buzzer.h"
-#include "ports.h"
-#include "timer.h"
-#include "pmm.h"
-#include "rf1a.h"
-#include "rtca.h"
+#include <drivers/display.h>
+#include <drivers/vti_as.h>
+#include <drivers/vti_ps.h>
+#include <drivers/radio.h>
+#include <drivers/buzzer.h>
+#include <drivers/ports.h>
+#include <drivers/timer.h>
+#include <drivers/pmm.h>
+#include <drivers/rf1a.h>
+#include <drivers/rtca.h>
 
 /* Menu definitions and declarations */
 struct menu {
