@@ -23,12 +23,12 @@
 #include <ezchronos.h>
 
 enum rtca_tevent{
-	RTCA_EV_ALARM	= 0x01,
-	RTCA_EV_MINUTE	= 0x02,
-	RTCA_EV_HOUR	= 0x04,
-	RTCA_EV_DAY		= 0x08,
-	RTCA_EV_MONTH	= 0x10,
-	RTCA_EV_YEAR	= 0x20
+	RTCA_EV_ALARM	= BIT0,
+	RTCA_EV_MINUTE	= BIT1,
+	RTCA_EV_HOUR	= BIT2,
+	RTCA_EV_DAY		= BIT3,
+	RTCA_EV_MONTH	= BIT4,
+	RTCA_EV_YEAR	= BIT5
 };
 
 /* the ev variable holds the time event, see enum rtca_tevent for more info.

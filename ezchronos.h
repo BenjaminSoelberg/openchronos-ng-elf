@@ -37,16 +37,16 @@ void helpers_loop_down(uint8_t *value, uint8_t lower, uint8_t upper);
 	If you need to add a new entry, append it to the end! */
 enum sys_message {
 	/* drivers/rtca */
-	SYS_MSG_RTC_ALARM		= 0x001,
-	SYS_MSG_RTC_MINUTE	= 0x002,
-	SYS_MSG_RTC_HOUR		= 0x004,
-	SYS_MSG_RTC_DAY		= 0x008,
-	SYS_MSG_RTC_MONTH		= 0x010,
-	SYS_MSG_RTC_YEAR		= 0x020,
+	SYS_MSG_RTC_ALARM		= BIT0,
+	SYS_MSG_RTC_MINUTE	= BIT1,
+	SYS_MSG_RTC_HOUR		= BIT2,
+	SYS_MSG_RTC_DAY		= BIT3,
+	SYS_MSG_RTC_MONTH		= BIT4,
+	SYS_MSG_RTC_YEAR		= BIT5,
 	/* drivers/timer */
-	SYS_MSG_TIMER_1HZ		= 0x040,
-	SYS_MSG_TIMER_10HZ	= 0x080,
-	SYS_MSG_TIMER_PROG	= 0x100,
+	SYS_MSG_TIMER_1HZ		= BIT6,
+	SYS_MSG_TIMER_10HZ	= BIT7,
+	SYS_MSG_TIMER_PROG	= BIT8,
 };
 
 struct sys_messagebus {

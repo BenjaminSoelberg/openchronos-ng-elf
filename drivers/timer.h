@@ -14,9 +14,9 @@ void timer0_destroy_prog_timer();
 void timer0_delay(uint16_t duration);
 
 enum timer0_event {
-	TIMER0_EVENT_1HZ	= 0x01,
-	TIMER0_EVENT_10HZ	= 0x02,
-	TIMER0_EVENT_PROG	= 0x04
+	TIMER0_EVENT_1HZ	= BIT0,
+	TIMER0_EVENT_10HZ	= BIT1,
+	TIMER0_EVENT_PROG	= BIT2
 };
 
 /* exclusive use by openchronos system */
