@@ -50,6 +50,7 @@ static struct {
 
 void rtca_init(void)
 {
+#ifdef CONFIG_RTC_IRQ
 	/* Enable calendar mode (date/time registers are automatically reset)
 	and enable read ready interrupts
 	and set time event interrupts at each minute
@@ -61,6 +62,7 @@ void rtca_init(void)
 
 	/* Enable minutes interrupts */
 	RTCCTL01 |= RTCTEVIE;
+#endif
 }
 
 

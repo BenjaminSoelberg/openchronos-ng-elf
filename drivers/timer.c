@@ -75,16 +75,20 @@ static uint16_t timer0_prog_ticks;
 /* this function setups a 1Hz timer ticked every overflow interrupt */
 void timer0_init(void)
 {
+#ifdef CONFIG_TIMER_1HZ_IRQ
 	/* Enable overflow interrupts */
 	TA0CTL |= TAIE;
+#endif
 
 	/* select external 32kHz source, /2 divider, continous mode */
 	TA0CTL |= TASSEL__ACLK | ID__2 | MC__CONTINOUS;
 
+#ifdef CONFIG_TIMER_1HZ_IRQ
 	/* setup and enable 100ms (10Hz) timer */
 	timer0_10hz_ticks = TIMER0_TICKS_FROM_MS(100);
 	TA0CCR0 = TA0R + timer0_10hz_ticks;
 	TA0CCTL0 |= CCIE;
+#endif
 }
 
 /* This function was based on original Texas Instruments implementation,

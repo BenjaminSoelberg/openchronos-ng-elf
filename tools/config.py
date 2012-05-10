@@ -75,6 +75,24 @@ DATA["USE_WATCHDOG"] = {
 	"help": "Protects the clock against deadlocks by rebooting it.",
 }
 
+DATA["CONFIG_RTCA_IRQ"] = {
+	"name": "Enable RTC interrupts",
+	"default": True,
+	"help": "Enables interrupts on the Real Time Clock",
+}
+
+DATA["CONFIG_TIMER_1HZ_IRQ"] = {
+	"name": "Enable 1Hz timer interrupts",
+	"default": True,
+	"help": "Enables 1Hz interrupts on the hardware timer",
+}
+
+DATA["CONFIG_TIMER_10HZ_IRQ"] = {
+	"name": "Enable 10Hz timer interrupts",
+	"default": False,
+	"help": "Enables 10Hz interrupts on the hardware timer",
+}
+
 DATA["DEBUG"] = {
 	"name": "Debug",
 	"default": False,
