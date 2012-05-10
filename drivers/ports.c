@@ -173,12 +173,6 @@ void PORT2_ISR(void)
 		}
 	}
 
-	/* Trying to lock/unlock buttons? */
-	if ((ports_buttons.flag.num && ports_buttons.flag.down)
-	  || (ports_buttons.flag.star && ports_buttons.flag.up)) {
-		ports_buttons.all_flags = 0;
-	}
-
 	/* Acceleration sensor IRQ */
 	if (IRQ_TRIGGERED(int_flag, AS_INT_PIN)) {
 		/* Get data from sensor */
