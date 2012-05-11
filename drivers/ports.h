@@ -34,22 +34,28 @@
 #ifndef __PORTS_H__
 #define __PORTS_H__
 
-union ports_buttons {
-	struct {
-		/* Manual button events */
-		uint8_t star:1;			/* Short STAR button press */
-		uint8_t num:1;			/* Short NUM button press */
-		uint8_t up:1;				/* Short UP button press */
-		uint8_t down:1;			/* Short DOWN button press */
-		uint8_t backlight:1;	/* Short BACKLIGHT button press */
-		uint8_t star_long:1;	/* Long STAR button press */
-		uint8_t num_long:1;		/* Long NUM button press */
-	} flag;
-	uint8_t all_flags; /* Shortcut to all display flags (for reset) */
+/* Button ports */
+#define PORTS_BTN_DOWN_PIN		(BIT0)
+#define PORTS_BTN_NUM_PIN		(BIT1)
+#define PORTS_BTN_STAR_PIN		(BIT2)
+#define PORTS_BTN_BL_PIN		(BIT3)
+#define PORTS_BTN_UP_PIN		(BIT4)
+
+enum ports_buttons {
+	PORTS_BTN_DOWN		= PORTS_BTN_DOWN_PIN,
+	PORTS_BTN_NUM		= PORTS_BTN_NUM_PIN,
+	PORTS_BTN_STAR		= PORTS_BTN_STAR_PIN,
+	PORTS_BTN_BL		= PORTS_BTN_BL_PIN,
+	PORTS_BTN_UP		= PORTS_BTN_UP_PIN,
+	PORTS_BTN_LDOWN	= BIT5,
+	PORTS_BTN_LNUM		= BIT6,
+	PORTS_BTN_LSTAR	= BIT7,
+	PORTS_BTN_LBL		= BIT8,
+	PORTS_BTN_LUP		= BIT9,
 };
 
 /* exclusive for ezchronos.c, modules should NOT use this directly */
-volatile union ports_buttons ports_buttons;
+volatile enum ports_buttons ports_pressed_btns;
 
 void init_buttons(void);
 

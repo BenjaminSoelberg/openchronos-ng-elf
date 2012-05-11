@@ -72,6 +72,8 @@
 #include <drivers/rf1a.h>
 #include <drivers/rtca.h>
 
+#define BIT_IS_SET(F, B)  ((F) | (B)) == (F)
+
 /* Menu definitions and declarations */
 struct menu {
 	/* Pointer to up button handler */
@@ -186,54 +188,46 @@ void check_buttons(void)
 	/* Are we in edit mode? */
 	if (menu_editmode.enabled) {
 		/* STAR button exits edit mode */
-		if (ports_buttons.flag.star) {
-			ports_buttons.flag.star = 0;
+		if (BIT_IS_SET(ports_pressed_btns, PORTS_BTN_STAR)) {
 			menu_editmode.complete_fn();
 			menu_editmode.enabled = 0;
 
-		} else if (ports_buttons.flag.num) {
-			ports_buttons.flag.num = 0;
+		} else if (BIT_IS_SET(ports_pressed_btns, PORTS_BTN_NUM)) {
 			menu_editmode.next_item_fn();
 
-		} else if (ports_buttons.flag.up) {
-			ports_buttons.flag.up = 0;
+		} else if (BIT_IS_SET(ports_pressed_btns, PORTS_BTN_UP)) {
 			menu_editmode.value_fn(1);
 
-		} else if (ports_buttons.flag.down) {
-			ports_buttons.flag.down = 0;
+		} else if (BIT_IS_SET(ports_pressed_btns, PORTS_BTN_DOWN)) {
 			menu_editmode.value_fn(-1);
-		}
+		}	
 	} else { /* not in edit mode */	
-		if (ports_buttons.flag.star_long) {
-			ports_buttons.flag.star_long = 0;
+		if (BIT_IS_SET(ports_pressed_btns, PORTS_BTN_LSTAR)) {
 			if (menu_item->lstar_btn_fn)
 				menu_item->lstar_btn_fn();
 
-		} else if (ports_buttons.flag.star) {
-			ports_buttons.flag.star = 0;
+		} else if (BIT_IS_SET(ports_pressed_btns, PORTS_BTN_STAR)) {
 			menu_item_next();
 
-		} else if (ports_buttons.flag.num_long) {
-			ports_buttons.flag.num_long = 0;
+		} else if (BIT_IS_SET(ports_pressed_btns, PORTS_BTN_LNUM)) {
 			if (menu_item->lnum_btn_fn)
 				menu_item->lnum_btn_fn();
 
-		} else if (ports_buttons.flag.num) {
-			ports_buttons.flag.num = 0;
+		} else if (BIT_IS_SET(ports_pressed_btns, PORTS_BTN_NUM)) {
 			if (menu_item->num_btn_fn)
 				menu_item->num_btn_fn();
 		
-		} else if (ports_buttons.flag.up) {
-			ports_buttons.flag.up = 0;
+		} else if (BIT_IS_SET(ports_pressed_btns, PORTS_BTN_UP)) {
 			if (menu_item->up_btn_fn)
 				menu_item->up_btn_fn();
 
-		} else if (ports_buttons.flag.down) {
-			ports_buttons.flag.down = 0;
+		} else if (BIT_IS_SET(ports_pressed_btns, PORTS_BTN_DOWN)) {
 			if (menu_item->down_btn_fn)
 				menu_item->down_btn_fn();
 		}
 	}
+
+	ports_pressed_btns = 0;
 }
 
 void menu_add_entry(void (*up_btn_fn)(void),

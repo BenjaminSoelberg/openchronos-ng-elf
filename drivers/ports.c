@@ -52,86 +52,18 @@
 #define BUTTONS_IFG				(P2IFG)
 #define BUTTONS_IRQ_VECT2		(PORT2_VECTOR)
 
-/* Button ports */
-#define BUTTON_STAR_PIN			(BIT2)
-#define BUTTON_NUM_PIN			(BIT1)
-#define BUTTON_UP_PIN			(BIT4)
-#define BUTTON_DOWN_PIN			(BIT0)
-#define BUTTON_BACKLIGHT_PIN	(BIT3)
-#define ALL_BUTTONS \
-	(BUTTON_STAR_PIN + BUTTON_NUM_PIN + BUTTON_UP_PIN \
-	  + BUTTON_DOWN_PIN + BUTTON_BACKLIGHT_PIN)
+#define ALL_BUTTONS				0x1F
 
-/* Macros for button press detection */
-#define BUTTON_STAR_IS_PRESSED \
-	((BUTTONS_IN & BUTTON_STAR_PIN) == BUTTON_STAR_PIN)
+#define BIT_IS_SET(F, B) ((F) | (B)) == (F)
 
-#define BUTTON_NUM_IS_PRESSED	\
-	((BUTTONS_IN & BUTTON_NUM_PIN) == BUTTON_NUM_PIN)
+/* Button debounce time (ms) */
+#define BUTTONS_DEBOUNCE_TIME	5
 
-#define BUTTON_UP_IS_PRESSED \
-	((BUTTONS_IN & BUTTON_UP_PIN) == BUTTON_UP_PIN)
-
-#define BUTTON_DOWN_IS_PRESSED \
-	((BUTTONS_IN & BUTTON_DOWN_PIN) == BUTTON_DOWN_PIN)
-
-#define BUTTON_BACKLIGHT_IS_PRESSED \
-	((BUTTONS_IN & BUTTON_BACKLIGHT_PIN) == BUTTON_BACKLIGHT_PIN)
-
-#define NO_BUTTON_IS_PRESSED \
-	((BUTTONS_IN & ALL_BUTTONS) == 0)
-
-/* Macros for button release detection */
-#define BUTTON_STAR_IS_RELEASED			((BUTTONS_IN & BUTTON_STAR_PIN) == 0)
-#define BUTTON_NUM_IS_RELEASED			((BUTTONS_IN & BUTTON_NUM_PIN) == 0)
-#define BUTTON_UP_IS_RELEASED				((BUTTONS_IN & BUTTON_UP_PIN) == 0)
-#define BUTTON_DOWN_IS_RELEASED			((BUTTONS_IN & BUTTON_DOWN_PIN) == 0)
-#define BUTTON_BACKLIGHT_IS_RELEASED	((BUTTONS_IN & BUTTON_BACKLIGHT_PIN) == 0)
-
-/* Button debounce time (msec) */
-#define BUTTONS_DEBOUNCE_TIME_IN	(5u)
-#define BUTTONS_DEBOUNCE_TIME_OUT	(250u)
-#define BUTTONS_DEBOUNCE_TIME_LEFT	(50u)
-
-/* Detect if STAR / NUM button is held low continuously */
-#define LEFT_BUTTON_LONG_TIME		(1u)
-
-/* Macro for button IRQ */
-#define IRQ_TRIGGERED(flags, bit)		((flags & bit) == bit)
+/* How long does a button need to be pressed to be long press? */
+/* in multiples of 1/10 second */
+#define BUTTONS_LONG_PRESS_TIME 3
 
 /* check which one of those need volatile */
-static uint8_t star_timeout;
-static uint8_t num_timeout;
-static uint8_t backlight_timeout;
-static uint8_t backlight_status;
-
-void buttons_pooling_fn(enum sys_message msg)
-{
-	/* Detect continuous button high states */
-	if (BUTTON_STAR_IS_PRESSED) {
-		star_timeout++;
-
-		/* Check if button was held low for some seconds */
-		if (star_timeout > LEFT_BUTTON_LONG_TIME) {
-			ports_buttons.flag.star_long = 1;
-			star_timeout = 0;
-		}
-	} else {
-		star_timeout = 0;
-	}
-
-	if (BUTTON_NUM_IS_PRESSED) {
-		num_timeout++;
-
-		/* Check if button was held low for some seconds */
-		if (num_timeout > LEFT_BUTTON_LONG_TIME) {
-			ports_buttons.flag.num_long = 1;
-			num_timeout = 0;
-		}
-	} else {
-		num_timeout = 0;
-	}
-}
 
 void init_buttons(void)
 {
@@ -150,9 +82,6 @@ void init_buttons(void)
 
 	/* Enable button interrupts */
 	BUTTONS_IE |= ALL_BUTTONS;
-
-	/* register on 1Hz timer */
-	sys_messagebus_register(&buttons_pooling_fn, SYS_MSG_TIMER_1HZ);
 }
 
 /*
@@ -164,102 +93,52 @@ void init_buttons(void)
 __attribute__((interrupt(PORT2_VECTOR)))
 void PORT2_ISR(void)
 {
-	uint8_t int_flag, int_enable;
+	static uint16_t last_press;
 
-	/* Clear button flags */
-	ports_buttons.all_flags = 0;
+	/* If the interrupt was not raised by a button press, then return */
+	if ((BUTTONS_IFG & ALL_BUTTONS) == 0)
+		return;
 
-	/* Remember interrupt enable bits */
-	int_enable = BUTTONS_IE;
+	/* get mask for buttons in rising edge */
+	uint8_t rising_mask = ~BUTTONS_IES & ALL_BUTTONS;
 
-	/* Store valid button interrupt flag */
-	int_flag = BUTTONS_IFG & int_enable;
+	/* for those, check which ones raised the interrupt, these are
+	 the ones that were just pressed */
+	uint8_t buttons = BUTTONS_IFG & rising_mask;
 
-	/* Debounce buttons */
-	if ((int_flag & ALL_BUTTONS) != 0) {
-		/* Disable PORT2 IRQ */
-		__disable_interrupt();
-		BUTTONS_IE = 0x00;
-		__enable_interrupt();
+	if (buttons)
+		last_press = timer0_10hz_counter;
 
-		/* Debounce delay 1 */
-		timer0_delay(BUTTONS_DEBOUNCE_TIME_IN);
+	/* set pressed button IRQ triggers to falling edge,
+	 so we can detect when they are released */
+	BUTTONS_IES |= buttons;
+		
+	/* now get mask for buttons on falling edge
+	  (except the ones we just set) */
+	uint8_t falling_mask = BUTTONS_IES & ALL_BUTTONS & ~rising_mask;
+
+	/* now for those check which ones raised the interrupt, these are
+	  the ones that were just released */
+	buttons = BUTTONS_IFG & falling_mask;
+
+	/* check if button was pressed long enough */
+	 if (buttons) {
+		if (timer0_10hz_counter - last_press > BUTTONS_LONG_PRESS_TIME)
+			ports_pressed_btns |= buttons << 5;
+		else
+			ports_pressed_btns |= buttons;
 	}
 
-	if (IRQ_TRIGGERED(int_flag, BUTTON_STAR_PIN)) {
-		/* STAR button IRQ */
-
-		/* Filter bouncing noise */
-		if (BUTTON_STAR_IS_PRESSED)
-			ports_buttons.flag.star = 1;
-
-	} else if (IRQ_TRIGGERED(int_flag, BUTTON_NUM_PIN)) {
-		/* NUM button IRQ */
-
-		/* Filter bouncing noise */
-		if (BUTTON_NUM_IS_PRESSED)
-			ports_buttons.flag.num = 1;
-
-	} else if (IRQ_TRIGGERED(int_flag, BUTTON_UP_PIN)) {
-		/* UP button IRQ */
-
-		/* Filter bouncing noise */
-		if (BUTTON_UP_IS_PRESSED)
-			ports_buttons.flag.up = 1;
-	
-	} else if (IRQ_TRIGGERED(int_flag, BUTTON_DOWN_PIN)) {
-		/* DOWN button IRQ */
-
-		/* Filter bouncing noise */
-		if (BUTTON_DOWN_IS_PRESSED)
-			ports_buttons.flag.down = 1;
-
-	} else if (IRQ_TRIGGERED(int_flag, BUTTON_BACKLIGHT_PIN)) {
-		/* BACKLIGHT button IRQ */
-
-		/* Filter bouncing noise */
-		if (BUTTON_BACKLIGHT_IS_PRESSED) {
-			backlight_status = 1;
-			backlight_timeout = 0;
-			P2OUT |= BUTTON_BACKLIGHT_PIN;
-			P2DIR |= BUTTON_BACKLIGHT_PIN;
-			ports_buttons.flag.backlight = 1;
-		}
-	}
-
-	/* Acceleration sensor IRQ */
-	if (IRQ_TRIGGERED(int_flag, AS_INT_PIN)) {
-		/* Get data from sensor */
-		/* TODO: we should do something here */
-	}
-
-	/* Pressure sensor IRQ */
-	if (IRQ_TRIGGERED(int_flag, PS_INT_PIN)) {
-		/* Get data from sensor */
-		/* TODO: we should do something here */
-	}
-
-	/* Safe long button event detection */
-	if (ports_buttons.flag.star || ports_buttons.flag.num) {
-		/* Additional debounce delay to enable safe high detection */
-		timer0_delay(BUTTONS_DEBOUNCE_TIME_LEFT);
-
-		/* Check if this button event is short enough */
-		if (BUTTON_STAR_IS_PRESSED)
-			ports_buttons.flag.star = 0;
-
-		if (BUTTON_NUM_IS_PRESSED)
-			ports_buttons.flag.num = 0;
-	}
-
-	/* Reenable PORT2 IRQ */
-	__disable_interrupt();
-	BUTTONS_IFG = 0x00;
-	BUTTONS_IE  = int_enable;
-	__enable_interrupt();
+	/* set buttons IRQ triggers to rising edge */
+	BUTTONS_IES &= ~buttons;
 
 	/* Exit from LPM3 on RETI */
-	_BIC_SR_IRQ(LPM3_bits);
+	if (buttons)
+		_BIC_SR_IRQ(LPM3_bits);
+
+	/* A write to the interrupt vector, automatically clears the
+	 latest interrupt */
+	P2IV = 0x00;
 }
 
 
