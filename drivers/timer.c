@@ -83,7 +83,7 @@ void timer0_init(void)
 	/* select external 32kHz source, /2 divider, continous mode */
 	TA0CTL |= TASSEL__ACLK | ID__2 | MC__CONTINOUS;
 
-#ifdef CONFIG_TIMER_1HZ_IRQ
+#ifdef CONFIG_TIMER_10HZ_IRQ
 	/* setup and enable 100ms (10Hz) timer */
 	timer0_10hz_ticks = TIMER0_TICKS_FROM_MS(100);
 	TA0CCR0 = TA0R + timer0_10hz_ticks;
@@ -152,9 +152,11 @@ __attribute__((interrupt(TIMER0_A0_VECTOR)))
 void timer0_A0_ISR(void)
 {
 	/* TODO: Do we need to reset the interrupt flag ? */
-
 	/* setup timer for next time */
 	TA0CCR0 = TA0R + timer0_10hz_ticks;
+
+	/* increase 10hz counter */
+	timer0_10hz_counter++;
 
 	/* store 10hz timer event */
 	timer0_last_event |= TIMER0_EVENT_10HZ;
