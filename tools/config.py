@@ -75,7 +75,7 @@ DATA["USE_WATCHDOG"] = {
 	"help": "Protects the clock against deadlocks by rebooting it.",
 }
 
-DATA["CONFIG_RTCA_IRQ"] = {
+DATA["CONFIG_RTC_IRQ"] = {
 	"name": "Enable RTC interrupts",
 	"default": True,
 	"help": "Enables interrupts on the Real Time Clock",
