@@ -8,6 +8,7 @@ PYTHON := $(shell which python2 || which python)
 .PHONY: clean
 .PHONY: install
 .PHONY: config
+.PHONY: doc
 
 all: config.h ezchronos.txt
 
@@ -68,3 +69,7 @@ clean: $(SUBDIRS)
 		echo "Cleaning $$subdir .."; rm -f $$subdir/*.{o,a}; \
 	done
 	@rm -f *.o ezchronos.elf ezchronos.txt
+
+doc:
+	rm -rf doc/*
+	doxygen Doxyfile

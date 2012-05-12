@@ -1,3 +1,4 @@
+doc
 modinit.c
 ezchronos.txt
 ezchronos.elf
@@ -9,5 +10,4 @@ ezchronos.elf
 config.h
 .pida-metadata
 TAGS
-doc/*.html
 output.map
