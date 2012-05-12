@@ -5,3 +5,4 @@ put this and make it work again.
 * imperial/metric selection is borken.
 * low battery check is borken.
 * simpliciTI is deactivated.
+* Allow dependecies to be specified in modules/MODULE.cfg
