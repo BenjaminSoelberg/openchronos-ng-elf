@@ -458,7 +458,7 @@ int main(void)
 	test_mode();
 #else
 	/* clear whole scren */
-	display_clear(0);
+	display_clear(NULL, 0);
 #endif
 
 	/* Init modules */

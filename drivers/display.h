@@ -296,7 +296,17 @@ extern const uint8_t itoa_conversion_table[][3];
 
 // Display init / clear
 extern void lcd_init(void);
-extern void display_clear(uint8_t line);
+
+/* virtual screens */
+struct lcd_screen {
+	uint8_t *segmem;
+	uint8_t *blkmem;
+};
+
+inline void lcd_screen_create(struct lcd_screen *screen);
+inline void lcd_screen_destroy(struct lcd_screen *screen);
+inline void lcd_screen_real_to_virtual(struct lcd_screen *screen);
+inline void lcd_screen_virtual_to_real(struct lcd_screen *screen);
 
 // Blinking function
 extern void start_blink(void);
@@ -304,10 +314,11 @@ extern void stop_blink(void);
 extern void clear_blink_mem(void);
 extern void set_blink_rate(uint8_t bits);
 
-// Character / symbol draw functions
-extern void display_char(uint8_t segment, uint8_t chr, uint8_t mode);
-extern void display_chars(uint8_t segments, uint8_t *str, uint8_t mode);
-extern void display_symbol(uint8_t symbol, uint8_t mode);
+/* Screen update functions */
+extern void display_clear(struct lcd_screen *screen, uint8_t line);
+extern void display_char(struct lcd_screen *screen, uint8_t segment, uint8_t chr, uint8_t mode);
+extern void display_chars(struct lcd_screen *screen, uint8_t segments, uint8_t *str, uint8_t mode);
+extern void display_symbol(struct lcd_screen *screen, uint8_t symbol, uint8_t mode);
 
 // Integer to string conversion
 extern uint8_t *_itoa(uint32_t n, uint8_t digits, uint8_t blanks);

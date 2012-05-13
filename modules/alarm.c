@@ -44,8 +44,8 @@ static void refresh_screen()
 {
 	rtca_get_alarm(&tmp_hh, &tmp_mm);
 
-	display_chars(LCD_SEG_L1_1_0, _itoa(tmp_mm, 2, 0), SEG_SET);
-	display_chars(LCD_SEG_L1_3_2, _itoa(tmp_hh, 2, 0), SEG_SET);
+	display_chars(NULL, LCD_SEG_L1_1_0, _itoa(tmp_mm, 2, 0), SEG_SET);
+	display_chars(NULL, LCD_SEG_L1_3_2, _itoa(tmp_hh, 2, 0), SEG_SET);
 }
 
 static void alarm_event(enum sys_message msg)
@@ -57,7 +57,7 @@ static void alarm_event(enum sys_message msg)
 static void alarm_activated()
 {
 	/* Force redraw of the screen */
-	display_symbol(LCD_SEG_L1_COL, SEG_ON);
+	display_symbol(NULL, LCD_SEG_L1_COL, SEG_ON);
 	refresh_screen();
 }
 
@@ -65,7 +65,7 @@ static void alarm_activated()
 static void alarm_deactivated()
 {
 	/* clean up screen */
-	display_clear(1);
+	display_clear(NULL, 1);
 }
 
 
@@ -77,12 +77,12 @@ static void edit(int8_t step)
 	if (edit_state == EDIT_STATE_MM) {
 		loop_fn(&tmp_mm, 0, 59);
 
-		display_chars(LCD_SEG_L1_1_0, _itoa(tmp_mm, 2, 0), SEG_SET);
+		display_chars(NULL, LCD_SEG_L1_1_0, _itoa(tmp_mm, 2, 0), SEG_SET);
 	} else {
 		/* TODO: fix for 12/24 hr! */
 		loop_fn(&tmp_hh, 0, 23);
 
-		display_chars(LCD_SEG_L1_3_2, _itoa(tmp_hh, 2, 0), SEG_SET);
+		display_chars(NULL, LCD_SEG_L1_3_2, _itoa(tmp_hh, 2, 0), SEG_SET);
 	}
 }
 
@@ -91,10 +91,10 @@ static void edit_next()
 {
 	helpers_loop_up(&edit_state, EDIT_STATE_HH, EDIT_STATE_MM);
 
-	display_chars(LCD_SEG_L1_1_0, NULL,
+	display_chars(NULL, LCD_SEG_L1_1_0, NULL,
 			(edit_state == EDIT_STATE_MM ? BLINK_ON : BLINK_OFF));
 
-	display_chars(LCD_SEG_L1_3_2, _itoa(tmp_hh, 2, 0),
+	display_chars(NULL, LCD_SEG_L1_3_2, _itoa(tmp_hh, 2, 0),
 			(edit_state == EDIT_STATE_HH ? BLINK_ON : BLINK_OFF));
 }
 
@@ -105,7 +105,7 @@ static void edit_save()
 	rtca_set_alarm(tmp_hh, tmp_mm);
 
 	/* only turn off SOME blinking segments */
-	display_chars(LCD_SEG_L1_3_0, NULL, BLINK_OFF);
+	display_chars(NULL, LCD_SEG_L1_3_0, NULL, BLINK_OFF);
 }
 
 /* NUM (#) button pressed callback */
@@ -121,19 +121,19 @@ static void num_pressed()
 		sys_messagebus_unregister(alarm_event);
 
 	if (alarm_state.alarm) {
-		display_symbol(LCD_ICON_ALARM, SEG_ON);
+		display_symbol(NULL, LCD_ICON_ALARM, SEG_ON);
 		rtca_enable_alarm();
 	} else {
-		display_symbol(LCD_ICON_ALARM, SEG_OFF);
+		display_symbol(NULL, LCD_ICON_ALARM, SEG_OFF);
 		rtca_disable_alarm();
 	}
 
 	if (alarm_state.chime) {
-		display_symbol(LCD_ICON_BEEPER2, SEG_ON);
-		display_symbol(LCD_ICON_BEEPER3, SEG_ON);
+		display_symbol(NULL, LCD_ICON_BEEPER2, SEG_ON);
+		display_symbol(NULL, LCD_ICON_BEEPER3, SEG_ON);
 	} else {
-		display_symbol(LCD_ICON_BEEPER2, SEG_OFF);
-		display_symbol(LCD_ICON_BEEPER3, SEG_OFF);
+		display_symbol(NULL, LCD_ICON_BEEPER2, SEG_OFF);
+		display_symbol(NULL, LCD_ICON_BEEPER3, SEG_OFF);
 	}
 
 }
