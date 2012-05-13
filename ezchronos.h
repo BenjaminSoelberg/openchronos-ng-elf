@@ -23,6 +23,7 @@ void menu_add_entry(
 	void (*num_btn_fn)(void),   /*!< callback for num button presses. */
 	void (*lstar_btn_fn)(void), /*!< callback for long star button presses. */
 	void (*lnum_btn_fn)(void),  /*!< callback for long num button presses. */
+	void (*updown_btn_fn)(void),/*!< callback for up&down button presses. */
 	void (*activate_fn)(void),  /*!< callback for when the user switches into this entry in the menu. */
 	void (*deactivate_fn)(void) /*!< callback for when the user switches out from this entry in the menu. */
 );

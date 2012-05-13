@@ -157,7 +157,7 @@ void alarm_init()
 	menu_add_entry(NULL, NULL,
 			&num_pressed,
 			&star_long_pressed,
-			NULL,
+			NULL, NULL,
 			&alarm_activated,
 			&alarm_deactivated);
 

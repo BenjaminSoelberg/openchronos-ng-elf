@@ -174,7 +174,7 @@ void clock_init()
 
 	menu_add_entry(NULL, NULL, NULL,
 			&star_long_pressed,
-			NULL,
+			NULL, NULL,
 			&clock_activated,
 			&clock_deactivated);
 

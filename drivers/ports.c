@@ -121,20 +121,23 @@ void PORT2_ISR(void)
 	  the ones that were just released */
 	buttons = BUTTONS_IFG & falling_mask;
 
-	/* check if button was pressed long enough */
-	 if (buttons) {
+	/* if a single button was released, then release all the others */
+	if (buttons) {
+		buttons |= BUTTONS_IES;
+
+		/* check if button was pressed long enough */
 		if (timer0_10hz_counter - last_press > BUTTONS_LONG_PRESS_TIME)
-			ports_pressed_btns |= buttons << 5;
-		else
-			ports_pressed_btns |= buttons;
-	}
+			buttons <<= 5;
+		
+		/* save pressed buttons */
+		ports_pressed_btns |= buttons;
 
-	/* set buttons IRQ triggers to rising edge */
-	BUTTONS_IES &= ~buttons;
+		/* set buttons IRQ triggers to rising edge */
+		BUTTONS_IES &= ~ALL_BUTTONS;
 
-	/* Exit from LPM3 on RETI */
-	if (buttons)
+		/* Exit from LPM3 on RETI */
 		_BIC_SR_IRQ(LPM3_bits);
+	}
 
 	/* A write to the interrupt vector, automatically clears the
 	 latest interrupt */

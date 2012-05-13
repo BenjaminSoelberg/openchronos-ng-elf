@@ -86,6 +86,8 @@ struct menu {
 	void (*lstar_btn_fn)(void);
 	/* Pointer to function button (long NUM) */
 	void (*lnum_btn_fn)(void);
+	/* Pointer to simultaneous up&down press */
+	void (*updown_btn_fn)(void);
 	/* Pointer to activate function */
 	void (*activate_fn)(void);
 	/* Pointer to deactivate function */
@@ -217,6 +219,10 @@ void check_buttons(void)
 			if (menu_item->num_btn_fn)
 				menu_item->num_btn_fn();
 		
+		} else if (BIT_IS_SET(ports_pressed_btns, PORTS_BTN_UP | PORTS_BTN_DOWN)) {
+			if (menu_item->updown_btn_fn)
+				menu_item->updown_btn_fn();
+
 		} else if (BIT_IS_SET(ports_pressed_btns, PORTS_BTN_UP)) {
 			if (menu_item->up_btn_fn)
 				menu_item->up_btn_fn();
@@ -235,6 +241,7 @@ void menu_add_entry(void (*up_btn_fn)(void),
 		    void (*num_btn_fn)(void),
 		    void (*lstar_btn_fn)(void),
 			 void (*lnum_btn_fn)(void),
+			 void (*updown_btn_fn)(void),
 		    void (*activate_fn)(void),
 		    void (*deactivate_fn)(void))
 {
@@ -262,6 +269,7 @@ void menu_add_entry(void (*up_btn_fn)(void),
 	menu_p->num_btn_fn = num_btn_fn;
 	menu_p->lstar_btn_fn = lstar_btn_fn;
 	menu_p->lnum_btn_fn = lnum_btn_fn;
+	menu_p->updown_btn_fn = updown_btn_fn;
 	menu_p->activate_fn = activate_fn;
 	menu_p->deactivate_fn = deactivate_fn;
 }

@@ -48,7 +48,7 @@
 // @param       line		LINE1, LINE2
 // @return      none
 // *************************************************************************************************
-static void long_num_press()
+static void updown_press()
 {
 	/* TODO: we need to reimplement this */
 	//if (sys.flag.low_battery) return;
@@ -85,8 +85,8 @@ static void rfbsl_deactivate()
 
 void rfbsl_init(void)
 {
-	menu_add_entry(NULL, NULL, NULL, NULL,
-						&long_num_press,
+	menu_add_entry(NULL, NULL, NULL, NULL, NULL,
+						&updown_press,
 						&rfbsl_activate,
 						&rfbsl_deactivate);
 }
