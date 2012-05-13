@@ -89,7 +89,7 @@ DATA["CONFIG_TIMER_1HZ_IRQ"] = {
 
 DATA["CONFIG_TIMER_10HZ_IRQ"] = {
 	"name": "Enable 10Hz timer interrupts",
-	"default": False,
+	"default": True,
 	"help": "Enables 10Hz interrupts on the hardware timer",
 }
 
