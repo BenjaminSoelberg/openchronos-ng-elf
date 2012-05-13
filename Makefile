@@ -9,6 +9,7 @@ PYTHON := $(shell which python2 || which python)
 .PHONY: install
 .PHONY: config
 .PHONY: doc
+.PHONY: httpdoc
 
 all: config.h ezchronos.txt
 
@@ -73,3 +74,6 @@ clean: $(SUBDIRS)
 doc:
 	rm -rf doc/*
 	doxygen Doxyfile
+	
+httpdoc: doc
+	rsync -vr doc/ $(USER)@web.sourceforge.net:/home/project-web/openchronos-ng/htdocs/api/
