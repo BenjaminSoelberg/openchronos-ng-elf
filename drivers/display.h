@@ -309,14 +309,6 @@ extern void display_char(uint8_t segment, uint8_t chr, uint8_t mode);
 extern void display_chars(uint8_t segments, uint8_t *str, uint8_t mode);
 extern void display_symbol(uint8_t symbol, uint8_t mode);
 
-// Time display function
-extern void DisplayTime(uint8_t updateMode);
-extern void display_am_pm_symbol(uint8_t timeAM);
-
-// Set_value display functions
-extern void display_value1(uint8_t segments, uint32_t value, uint8_t digits, uint8_t blanks, uint8_t disp_mode);
-extern void display_hours_12_or_24(uint8_t segments, uint32_t value, uint8_t digits, uint8_t blanks, uint8_t disp_mode);
-
 // Integer to string conversion
 extern uint8_t *_itoa(uint32_t n, uint8_t digits, uint8_t blanks);
 

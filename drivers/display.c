@@ -32,53 +32,16 @@
 //	  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 // *************************************************************************************************
-// Display functions.
-// *************************************************************************************************
 
-
-// *************************************************************************************************
-// Include section
-
-// system
-#include "ezchronos.h"
+#include <ezchronos.h>
 #include <string.h>
 
-// driver
 #include "display.h"
 
-// *************************************************************************************************
-// Prototypes section
-void clear_line(uint8_t line);
-void display_symbol(uint8_t symbol, uint8_t mode);
-void display_char(uint8_t segment, uint8_t chr, uint8_t mode);
-void display_chars(uint8_t segments, uint8_t *str, uint8_t mode);
+/* storage for itoa function */
+static uint8_t itoa_str[8];
 
 
-// *************************************************************************************************
-// Defines section
-
-
-
-// *************************************************************************************************
-// Global Variable section
-
-// TODO: WTF is this?
-// Global return string for itoa function
-uint8_t itoa_str[8];
-
-
-// *************************************************************************************************
-// Extern section
-extern void (*fptr_lcd_function_line1)(uint8_t line, uint8_t update);
-extern void (*fptr_lcd_function_line2)(uint8_t line, uint8_t update);
-
-
-// *************************************************************************************************
-// @fn          lcd_init
-// @brief       Erase LCD memory. Init LCD peripheral.
-// @param      	none
-// @return      none
-// *************************************************************************************************
 void lcd_init(void)
 {
 	// Clear entire display memory
@@ -109,14 +72,6 @@ void lcd_init(void)
 }
 
 
-// *************************************************************************************************
-// @fn          clear_line
-// @brief       Erase segments of a given line or the entire screen
-// @param      	uint8_t line:	0 - ALL THE SCREEN
-// 				1 - LINE 1
-// 				2 - LINE 2
-// @return      none
-// *************************************************************************************************
 void display_clear(uint8_t line)
 {
 	if (line == 1) {
@@ -130,25 +85,16 @@ void display_clear(uint8_t line)
 		display_symbol(LCD_SEG_L2_COL1, SEG_OFF);
 		display_symbol(LCD_SEG_L2_COL0, SEG_OFF);
 	} else {
-		uint8_t *lcdptr = (uint8_t *)0x0A20;
-		uint8_t i;
+		uint8_t *lcdptr = (uint8_t *)LCD_MEM_1;
+		uint8_t i = 1;
 
-		for (i = 1; i <= 12; i++) {
+		for (; i <= 12; i++) {
 			*(lcdptr++) = 0x00;
 		}
 	}
 }
 
 
-// *************************************************************************************************
-// @fn          write_segment
-// @brief       Write to one or multiple LCD segments
-// @param       lcdmem		Pointer to LCD byte memory
-//				bits		Segments to address
-//				bitmask		Bitmask for particular display item
-//				mode		On, off or blink segments
-// @return
-// *************************************************************************************************
 static void write_lcd_mem(uint8_t *lcdmem, uint8_t bits,
 						uint8_t bitmask, uint8_t state)
 {
@@ -226,90 +172,6 @@ uint8_t *_itoa(uint32_t n, uint8_t digits, uint8_t blanks)
 	return (itoa_str);
 }
 
-
-// *************************************************************************************************
-// @fn          display_value1
-// @brief       Generic decimal display routine. Used exclusively by set_value function.
-// @param       uint8_t segments		LCD segments where value is displayed
-//				uint32_t value			Integer value to be displayed
-//				uint8_t digits			Number of digits to convert
-//				uint8_t blanks			Number of leadings blanks in itoa result string
-// @return      none
-// *************************************************************************************************
-/* TODO: This function is marked for deletion */
-void display_value1(uint8_t segments, uint32_t value, uint8_t digits, uint8_t blanks, uint8_t disp_mode)
-{
-	uint8_t *str;
-
-	str = _itoa(value, digits, blanks);
-
-	// Display string in blink mode
-	display_chars(segments, str, disp_mode);
-}
-
-
-
-
-// *************************************************************************************************
-// @fn          display_hours_12_or_24
-// @brief       Display hours in 24H / 12H time format.
-// @param       uint8_t segments	Segments where to display hour data
-//				uint32_t value		Hour data
-//				uint8_t digits		Must be "2"
-//				uint8_t blanks		Must be "0"
-// @return      none
-// *************************************************************************************************
-void display_hours_12_or_24(uint8_t segments, uint32_t value, uint8_t digits, uint8_t blanks, uint8_t disp_mode)
-{
-#if (OPTION_TIME_DISPLAY > CLOCK_24HR)
-	uint8_t hours;
-#endif
-
-#if (OPTION_TIME_DISPLAY == CLOCK_DISPLAY_SELECT)
-
-	if (sys.flag.am_pm_time) {
-#endif
-#if (OPTION_TIME_DISPLAY > CLOCK_24HR)
-		// convert internal 24H time format to 12H time format
-		hours = convert_hour_to_12H_format(value);
-
-		// display hours in 12H time format
-		display_value1(segments, hours, digits, blanks, disp_mode);
-		display_am_pm_symbol(value);
-#endif
-#if (OPTION_TIME_DISPLAY == CLOCK_DISPLAY_SELECT)
-	} else {
-#endif
-#if (OPTION_TIME_DISPLAY != CLOCK_AM_PM)
-		// Display hours in 24H time format
-		display_value1(segments, (uint16_t) value, digits, blanks, disp_mode);
-#endif
-#if (OPTION_TIME_DISPLAY == CLOCK_DISPLAY_SELECT)
-	}
-
-#endif
-}
-
-
-// *************************************************************************************************
-// @fn          display_am_pm_symbol
-// @brief       Display AM or PM symbol.
-// @param       uint8_t hour		24H internal time format
-// @return      none
-// *************************************************************************************************
-#if (OPTION_TIME_DISPLAY > CLOCK_24HR)
-void display_am_pm_symbol(uint8_t hour)
-{
-	// Display AM/PM symbol
-	if (is_hour_am(hour)) {
-		display_symbol(LCD_SYMB_AM, SEG_ON);
-	} else {
-		// Clear AM segments first - required when changing from AM to PM
-		display_symbol(LCD_SYMB_AM, SEG_OFF);
-		display_symbol(LCD_SYMB_PM, SEG_ON);
-	}
-}
-#endif
 
 // *************************************************************************************************
 // @fn          display_symbol
@@ -410,7 +272,8 @@ void display_chars(uint8_t segments, uint8_t *str, uint8_t mode)
 		char_start = segments;
 	}
 
-	//multiple charakters
+	/* TODO: Holly crap! Isn't there a more efficient way to do this? */
+	// multiple charakters
 	switch (segments) {
 		// LINE1
 	case LCD_SEG_L1_3_0:
