@@ -69,7 +69,7 @@ clean: $(SUBDIRS)
 	@for subdir in $(SUBDIRS); do \
 		echo "Cleaning $$subdir .."; rm -f $$subdir/*.{o,a}; \
 	done
-	@rm -f *.o openchronos.elf openchronos.txt
+	@rm -f *.o openchronos.elf openchronos.txt output.map
 
 doc:
 	rm -rf doc/*
