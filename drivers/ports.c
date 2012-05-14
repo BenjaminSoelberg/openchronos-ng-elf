@@ -18,7 +18,7 @@
  */
 
 
-#include <ezchronos.h>
+#include <openchronos.h>
 
 /* drivers */
 #include "ports.h"

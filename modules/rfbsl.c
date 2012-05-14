@@ -34,7 +34,7 @@
 // *************************************************************************************************
 
 // system
-#include <ezchronos.h>
+#include <openchronos.h>
 
 // driver
 #include <drivers/display.h>

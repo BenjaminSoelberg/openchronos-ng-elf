@@ -11,7 +11,7 @@ PYTHON := $(shell which python2 || which python)
 .PHONY: doc
 .PHONY: httpdoc
 
-all: config.h ezchronos.txt
+all: config.h openchronos.txt
 
 #
 # Build list of archives to be built in
@@ -32,11 +32,11 @@ $(foreach subdir,$(SUBDIRS), \
 	)) \
 )
 
-ezchronos.elf: even_in_range.o modinit.o ezchronos.o $(BUILTIN)
+openchronos.elf: even_in_range.o modinit.o openchronos.o $(BUILTIN)
 	@echo -e "\n>> Building $@"
 	@$(CC) $(CFLAGS) $(LDFLAGS) $(INCLUDES) -o $@ $+	
 
-ezchronos.txt: ezchronos.elf
+openchronos.txt: openchronos.elf
 	$(PYTHON) tools/memory.py -i $< -o $@
 
 even_in_range.o: even_in_range.s
@@ -62,14 +62,14 @@ config:
 	$(PYTHON) tools/make_modinit.py
 	@echo "Don't forget to do a make clean!" && true
 
-install: ezchronos.txt
+install: openchronos.txt
 	contrib/ChronosTool.py rfbsl $<
 
 clean: $(SUBDIRS)
 	@for subdir in $(SUBDIRS); do \
 		echo "Cleaning $$subdir .."; rm -f $$subdir/*.{o,a}; \
 	done
-	@rm -f *.o ezchronos.elf ezchronos.txt
+	@rm -f *.o openchronos.elf openchronos.txt
 
 doc:
 	rm -rf doc/*

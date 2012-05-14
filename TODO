@@ -1,4 +1,4 @@
-* read_calibration_values() was removed from ezchronos.c, find out where to
+* read_calibration_values() was removed from openchronos.c, find out where to
 put this and make it work again.
 * temperature measurement is borken.
 * pressure measurement is borken.

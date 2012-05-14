@@ -1,5 +1,5 @@
 /*
-    modules/clock.c: Openchronos clock module
+    modules/clock.c: clock module for openchronos-ng
 
     Copyright (C) 2012 Angelo Arrifano <miknix@gmail.com>
 
@@ -18,7 +18,7 @@
  */
 
 
-#include <ezchronos.h>
+#include <openchronos.h>
 
 /* driver */
 #include <drivers/rtca.h>

@@ -1,5 +1,5 @@
 /*
-    ezchronos.c: Openchronos main loop & user interface
+    openchronos.c: openchronos-ng main loop & user interface
 	 
 	 Copyright (C) 2012 Angelo Arrifano <miknix@gmail.com>
 
@@ -56,7 +56,7 @@
 // *************************************************************************************************
 // Include section
 
-#include "ezchronos.h"
+#include <openchronos.h>
 
 #include "modinit.h"
 

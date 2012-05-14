@@ -40,7 +40,7 @@
 // Include section
 
 // system
-#include <ezchronos.h>
+#include <openchronos.h>
 #include "vti_as.h"
 
 #ifndef FEATURE_PROVIDE_ACCEL

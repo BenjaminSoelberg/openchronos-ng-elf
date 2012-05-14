@@ -13,7 +13,7 @@
 // Include section
 
 // system
-#include <ezchronos.h>
+#include <openchronos.h>
 
 // driver
 #include "rf1a.h"

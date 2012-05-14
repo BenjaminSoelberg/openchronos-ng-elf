@@ -54,7 +54,7 @@ enum ports_buttons {
 	PORTS_BTN_LUP		= BIT9,
 };
 
-/* exclusive for ezchronos.c, modules should NOT use this directly */
+/* exclusive for openchronos.c, modules should NOT use this directly */
 volatile enum ports_buttons ports_pressed_btns;
 
 void init_buttons(void);

@@ -33,7 +33,7 @@
 //
 // *************************************************************************************************
 
-#include <ezchronos.h>
+#include <openchronos.h>
 #include <string.h>
 
 #include "display.h"

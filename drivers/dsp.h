@@ -10,7 +10,7 @@
 #define DSP_H_
 
 // Include section
-#include <ezchronos.h>
+#include <openchronos.h>
 
 // *************************************************************************************************
 // Prototypes section

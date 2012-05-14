@@ -1,6 +1,6 @@
 /*!
-	\file ezchronos.h
-	\brief Main openchronos include file
+	\file openchronos.h
+	\brief Main openchronos-ng include file
 */
 
 #ifndef __EZCHRONOS_H__
