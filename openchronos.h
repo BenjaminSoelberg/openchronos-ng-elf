@@ -1,4 +1,27 @@
 /*!
+	\mainpage openchronos-ng (new generation)
+
+	\section contact_sec Contact
+	Project website: http://openchronos-ng.sourceforge.net
+	            IRC: \#openchronos @ chat.freenode.net
+
+	<i>for mailing list, bug tracker and forum please go to the project website, you will find that info there.</i>
+
+	\section devs_sec For developers..
+	If you are a module developer please take a look to the following topics, we choose them for you because they are the most important when starting a new module.
+
+	<ol>
+		<li>First have a look to <a href="http://sourceforge.net/p/openchronos-ng/wiki/Module%20build%20system/">our wiki</a> to understand how to create a module (including its sources) and make it appear in the openchronos menu config. It is really simple and should not take much of your time.</li>
+
+		<li>Then have a look to menu_add_entry(), this is what you should call during module initialization to make it appear in the system menu. It is also in this function where you specify the module functions that are to be called when the user presses the ez430 chronos buttons.</li>
+
+		<li>Your module is now receiving input but what about output? TODO: document the API of display functions. </li>
+
+		<li>Finally, if your module needs to execute some code periodically, then have a look to sys_messagebus_register() and #sys_message, on how to make your module listen for system events, like 1Hz events from the hardware timer.</li>
+	</ol>
+*/
+
+/*!
 	\file openchronos.h
 	\brief Main openchronos-ng include file
 */
