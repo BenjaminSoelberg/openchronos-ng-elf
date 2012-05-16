@@ -1,7 +1,7 @@
 doc
 modinit.c
-ezchronos.txt
-ezchronos.elf
+openchronos.txt
+openchronos.elf
 *.[oa]
 *.pyc
 *.*~
