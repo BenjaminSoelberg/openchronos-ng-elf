@@ -439,9 +439,6 @@ void init_application(void)
 		infomem_init(INFOMEM_C, INFOMEM_C + 2 * INFOMEM_SEGMENT_SIZE);
 	}
 #endif
-
-	// Set buzzer to default value
-	reset_buzzer();
 }
 
 
