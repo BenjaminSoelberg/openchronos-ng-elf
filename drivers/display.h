@@ -38,27 +38,6 @@
 
 
 // *************************************************************************************************
-// Include section
-
-/*
- * Set some options at compile time for how the time is displayed
- * The options are, in order of code space used-
- * OPTION_TIME_DISPLAY == CLOCK_24HR
- * OPTION_TIME_DISPLAY == CLOCK_AM_PM
- * OPTION_TIME_DISPLAY == CLOCK_DISPLAY_SELECT
- */
-
-#define CLOCK_24HR              0
-#define CLOCK_AM_PM             1
-#define CLOCK_DISPLAY_SELECT    2
-
-#ifndef OPTION_TIME_DISPLAY
-#warning "OPTION_TIME_DISPLAY not defined, 0 = 24Hr, 1 = AM/PM, 2 = selectable"
-#endif
-
-
-
-// *************************************************************************************************
 // Extern section
 
 // Constants defined in library

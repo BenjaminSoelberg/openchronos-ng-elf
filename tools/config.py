@@ -31,15 +31,6 @@ DATA["CONFIG_FREQUENCY"] = {
 	"help": "Radio frequency for the clock"
 }
 
-DATA["OPTION_TIME_DISPLAY"] = {
-	"name": "Time display options",
-	"depends": [],
-	"default": 0,
-	"type": "choices",
-	"values": [(0, "24hr"), (1, "12hr (AM/PM)"), (2, "selectable")],
-	"help": "Select how time should be displayed, in order of code size options are- 0 = 24hr, 1=12hr (AM/PM) or 2=selectable"
-}
-
 DATA["CONFIG_METRIC_ONLY"] = {
 	"name": "Metric only code (-286 bytes)",
 	"depends": [],
