@@ -53,15 +53,6 @@ enum display_segstate {
 	BLINK_SET	= 12u /*!< turn blinking OFF on all bits of segment, then turn blinking ON on only selected bits */
 };
 
-/* 7-segment character bit assignments */
-#define SEG_A                	(BIT4)
-#define SEG_B                	(BIT5)
-#define SEG_C                	(BIT6)
-#define SEG_D                	(BIT7)
-#define SEG_E                	(BIT2)
-#define SEG_F                	(BIT0)
-#define SEG_G                	(BIT1)
-
 /* LCD symbols for easier access
 
   xxx_SEG_xxx	= Seven-segment character (sequence 5-4-3-2-1-0)

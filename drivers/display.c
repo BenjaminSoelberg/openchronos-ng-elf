@@ -148,6 +148,15 @@
 /* storage for itoa function */
 static uint8_t itoa_str[8];
 
+/* 7-segment character bit assignments */
+#define SEG_A     (BIT4)
+#define SEG_B     (BIT5)
+#define SEG_C     (BIT6)
+#define SEG_D     (BIT7)
+#define SEG_E     (BIT2)
+#define SEG_F     (BIT0)
+#define SEG_G     (BIT1)
+
 /* Table with memory bit assignment for digits "0"-"9" and chars "A"-"Z"
      A
    F   B
