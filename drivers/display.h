@@ -47,20 +47,6 @@ extern const uint8_t segments_bitmask[];
 extern const uint8_t itoa_conversion_table[][3];
 
 
-// *************************************************************************************************
-// Defines section
-
-// Display function modes
-#define DISPLAY_LINE_UPDATE_FULL		(BIT0)
-#define DISPLAY_LINE_UPDATE_PARTIAL		(BIT1)
-#define DISPLAY_LINE_CLEAR				(BIT2)
-#define DISPLAY_LINE_MESSAGE			(BIT3)
-
-// Definitions for line view style
-#define DISPLAY_DEFAULT_VIEW			(0u)
-#define DISPLAY_ALTERNATIVE_VIEW		(1u)
-#define DISPLAY_ALTERNATIVE2_VIEW		(2u)
-
 // LCD display modes
 #define SEG_OFF		(1u)
 #define SEG_ON		(2u)
