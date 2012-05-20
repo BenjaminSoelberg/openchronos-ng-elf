@@ -2,6 +2,7 @@ doc
 modinit.c
 openchronos.txt
 openchronos.elf
+openchronos.dep
 *.[oa]
 *.pyc
 *.*~

@@ -8,31 +8,33 @@ PYTHON := $(shell which python2 || which python)
 .PHONY: clean
 .PHONY: install
 .PHONY: config
+.PHONY: depend
 .PHONY: doc
 .PHONY: httpdoc
 
-all: config.h openchronos.txt
+all: depend config.h openchronos.txt
 
 #
-# Build list of archives to be built in
-BUILTIN := $(patsubst %,%/xbuilt.a,$(SUBDIRS))
-
-#
-# Make list of object dependency for each archive
-define XBUILT_RULE
-$(1): $(2)
-	@echo "AR $$@"
-	@$(AR) rcuTPs $$@ $$+
-endef
-
+# Build list of sources and objects to build
+SRCS := $(wildcard *.c)
 $(foreach subdir,$(SUBDIRS), \
-	$(eval $(call XBUILT_RULE,\
-		$(subdir)/xbuilt.a,\
-		$(subst .c,.o,$(wildcard $(subdir)/*.c)) \
-	)) \
+	$(eval SRCS := $(SRCS) $(wildcard $(subdir)/*.c)) \
 )
+OBJS := $(patsubst %.c,%.o,$(SRCS))
 
-openchronos.elf: even_in_range.o modinit.o openchronos.o $(BUILTIN)
+#
+# Dependencies rules
+depend: openchronos.dep
+
+openchronos.dep: $(SRCS)
+	echo "Generating dependencies.."
+	@touch $@
+	@makedepend $(INCLUDES) -Y -f $@ $^ &> /dev/null
+	@rm -f $@.bak
+
+#
+# Top rules
+openchronos.elf: even_in_range.o $(OBJS)
 	@echo -e "\n>> Building $@"
 	@$(CC) $(CFLAGS) $(LDFLAGS) $(INCLUDES) -o $@ $+	
 
@@ -77,3 +79,6 @@ doc:
 	
 httpdoc: doc
 	rsync -vr doc/ $(USER)@web.sourceforge.net:/home/project-web/openchronos-ng/htdocs/api/
+
+
+include openchronos.dep
