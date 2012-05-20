@@ -503,7 +503,7 @@ uint8_t *_itoa(uint32_t n, uint8_t digits, uint8_t blanks)
 }
 
 
-void display_symbol(struct lcd_screen *screen, uint8_t symbol,
+void display_symbol(struct lcd_screen *screen, enum display_segment symbol,
                                                enum display_segstate state)
 {
 	if (symbol <= LCD_SEG_L2_DP) {
@@ -529,7 +529,7 @@ void display_symbol(struct lcd_screen *screen, uint8_t symbol,
 }
 
 
-void display_char(struct lcd_screen *screen, uint8_t segment,
+void display_char(struct lcd_screen *screen, enum display_segment segment,
                   uint8_t chr, enum display_segstate state)
 {
 	uint8_t bits, bits1;		// Bits to write
@@ -590,7 +590,7 @@ void display_char(struct lcd_screen *screen, uint8_t segment,
 //				uint8_t mode		SEG_ON, SEG_OFF, SEG_BLINK
 // @return      none
 // *************************************************************************************************
-void display_chars(struct lcd_screen *screen, uint8_t segments,
+void display_chars(struct lcd_screen *screen, enum display_segment segments,
                    uint8_t *str, enum display_segstate state)
 {
 	uint8_t i;

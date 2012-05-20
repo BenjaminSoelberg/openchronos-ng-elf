@@ -53,91 +53,86 @@ enum display_segstate {
 	BLINK_SET	= 12u /*!< turn blinking OFF on all bits of segment, then turn blinking ON on only selected bits */
 };
 
-/* LCD symbols for easier access
-
-  xxx_SEG_xxx	= Seven-segment character (sequence 5-4-3-2-1-0)
-  xxx_SYMB_xxx	= Display symbol, e.g. "AM" for ante meridiem
-  xxx_UNIT_xxx	= Display unit, e.g. "km/h" for kilometers per hour
-  xxx_ICON_xxx	= Display icon, e.g. heart
-  xxx_L1_xxx	= Item is part of Line1 information
-  xxx_L2_xxx	= Item is part of Line2 information
+/*!
+	\brief Enumeration of all ez430 chronos LCD segments
+	\note Line segments are numbered from right to left.
 */
-/* Symbols for Line1 */
-#define LCD_SYMB_AM					0
-#define LCD_SYMB_PM					1
-#define LCD_SYMB_ARROW_UP			2
-#define LCD_SYMB_ARROW_DOWN		3
-#define LCD_SYMB_PERCENT			4
+enum display_segment {
+	/* Symbols for Line1 */
+	LCD_SYMB_AM				=	0, /*!< AM symbol segment */
+	LCD_SYMB_PM				=	1, /*!< PM symbol segment */
+	LCD_SYMB_ARROW_UP		=	2, /*!< little up arrow symbol segment */
+	LCD_SYMB_ARROW_DOWN	=	3, /*!< little down arrow symbol segment */
+	LCD_SYMB_PERCENT		=	4, /*!< percent symbol segment */
+	
+	/* Symbols for Line2 */
+	LCD_SYMB_TOTAL			=	5, /*!< TOTAL symbol segment */
+	LCD_SYMB_AVERAGE		=	6, /*!< AVG symbol segment */
+	LCD_SYMB_MAX			=	7, /*!< MAX symbol segment */
+	LCD_SYMB_BATTERY		=	8, /*!< BATT symbol segment */
+	
+	/* Units for Line1 */
+	LCD_UNIT_L1_FT			=	9,  /*!< FT symbol segment */
+	LCD_UNIT_L1_K			=	10, /*!< K symbol segment */
+	LCD_UNIT_L1_M			=	11, /*!< M symbol segment */
+	LCD_UNIT_L1_I			=	12, /*!< I symbol segment */
+	LCD_UNIT_L1_PER_S		=	13, /*!< /s symbol segment */
+	LCD_UNIT_L1_PER_H		=	14, /*!< /h symbol segment */
+	LCD_UNIT_L1_DEGREE	=	15, /*!< º symbol segment */
+	
+	/* Units for Line2 */
+	LCD_UNIT_L2_KCAL		=	16, /*!< kcal symbol segment */
+	LCD_UNIT_L2_KM			=	17, /*!< Km symbol segment */
+	LCD_UNIT_L2_MI			=	18, /*!< MI symbol segment */
+	
+	/* Icons */
+	LCD_ICON_HEART			=	19, /*!< HEART symbol segment */
+	LCD_ICON_STOPWATCH	=	20, /*!< STOPWATCH symbol segment */
+	LCD_ICON_RECORD		=	21, /*!< RECORD symbol segment */
+	LCD_ICON_ALARM			=	22, /*!< ALARM symbol segment */
+	LCD_ICON_BEEPER1		=	23, /*!< segment 1 of ((( symbol */
+	LCD_ICON_BEEPER2		=	24, /*!< segment 2 of ((( symbol */
+	LCD_ICON_BEEPER3		=	25, /*!< segment 3 of ((( symbol */
+	
+	/* Line1 7-segments */
+	LCD_SEG_L1_3			=	26, /*!< line1, 4th segment */
+	LCD_SEG_L1_2			=	27, /*!< line1, 3rd segment */
+	LCD_SEG_L1_1			=	28, /*!< line1, 2nd segment */
+	LCD_SEG_L1_0			=	29, /*!< line1, 1st segment */
+	LCD_SEG_L1_COL			=	30, /*!< line1, : segment */
+	LCD_SEG_L1_DP1			=	31, /*!< ?? */
+	LCD_SEG_L1_DP0			=	32, /*!< ?? */
+	
+	/* Line2 7-segments */
+	LCD_SEG_L2_5			=	33, /*!< line2, 6th segment */
+	LCD_SEG_L2_4			=	34, /*!< line2, 5th segment */
+	LCD_SEG_L2_3			=	35, /*!< line2, 4th segment */
+	LCD_SEG_L2_2			=	36, /*!< line2, 3rd segment */
+	LCD_SEG_L2_1			=	37, /*!< line2, 2nd segment */
+	LCD_SEG_L2_0			=	38, /*!< line2, 1st segment */
+	LCD_SEG_L2_COL1		=	39, /*!< line2, 2nd : segment */
+	LCD_SEG_L2_COL0		=	40, /*!< line2, 1st : segment */
+	LCD_SEG_L2_DP			=	41, /*!< ?? */
 
-/* Symbols for Line2 */
-#define LCD_SYMB_TOTAL				5
-#define LCD_SYMB_AVERAGE			6
-#define LCD_SYMB_MAX					7
-#define LCD_SYMB_BATTERY			8
-
-/* Units for Line1 */
-#define LCD_UNIT_L1_FT				9
-#define LCD_UNIT_L1_K				10
-#define LCD_UNIT_L1_M				11
-#define LCD_UNIT_L1_I				12
-#define LCD_UNIT_L1_PER_S			13
-#define LCD_UNIT_L1_PER_H			14
-#define LCD_UNIT_L1_DEGREE			15
-
-/* Units for Line2 */
-#define LCD_UNIT_L2_KCAL			16
-#define LCD_UNIT_L2_KM				17
-#define LCD_UNIT_L2_MI				18
-
-/* Icons */
-#define LCD_ICON_HEART				19
-#define LCD_ICON_STOPWATCH			20
-#define LCD_ICON_RECORD				21
-#define LCD_ICON_ALARM				22
-#define LCD_ICON_BEEPER1			23
-#define LCD_ICON_BEEPER2			24
-#define LCD_ICON_BEEPER3			25
-
-/* Line1 7-segments */
-#define LCD_SEG_L1_3					26
-#define LCD_SEG_L1_2					27
-#define LCD_SEG_L1_1					28
-#define LCD_SEG_L1_0					29
-#define LCD_SEG_L1_COL				30
-#define LCD_SEG_L1_DP1				31
-#define LCD_SEG_L1_DP0				32
-
-/* Line2 7-segments */
-#define LCD_SEG_L2_5					33
-#define LCD_SEG_L2_4					34
-#define LCD_SEG_L2_3					35
-#define LCD_SEG_L2_2					36
-#define LCD_SEG_L2_1					37
-#define LCD_SEG_L2_0					38
-#define LCD_SEG_L2_COL1				39
-#define LCD_SEG_L2_COL0				40
-#define LCD_SEG_L2_DP				41
-
-
-/* Line1 7-segment arrays */
-#define LCD_SEG_L1_3_0				70
-#define LCD_SEG_L1_2_0				71
-#define LCD_SEG_L1_1_0				72
-#define LCD_SEG_L1_3_1				73
-#define LCD_SEG_L1_3_2				74
-
-/* Line2 7-segment arrays */
-#define LCD_SEG_L2_5_0				90
-#define LCD_SEG_L2_4_0				91
-#define LCD_SEG_L2_3_0				92
-#define LCD_SEG_L2_2_0				93
-#define LCD_SEG_L2_1_0				94
-#define LCD_SEG_L2_5_2				95
-#define LCD_SEG_L2_3_2				96
-#define LCD_SEG_L2_5_4				97
-#define LCD_SEG_L2_4_2				98
-#define LCD_SEG_L2_4_3				99
-
+	/* Line1 7-segment arrays */
+	LCD_SEG_L1_3_0			=	70, /*!< line1, segments 1-4 */
+	LCD_SEG_L1_2_0			=	71, /*!< line1, segments 1-3 */
+	LCD_SEG_L1_1_0			=	72, /*!< line1, segments 1-2 */
+	LCD_SEG_L1_3_1			=	73, /*!< line1, segments 2-4 */
+	LCD_SEG_L1_3_2			=	74, /*!< line1, segments 3-4 */
+	
+	/* Line2 7-segment arrays */
+	LCD_SEG_L2_5_0			=	90, /*!< line2, segments 1-6 */
+	LCD_SEG_L2_4_0			=	91, /*!< line2, segments 1-5 */
+	LCD_SEG_L2_3_0			=	92, /*!< line2, segments 1-4 */
+	LCD_SEG_L2_2_0			=	93, /*!< line2, segments 1-3 */
+	LCD_SEG_L2_1_0			=	94, /*!< line2, segments 1-2 */
+	LCD_SEG_L2_5_2			=	95, /*!< line2, segments 3-6 */
+	LCD_SEG_L2_3_2			=	96, /*!< line2, segments 3-4 */
+	LCD_SEG_L2_5_4			=	97, /*!< line2, segments 5-6 */
+	LCD_SEG_L2_4_2			=	98, /*!< line2, segments 3-5 */
+	LCD_SEG_L2_4_3			=	99, /*!< line2, segments 4-5 */
+};
 
 /*!
 	\brief Initializes the display
@@ -241,7 +236,7 @@ void display_clear(
 */
 void display_char(
 	struct lcd_screen *screen, /*!< pointer to the #lcd_screen storage */
-	uint8_t segment, /*!< A LCD_SEG_* definition found in display.h */
+	enum display_segment segment, /*!< A segment */
 	uint8_t chr, /*!< The character to be displayed */
 	enum display_segstate state /*!< A bitfield with state operations to be performed on the segment */
 );
@@ -272,7 +267,7 @@ void display_char(
 */
 void display_chars(
 	struct lcd_screen *screen, /*!< pointer to the #lcd_screen storage */
-	uint8_t segments, /*!< A LCD_SEG_* definition found in display.h */
+	enum display_segment segments, /*!< A segment array */
 	uint8_t *str, /*!< A pointer to a vector of chars to be displayed */
 	enum display_segstate state /*!< A bitfield with state operations to be performed on the segment */
 );
@@ -288,9 +283,9 @@ void display_chars(
 	\endcode
 */
 void display_symbol(
-	struct lcd_screen *screen,
-	uint8_t symbol,
-	enum display_segstate state
+	struct lcd_screen *screen, /*!< pointer to the #lcd_screen storage */
+	enum display_segment symbol, /*!< the segment to display */
+	enum display_segstate state /*!< A bitfield with state operations to be performed on the segment */
 );
 
 /*!
@@ -302,7 +297,12 @@ void display_symbol(
 	// this returns "32"
 	uint8_t *s = _itoa(32, 2, 0);
 	\endcode
+	\return a string representation of <i>n</i>
 */
-uint8_t *_itoa(uint32_t n, uint8_t digits, uint8_t blanks);
+uint8_t *_itoa(
+	uint32_t n,     /*!< the number to convert to a string */
+	uint8_t digits, /*!< the number of output digits */
+	uint8_t blanks  /*!< the number of blanks to pad the output */
+);
 
 #endif /* __DISPLAY_H__ */
