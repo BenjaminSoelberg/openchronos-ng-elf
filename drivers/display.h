@@ -33,19 +33,8 @@
 //
 // *************************************************************************************************
 
-#ifndef __DISPLAY_H
-#define __DISPLAY_H
-
-
-// *************************************************************************************************
-// Extern section
-
-// Constants defined in library
-extern const uint8_t lcd_font[];
-extern const uint8_t *segments_lcdmem[];
-extern const uint8_t segments_bitmask[];
-extern const uint8_t itoa_conversion_table[][3];
-
+#ifndef __DISPLAY_H__
+#define __DISPLAY_H__
 
 // LCD display modes
 #define SEG_OFF		(1u)
@@ -151,111 +140,6 @@ extern const uint8_t itoa_conversion_table[][3];
 #define LCD_SEG_L2_4_3				99
 
 
-// LCD controller memory map
-#define LCD_MEM_1          			((uint8_t*)0x0A20)
-#define LCD_MEM_2          			((uint8_t*)0x0A21)
-#define LCD_MEM_3          			((uint8_t*)0x0A22)
-#define LCD_MEM_4          			((uint8_t*)0x0A23)
-#define LCD_MEM_5          			((uint8_t*)0x0A24)
-#define LCD_MEM_6          			((uint8_t*)0x0A25)
-#define LCD_MEM_7          			((uint8_t*)0x0A26)
-#define LCD_MEM_8          	 		((uint8_t*)0x0A27)
-#define LCD_MEM_9          			((uint8_t*)0x0A28)
-#define LCD_MEM_10         			((uint8_t*)0x0A29)
-#define LCD_MEM_11         			((uint8_t*)0x0A2A)
-#define LCD_MEM_12         			((uint8_t*)0x0A2B)
-
-
-// Memory assignment
-#define LCD_SEG_L1_0_MEM			(LCD_MEM_6)
-#define LCD_SEG_L1_1_MEM			(LCD_MEM_4)
-#define LCD_SEG_L1_2_MEM			(LCD_MEM_3)
-#define LCD_SEG_L1_3_MEM			(LCD_MEM_2)
-#define LCD_SEG_L1_COL_MEM			(LCD_MEM_1)
-#define LCD_SEG_L1_DP1_MEM			(LCD_MEM_1)
-#define LCD_SEG_L1_DP0_MEM			(LCD_MEM_5)
-#define LCD_SEG_L2_0_MEM			(LCD_MEM_8)
-#define LCD_SEG_L2_1_MEM			(LCD_MEM_9)
-#define LCD_SEG_L2_2_MEM			(LCD_MEM_10)
-#define LCD_SEG_L2_3_MEM			(LCD_MEM_11)
-#define LCD_SEG_L2_4_MEM			(LCD_MEM_12)
-#define LCD_SEG_L2_5_MEM			(LCD_MEM_12)
-#define LCD_SEG_L2_COL1_MEM			(LCD_MEM_1)
-#define LCD_SEG_L2_COL0_MEM			(LCD_MEM_5)
-#define LCD_SEG_L2_DP_MEM			(LCD_MEM_9)
-#define LCD_SYMB_AM_MEM				(LCD_MEM_1)
-#define LCD_SYMB_PM_MEM				(LCD_MEM_1)
-#define LCD_SYMB_ARROW_UP_MEM		(LCD_MEM_1)
-#define LCD_SYMB_ARROW_DOWN_MEM		(LCD_MEM_1)
-#define LCD_SYMB_PERCENT_MEM		(LCD_MEM_5)
-#define LCD_SYMB_TOTAL_MEM			(LCD_MEM_11)
-#define LCD_SYMB_AVERAGE_MEM		(LCD_MEM_10)
-#define LCD_SYMB_MAX_MEM			(LCD_MEM_8)
-#define LCD_SYMB_BATTERY_MEM		(LCD_MEM_7)
-#define LCD_UNIT_L1_FT_MEM			(LCD_MEM_5)
-#define LCD_UNIT_L1_K_MEM			(LCD_MEM_5)
-#define LCD_UNIT_L1_M_MEM			(LCD_MEM_7)
-#define LCD_UNIT_L1_I_MEM			(LCD_MEM_7)
-#define LCD_UNIT_L1_PER_S_MEM		(LCD_MEM_5)
-#define LCD_UNIT_L1_PER_H_MEM		(LCD_MEM_7)
-#define LCD_UNIT_L1_DEGREE_MEM		(LCD_MEM_5)
-#define LCD_UNIT_L2_KCAL_MEM		(LCD_MEM_7)
-#define LCD_UNIT_L2_KM_MEM			(LCD_MEM_7)
-#define LCD_UNIT_L2_MI_MEM			(LCD_MEM_7)
-#define LCD_ICON_HEART_MEM			(LCD_MEM_2)
-#define LCD_ICON_STOPWATCH_MEM		(LCD_MEM_3)
-#define LCD_ICON_RECORD_MEM			(LCD_MEM_1)
-#define LCD_ICON_ALARM_MEM			(LCD_MEM_4)
-#define LCD_ICON_BEEPER1_MEM		(LCD_MEM_5)
-#define LCD_ICON_BEEPER2_MEM		(LCD_MEM_6)
-#define LCD_ICON_BEEPER3_MEM		(LCD_MEM_7)
-
-// Bit masks for write access
-#define LCD_SEG_L1_0_MASK			(BIT2+BIT1+BIT0+BIT7+BIT6+BIT5+BIT4)
-#define LCD_SEG_L1_1_MASK			(BIT2+BIT1+BIT0+BIT7+BIT6+BIT5+BIT4)
-#define LCD_SEG_L1_2_MASK			(BIT2+BIT1+BIT0+BIT7+BIT6+BIT5+BIT4)
-#define LCD_SEG_L1_3_MASK			(BIT2+BIT1+BIT0+BIT7+BIT6+BIT5+BIT4)
-#define LCD_SEG_L1_COL_MASK			(BIT5)
-#define LCD_SEG_L1_DP1_MASK			(BIT6)
-#define LCD_SEG_L1_DP0_MASK			(BIT2)
-#define LCD_SEG_L2_0_MASK			(BIT3+BIT2+BIT1+BIT0+BIT6+BIT5+BIT4)
-#define LCD_SEG_L2_1_MASK			(BIT3+BIT2+BIT1+BIT0+BIT6+BIT5+BIT4)
-#define LCD_SEG_L2_2_MASK			(BIT3+BIT2+BIT1+BIT0+BIT6+BIT5+BIT4)
-#define LCD_SEG_L2_3_MASK			(BIT3+BIT2+BIT1+BIT0+BIT6+BIT5+BIT4)
-#define LCD_SEG_L2_4_MASK			(BIT3+BIT2+BIT1+BIT0+BIT6+BIT5+BIT4)
-#define LCD_SEG_L2_5_MASK			(BIT7)
-#define LCD_SEG_L2_COL1_MASK		(BIT4)
-#define LCD_SEG_L2_COL0_MASK		(BIT0)
-#define LCD_SEG_L2_DP_MASK			(BIT7)
-#define LCD_SYMB_AM_MASK			(BIT1+BIT0)
-#define LCD_SYMB_PM_MASK			(BIT0)
-#define LCD_SYMB_ARROW_UP_MASK		(BIT2)
-#define LCD_SYMB_ARROW_DOWN_MASK	(BIT3)
-#define LCD_SYMB_PERCENT_MASK		(BIT4)
-#define LCD_SYMB_TOTAL_MASK			(BIT7)
-#define LCD_SYMB_AVERAGE_MASK		(BIT7)
-#define LCD_SYMB_MAX_MASK			(BIT7)
-#define LCD_SYMB_BATTERY_MASK		(BIT7)
-#define LCD_UNIT_L1_FT_MASK			(BIT5)
-#define LCD_UNIT_L1_K_MASK			(BIT6)
-#define LCD_UNIT_L1_M_MASK			(BIT1)
-#define LCD_UNIT_L1_I_MASK			(BIT0)
-#define LCD_UNIT_L1_PER_S_MASK		(BIT7)
-#define LCD_UNIT_L1_PER_H_MASK		(BIT2)
-#define LCD_UNIT_L1_DEGREE_MASK		(BIT1)
-#define LCD_UNIT_L2_KCAL_MASK		(BIT4)
-#define LCD_UNIT_L2_KM_MASK			(BIT5)
-#define LCD_UNIT_L2_MI_MASK			(BIT6)
-#define LCD_ICON_HEART_MASK			(BIT3)
-#define LCD_ICON_STOPWATCH_MASK		(BIT3)
-#define LCD_ICON_RECORD_MASK		(BIT7)
-#define LCD_ICON_ALARM_MASK			(BIT3)
-#define LCD_ICON_BEEPER1_MASK		(BIT3)
-#define LCD_ICON_BEEPER2_MASK		(BIT3)
-#define LCD_ICON_BEEPER3_MASK		(BIT3)
-
-
-
 // *************************************************************************************************
 // API section
 
@@ -288,4 +172,4 @@ extern void display_symbol(struct lcd_screen *screen, uint8_t symbol, uint8_t mo
 // Integer to string conversion
 extern uint8_t *_itoa(uint32_t n, uint8_t digits, uint8_t blanks);
 
-#endif // __DISPLAY_
+#endif /* __DISPLAY_H__ */
