@@ -494,14 +494,8 @@ uint8_t *_itoa(uint32_t n, uint8_t digits, uint8_t blanks)
 }
 
 
-// *************************************************************************************************
-// @fn          display_symbol
-// @brief       Switch symbol on or off on LCD.
-// @param       uint8_t symbol		A valid LCD symbol (index 0..42)
-//				uint8_t state		SEG_ON, SEG_OFF, SEG_BLINK
-// @return      none
-// *************************************************************************************************
-void display_symbol(struct lcd_screen *screen, uint8_t symbol, uint8_t mode)
+void display_symbol(struct lcd_screen *screen, uint8_t symbol,
+                                               enum display_segstate state)
 {
 	if (symbol <= LCD_SEG_L2_DP) {
 		// Get LCD memory address for symbol from table
@@ -521,20 +515,13 @@ void display_symbol(struct lcd_screen *screen, uint8_t symbol, uint8_t mode)
 
 		// Write LCD memory
 		// (bitmask for symbols equals bits)
-		write_lcd_mem(segmem, blkmem, bits, bits, mode);
+		write_lcd_mem(segmem, blkmem, bits, bits, state);
 	}
 }
 
 
-// *************************************************************************************************
-// @fn          display_char
-// @brief       Write to 7-segment characters.
-// @param       uint8_t segment		A valid LCD segment
-//				uint8_t chr			Character to display
-//				uint8_t mode		SEG_ON, SEG_OFF, SEG_BLINK
-// @return      none
-// *************************************************************************************************
-void display_char(struct lcd_screen *screen, uint8_t segment, uint8_t chr, uint8_t mode)
+void display_char(struct lcd_screen *screen, uint8_t segment,
+                  uint8_t chr, enum display_segstate state)
 {
 	uint8_t bits, bits1;		// Bits to write
 
@@ -581,7 +568,7 @@ void display_char(struct lcd_screen *screen, uint8_t segment, uint8_t chr, uint8
 		}
 
 		// Physically write to LCD memory
-		write_lcd_mem(segmem, blkmem, bits, bitmask, mode);
+		write_lcd_mem(segmem, blkmem, bits, bitmask, state);
 	}
 }
 
@@ -594,7 +581,8 @@ void display_char(struct lcd_screen *screen, uint8_t segment, uint8_t chr, uint8
 //				uint8_t mode		SEG_ON, SEG_OFF, SEG_BLINK
 // @return      none
 // *************************************************************************************************
-void display_chars(struct lcd_screen *screen, uint8_t segments, uint8_t *str, uint8_t mode)
+void display_chars(struct lcd_screen *screen, uint8_t segments,
+                   uint8_t *str, enum display_segstate state)
 {
 	uint8_t i;
 	uint8_t length = 0;			// Write length
@@ -690,7 +678,7 @@ void display_chars(struct lcd_screen *screen, uint8_t segments, uint8_t *str, ui
 	// Write to consecutive digits
 	for (i = 0; i < length; i++) {
 		// Use single character routine to write display memory
-		display_char(screen, char_start + i, (str ? *(str + i) : '8'), mode);
+		display_char(screen, char_start + i, (str ? *(str + i) : '8'), state);
 	}
 }
 
