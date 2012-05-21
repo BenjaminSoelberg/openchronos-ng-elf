@@ -69,7 +69,7 @@ install: openchronos.txt
 
 clean: $(SUBDIRS)
 	@for subdir in $(SUBDIRS); do \
-		echo "Cleaning $$subdir .."; rm -f $$subdir/*.{o,a}; \
+		echo "Cleaning $$subdir .."; rm -f $$subdir/*.o; \
 	done
 	@rm -f *.o openchronos.elf openchronos.txt output.map
 
