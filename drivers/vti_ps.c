@@ -45,7 +45,7 @@
 // driver
 #include "vti_ps.h"
 //#include "timer.h"
-#ifdef FIXEDPOINT
+#ifdef CONFIG_FIXEDPOINT_MATH
 #include "dsp.h"
 #endif
 
@@ -65,7 +65,7 @@ void twi_delay(void);
 // *************************************************************************************************
 // Global Variable section
 
-#ifndef FIXEDPOINT
+#ifndef CONFIG_FIXEDPOINT_MATH
 // VTI pressure (hPa) to altitude (m) conversion tables
 const int16_t h0[17] = { -153, 0, 111, 540, 989, 1457, 1949, 2466, 3012, 3591, 4206, 4865, 5574, 6344, 7185, 8117, 9164 };
 const uint16_t p0[17] = { 1031, 1013, 1000, 950, 900, 850, 800, 750, 700, 650, 600, 550, 500, 450, 400, 350, 300 };
@@ -449,7 +449,7 @@ uint16_t ps_get_temp(void)
 // *************************************************************************************************
 void init_pressure_table(void)
 {
-#ifndef FIXEDPOINT
+#ifndef CONFIG_FIXEDPOINT_MATH
 	uint8_t i;
 
 	for (i = 0; i < 17; i++) p[i] = p0[i];
@@ -461,7 +461,7 @@ void init_pressure_table(void)
 #endif
 }
 
-#ifdef FIXEDPOINT
+#ifdef CONFIG_FIXEDPOINT_MATH
 // *************************************************************************************************
 // @fn          conv_altitude_to_fraction
 // @brief       Relative pressure deviation from reference pressure for given altitude estimate.
@@ -509,7 +509,7 @@ int16_t conv_altitude_to_fraction(int16_t hh)
 	return f;
 }
 
-#endif // FIXEDPOINT
+#endif // CONFIG_FIXEDPOINT_MATH
 
 
 // *************************************************************************************************
@@ -523,7 +523,7 @@ int16_t conv_altitude_to_fraction(int16_t hh)
 // *************************************************************************************************
 void update_pressure_table(int16_t href, uint32_t p_meas, uint16_t t_meas)
 {
-#ifndef FIXEDPOINT
+#ifndef CONFIG_FIXEDPOINT_MATH
 	const float Invt00 = 0.003470415;
 	const float coefp  = 0.00006;
 	volatile float p_fact;
@@ -582,7 +582,7 @@ void update_pressure_table(int16_t href, uint32_t p_meas, uint16_t t_meas)
 #endif
 }
 
-#ifndef FIXEDPOINT
+#ifndef CONFIG_FIXEDPOINT_MATH
 // *************************************************************************************************
 // @fn          conv_pa_to_meter
 // @brief       Convert pressure (Pa) to altitude (m) using a conversion table
@@ -714,4 +714,4 @@ int16_t conv_pa_to_altitude(uint32_t p_meas, uint16_t t_meas)
 		return mult_scale15(hLast, 27672);
 	}*/
 }
-#endif // FIXEDPOINT
+#endif // CONFIG_FIXEDPOINT_MATH

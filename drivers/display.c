@@ -38,9 +38,292 @@
 
 #include "display.h"
 
+/* LCD controller memory map */
+#define LCD_MEM_1          			((uint8_t*)0x0A20)
+#define LCD_MEM_2          			((uint8_t*)0x0A21)
+#define LCD_MEM_3          			((uint8_t*)0x0A22)
+#define LCD_MEM_4          			((uint8_t*)0x0A23)
+#define LCD_MEM_5          			((uint8_t*)0x0A24)
+#define LCD_MEM_6          			((uint8_t*)0x0A25)
+#define LCD_MEM_7          			((uint8_t*)0x0A26)
+#define LCD_MEM_8          	 		((uint8_t*)0x0A27)
+#define LCD_MEM_9          			((uint8_t*)0x0A28)
+#define LCD_MEM_10         			((uint8_t*)0x0A29)
+#define LCD_MEM_11         			((uint8_t*)0x0A2A)
+#define LCD_MEM_12         			((uint8_t*)0x0A2B)
+
+
+/* Memory assignment */
+#define LCD_SEG_L1_0_MEM			(LCD_MEM_6)
+#define LCD_SEG_L1_1_MEM			(LCD_MEM_4)
+#define LCD_SEG_L1_2_MEM			(LCD_MEM_3)
+#define LCD_SEG_L1_3_MEM			(LCD_MEM_2)
+#define LCD_SEG_L1_COL_MEM			(LCD_MEM_1)
+#define LCD_SEG_L1_DP1_MEM			(LCD_MEM_1)
+#define LCD_SEG_L1_DP0_MEM			(LCD_MEM_5)
+#define LCD_SEG_L2_0_MEM			(LCD_MEM_8)
+#define LCD_SEG_L2_1_MEM			(LCD_MEM_9)
+#define LCD_SEG_L2_2_MEM			(LCD_MEM_10)
+#define LCD_SEG_L2_3_MEM			(LCD_MEM_11)
+#define LCD_SEG_L2_4_MEM			(LCD_MEM_12)
+#define LCD_SEG_L2_5_MEM			(LCD_MEM_12)
+#define LCD_SEG_L2_COL1_MEM			(LCD_MEM_1)
+#define LCD_SEG_L2_COL0_MEM			(LCD_MEM_5)
+#define LCD_SEG_L2_DP_MEM			(LCD_MEM_9)
+#define LCD_SYMB_AM_MEM				(LCD_MEM_1)
+#define LCD_SYMB_PM_MEM				(LCD_MEM_1)
+#define LCD_SYMB_ARROW_UP_MEM		(LCD_MEM_1)
+#define LCD_SYMB_ARROW_DOWN_MEM		(LCD_MEM_1)
+#define LCD_SYMB_PERCENT_MEM		(LCD_MEM_5)
+#define LCD_SYMB_TOTAL_MEM			(LCD_MEM_11)
+#define LCD_SYMB_AVERAGE_MEM		(LCD_MEM_10)
+#define LCD_SYMB_MAX_MEM			(LCD_MEM_8)
+#define LCD_SYMB_BATTERY_MEM		(LCD_MEM_7)
+#define LCD_UNIT_L1_FT_MEM			(LCD_MEM_5)
+#define LCD_UNIT_L1_K_MEM			(LCD_MEM_5)
+#define LCD_UNIT_L1_M_MEM			(LCD_MEM_7)
+#define LCD_UNIT_L1_I_MEM			(LCD_MEM_7)
+#define LCD_UNIT_L1_PER_S_MEM		(LCD_MEM_5)
+#define LCD_UNIT_L1_PER_H_MEM		(LCD_MEM_7)
+#define LCD_UNIT_L1_DEGREE_MEM		(LCD_MEM_5)
+#define LCD_UNIT_L2_KCAL_MEM		(LCD_MEM_7)
+#define LCD_UNIT_L2_KM_MEM			(LCD_MEM_7)
+#define LCD_UNIT_L2_MI_MEM			(LCD_MEM_7)
+#define LCD_ICON_HEART_MEM			(LCD_MEM_2)
+#define LCD_ICON_STOPWATCH_MEM		(LCD_MEM_3)
+#define LCD_ICON_RECORD_MEM			(LCD_MEM_1)
+#define LCD_ICON_ALARM_MEM			(LCD_MEM_4)
+#define LCD_ICON_BEEPER1_MEM		(LCD_MEM_5)
+#define LCD_ICON_BEEPER2_MEM		(LCD_MEM_6)
+#define LCD_ICON_BEEPER3_MEM		(LCD_MEM_7)
+
+/* Bit masks for write access */
+#define LCD_SEG_L1_0_MASK			(BIT2+BIT1+BIT0+BIT7+BIT6+BIT5+BIT4)
+#define LCD_SEG_L1_1_MASK			(BIT2+BIT1+BIT0+BIT7+BIT6+BIT5+BIT4)
+#define LCD_SEG_L1_2_MASK			(BIT2+BIT1+BIT0+BIT7+BIT6+BIT5+BIT4)
+#define LCD_SEG_L1_3_MASK			(BIT2+BIT1+BIT0+BIT7+BIT6+BIT5+BIT4)
+#define LCD_SEG_L1_COL_MASK			(BIT5)
+#define LCD_SEG_L1_DP1_MASK			(BIT6)
+#define LCD_SEG_L1_DP0_MASK			(BIT2)
+#define LCD_SEG_L2_0_MASK			(BIT3+BIT2+BIT1+BIT0+BIT6+BIT5+BIT4)
+#define LCD_SEG_L2_1_MASK			(BIT3+BIT2+BIT1+BIT0+BIT6+BIT5+BIT4)
+#define LCD_SEG_L2_2_MASK			(BIT3+BIT2+BIT1+BIT0+BIT6+BIT5+BIT4)
+#define LCD_SEG_L2_3_MASK			(BIT3+BIT2+BIT1+BIT0+BIT6+BIT5+BIT4)
+#define LCD_SEG_L2_4_MASK			(BIT3+BIT2+BIT1+BIT0+BIT6+BIT5+BIT4)
+#define LCD_SEG_L2_5_MASK			(BIT7)
+#define LCD_SEG_L2_COL1_MASK		(BIT4)
+#define LCD_SEG_L2_COL0_MASK		(BIT0)
+#define LCD_SEG_L2_DP_MASK			(BIT7)
+#define LCD_SYMB_AM_MASK			(BIT1+BIT0)
+#define LCD_SYMB_PM_MASK			(BIT0)
+#define LCD_SYMB_ARROW_UP_MASK		(BIT2)
+#define LCD_SYMB_ARROW_DOWN_MASK	(BIT3)
+#define LCD_SYMB_PERCENT_MASK		(BIT4)
+#define LCD_SYMB_TOTAL_MASK			(BIT7)
+#define LCD_SYMB_AVERAGE_MASK		(BIT7)
+#define LCD_SYMB_MAX_MASK			(BIT7)
+#define LCD_SYMB_BATTERY_MASK		(BIT7)
+#define LCD_UNIT_L1_FT_MASK			(BIT5)
+#define LCD_UNIT_L1_K_MASK			(BIT6)
+#define LCD_UNIT_L1_M_MASK			(BIT1)
+#define LCD_UNIT_L1_I_MASK			(BIT0)
+#define LCD_UNIT_L1_PER_S_MASK		(BIT7)
+#define LCD_UNIT_L1_PER_H_MASK		(BIT2)
+#define LCD_UNIT_L1_DEGREE_MASK		(BIT1)
+#define LCD_UNIT_L2_KCAL_MASK		(BIT4)
+#define LCD_UNIT_L2_KM_MASK			(BIT5)
+#define LCD_UNIT_L2_MI_MASK			(BIT6)
+#define LCD_ICON_HEART_MASK			(BIT3)
+#define LCD_ICON_STOPWATCH_MASK		(BIT3)
+#define LCD_ICON_RECORD_MASK		(BIT7)
+#define LCD_ICON_ALARM_MASK			(BIT3)
+#define LCD_ICON_BEEPER1_MASK		(BIT3)
+#define LCD_ICON_BEEPER2_MASK		(BIT3)
+#define LCD_ICON_BEEPER3_MASK		(BIT3)
+
+/***************************************************************************
+ ***************************** LOCAL STORAGE *******************************
+ **************************************************************************/
+
 /* storage for itoa function */
 static uint8_t itoa_str[8];
 
+/* 7-segment character bit assignments */
+#define SEG_A     (BIT4)
+#define SEG_B     (BIT5)
+#define SEG_C     (BIT6)
+#define SEG_D     (BIT7)
+#define SEG_E     (BIT2)
+#define SEG_F     (BIT0)
+#define SEG_G     (BIT1)
+
+/* Table with memory bit assignment for digits "0"-"9" and chars "A"-"Z"
+     A
+   F   B
+     G
+   E   C
+     D
+*/
+static const uint8_t lcd_font[] = {
+	SEG_A + SEG_B + SEG_C + SEG_D + SEG_E + SEG_F, // Displays "0"
+	SEG_B + SEG_C,                           // Displays "1"
+	SEG_A + SEG_B +      SEG_D + SEG_E +      SEG_G, // Displays "2"
+	SEG_A + SEG_B + SEG_C + SEG_D +            SEG_G, // Displays "3"
+	SEG_B + SEG_C +            SEG_F + SEG_G, // Displays "4"
+	SEG_A +      SEG_C + SEG_D +      SEG_F + SEG_G, // Displays "5"
+	SEG_A +      SEG_C + SEG_D + SEG_E + SEG_F + SEG_G, // Displays "6"
+	SEG_A + SEG_B + SEG_C,                         // Displays "7"
+	SEG_A + SEG_B + SEG_C + SEG_D + SEG_E + SEG_F + SEG_G, // Displays "8"
+	SEG_A + SEG_B + SEG_C + SEG_D +      SEG_F + SEG_G, // Displays "9"
+	0                                        ,     // Displays " " (:)
+	0                                        ,     // Displays " " (;)
+	SEG_A +                        SEG_F + SEG_G,  // Displays "<" as high c
+	SEG_D +            SEG_G,    // Displays "="
+	0                                        ,     // Displays " " (>)
+	SEG_A + SEG_B +            SEG_E +      SEG_G, // Displays "?"
+	0                                        ,     // Displays " " (@)
+	SEG_A + SEG_B + SEG_C +      SEG_E + SEG_F + SEG_G, // Displays "A"
+	SEG_C + SEG_D + SEG_E + SEG_F + SEG_G, // Displays "b"
+	SEG_D + SEG_E +      SEG_G,  // Displays "c"
+	SEG_B + SEG_C + SEG_D + SEG_E +      SEG_G, // Displays "d"
+	SEG_A +           +SEG_D + SEG_E + SEG_F + SEG_G, // Displays "E"
+	SEG_A +                  SEG_E + SEG_F + SEG_G, // Displays "f"
+	SEG_A + SEG_B + SEG_C + SEG_D +      SEG_F + SEG_G, // Displays "g" same as 9
+	SEG_C +      SEG_E + SEG_F + SEG_G, // Displays "h"
+	SEG_E            ,     // Displays "i"
+	SEG_A + SEG_B + SEG_C + SEG_D                  , // Displays "J"
+	SEG_D +      SEG_F + SEG_G,  // Displays "k"
+	SEG_D + SEG_E + SEG_F      , // Displays "L"
+	SEG_A + SEG_B + SEG_C +      SEG_E + SEG_F      , // Displays "M"
+	SEG_C +      SEG_E +      SEG_G,   // Displays "n"
+	SEG_C + SEG_D + SEG_E +      SEG_G, // Displays "o"
+	SEG_A + SEG_B +            SEG_E + SEG_F + SEG_G, // Displays "P"
+	SEG_A + SEG_B + SEG_C +            SEG_F + SEG_G, // Displays "q"
+	SEG_E +      SEG_G,    // Displays "r"
+	SEG_A +      SEG_C + SEG_D +      SEG_F + SEG_G, // Displays "S" same as 5
+	SEG_D + SEG_E + SEG_F + SEG_G, // Displays "t"
+	SEG_C + SEG_D + SEG_E            , // Displays "u"
+	SEG_C + SEG_D + SEG_E            , // Displays "v" same as u
+	SEG_B + SEG_C + SEG_D + SEG_E + SEG_F + SEG_G, // Displays "W"
+	SEG_B + SEG_C +     +SEG_E + SEG_F + SEG_G, // Displays "X" as H
+	SEG_B + SEG_C + SEG_D +      SEG_F + SEG_G, // Displays "Y"
+	SEG_A + SEG_B +      SEG_D + SEG_E +      SEG_G, // Displays "Z" same as 2
+};
+
+
+/* Table with memory address for each display element */
+static const uint8_t *segments_lcdmem[] = {
+	LCD_SYMB_AM_MEM,
+	LCD_SYMB_PM_MEM,
+	LCD_SYMB_ARROW_UP_MEM,
+	LCD_SYMB_ARROW_DOWN_MEM,
+	LCD_SYMB_PERCENT_MEM,
+	LCD_SYMB_TOTAL_MEM,
+	LCD_SYMB_AVERAGE_MEM,
+	LCD_SYMB_MAX_MEM,
+	LCD_SYMB_BATTERY_MEM,
+	LCD_UNIT_L1_FT_MEM,
+	LCD_UNIT_L1_K_MEM,
+	LCD_UNIT_L1_M_MEM,
+	LCD_UNIT_L1_I_MEM,
+	LCD_UNIT_L1_PER_S_MEM,
+	LCD_UNIT_L1_PER_H_MEM,
+	LCD_UNIT_L1_DEGREE_MEM,
+	LCD_UNIT_L2_KCAL_MEM,
+	LCD_UNIT_L2_KM_MEM,
+	LCD_UNIT_L2_MI_MEM,
+	LCD_ICON_HEART_MEM,
+	LCD_ICON_STOPWATCH_MEM,
+	LCD_ICON_RECORD_MEM,
+	LCD_ICON_ALARM_MEM,
+	LCD_ICON_BEEPER1_MEM,
+	LCD_ICON_BEEPER2_MEM,
+	LCD_ICON_BEEPER3_MEM,
+	LCD_SEG_L1_3_MEM,
+	LCD_SEG_L1_2_MEM,
+	LCD_SEG_L1_1_MEM,
+	LCD_SEG_L1_0_MEM,
+	LCD_SEG_L1_COL_MEM,
+	LCD_SEG_L1_DP1_MEM,
+	LCD_SEG_L1_DP0_MEM,
+	LCD_SEG_L2_5_MEM,
+	LCD_SEG_L2_4_MEM,
+	LCD_SEG_L2_3_MEM,
+	LCD_SEG_L2_2_MEM,
+	LCD_SEG_L2_1_MEM,
+	LCD_SEG_L2_0_MEM,
+	LCD_SEG_L2_COL1_MEM,
+	LCD_SEG_L2_COL0_MEM,
+	LCD_SEG_L2_DP_MEM,
+};
+
+
+/* Table with bit mask for each display element */
+static const uint8_t segments_bitmask[] = {
+	LCD_SYMB_AM_MASK,
+	LCD_SYMB_PM_MASK,
+	LCD_SYMB_ARROW_UP_MASK,
+	LCD_SYMB_ARROW_DOWN_MASK,
+	LCD_SYMB_PERCENT_MASK,
+	LCD_SYMB_TOTAL_MASK,
+	LCD_SYMB_AVERAGE_MASK,
+	LCD_SYMB_MAX_MASK,
+	LCD_SYMB_BATTERY_MASK,
+	LCD_UNIT_L1_FT_MASK,
+	LCD_UNIT_L1_K_MASK,
+	LCD_UNIT_L1_M_MASK,
+	LCD_UNIT_L1_I_MASK,
+	LCD_UNIT_L1_PER_S_MASK,
+	LCD_UNIT_L1_PER_H_MASK,
+	LCD_UNIT_L1_DEGREE_MASK,
+	LCD_UNIT_L2_KCAL_MASK,
+	LCD_UNIT_L2_KM_MASK,
+	LCD_UNIT_L2_MI_MASK,
+	LCD_ICON_HEART_MASK,
+	LCD_ICON_STOPWATCH_MASK,
+	LCD_ICON_RECORD_MASK,
+	LCD_ICON_ALARM_MASK,
+	LCD_ICON_BEEPER1_MASK,
+	LCD_ICON_BEEPER2_MASK,
+	LCD_ICON_BEEPER3_MASK,
+	LCD_SEG_L1_3_MASK,
+	LCD_SEG_L1_2_MASK,
+	LCD_SEG_L1_1_MASK,
+	LCD_SEG_L1_0_MASK,
+	LCD_SEG_L1_COL_MASK,
+	LCD_SEG_L1_DP1_MASK,
+	LCD_SEG_L1_DP0_MASK,
+	LCD_SEG_L2_5_MASK,
+	LCD_SEG_L2_4_MASK,
+	LCD_SEG_L2_3_MASK,
+	LCD_SEG_L2_2_MASK,
+	LCD_SEG_L2_1_MASK,
+	LCD_SEG_L2_0_MASK,
+	LCD_SEG_L2_COL1_MASK,
+	LCD_SEG_L2_COL0_MASK,
+	LCD_SEG_L2_DP_MASK,
+};
+
+
+/* Quick integer to array conversion table for most common integer values */
+static const uint8_t itoa_conversion_table[][3] = {
+	"000", "001", "002", "003", "004", "005", "006", "007", "008", "009", "010", "011", "012", "013", "014", "015",
+	"016", "017", "018", "019", "020", "021", "022", "023", "024", "025", "026", "027", "028", "029", "030", "031",
+	"032", "033", "034", "035", "036", "037", "038", "039", "040", "041", "042", "043", "044", "045", "046", "047",
+	"048", "049", "050", "051", "052", "053", "054", "055", "056", "057", "058", "059", "060", "061", "062", "063",
+	"064", "065", "066", "067", "068", "069", "070", "071", "072", "073", "074", "075", "076", "077", "078", "079",
+	"080", "081", "082", "083", "084", "085", "086", "087", "088", "089", "090", "091", "092", "093", "094", "095",
+	"096", "097", "098", "099", "100", "101", "102", "103", "104", "105", "106", "107", "108", "109", "110", "111",
+	"112", "113", "114", "115", "116", "117", "118", "119", "120", "121", "122", "123", "124", "125", "126", "127",
+	"128", "129", "130", "131", "132", "133", "134", "135", "136", "137", "138", "139", "140", "141", "142", "143",
+	"144", "145", "146", "147", "148", "149", "150", "151", "152", "153", "154", "155", "156", "157", "158", "159",
+	"160", "161", "162", "163", "164", "165", "166", "167", "168", "169", "170", "171", "172", "173", "174", "175",
+	"176", "177", "178", "179", "180",
+};
+
+/***************************************************************************
+ ***************************** LOCAL FUNCTIONS *****************************
+ **************************************************************************/
 
 static void write_lcd_mem(uint8_t *segmem, uint8_t *blkmem,
                   uint8_t bits, uint8_t bitmask, uint8_t state)
@@ -66,6 +349,9 @@ static void write_lcd_mem(uint8_t *segmem, uint8_t *blkmem,
 	}
 }
 
+/***************************************************************************
+ **************************** EXPORTED FUNCTIONS ***************************
+ **************************************************************************/
 
 void lcd_init(void)
 {
@@ -217,14 +503,8 @@ uint8_t *_itoa(uint32_t n, uint8_t digits, uint8_t blanks)
 }
 
 
-// *************************************************************************************************
-// @fn          display_symbol
-// @brief       Switch symbol on or off on LCD.
-// @param       uint8_t symbol		A valid LCD symbol (index 0..42)
-//				uint8_t state		SEG_ON, SEG_OFF, SEG_BLINK
-// @return      none
-// *************************************************************************************************
-void display_symbol(struct lcd_screen *screen, uint8_t symbol, uint8_t mode)
+void display_symbol(struct lcd_screen *screen, enum display_segment symbol,
+                                               enum display_segstate state)
 {
 	if (symbol <= LCD_SEG_L2_DP) {
 		// Get LCD memory address for symbol from table
@@ -244,20 +524,13 @@ void display_symbol(struct lcd_screen *screen, uint8_t symbol, uint8_t mode)
 
 		// Write LCD memory
 		// (bitmask for symbols equals bits)
-		write_lcd_mem(segmem, blkmem, bits, bits, mode);
+		write_lcd_mem(segmem, blkmem, bits, bits, state);
 	}
 }
 
 
-// *************************************************************************************************
-// @fn          display_char
-// @brief       Write to 7-segment characters.
-// @param       uint8_t segment		A valid LCD segment
-//				uint8_t chr			Character to display
-//				uint8_t mode		SEG_ON, SEG_OFF, SEG_BLINK
-// @return      none
-// *************************************************************************************************
-void display_char(struct lcd_screen *screen, uint8_t segment, uint8_t chr, uint8_t mode)
+void display_char(struct lcd_screen *screen, enum display_segment segment,
+                  uint8_t chr, enum display_segstate state)
 {
 	uint8_t bits, bits1;		// Bits to write
 
@@ -304,7 +577,7 @@ void display_char(struct lcd_screen *screen, uint8_t segment, uint8_t chr, uint8
 		}
 
 		// Physically write to LCD memory
-		write_lcd_mem(segmem, blkmem, bits, bitmask, mode);
+		write_lcd_mem(segmem, blkmem, bits, bitmask, state);
 	}
 }
 
@@ -317,7 +590,8 @@ void display_char(struct lcd_screen *screen, uint8_t segment, uint8_t chr, uint8
 //				uint8_t mode		SEG_ON, SEG_OFF, SEG_BLINK
 // @return      none
 // *************************************************************************************************
-void display_chars(struct lcd_screen *screen, uint8_t segments, uint8_t *str, uint8_t mode)
+void display_chars(struct lcd_screen *screen, enum display_segment segments,
+                   uint8_t *str, enum display_segstate state)
 {
 	uint8_t i;
 	uint8_t length = 0;			// Write length
@@ -413,7 +687,7 @@ void display_chars(struct lcd_screen *screen, uint8_t segments, uint8_t *str, ui
 	// Write to consecutive digits
 	for (i = 0; i < length; i++) {
 		// Use single character routine to write display memory
-		display_char(screen, char_start + i, (str ? *(str + i) : '8'), mode);
+		display_char(screen, char_start + i, (str ? *(str + i) : '8'), state);
 	}
 }
 

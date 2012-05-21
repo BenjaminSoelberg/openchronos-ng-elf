@@ -50,7 +50,7 @@ extern uint16_t ps_get_temp(void);
 
 extern void init_pressure_table(void);
 extern void update_pressure_table(int16_t href, uint32_t p_meas, uint16_t t_meas);
-#ifndef FIXEDPOINT
+#ifndef CONFIG_FIXEDPOINT_MATH
 extern int16_t conv_pa_to_meter(uint32_t p_meas, uint16_t t_meas);
 #else
 extern int16_t conv_pa_to_altitude(uint32_t p_meas, uint16_t t_meas);

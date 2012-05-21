@@ -31,27 +31,11 @@ DATA["CONFIG_FREQUENCY"] = {
 	"help": "Radio frequency for the clock"
 }
 
-DATA["OPTION_TIME_DISPLAY"] = {
-	"name": "Time display options",
-	"depends": [],
-	"default": 0,
-	"type": "choices",
-	"values": [(0, "24hr"), (1, "12hr (AM/PM)"), (2, "selectable")],
-	"help": "Select how time should be displayed, in order of code size options are- 0 = 24hr, 1=12hr (AM/PM) or 2=selectable"
-}
-
-DATA["CONFIG_METRIC_ONLY"] = {
-	"name": "Metric only code (-286 bytes)",
+DATA["CONFIG_FIXEDPOINT_MATH"] = {
+	"name": "Fixedpoint Math (EXPERIMENTAL)",
 	"depends": [],
 	"default": False,
-	"help": "Only add code for Metric units (meter/celsius) to reduce image size",
-}
-
-DATA["FIXEDPOINT"] = {
-	"name": "Fixedpoint (-5078 bytes)",
-	"depends": [],
-	"default": False,
-	"help": "Tries to use fix point aritmetric. If no module is using it, it reduces the code size dramaticly. EXPERIMENTAL",
+	"help": "Tries to use fix point aritmetric. If no module is using it, it reduces the code size dramaticly.",
 }
 
 DATA["THIS_DEVICE_ADDRESS"] = {
