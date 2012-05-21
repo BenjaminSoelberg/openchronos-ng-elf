@@ -27,7 +27,7 @@ OBJS := $(patsubst %.c,%.o,$(SRCS))
 depend: openchronos.dep
 
 openchronos.dep: $(SRCS)
-	echo "Generating dependencies.."
+	@echo "Generating dependencies.."
 	@touch $@
 	@makedepend $(INCLUDES) -Y -f $@ $^ &> /dev/null
 	@rm -f $@.bak
