@@ -1,4 +1,4 @@
-openchronos-ng - http://openchronos.sourceforge.net/
+openchronos-ng - http://openchronos-ng.sourceforge.net/
 
 == Status ==
 In progress..
@@ -16,6 +16,7 @@ core openchronos. Basically, at core level, this was what has been done:
 * Implementation of a module system (drop in applications).
 * Rework of the display routines.
 * Rework of the menu system.
+* Rework of the buzzer system: it can now play RTTTL (nokia tunes) melodies.
 
 In summary, you should expect the code to be more stable, smaller and easier
 to understand.
@@ -26,8 +27,7 @@ to understand.
 * python
 
 == Recommended Toolchain ==
-
-gcc-4.4.3
-binutils-2.20.1
-libc-20100430
+msp430-gcc-4.6.3
+msp430-binutils-2.21.1a
+msp430-libc-20120224
 
