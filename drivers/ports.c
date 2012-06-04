@@ -26,9 +26,19 @@
 
 #include "display.h"
 
+#ifdef CONFIG_ACCELEROMETER
+#include "vti_as.h"
+#endif
+
 #define ALL_BUTTONS				0x1F
 
 #define BIT_IS_SET(F, B) ((F) | (B)) == (F)
+
+// *************************************************************************************************
+// Defines section
+
+// Macro for button IRQ
+#define IRQ_TRIGGERED(flags, bit)		((flags & bit) == bit)
 
 /* Button debounce time (ms) */
 #define BUTTONS_DEBOUNCE_TIME	5
@@ -81,6 +91,15 @@ void PORT2_ISR(void)
 	if (buttons)
 		last_press = timer0_10hz_counter;
 
+	#ifdef CONFIG_ACCELEROMETER
+	// Accelerometer is on rising edge in the default configuration
+	if (IRQ_TRIGGERED(buttons, AS_INT_PIN))
+	{
+		// Get data from sensor
+		as_last_interrupt = 1;
+	}
+	#endif
+
 	/* set pressed button IRQ triggers to falling edge,
 	 so we can detect when they are released */
 	P2IES |= buttons;
@@ -111,9 +130,12 @@ void PORT2_ISR(void)
 		_BIC_SR_IRQ(LPM3_bits);
 	}
 
+
+
 	/* A write to the interrupt vector, automatically clears the
 	 latest interrupt */
 	P2IV = 0x00;
 }
+
 
 

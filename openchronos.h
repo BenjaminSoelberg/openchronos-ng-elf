@@ -114,6 +114,9 @@ enum sys_message {
 	SYS_MSG_TIMER_1HZ		= BIT6, /*!< 1HZ event from the hardware TIMER_0. */
 	SYS_MSG_TIMER_10HZ	= BIT7, /*!< 10HZ event from the hardware TIMER_0. */
 	SYS_MSG_TIMER_PROG	= BIT8, /*!< programmable event from TIMER_0. */
+	/* sensor/interrups */
+	SYS_MSG_AS_INT =	BIT9,
+	SYS_MSG_PS_INT =	BITA,
 };
 
 /*!

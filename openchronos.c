@@ -166,6 +166,12 @@ void check_events(void)
 		timer0_last_event = 0;
 	}
 
+	/* drivers/accelerometer */
+	if(as_last_interrupt){
+		msg |= SYS_MSG_AS_INT;
+		as_last_interrupt = 0;
+	}
+
 	{
 		struct sys_messagebus *p = messagebus;
 
@@ -179,6 +185,8 @@ void check_events(void)
 			p = p->next;
 		}
 	}
+
+
 }
 
 /***************************************************************************
@@ -410,7 +418,7 @@ void init_application(void)
 	radio_reset();
 	radio_powerdown();
 
-#ifdef FEATURE_PROVIDE_ACCEL
+#ifdef CONFIG_ACCELEROMETER
 	// ---------------------------------------------------------------------
 	// Init acceleration sensor
 	as_init();
