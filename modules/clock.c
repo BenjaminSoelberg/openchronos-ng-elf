@@ -77,6 +77,9 @@ static void clock_activated()
 	lcd_screen_create(&screen[0]);
 	lcd_screen_create(&screen[1]);
 
+	/* keep screen contents */
+	lcd_screen_real_to_virtual(&screen[0]);
+
 	/* set screen0 as current one */
 	scr = &screen[0];
 
