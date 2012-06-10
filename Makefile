@@ -11,6 +11,7 @@ PYTHON := $(shell which python2 || which python)
 .PHONY: depend
 .PHONY: doc
 .PHONY: httpdoc
+.PHONY: force
 
 all: depend config.h openchronos.txt
 
@@ -32,8 +33,15 @@ openchronos.dep: $(SRCS)
 	@makedepend $(INCLUDES) -Y -f $@ $^ &> /dev/null
 	@rm -f $@.bak
 
+# rebuild if CFLAGS changed, as suggested in:
+# http://stackoverflow.com/questions/3236145/force-gnu-make-to-rebuild-objects-affected-by-compiler-definition/3237349#3237349
+openchronos.cflags: force
+	@echo "$(CFLAGS)" | cmp -s - $@ || echo "$(CFLAGS)" > $@
+
+$(OBJS): openchronos.cflags
 #
 # Top rules
+
 openchronos.elf: even_in_range.o $(OBJS)
 	@echo -e "\n>> Building $@"
 	@$(CC) $(CFLAGS) $(LDFLAGS) $(INCLUDES) -o $@ $+	
