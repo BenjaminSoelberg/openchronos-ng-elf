@@ -8,10 +8,15 @@ CC_DMACH	= -D__MSP430_6137__ -DMRFI_CC430 -D__CC430F6137__
 # are used for dead code elimination, see:
 # http://gcc.gnu.org/ml/gcc-help/2003-08/msg00128.html
 #
-CFLAGS		+= $(CC_CMACH) $(CC_DMACH) -Os -Wall -fomit-frame-pointer
+CFLAGS		+= $(CC_CMACH) $(CC_DMACH) -Wall
 CFLAGS		+= -fno-force-addr -finline-limit=1 -fno-schedule-insns
 CFLAGS		+= -fshort-enums -Wl,-Map=output.map
-CFLAGS		+= -fdata-sections -ffunction-sections
+
+# switch between the following lines for debugging
+CFLAGS		+= -Os -fdata-sections -ffunction-sections -fomit-frame-pointer
+#CFLAGS		+= -O1 -ggdb
+
+# linker flags and include directories
 LDFLAGS		= -Wl,--gc-sections -Wl,-s
 INCLUDES	+= -I./ -Igcc/
 ### Build tools

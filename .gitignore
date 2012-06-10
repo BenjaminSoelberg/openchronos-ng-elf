@@ -3,6 +3,7 @@ modinit.c
 openchronos.txt
 openchronos.elf
 openchronos.dep
+openchronos.cflags
 *.[oa]
 *.pyc
 *.*~
