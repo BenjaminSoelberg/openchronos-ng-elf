@@ -12,12 +12,15 @@ CFLAGS		+= $(CC_CMACH) $(CC_DMACH) -Wall
 CFLAGS		+= -fno-force-addr -finline-limit=1 -fno-schedule-insns
 CFLAGS		+= -fshort-enums -Wl,-Map=output.map
 
-# switch between the following lines for debugging
+# uncomment the following lines for size optimization
 CFLAGS		+= -Os -fdata-sections -ffunction-sections -fomit-frame-pointer
+LDFLAGS		= -Wl,--gc-sections -Wl,-s
+
+# uncomment the following lines for debugging
 #CFLAGS		+= -O1 -ggdb
+#LDFLAGS		= -Wl,--gc-sections
 
 # linker flags and include directories
-LDFLAGS		= -Wl,--gc-sections -Wl,-s
 INCLUDES	+= -I./ -Igcc/
 ### Build tools
 # 
