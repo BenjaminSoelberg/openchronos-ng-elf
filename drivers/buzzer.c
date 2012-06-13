@@ -43,7 +43,7 @@ uint16_t base_notes[13] = {
 	1262  /* C: G# */
 };
 
-void buzzer_init(void)
+inline void buzzer_init(void)
 {
 	/* Reset TA1R, TA1 runs from 32768Hz ACLK */
 	TA1CTL = TACLR | TASSEL__SMCLK;
