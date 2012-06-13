@@ -123,7 +123,7 @@ void timer0_delay(uint16_t duration)
 	}
 
 	/* disable interrupt */
-	TA0CCTL4 |= CCIE;
+	TA0CCTL4 &= ~CCIE;
 }
 
 /* programable timer:
