@@ -434,6 +434,9 @@ void init_application(void)
 	// Init buttons
 	init_buttons();
 
+	/* Init buzzer */
+	buzzer_init();
+
 	// ---------------------------------------------------------------------
 	// Configure Timer0 for use by the clock and delay functions
 	timer0_init();
