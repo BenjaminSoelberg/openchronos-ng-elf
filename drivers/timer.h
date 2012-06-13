@@ -37,7 +37,7 @@ void timer0_create_prog_timer(
 
 /*!
 	\brief destroys a running programmable timer
-	\sa timer0_destroy_prog_timer
+	\sa timer0_create_prog_timer
 */
 void timer0_destroy_prog_timer();
 
