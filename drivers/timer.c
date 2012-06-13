@@ -186,7 +186,7 @@ void timer0_A1_ISR(void)
 	/* delay timer */
 	if (flag == TA0IV_TA0CCR4) {
 		delay_finished = 1;
-		return;
+		goto exit_lpm3;
 	}
 
 	/* 1Hz timer, nothing to do yet */
