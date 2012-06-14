@@ -62,7 +62,7 @@
 #define TIMER0_FREQ 16000
 
 /* converts microseconds to clock ticks */
-#define TIMER0_TICKS_FROM_MS(T) (TIMER0_FREQ / 1000) * (T)
+#define TIMER0_TICKS_FROM_MS(T) ((TIMER0_FREQ / 1000) * (T))
 
 static volatile uint8_t delay_finished;
 
