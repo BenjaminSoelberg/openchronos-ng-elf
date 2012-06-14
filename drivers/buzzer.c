@@ -88,14 +88,10 @@ void buzzer_play(note *notes)
 			TA1CTL |= MC__UP;
 		}
 
-		/* Delay for DURATION(*notes) milliseconds */
-		uint16_t i;
-
-		for (i = 0; i < DURATION(*notes); i++) {
-			/* FIXME: This delays 1ms, however the watch is not sleeping during this period */
-			__delay_cycles(12000);
-		}
-
+		/* Delay for DURATION(*notes) milliseconds,
+		   use LPM1 because we need SMCLK for tone generation */
+		timer0_delay(DURATION(*notes), LPM1_bits);
+		
 		/* Advance to the next note */
 		notes++;
 	}
