@@ -17,10 +17,12 @@
  * - The first 4 MSB represent the pitch
  * - The next 2 bits represent the octave
  * - The following 10 bits are the duration in ms of the note.
+ *
  * There are two "meta" notes:
  * - The note xxx0 represents no tone (a rest).
  * - The note xxxF represents the "stop note" marking the \
  *   end of a note sequence.
+ *
  * \note The stop note is needed in the play loop to determine \
  * when to end the melody.
  */
