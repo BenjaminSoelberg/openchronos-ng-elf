@@ -22,15 +22,6 @@ def rand_hw():
 
 DATA = SortedDict()
 
-DATA["CONFIG_FREQUENCY"] = {
-	"name": "Frequency",
-	"depends": [],
-	"default": 902,
-	"type": "choices",
-	"values": [902, 868, 433],
-	"help": "Radio frequency for the clock"
-}
-
 DATA["CONFIG_FIXEDPOINT_MATH"] = {
 	"name": "Fixedpoint Math (EXPERIMENTAL)",
 	"depends": [],
