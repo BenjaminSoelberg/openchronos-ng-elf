@@ -37,9 +37,6 @@
 // *************************************************************************************************
 // Defines section
 
-// Macro for button IRQ
-#define IRQ_TRIGGERED(flags, bit)		((flags & bit) == bit)
-
 /* Button debounce time (ms) */
 #define BUTTONS_DEBOUNCE_TIME	5
 
@@ -77,9 +74,9 @@ void PORT2_ISR(void)
 {
 	static uint16_t last_press;
 
-	/* If the interrupt was not raised by a button press, then return */
+	/* If the interrupt was not raised by a button press, then handle accel */
 	if ((P2IFG & ALL_BUTTONS) == 0)
-		return;
+		goto accel_handler;
 
 	/* get mask for buttons in rising edge */
 	uint8_t rising_mask = ~P2IES & ALL_BUTTONS;
@@ -90,15 +87,6 @@ void PORT2_ISR(void)
 
 	if (buttons)
 		last_press = timer0_10hz_counter;
-
-	#ifdef CONFIG_ACCELEROMETER
-	// Accelerometer is on rising edge in the default configuration
-	if (IRQ_TRIGGERED(buttons, AS_INT_PIN))
-	{
-		// Get data from sensor
-		as_last_interrupt = 1;
-	}
-	#endif
 
 	/* set pressed button IRQ triggers to falling edge,
 	 so we can detect when they are released */
@@ -130,7 +118,12 @@ void PORT2_ISR(void)
 		_BIC_SR_IRQ(LPM3_bits);
 	}
 
-
+accel_handler:
+	#ifdef CONFIG_ACCELEROMETER
+	/* Check if accelerometer interrupt flag */
+	if ((P2IFG & AS_INT_PIN) == AS_INT_PIN)
+		as_last_interrupt = 1;
+	#endif
 
 	/* A write to the interrupt vector, automatically clears the
 	 latest interrupt */
