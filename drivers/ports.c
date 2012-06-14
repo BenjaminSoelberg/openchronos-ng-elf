@@ -44,6 +44,10 @@
 /* in multiples of 1/10 second */
 #define BUTTONS_LONG_PRESS_TIME 3
 
+/* How long does a button need to be pressed to be a short press? */
+/* in multiples of 1/10 second */
+#define BUTTONS_SHORT_PRESS_TIME 1
+
 void init_buttons(void)
 {
 	/* Set button ports to input */
@@ -104,12 +108,18 @@ void PORT2_ISR(void)
 	if (buttons) {
 		buttons |= P2IES;
 
-		/* check if button was pressed long enough */
-		if (timer0_10hz_counter - last_press > BUTTONS_LONG_PRESS_TIME)
-			buttons <<= 5;
-		
-		/* save pressed buttons */
-		ports_pressed_btns |= buttons;
+#ifdef CONFIG_TIMER_10HZ_IRQ
+		uint16_t pressed_ticks = timer0_10hz_counter - last_press;
+#else
+		/* in case the timer is disabled, at least detect short btn presses */
+		uint16_t pressed_ticks = BUTTONS_SHORT_PRESS_TIME;
+#endif
+
+		/* check how long btn was pressed and save the event */
+		if (pressed_ticks > BUTTONS_LONG_PRESS_TIME)
+			ports_pressed_btns |= buttons << 5;
+		else if (pressed_ticks >= BUTTONS_SHORT_PRESS_TIME)
+			ports_pressed_btns |= buttons;
 
 		/* set buttons IRQ triggers to rising edge */
 		P2IES &= ~ALL_BUTTONS;
