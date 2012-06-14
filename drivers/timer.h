@@ -44,10 +44,12 @@ void timer0_destroy_prog_timer();
 /*!
 	\brief 1ms - 1s programmable delay
 	\details delays execution for \b duration milliseconds. During the delay, interrupts are still generated but #sys_message only broadcasts the events after the delay has finished.
+	The second argument is put directly into the _STATUS_ register. This could of course disrupt the state of the watch. Please be careful and take a look at http://mspgcc.sourceforge.net/manual/x1028.html for information regarding the _STATUS_ register.
 	\note Please avoid using this. No processing is done in the background during the delay, which can have impact in modules that require a responsive system.
 */
 void timer0_delay(
-	uint16_t duration /*!< delay duration between 1 and 1000 milliseconds */
+	uint16_t duration, /*!< delay duration between 1 and 1000 milliseconds */
+			uint16_t LPM_bits  /*!< LPM bits to put in the status register, so the user can choose LPM level */
 );
 
 /*!

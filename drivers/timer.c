@@ -93,22 +93,20 @@ void timer0_init(void)
 
 /* This function was based on original Texas Instruments implementation,
    see LICENSE-TI for more information. */
-void timer0_delay(uint16_t duration)
-{
-	uint16_t ticks = TIMER0_TICKS_FROM_MS(duration);
-	
+void timer0_delay(uint16_t duration, uint16_t LPM_bits)
+{	
 	delay_finished = 0;
 
 	/* Set next CCR match */
-	TA0CCR4 = TA0R + ticks;
-
+	TA0CCR4 = TA0R + TIMER0_TICKS_FROM_MS(duration);
+	
 	/* enable interrupt */
 	TA0CCTL4 |= CCIE;
 
 	/* Wait for interrupt */
 	while (1) {
 		/* enter low power mode */
-		_BIS_SR(LPM3_bits + GIE);
+		_BIS_SR(LPM_bits + GIE);
 		__no_operation();
 
 #ifdef USE_WATCHDOG
