@@ -194,7 +194,7 @@ void as_start(uint8_t mode) {
 #endif
 
 	// Delay of >5ms required between switching on power and configuring sensor
-	timer0_delay(10);
+	timer0_delay(10, LPM3_bits);
 
 	// Initialize interrupt pin for data read out from acceleration sensor
 	AS_INT_IFG &= ~AS_INT_PIN; // Reset flag
@@ -207,7 +207,7 @@ void as_start(uint8_t mode) {
 	as_write_register(0x04, 0x04);
 
 	// Wait 5 ms before starting sensor output
-	timer0_delay(5);
+	timer0_delay(5, LPM3_bits);
 
 
 	// Configure sensor and start to sample data
@@ -276,13 +276,13 @@ void as_start(uint8_t mode) {
 		}
 
 	// Wait 2 ms before entering modality to settle down
-	timer0_delay(2);
+	timer0_delay(2, LPM3_bits);
 
 	//write the configuration
 	as_write_register(ADDR_CTRL, bConfig);
 
 	// Wait 2 ms before entering modality to settle down
-	timer0_delay(2);
+	timer0_delay(2, LPM3_bits);
 }
 
 // *************************************************************************************************
