@@ -1,7 +1,7 @@
 /*!
 	\file timer.h
 	\brief openchronos-ng timer driver
-	\details This driver takes care of the Timer0 hardware timer. From this hardware timer the driver produces two hardware-based timers running at 10Hz and 1Hz. The events produced by those timers are available in #sys_message. Beyound the fixed frequency timers, this driver also implements a programmable timer and a programmable delay.
+	\details This driver takes care of the Timer0 hardware timer. From this hardware timer the driver produces two hardware-based timers running at 20Hz and 1Hz. The events produced by those timers are available in #sys_message. Beyound the fixed frequency timers, this driver also implements a programmable timer and a programmable delay.
 	\note If you are looking to timer events, then see #sys_message
 */
 
@@ -19,11 +19,11 @@
 void timer0_init(void);
 
 /*!
-	\brief 10Hz counter.
-	\details This is a counter variable, its value is updated at 10Hz. You can use this to measure timings.
-	\note counter overflows should be relatively safe since they only happen once each 6553.6 seconds. However you should handle overflows if your application cannot accept sporadic failures in measurement.
+	\brief 20Hz counter.
+	\details This is a counter variable, its value is updated at 20Hz. You can use this to measure timings.
+	\note counter overflows should be relatively safe since they only happen once each 3276.8 seconds. However you should handle overflows if your application cannot accept sporadic failures in measurement.
 */
-volatile uint16_t timer0_10hz_counter;
+volatile uint16_t timer0_20hz_counter;
 
 /*!
 	\brief creates a 1000Hz - 1Hz programmable timer
@@ -57,7 +57,7 @@ void timer0_delay(
 */
 enum timer0_event {
 	TIMER0_EVENT_1HZ	= BIT0,	/*!< 1Hz event */
-	TIMER0_EVENT_10HZ	= BIT1,	/*!< 10Hz event */
+	TIMER0_EVENT_20HZ	= BIT1,	/*!< 20Hz event */
 	TIMER0_EVENT_PROG	= BIT2	/*!< programmable timer event */
 };
 

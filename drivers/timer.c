@@ -51,7 +51,7 @@
 #include "timer.h"
 
 /* HARDWARE TIMER ASSIGNMENT:
-	 TA0CCR0: 100ms timer
+	 TA0CCR0: 20Hz timer
 	 TA0CCR1: Unused
 	 TA0CCR2: Unused
 	 TA0CCR3: programable timer
@@ -66,8 +66,8 @@
 
 static volatile uint8_t delay_finished;
 
-/* 10hz timer */
-static uint16_t timer0_10hz_ticks;
+/* 20hz timer */
+static uint16_t timer0_20hz_ticks;
 
 /* programable timer */
 static uint16_t timer0_prog_ticks;
@@ -83,10 +83,10 @@ void timer0_init(void)
 	/* select external 32kHz source, /2 divider, continous mode */
 	TA0CTL |= TASSEL__ACLK | ID__2 | MC__CONTINOUS;
 
-#ifdef CONFIG_TIMER_10HZ_IRQ
-	/* setup and enable 100ms (10Hz) timer */
-	timer0_10hz_ticks = TIMER0_TICKS_FROM_MS(100);
-	TA0CCR0 = TA0R + timer0_10hz_ticks;
+#ifdef CONFIG_TIMER_20HZ_IRQ
+	/* setup and enable 20Hz timer */
+	timer0_20hz_ticks = TIMER0_TICKS_FROM_MS(50);
+	TA0CCR0 = TA0R + timer0_20hz_ticks;
 	TA0CCTL0 |= CCIE;
 #endif
 }
@@ -151,13 +151,13 @@ void timer0_A0_ISR(void)
 {
 	/* TODO: Do we need to reset the interrupt flag ? */
 	/* setup timer for next time */
-	TA0CCR0 = TA0R + timer0_10hz_ticks;
+	TA0CCR0 = TA0R + timer0_20hz_ticks;
 
-	/* increase 10hz counter */
-	timer0_10hz_counter++;
+	/* increase 20hz counter */
+	timer0_20hz_counter++;
 
-	/* store 10hz timer event */
-	timer0_last_event |= TIMER0_EVENT_10HZ;
+	/* store 20hz timer event */
+	timer0_last_event |= TIMER0_EVENT_20HZ;
 
 	/* exit from LPM3, give execution back to mainloop */
 	_BIC_SR_IRQ(LPM3_bits);

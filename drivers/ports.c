@@ -90,7 +90,7 @@ void PORT2_ISR(void)
 	uint8_t buttons = P2IFG & rising_mask;
 
 	if (buttons)
-		last_press = timer0_10hz_counter;
+		last_press = timer0_20hz_counter;
 
 	/* set pressed button IRQ triggers to falling edge,
 	 so we can detect when they are released */
@@ -108,8 +108,8 @@ void PORT2_ISR(void)
 	if (buttons) {
 		buttons |= P2IES;
 
-#ifdef CONFIG_TIMER_10HZ_IRQ
-		uint16_t pressed_ticks = timer0_10hz_counter - last_press;
+#ifdef CONFIG_TIMER_20HZ_IRQ
+		uint16_t pressed_ticks = timer0_20hz_counter - last_press;
 #else
 		/* in case the timer is disabled, at least detect short btn presses */
 		uint16_t pressed_ticks = BUTTONS_SHORT_PRESS_TIME;
