@@ -48,6 +48,13 @@ static struct {
 	uint8_t sec;    /* cache of RTC seconds register */
 } rtca_time = { 0, 0, 1, 1, 0, 0, 0, 0 };
 
+
+/* Day of week strings */
+static char const * const rtca_dow_str[] = {
+	"SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"
+};
+
+
 void rtca_init(void)
 {
 #ifdef CONFIG_RTC_IRQ
@@ -58,13 +65,12 @@ void rtca_init(void)
 	RTCCTL01 |= RTCMODE | RTCRDYIE | RTCAIE;
 
 	/* Enable the RTC */
-	RTCCTL01 &= ~RTCHOLD;
+	rtca_start();
 
 	/* Enable minutes interrupts */
 	RTCCTL01 |= RTCTEVIE;
 #endif
 }
-
 
 /* returns number of days for a given month */
 uint8_t rtca_get_max_days(uint8_t month, uint16_t year)
@@ -110,7 +116,7 @@ void rtca_get_time(uint8_t *hour, uint8_t *min, uint8_t *sec)
 void rtca_set_time(uint8_t hour, uint8_t min, uint8_t sec)
 {
 	/* Stop RTC timekeeping for a while */
-	RTCCTL01 |= RTCHOLD;
+	rtca_stop();
 
 	/* update RTC registers */
 	RTCSEC = (rtca_time.sec = sec);
@@ -118,7 +124,7 @@ void rtca_set_time(uint8_t hour, uint8_t min, uint8_t sec)
 	RTCHOUR = (rtca_time.hour = hour);
 
 	/* Resume RTC time keeping */
-	RTCCTL01 &= ~RTCHOLD;
+	rtca_start();
 }
 
 void rtca_get_alarm(uint8_t *hour, uint8_t *min)
@@ -148,8 +154,10 @@ void rtca_disable_alarm()
 	RTCCTL01 &= ~RTCAIE;
 }
 
-void rtca_get_date(uint16_t *year, uint8_t *mon, uint8_t *day, uint8_t *dow)
+void rtca_get_date(uint16_t *year, uint8_t *mon, uint8_t *day,
+                   uint8_t *dow, char const **dow_str)
 {
+	*dow_str = rtca_dow_str[rtca_time.dow];
 	*dow = rtca_time.dow;
 	*day = rtca_time.day;
 	*mon = rtca_time.mon;
@@ -161,7 +169,7 @@ void rtca_set_date(uint16_t year, uint8_t mon, uint8_t day)
 	uint8_t dow;
 
 	/* Stop RTC timekeeping for a while */
-	RTCCTL01 |= RTCHOLD;
+	rtca_stop();
 
 	dow = LEAPS_SINCE_YEAR(year);
 
@@ -213,7 +221,8 @@ void rtca_set_date(uint16_t year, uint8_t mon, uint8_t day)
 	RTCYEARH = year >> 8;
 
 	/* Resume RTC time keeping */
-	RTCCTL01 &= ~RTCHOLD;
+	rtca_start();
+
 #if (CONFIG_DST > 0)
 	dst_calculate_dates(year, mon, day);	/* calculate new DST switch dates */
 #endif

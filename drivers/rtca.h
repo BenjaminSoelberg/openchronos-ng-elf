@@ -31,9 +31,13 @@ enum rtca_tevent{
 	RTCA_EV_YEAR	= BIT5
 };
 
+#define rtca_stop()		RTCCTL01 |=  RTCHOLD
+#define rtca_start()		RTCCTL01 &= ~RTCHOLD
+
 /* the ev variable holds the time event, see enum rtca_tevent for more info.
 please add -fshort-enums to CFLAGS to store rtca_tevent as only a byte */
 void rtca_init(void);
+
 void rtca_tevent_fn_register(void (*fn)(enum rtca_tevent));
 void rtca_tevent_fn_unregister(void (*fn)(enum rtca_tevent));
 
@@ -43,7 +47,13 @@ uint32_t rtca_get_systime(void);
 void rtca_get_time(uint8_t *hour, uint8_t *min, uint8_t *sec);
 void rtca_set_time(uint8_t hour, uint8_t min, uint8_t sec);
 
-void rtca_get_date(uint16_t *year, uint8_t *mon, uint8_t *day, uint8_t *dow);
+void rtca_get_date(
+	uint16_t *year,
+	uint8_t *mon,
+	uint8_t *day,
+	uint8_t *dow,
+	char const **dow_str
+);
 void rtca_set_date(uint16_t year, uint8_t mon, uint8_t day);
 
 void rtca_get_alarm(uint8_t *hour, uint8_t *min);

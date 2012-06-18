@@ -35,6 +35,7 @@ enum {
 
 static uint16_t tmp_yy;
 static uint8_t tmp_mo, tmp_dw, tmp_dd, tmp_hh, tmp_mm, tmp_ss;
+static char const * tmp_dws;
 
 /* vector of screens */
 static struct lcd_screen screen[2];
@@ -44,19 +45,17 @@ static struct lcd_screen *scr;
 
 static void clock_event(enum sys_message msg)
 {
-	/* Exit if we are in edit mode */
-	if (edit_state != EDIT_STATE_OFF)
-		return;
-
 	rtca_get_time(&tmp_hh, &tmp_mm, &tmp_ss);
-	rtca_get_date(&tmp_yy, &tmp_mo, &tmp_dd, &tmp_dw);
+	rtca_get_date(&tmp_yy, &tmp_mo, &tmp_dd, &tmp_dw, &tmp_dws);
 
 	if (msg | SYS_MSG_RTC_YEAR)
-		display_chars(&screen[1], LCD_SEG_L2_3_0, _itoa(tmp_yy, 4, 0), SEG_SET);
+		display_chars(&screen[1], LCD_SEG_L1_3_0, _itoa(tmp_yy, 4, 0), SEG_SET);
 	if (msg | SYS_MSG_RTC_MONTH)
 		display_chars(&screen[0], LCD_SEG_L2_1_0, _itoa(tmp_mo, 2, 0), SEG_SET);
-	if (msg | SYS_MSG_RTC_DAY)
+	if (msg | SYS_MSG_RTC_DAY) {
 		display_chars(&screen[0], LCD_SEG_L2_4_3, _itoa(tmp_dd, 2, 0), SEG_SET);
+		display_chars(&screen[1], LCD_SEG_L2_2_0, (uint8_t *)tmp_dws, SEG_SET);
+	}
 	if (msg | SYS_MSG_RTC_HOUR)
 		display_chars(&screen[0], LCD_SEG_L1_3_2, _itoa(tmp_hh, 2, 0), SEG_SET);
 	if (msg | SYS_MSG_RTC_MINUTE)
@@ -93,8 +92,9 @@ static void clock_activated()
 	display_chars(&screen[0], LCD_SEG_L2_4_0, NULL, SEG_ON);
 	display_char(&screen[0], LCD_SEG_L2_2, '-', SEG_SET);
 
-	/* on screen one we display year */
-	display_chars(&screen[1], LCD_SEG_L2_3_0, NULL, SEG_ON);
+	/* on screen one we display year and day of week */
+	display_chars(&screen[1], LCD_SEG_L1_3_0, NULL, SEG_ON);
+	display_chars(&screen[1], LCD_SEG_L2_2_0, NULL, SEG_ON);
 
 	/* update screens with fake event */
 	clock_event(RTCA_EV_YEAR
@@ -129,7 +129,7 @@ static void edit(int8_t step)
 		*((uint8_t *)&tmp_yy + 1) = 0x07;
 		loop_fn((uint8_t *)&tmp_yy, 220, 230);
 
-		display_chars(&screen[1], LCD_SEG_L2_3_0, _itoa(tmp_yy, 4, 0), SEG_SET);
+		display_chars(&screen[1], LCD_SEG_L1_3_0, _itoa(tmp_yy, 4, 0), SEG_SET);
 		break;
 
 	case EDIT_STATE_MO:
@@ -169,7 +169,7 @@ static void edit_next()
 {
 	helpers_loop_up(&edit_state, EDIT_STATE_HH, EDIT_STATE_YY);
 
-	display_chars(&screen[1], LCD_SEG_L2_3_0, NULL,
+	display_chars(&screen[1], LCD_SEG_L1_3_0, NULL,
 			(edit_state == EDIT_STATE_YY ? BLINK_ON : BLINK_OFF));
 
 	display_chars(&screen[0], LCD_SEG_L2_1_0, NULL,
@@ -198,13 +198,16 @@ static void edit_save()
 	/* turn off only SOME blinking segments */
 	display_chars(&screen[0], LCD_SEG_L1_3_0, NULL, BLINK_OFF);
 	display_chars(&screen[0], LCD_SEG_L2_4_0, NULL, BLINK_OFF);
-	display_chars(&screen[1], LCD_SEG_L2_3_0, NULL, BLINK_OFF);
+	display_chars(&screen[1], LCD_SEG_L1_3_0, NULL, BLINK_OFF);
 
 	/* set edit mode state to off */
 	edit_state = EDIT_STATE_OFF;
 
 	/* refresh real screen */
 	lcd_screen_virtual_to_real(scr);
+
+	/* start the RTC */
+	rtca_start();
 }
 
 
@@ -221,13 +224,15 @@ static void num_pressed()
 /* Star button long press callback. */
 static void star_long_pressed()
 {
+	/* stop the hardware RTC */
+	rtca_stop();
+
 	/* We go into edit mode  */
 	edit_state = EDIT_STATE_DD;
 
 	/* Save the current time in edit_buffer */
-	uint8_t tmp;
-	rtca_get_time(&tmp_hh, &tmp_mm, &tmp);
-	rtca_get_date(&tmp_yy, &tmp_mo, &tmp_dd, &tmp);
+	rtca_get_time(&tmp_hh, &tmp_mm, &tmp_ss);
+	rtca_get_date(&tmp_yy, &tmp_mo, &tmp_dd, &tmp_dw, &tmp_dws);
 
 	menu_editmode_start(&edit, &edit_next, &edit_save);
 
