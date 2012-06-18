@@ -23,11 +23,6 @@
 #include <drivers/display.h>
 #include <drivers/rtca.h>
 
-static enum {
-	EDIT_STATE_HH = 0,
-	EDIT_STATE_MM,
-} edit_state;
-
 static union {
 	struct {
 		/* one shot alarm */
@@ -53,7 +48,54 @@ static void alarm_event(enum sys_message msg)
 	/* TODO: */
 }
 
+/*************************** edit mode callbacks **************************/
+static void edit_hh_sel(void)
+{
+	display_chars(NULL, LCD_SEG_L1_3_2, NULL, BLINK_ON);
+}
 
+static void edit_hh_dsel(void)
+{
+	display_chars(NULL, LCD_SEG_L1_3_2, NULL, BLINK_OFF);
+}
+
+static void edit_hh_set(int8_t step)
+{
+	/* TODO: fix for 12/24 hr! */
+	helpers_loop(&tmp_hh, 0, 23, step);
+	display_chars(NULL, LCD_SEG_L1_3_2, _itoa(tmp_hh, 2, 0), SEG_SET);
+}
+
+static void edit_mm_sel(void)
+{
+	display_chars(NULL, LCD_SEG_L1_1_0, NULL, BLINK_ON);
+}
+
+static void edit_mm_dsel(void)
+{
+	display_chars(NULL, LCD_SEG_L1_1_0, NULL, BLINK_OFF);
+}
+
+static void edit_mm_set(int8_t step)
+{
+	helpers_loop(&tmp_mm, 0, 59, step);
+	display_chars(NULL, LCD_SEG_L1_1_0, _itoa(tmp_mm, 2, 0), SEG_SET);
+}
+
+static void edit_save(void)
+{
+	/* Here we return from the edit mode, fill in the new values! */
+	rtca_set_alarm(tmp_hh, tmp_mm);
+}
+
+/* edit mode item table */
+static struct menu_editmode_item edit_items[] = {
+	{&edit_hh_sel, &edit_hh_dsel, &edit_hh_set},
+	{&edit_mm_sel, &edit_mm_dsel, &edit_mm_set},
+	{ NULL },
+};
+
+/******************** menu callbacks **************************************/
 static void alarm_activated()
 {
 	/* Force redraw of the screen */
@@ -68,45 +110,6 @@ static void alarm_deactivated()
 	display_clear(NULL, 1);
 }
 
-
-static void edit(int8_t step)
-{
-	helpers_loop_fn_t loop_fn = (step > 0 ?
-					&helpers_loop_up : &helpers_loop_down);
-
-	if (edit_state == EDIT_STATE_MM) {
-		loop_fn(&tmp_mm, 0, 59);
-
-		display_chars(NULL, LCD_SEG_L1_1_0, _itoa(tmp_mm, 2, 0), SEG_SET);
-	} else {
-		/* TODO: fix for 12/24 hr! */
-		loop_fn(&tmp_hh, 0, 23);
-
-		display_chars(NULL, LCD_SEG_L1_3_2, _itoa(tmp_hh, 2, 0), SEG_SET);
-	}
-}
-
-
-static void edit_next()
-{
-	helpers_loop_up(&edit_state, EDIT_STATE_HH, EDIT_STATE_MM);
-
-	display_chars(NULL, LCD_SEG_L1_1_0, NULL,
-			(edit_state == EDIT_STATE_MM ? BLINK_ON : BLINK_OFF));
-
-	display_chars(NULL, LCD_SEG_L1_3_2, _itoa(tmp_hh, 2, 0),
-			(edit_state == EDIT_STATE_HH ? BLINK_ON : BLINK_OFF));
-}
-
-
-static void edit_save()
-{
-	/* Here we return from the edit mode, fill in the new values! */
-	rtca_set_alarm(tmp_hh, tmp_mm);
-
-	/* only turn off SOME blinking segments */
-	display_chars(NULL, LCD_SEG_L1_3_0, NULL, BLINK_OFF);
-}
 
 /* NUM (#) button pressed callback */
 static void num_pressed()
@@ -138,17 +141,14 @@ static void num_pressed()
 
 }
 
+
 /* Star button long press callback. */
 static void star_long_pressed()
 {
-	/* We go into edit mode  */
-	edit_state = EDIT_STATE_MM;
-
 	/* Save the current time in edit_buffer */
 	rtca_get_alarm(&tmp_hh, &tmp_mm);
 
-	menu_editmode_start(&edit, &edit_next, &edit_save);
-
+	menu_editmode_start(&edit_save, edit_items);
 }
 
 

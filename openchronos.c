@@ -104,10 +104,10 @@ static struct menu *menu_item;
 
 /* Menu edit mode stuff */
 static struct {
-	uint8_t enabled;
-	void (* value_fn)(int8_t step);
-	void (* next_item_fn)(void);
-	void (* complete_fn)(void);
+	uint8_t enabled:1;          /* is edit mode enabled? */
+	uint8_t pos:7;              /* the position for selected item */
+	void (* complete_fn)(void); /* call this fn when editmode exits */
+	struct menu_editmode_item *items;  /* vector of editmode items */
 } menu_editmode;
 
 /* the message bus */
@@ -199,17 +199,27 @@ void check_buttons(void)
 	if (menu_editmode.enabled) {
 		/* STAR button exits edit mode */
 		if (BIT_IS_SET(ports_pressed_btns, PORTS_BTN_STAR)) {
+			/* deselect item */
+			menu_editmode.items[menu_editmode.pos].deselect();
+
 			menu_editmode.complete_fn();
 			menu_editmode.enabled = 0;
 
 		} else if (BIT_IS_SET(ports_pressed_btns, PORTS_BTN_NUM)) {
-			menu_editmode.next_item_fn();
+			/* deselect current item */
+			menu_editmode.items[menu_editmode.pos].deselect();
+
+			/* select next item */
+			menu_editmode.pos++;
+			if (! menu_editmode.items[menu_editmode.pos].set)
+				menu_editmode.pos = 0;
+			menu_editmode.items[menu_editmode.pos].select();
 
 		} else if (BIT_IS_SET(ports_pressed_btns, PORTS_BTN_UP)) {
-			menu_editmode.value_fn(1);
+			menu_editmode.items[menu_editmode.pos].set(1);
 
 		} else if (BIT_IS_SET(ports_pressed_btns, PORTS_BTN_DOWN)) {
-			menu_editmode.value_fn(-1);
+			menu_editmode.items[menu_editmode.pos].set(-1);
 		}	
 	} else { /* not in edit mode */	
 		if (BIT_IS_SET(ports_pressed_btns, PORTS_BTN_LSTAR)) {
@@ -296,18 +306,17 @@ void menu_item_next(void)
 }
 
 
-void menu_editmode_start(void (* value_fn)(int8_t),
-			 void (* next_item_fn)(void),
-			 void (* complete_fn)(void))
+void menu_editmode_start(void (* complete_fn)(void),
+                         struct menu_editmode_item *items)
 {
-	menu_editmode.value_fn = value_fn;
-	menu_editmode.next_item_fn = next_item_fn;
+	menu_editmode.pos = 0;
+	menu_editmode.items = items;
 	menu_editmode.complete_fn = complete_fn;
 
 	menu_editmode.enabled = 1;
 
-	/* now call next_item to give control back to the module */
-	next_item_fn();
+	/* select the first item */
+	menu_editmode.items[0].select();
 }
 
 /***************************************************************************
@@ -496,30 +505,31 @@ int main(void)
 /***************************************************************************
  **************************** HERE BE HELPERS ******************************
  **************************************************************************/
-void helpers_loop_up(uint8_t *value, uint8_t lower, uint8_t upper)
+void helpers_loop(uint8_t *value, uint8_t lower, uint8_t upper, int8_t step)
 {
-	/* prevent overflow */
-	if (*value == 255) {
-		*value = lower;
-		return;
-	}
+	/* for now only increase/decrease on steps of 1 value */
+	if (step > 0) {
+		/* prevent overflow */
+		if (*value == 255) {
+			*value = lower;
+			return;
+		}
 
-	(*value)++;
-	if(*value -1 == upper)
-		*value = lower;
+		(*value)++;
+		if(*value -1 == upper)
+			*value = lower;
+	} else {
+		/* prevent overflow */
+		if (*value == 0) {
+			*value = upper;
+			return;
+		}
+
+		(*value)--;
+		if(*value +1 == lower)
+			*value = upper;
+	}
 }
 
-void helpers_loop_down(uint8_t *value, uint8_t lower, uint8_t upper)
-{
-	/* prevent overflow */
-	if (*value == 0) {
-		*value = upper;
-		return;
-	}
-
-	(*value)--;
-	if(*value +1 == lower)
-		*value = upper;
-}
 
 
