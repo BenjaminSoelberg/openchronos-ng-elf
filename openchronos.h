@@ -51,8 +51,6 @@ void menu_add_entry(
 	void (*deactivate_fn)(void) /*!< callback for when the user switches out from this entry in the menu. */
 );
 
-void menu_item_next(void);
-
 /*!
 	\brief A item structure for menu_editmode_start.
 */
