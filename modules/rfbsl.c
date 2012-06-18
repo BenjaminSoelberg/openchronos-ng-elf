@@ -57,7 +57,7 @@ static void updown_press()
 	/*if (is_rf()) return;*/
 
 	// Write RAM to indicate we will be downloading the RAM Updater first
-	display_chars(NULL, LCD_SEG_L1_3_0, (uint8_t *)" RAM", SEG_ON);
+	display_chars(0, LCD_SEG_L1_3_0, (uint8_t *)" RAM", SEG_ON);
 
 	// Call RFBSL
 	CALL_RFSBL();
@@ -74,13 +74,13 @@ static void updown_press()
 static void rfbsl_activate()
 {
 	/* update screen */
-	display_chars(NULL, LCD_SEG_L2_5_0, (uint8_t *)" RFBSL", SEG_ON);
+	display_chars(0, LCD_SEG_L2_5_0, (uint8_t *)" RFBSL", SEG_ON);
 }
 
 static void rfbsl_deactivate()
 {
 	/* cleanup screen */
-	display_clear(NULL, 2);
+	display_clear(0, 2);
 }
 
 void rfbsl_init(void)

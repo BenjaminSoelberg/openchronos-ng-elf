@@ -144,7 +144,7 @@ void lcd_init(void);
 
 /*!
 	\brief Virtual LCD screen
-	\sa #lcd_screen_create()
+	\sa #lcd_screens_create()
 */
 struct lcd_screen {
 	uint8_t *segmem; /*!< pointer to segment memory location */
@@ -152,45 +152,37 @@ struct lcd_screen {
 };
 
 /*!
-	\brief Creates a virtual LCD screen
-	\details A virtual screen is a pointer to #lcd_screen that you can pass to all the display functions:<br />
+	\brief Creates virtual screens
+	\details Virtual screens are used to display data outside of the real screen. After creating <i>nr</i> number of screens, you can select which screen to write data to using the <i>scr_nr</i> argument available in any of the display functions:<br />
 	 #display_symbol()<br />
     #display_char()<br />
     #display_chars()<br />
     #display_clear()<br />
 
-	You can do all the operations of #display_segstate in a virtual screen.
-
-	The information written by the above functions is not displayed in the real LCD. The information stored in a virtual screen can be displayed in the real
-	screen using the lcd_screen_virtual_to_real(). If you want to directly write to the real screen, just set the screen parameter of any of the above functions to NULL.
-	\note Each virtual screen takes 24bytes of memory. It is less than the code that you would actually need to write to handle the cases where these functions are meant to be used. However, RAM memory on the ez430 chronos is limited too so use this with care!
-	\sa lcd_screen_destroy(), lcd_screen_real_to_virtual(), lcd_screen_virtual_to_real()
+	After creating the virtual screens using this function, the screen 0 is always selected as the active screen. This means that any writes to screen 0 will actually be imediately displayed on the real screen, while writes to other screens will be saved until lcd_screen_activate() is called.
+	\note Each virtual screen takes 24bytes of memory. It is less than the code that you would actually need to write to handle the cases where these functions are meant to be used. However, RAM memory on the ez430 chronos is limited too so don't use a bazilion of screens.
+	\note Never, ever forget to destroy the created screens using lcd_screens_destroy() !
+	\sa lcd_screens_destroy(), lcd_screen_activate()
 */
-inline void lcd_screen_create(
-	struct lcd_screen *screen /*!< pointer to a lcd_screen storage */
+void lcd_screens_create(
+	uint8_t nr /*!< the number of screens to create */
 );
 
 /*!
-	\brief Destroys a virtual LCD screen
-	\details Destroys a #lcd_screen created by #lcd_screen_create()
+	\brief Destroys all virtual screen
+	\details Destroys all #lcd_screen created by #lcd_screens_create()
 */
-inline void lcd_screen_destroy(
-	struct lcd_screen *screen /*!< pointer to the lcd_screen storage */
-);
+void lcd_screens_destroy(void);
 
 /*!
-	\brief Copies the contents of the real screen into a virtual screen
+	\brief Activates a virtual screen
+	\details Virtual screens are used to display data outside of the real screen. See lcd_screens_create() on how to create virtual screens.<br />
+	This function selects the active screen. The active screen is the screen where any writes to it will be imediately displayed in the real screen.
+	\note If you set the <i>scr_nr</i> to 0xff, the next screen will be automatically activated.
+	\sa lcd_screens_destroy(), lcd_screens_create()
 */
-inline void lcd_screen_real_to_virtual(
-	struct lcd_screen *screen /*!< pointer to the lcd_screen storage */
-);
-
-/*!
-	\brief Copies the contents of a virtual screen into the real screen
-	\details The copied contents are immediately displayed in the real screen.
-*/
-inline void lcd_screen_virtual_to_real(
-	struct lcd_screen *screen /*!< pointer to the lcd_screen storage */
+void lcd_screen_activate(
+	uint8_t scr_nr /*!< the screen number to activate, or 0xff */
 );
 
 /* Not to be used by modules */
@@ -201,41 +193,41 @@ void set_blink_rate(uint8_t bits);
 
 /*!
 	\brief Clears the screen
-	\details Clears the screen as instructed by <i>line</i>. If <i>screen</i> is NULL, then the clear operation affects the real screen. Otherwise it affects the virtual screen pointed by <i>screen</i>.
+	\details Clears the screen as instructed by <i>line</i>. If no virtual screens are created, the argument <i>scr_nr</i> is ignored, otherwise it selects which screen the operation will affect.
 */
 void display_clear(
-	struct lcd_screen *screen, /*!< pointer to the #lcd_screen storage */
+	uint8_t scr_nr, /*!< the virtual screen number to clear */
 	uint8_t line /*!< If zero, clears the entire screen (symbols and lines).<br />If one, clears the first line.<br />If two, clears the second line. */
 );
 
 /*!
 	\brief Displays a single character
-	\details Changes the <i>state</i> of <i>segment</i> state according to bits calculated from <i>chr</i>. If <i>screen</i> is NULL then this operation affects the real screen, otherwise it affects the screen pointed by <i>screen</i>.
+	\details Changes the <i>state</i> of <i>segment</i> state according to bits calculated from <i>chr</i>. If no virtual screens are created, the argument <i>scr_nr</i> is ignored, otherwise it selects which screen the operation will affect.
 
 	For example, the following line:<br />
 	\code
-	display_char(NULL, LCD_SEG_L1_3, 'C', SEG_SET);<br />
+	display_char(0, LCD_SEG_L1_3, 'C', SEG_SET);<br />
 	\endcode
 	Changes the bits of the 4th segment (from the right) of first line to show a 'C' character. The 'C' character is shown in the real screen.
 
 	Another but a little more complex example:<br />
 	\code
 	// changes the bits of the 4th segment (from the right) of first line to show the '1' character in the real screen.
-	display_char(NULL, LCD_SEG_L1_3, '1', SEG_SET);
+	display_char(0, LCD_SEG_L1_3, '1', SEG_SET);
 
 	// makes all bits of the segment to blink. because only the bits corresponding to the '1' character are being shown, only the displayed '1' blinks.
-	display_char(NULL, LCD_SEG_L1_3, '8', BLINK_ON);
+	display_char(0, LCD_SEG_L1_3, '8', BLINK_ON);
 
 	// changes the bits of the segment to show the '8' character. this operation doesn't change the blinking bits, so the displayed '8' will blink.
-	display_char(NULL, LCD_SEG_L1_3, '8', SEG_SET);
+	display_char(0, LCD_SEG_L1_3, '8', SEG_SET);
 
 	// turns off blinking for the bits corresponding to the '-' character. In this case because the bits of '8' were blinking, turning off '-' will make the bits of '0' continue blinking, while the '-' remains static.
-	display_char(NULL, LCD_SEG_L1_3, '-', BLINK_OFF);
+	display_char(0, LCD_SEG_L1_3, '-', BLINK_OFF);
 	\endcode
 	\sa #display_chars()
 */
 void display_char(
-	struct lcd_screen *screen, /*!< pointer to the #lcd_screen storage */
+	uint8_t scr_nr, /*!< the virtual screen number where to display */
 	enum display_segment segment, /*!< A segment */
 	uint8_t chr, /*!< The character to be displayed */
 	enum display_segstate state /*!< A bitfield with state operations to be performed on the segment */
@@ -249,16 +241,16 @@ void display_char(
 	Example:<br />
 	\code
 	// changes the bits of the 4th to 1st segments (from the right) of the first line to show the "4321" string in the real screen.
-	display_chars(NULL, LCD_SEG_L1_3_0, "4321", SEG_SET);
+	display_chars(0, LCD_SEG_L1_3_0, "4321", SEG_SET);
 
 	// makes all bits of the first three segments to blink. because only the bits corresponding to the "4321" characters are being shown, only the first three displayed "432" segments blink.
-	display_chars(NULL, LCD_SEG_L1_3_0, "888 ", BLINK_ON);
+	display_chars(0, LCD_SEG_L1_3_0, "888 ", BLINK_ON);
 
 	// changes the bits of the segments to show the "8888" string. this operation doesn't change the blinking bits, so the first three displayed "888" segments will blink, while the last '8' segment is static.
-	display_chars(NULL, LCD_SEG_L1_3_0, "8888", SEG_SET);
+	display_chars(0, LCD_SEG_L1_3_0, "8888", SEG_SET);
 
 	// turns off blinking for the bits corresponding to the "----" characters. In this case because the bits of "888 " were blinking, turning off "----" will actually set the blinking bits to "000 ". Because the "8888" string is being displayed, only the first three "000" bits will blink, the first three "---" bits will remain static and the last segment remains static.
-	display_chars(NULL, LCD_SEG_L1_3_0, "----", BLINK_OFF);
+	display_chars(0, LCD_SEG_L1_3_0, "----", BLINK_OFF);
 	\endcode
 	Also, passing NULL as the <i>str</i> argument is equivalent of passing a vector of '8' characters. Consider the previous example, where the string "8888" can equivalently be replaced with NULL.
 
@@ -266,7 +258,7 @@ void display_char(
 	\sa #display_char(), #_itoa()
 */
 void display_chars(
-	struct lcd_screen *screen, /*!< pointer to the #lcd_screen storage */
+	uint8_t scr_nr, /*!< the virtual screen number where to display */
 	enum display_segment segments, /*!< A segment array */
 	uint8_t *str, /*!< A pointer to a vector of chars to be displayed */
 	enum display_segstate state /*!< A bitfield with state operations to be performed on the segment */
@@ -274,16 +266,15 @@ void display_chars(
 
 /*!
 	\brief Displays a symbol
-	\details Changes the <i>state</i> of the segment of <i>symbol</i>. If <i>screen</i> is NULL then this operation affects the real screen, otherwise it affects the screen pointed by <i>screen</i>.
-
+	\details Changes the <i>state</i> of the segment of <i>symbol</i>. If no virtual screens are created, the argument <i>scr_nr</i> is ignored, otherwise it selects which screen the operation will affect.
 	Example:
 	\code
 	// turns on the "heart" segment and make it blink
-	display_symbol(NULL, LCD_ICON_HEART, SEG_SET | BLINK_ON);
+	display_symbol(0, LCD_ICON_HEART, SEG_SET | BLINK_ON);
 	\endcode
 */
 void display_symbol(
-	struct lcd_screen *screen, /*!< pointer to the #lcd_screen storage */
+	uint8_t scr_nr,       /*!< the virtual screen number */
 	enum display_segment symbol, /*!< the segment to display */
 	enum display_segstate state /*!< A bitfield with state operations to be performed on the segment */
 );

@@ -39,8 +39,8 @@ static void refresh_screen()
 {
 	rtca_get_alarm(&tmp_hh, &tmp_mm);
 
-	display_chars(NULL, LCD_SEG_L1_1_0, _itoa(tmp_mm, 2, 0), SEG_SET);
-	display_chars(NULL, LCD_SEG_L1_3_2, _itoa(tmp_hh, 2, 0), SEG_SET);
+	display_chars(0, LCD_SEG_L1_1_0, _itoa(tmp_mm, 2, 0), SEG_SET);
+	display_chars(0, LCD_SEG_L1_3_2, _itoa(tmp_hh, 2, 0), SEG_SET);
 }
 
 static void alarm_event(enum sys_message msg)
@@ -51,35 +51,35 @@ static void alarm_event(enum sys_message msg)
 /*************************** edit mode callbacks **************************/
 static void edit_hh_sel(void)
 {
-	display_chars(NULL, LCD_SEG_L1_3_2, NULL, BLINK_ON);
+	display_chars(0, LCD_SEG_L1_3_2, NULL, BLINK_ON);
 }
 
 static void edit_hh_dsel(void)
 {
-	display_chars(NULL, LCD_SEG_L1_3_2, NULL, BLINK_OFF);
+	display_chars(0, LCD_SEG_L1_3_2, NULL, BLINK_OFF);
 }
 
 static void edit_hh_set(int8_t step)
 {
 	/* TODO: fix for 12/24 hr! */
 	helpers_loop(&tmp_hh, 0, 23, step);
-	display_chars(NULL, LCD_SEG_L1_3_2, _itoa(tmp_hh, 2, 0), SEG_SET);
+	display_chars(0, LCD_SEG_L1_3_2, _itoa(tmp_hh, 2, 0), SEG_SET);
 }
 
 static void edit_mm_sel(void)
 {
-	display_chars(NULL, LCD_SEG_L1_1_0, NULL, BLINK_ON);
+	display_chars(0, LCD_SEG_L1_1_0, NULL, BLINK_ON);
 }
 
 static void edit_mm_dsel(void)
 {
-	display_chars(NULL, LCD_SEG_L1_1_0, NULL, BLINK_OFF);
+	display_chars(0, LCD_SEG_L1_1_0, NULL, BLINK_OFF);
 }
 
 static void edit_mm_set(int8_t step)
 {
 	helpers_loop(&tmp_mm, 0, 59, step);
-	display_chars(NULL, LCD_SEG_L1_1_0, _itoa(tmp_mm, 2, 0), SEG_SET);
+	display_chars(0, LCD_SEG_L1_1_0, _itoa(tmp_mm, 2, 0), SEG_SET);
 }
 
 static void edit_save(void)
@@ -99,7 +99,7 @@ static struct menu_editmode_item edit_items[] = {
 static void alarm_activated()
 {
 	/* Force redraw of the screen */
-	display_symbol(NULL, LCD_SEG_L1_COL, SEG_ON);
+	display_symbol(0, LCD_SEG_L1_COL, SEG_ON);
 	refresh_screen();
 }
 
@@ -107,7 +107,7 @@ static void alarm_activated()
 static void alarm_deactivated()
 {
 	/* clean up screen */
-	display_clear(NULL, 1);
+	display_clear(0, 1);
 }
 
 
@@ -124,19 +124,19 @@ static void num_pressed()
 		sys_messagebus_unregister(alarm_event);
 
 	if (alarm_state.alarm) {
-		display_symbol(NULL, LCD_ICON_ALARM, SEG_ON);
+		display_symbol(0, LCD_ICON_ALARM, SEG_ON);
 		rtca_enable_alarm();
 	} else {
-		display_symbol(NULL, LCD_ICON_ALARM, SEG_OFF);
+		display_symbol(0, LCD_ICON_ALARM, SEG_OFF);
 		rtca_disable_alarm();
 	}
 
 	if (alarm_state.chime) {
-		display_symbol(NULL, LCD_ICON_BEEPER2, SEG_ON);
-		display_symbol(NULL, LCD_ICON_BEEPER3, SEG_ON);
+		display_symbol(0, LCD_ICON_BEEPER2, SEG_ON);
+		display_symbol(0, LCD_ICON_BEEPER3, SEG_ON);
 	} else {
-		display_symbol(NULL, LCD_ICON_BEEPER2, SEG_OFF);
-		display_symbol(NULL, LCD_ICON_BEEPER3, SEG_OFF);
+		display_symbol(0, LCD_ICON_BEEPER2, SEG_OFF);
+		display_symbol(0, LCD_ICON_BEEPER3, SEG_OFF);
 	}
 
 }

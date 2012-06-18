@@ -28,46 +28,34 @@ static uint16_t tmp_yy;
 static uint8_t tmp_mo, tmp_dw, tmp_dd, tmp_hh, tmp_mm, tmp_ss;
 static char const * tmp_dws;
 
-/* vector of screens */
-static struct lcd_screen screen[2];
-
-/* pointer to screen being shown */
-static struct lcd_screen *scr;
-
 static void clock_event(enum sys_message msg)
 {
 	rtca_get_time(&tmp_hh, &tmp_mm, &tmp_ss);
 	rtca_get_date(&tmp_yy, &tmp_mo, &tmp_dd, &tmp_dw, &tmp_dws);
 
 	if (msg | SYS_MSG_RTC_YEAR)
-		display_chars(&screen[1], LCD_SEG_L1_3_0, _itoa(tmp_yy, 4, 0), SEG_SET);
+		display_chars(1, LCD_SEG_L1_3_0, _itoa(tmp_yy, 4, 0), SEG_SET);
 	if (msg | SYS_MSG_RTC_MONTH)
-		display_chars(&screen[0], LCD_SEG_L2_1_0, _itoa(tmp_mo, 2, 0), SEG_SET);
+		display_chars(0, LCD_SEG_L2_1_0, _itoa(tmp_mo, 2, 0), SEG_SET);
 	if (msg | SYS_MSG_RTC_DAY) {
-		display_chars(&screen[0], LCD_SEG_L2_4_3, _itoa(tmp_dd, 2, 0), SEG_SET);
-		display_chars(&screen[1], LCD_SEG_L2_2_0, (uint8_t *)tmp_dws, SEG_SET);
+		display_chars(0, LCD_SEG_L2_4_3, _itoa(tmp_dd, 2, 0), SEG_SET);
+		display_chars(1, LCD_SEG_L2_2_0, (uint8_t *)tmp_dws, SEG_SET);
 	}
 	if (msg | SYS_MSG_RTC_HOUR)
-		display_chars(&screen[0], LCD_SEG_L1_3_2, _itoa(tmp_hh, 2, 0), SEG_SET);
+		display_chars(0, LCD_SEG_L1_3_2, _itoa(tmp_hh, 2, 0), SEG_SET);
 	if (msg | SYS_MSG_RTC_MINUTE)
-		display_chars(&screen[0], LCD_SEG_L1_1_0, _itoa(tmp_mm, 2, 0), SEG_SET);
-
-	/* refresh real screen */
-	lcd_screen_virtual_to_real(scr);
+		display_chars(0, LCD_SEG_L1_1_0, _itoa(tmp_mm, 2, 0), SEG_SET);
 }
 
 /********************* edit mode callbacks ********************************/
 static void edit_yy_sel(void)
 {
-	display_chars(&screen[1], LCD_SEG_L1_3_0, NULL, BLINK_ON);
-	
-	scr = &screen[1];
-	lcd_screen_virtual_to_real(scr);
+	lcd_screen_activate(1);
+	display_chars(1, LCD_SEG_L1_3_0, NULL, BLINK_ON);
 }
 static void edit_yy_dsel(void)
 {
-	display_chars(&screen[1], LCD_SEG_L1_3_0, NULL, BLINK_OFF);
-	lcd_screen_virtual_to_real(scr);
+	display_chars(1, LCD_SEG_L1_3_0, NULL, BLINK_OFF);
 }
 static void edit_yy_set(int8_t step)
 {
@@ -75,90 +63,73 @@ static void edit_yy_set(int8_t step)
 	*((uint8_t *)&tmp_yy + 1) = 0x07;
 	helpers_loop((uint8_t *)&tmp_yy, 220, 230, step);
 
-	display_chars(&screen[1], LCD_SEG_L1_3_0, _itoa(tmp_yy, 4, 0), SEG_SET);
-	lcd_screen_virtual_to_real(scr);
+	display_chars(1, LCD_SEG_L1_3_0, _itoa(tmp_yy, 4, 0), SEG_SET);
 }
 
 static void edit_mo_sel(void)
 {
-	display_chars(&screen[0], LCD_SEG_L2_1_0, NULL, BLINK_ON);
-	
-	scr = &screen[0];
-	lcd_screen_virtual_to_real(scr);
+	lcd_screen_activate(0);
+	display_chars(0, LCD_SEG_L2_1_0, NULL, BLINK_ON);
 }
 static void edit_mo_dsel(void)
 {
-	display_chars(&screen[0], LCD_SEG_L2_1_0, NULL, BLINK_OFF);
-	lcd_screen_virtual_to_real(scr);
+	display_chars(0, LCD_SEG_L2_1_0, NULL, BLINK_OFF);
 }
 static void edit_mo_set(int8_t step)
 {
 	helpers_loop(&tmp_mo, 1, 12, step);
 
-	display_chars(&screen[0], LCD_SEG_L2_1_0, _itoa(tmp_mo, 2, 0), SEG_SET);
-	lcd_screen_virtual_to_real(scr);
+	display_chars(0, LCD_SEG_L2_1_0, _itoa(tmp_mo, 2, 0), SEG_SET);
 }
 
 static void edit_dd_sel(void)
 {
-	display_chars(&screen[0], LCD_SEG_L2_4_3, NULL, BLINK_ON);
-	
-	scr = &screen[0];
-	lcd_screen_virtual_to_real(scr);
+	lcd_screen_activate(0);
+	display_chars(0, LCD_SEG_L2_4_3, NULL, BLINK_ON);
 }
 static void edit_dd_dsel(void)
 {
-	display_chars(&screen[0], LCD_SEG_L2_4_3, NULL, BLINK_OFF);
-	lcd_screen_virtual_to_real(scr);
+	display_chars(0, LCD_SEG_L2_4_3, NULL, BLINK_OFF);
 }
 
 static void edit_dd_set(int8_t step)
 {
 	helpers_loop(&tmp_dd, 1, rtca_get_max_days(tmp_mo, tmp_yy), step);
 
-	display_chars(&screen[0], LCD_SEG_L2_4_3, _itoa(tmp_dd, 2, 0), SEG_SET);
-	lcd_screen_virtual_to_real(scr);
+	display_chars(0, LCD_SEG_L2_4_3, _itoa(tmp_dd, 2, 0), SEG_SET);
 }
 
 static void edit_mm_sel(void)
 {
-	display_chars(&screen[0], LCD_SEG_L1_1_0, NULL, BLINK_ON);
-	
-	scr = &screen[0];
-	lcd_screen_virtual_to_real(scr);
+	lcd_screen_activate(0);
+	display_chars(0, LCD_SEG_L1_1_0, NULL, BLINK_ON);
 }
 static void edit_mm_dsel(void)
 {
-	display_chars(&screen[0], LCD_SEG_L1_1_0, NULL, BLINK_OFF);
-	lcd_screen_virtual_to_real(scr);
+	display_chars(0, LCD_SEG_L1_1_0, NULL, BLINK_OFF);
 }
 static void edit_mm_set(int8_t step)
 {
 	helpers_loop(&tmp_mm, 0, 59, step);
 
-	display_chars(&screen[0], LCD_SEG_L1_1_0, _itoa(tmp_mm, 2, 0), SEG_SET);
-	lcd_screen_virtual_to_real(scr);
+	display_chars(0, LCD_SEG_L1_1_0, _itoa(tmp_mm, 2, 0), SEG_SET);
 }
 
 static void edit_hh_sel(void)
 {
-	display_chars(&screen[0], LCD_SEG_L1_3_2, NULL, BLINK_ON);
-	
-	scr = &screen[0];
-	lcd_screen_virtual_to_real(scr);
+	lcd_screen_activate(0);
+	display_chars(0, LCD_SEG_L1_3_2, NULL, BLINK_ON);
 }
 static void edit_hh_dsel(void)
 {
-	display_chars(&screen[0], LCD_SEG_L1_3_2, NULL, BLINK_OFF);
-	lcd_screen_virtual_to_real(scr);
+	display_chars(0, LCD_SEG_L1_3_2, NULL, BLINK_OFF);
 }
 static void edit_hh_set(int8_t step)
 {
 	/* TODO: fix for 12/24 hr! */
 	helpers_loop(&tmp_hh, 0, 23, step);
 
-	display_chars(&screen[0], LCD_SEG_L1_3_2, _itoa(tmp_hh, 2, 0), SEG_SET);
-	lcd_screen_virtual_to_real(scr);
+	display_chars(0, LCD_SEG_L1_3_2, _itoa(tmp_hh, 2, 0), SEG_SET);
 }
 
 static void edit_save()
@@ -168,12 +139,12 @@ static void edit_save()
 	rtca_set_date(tmp_yy, tmp_mo, tmp_dd);
 
 	/* turn off only SOME blinking segments */
-	display_chars(&screen[0], LCD_SEG_L1_3_0, NULL, BLINK_OFF);
-	display_chars(&screen[0], LCD_SEG_L2_4_0, NULL, BLINK_OFF);
-	display_chars(&screen[1], LCD_SEG_L1_3_0, NULL, BLINK_OFF);
+	display_chars(0, LCD_SEG_L1_3_0, NULL, BLINK_OFF);
+	display_chars(0, LCD_SEG_L2_4_0, NULL, BLINK_OFF);
+	display_chars(1, LCD_SEG_L1_3_0, NULL, BLINK_OFF);
 
-	/* refresh real screen */
-	lcd_screen_virtual_to_real(scr);
+	/* return to main screen */
+	lcd_screen_activate(0);
 
 	/* start the RTC */
 	rtca_start();
@@ -197,29 +168,16 @@ static void clock_activated()
 													| SYS_MSG_RTC_DAY \
 													| SYS_MSG_RTC_MONTH);	
 	
-	/* create two empty screens */
-	lcd_screen_create(&screen[0]);
-	lcd_screen_create(&screen[1]);
+	/* create two screens, the first is always the active one */
+	lcd_screens_create(2);
 
-	/* keep screen contents */
-	lcd_screen_real_to_virtual(&screen[0]);
-
-	/* set screen0 as current one */
-	scr = &screen[0];
-
-	/* on screen zero we display hour, day and month */
+	/* display stuff that won't change with time */
 #ifdef CONFIG_CLOCK_BLINKCOL
-	display_symbol(&screen[0], LCD_SEG_L1_COL, SEG_ON | BLINK_ON);
+	display_symbol(0, LCD_SEG_L1_COL, SEG_ON | BLINK_ON);
 #else
-	display_symbol(&screen[0], LCD_SEG_L1_COL, SEG_ON);
+	display_symbol(0, LCD_SEG_L1_COL, SEG_ON);
 #endif
-	display_chars(&screen[0], LCD_SEG_L1_3_0, NULL, SEG_ON);
-	display_chars(&screen[0], LCD_SEG_L2_4_0, NULL, SEG_ON);
-	display_char(&screen[0], LCD_SEG_L2_2, '-', SEG_SET);
-
-	/* on screen one we display year and day of week */
-	display_chars(&screen[1], LCD_SEG_L1_3_0, NULL, SEG_ON);
-	display_chars(&screen[1], LCD_SEG_L2_2_0, NULL, SEG_ON);
+	display_char(0, LCD_SEG_L2_2, '-', SEG_SET);
 
 	/* update screens with fake event */
 	clock_event(RTCA_EV_YEAR
@@ -234,24 +192,19 @@ static void clock_deactivated()
 	sys_messagebus_unregister(&clock_event);
 
 	/* destroy virtual screens */
-	lcd_screen_destroy(&screen[0]);
-	lcd_screen_destroy(&screen[1]);
+	lcd_screens_destroy();
 
-	/* clean up real screen */
-	display_symbol(NULL, LCD_SEG_L1_COL, BLINK_OFF);
-	display_clear(NULL, 1);
-	display_clear(NULL, 2);
+	/* clean up screen */
+	display_symbol(0, LCD_SEG_L1_COL, BLINK_OFF);
+	display_clear(0, 1);
+	display_clear(0, 2);
 }
 
 
 /* Num button press callback */
 static void num_pressed()
 {
-	/* switch screen */
-	scr = (scr == &screen[0] ? &screen[1] : &screen[0]);
-
-	/* refresh real screen */
-	lcd_screen_virtual_to_real(scr);
+	lcd_screen_activate(0xff);
 }
 
 /* Star button long press callback. */
@@ -265,7 +218,6 @@ static void star_long_pressed()
 	rtca_get_date(&tmp_yy, &tmp_mo, &tmp_dd, &tmp_dw, &tmp_dws);
 
 	menu_editmode_start(&edit_save, edit_items);
-
 }
 
 void clock_init()
