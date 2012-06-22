@@ -106,7 +106,6 @@ static struct menu *menu_head;
 static struct {
 	uint8_t enabled:1;      /* is menu mode enabled? */
 	struct menu *item;      /* the currently active menu item */
-	struct menu *selitem;   /* the selected menu item */
 } menumode;
 
 /* Menu edit mode stuff */
@@ -245,28 +244,26 @@ static void menumode_handler(void)
 		/* stop blinking name of current selected module */
 		display_chars(0, LCD_SEG_L2_4_0, NULL, BLINK_OFF);
 
-		/* deactivate current menu item */
-		if (menumode.item->deactivate_fn)
-			menumode.item->deactivate_fn();
-
-		/* set active item as the selected item */
-		menumode.item = menumode.selitem;
-
 		/* activate item */
 		if (menumode.item->activate_fn)
 			menumode.item->activate_fn();
+
 	} else if (BIT_IS_SET(ports_pressed_btns, PORTS_BTN_UP)) {
-		menumode.selitem = menumode.selitem->next;
-		display_chars(0, LCD_SEG_L2_4_0, (uint8_t *)menumode.selitem->name, SEG_SET);
+		menumode.item = menumode.item->next;
+		display_chars(0, LCD_SEG_L2_4_0, (uint8_t *)menumode.item->name, SEG_SET);
 
 	} else if (BIT_IS_SET(ports_pressed_btns, PORTS_BTN_DOWN)) {
-		menumode.selitem = menumode.selitem->prev;
-		display_chars(0, LCD_SEG_L2_4_0, (uint8_t *)menumode.selitem->name, SEG_SET);
+		menumode.item = menumode.item->prev;
+		display_chars(0, LCD_SEG_L2_4_0, (uint8_t *)menumode.item->name, SEG_SET);
 	}
 }
 
 static void menumode_enable(void)
 {
+	/* deactivate current menu item */
+	if (menumode.item->deactivate_fn)
+		menumode.item->deactivate_fn();
+
 	/* enable edit mode */
 	menumode.enabled = 1;
 
@@ -277,12 +274,9 @@ static void menumode_enable(void)
 	display_symbol(0, LCD_SYMB_ARROW_UP, SEG_ON);
 	display_symbol(0, LCD_SYMB_ARROW_DOWN, SEG_ON);
 
-	/* set selected item as the active item */
-	menumode.selitem = menumode.item;
-
 	/* show up blinking name of current selected item */
 	display_chars(0, LCD_SEG_L2_4_0, NULL, BLINK_ON);
-	display_chars(0, LCD_SEG_L2_4_0, (uint8_t *)menumode.selitem->name, SEG_SET);
+	display_chars(0, LCD_SEG_L2_4_0, (uint8_t *)menumode.item->name, SEG_SET);
 }
 
 static void check_buttons(void)
