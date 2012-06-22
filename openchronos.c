@@ -76,6 +76,8 @@
 
 /* Menu definitions and declarations */
 struct menu {
+	/* menu item name */
+	char const * name;
 	/* Pointer to up button handler */
 	void (*up_btn_fn)(void);
 	/* Pointer to down button handler */
@@ -94,13 +96,18 @@ struct menu {
 	void (*deactivate_fn)(void);
 	/* pointer to next menu item */
 	struct menu *next;
+	struct menu *prev;
 };
 
 /* The head of the linked list holding menu items */
 static struct menu *menu_head;
 
-/* The currently active menu item */
-static struct menu *menu_item;
+/* Menu mode stuff */
+static struct {
+	uint8_t enabled:1;      /* is menu mode enabled? */
+	struct menu *item;      /* the currently active menu item */
+	struct menu *selitem;   /* the selected menu item */
+} menumode;
 
 /* Menu edit mode stuff */
 static struct {
@@ -112,8 +119,6 @@ static struct {
 
 /* the message bus */
 static struct sys_messagebus *messagebus;
-
-void menu_item_next(void);
 
 /***************************************************************************
  ************************* THE SYSTEM MESSAGE BUS **************************
@@ -195,68 +200,134 @@ void check_events(void)
  ************************ USER INPUT / MAIN MENU ***************************
  **************************************************************************/
 
-void check_buttons(void)
+static void editmode_handler(void)
 {
-	/* Are we in edit mode? */
+	/* STAR button exits edit mode */
+	if (BIT_IS_SET(ports_pressed_btns, PORTS_BTN_STAR)) {
+		/* deselect item */
+		menu_editmode.items[menu_editmode.pos].deselect();
+
+		menu_editmode.complete_fn();
+		menu_editmode.enabled = 0;
+
+	} else if (BIT_IS_SET(ports_pressed_btns, PORTS_BTN_NUM)) {
+		/* deselect current item */
+		menu_editmode.items[menu_editmode.pos].deselect();
+
+		/* select next item */
+		menu_editmode.pos++;
+		if (! menu_editmode.items[menu_editmode.pos].set)
+			menu_editmode.pos = 0;
+		menu_editmode.items[menu_editmode.pos].select();
+
+	} else if (BIT_IS_SET(ports_pressed_btns, PORTS_BTN_UP)) {
+		menu_editmode.items[menu_editmode.pos].set(1);
+
+	} else if (BIT_IS_SET(ports_pressed_btns, PORTS_BTN_DOWN)) {
+		menu_editmode.items[menu_editmode.pos].set(-1);
+	}
+}
+
+static void menumode_handler(void)
+{
+	if (BIT_IS_SET(ports_pressed_btns, PORTS_BTN_STAR)) {
+		/* exit mode mode */
+		menumode.enabled = 0;
+	
+		/* clear both lines but keep symbols! */
+		display_clear(0, 1);
+		display_clear(0, 2);
+		
+		/* turn off up/down symbols */
+		display_symbol(0, LCD_SYMB_ARROW_UP, SEG_OFF);
+		display_symbol(0, LCD_SYMB_ARROW_DOWN, SEG_OFF);
+		
+		/* stop blinking name of current selected module */
+		display_chars(0, LCD_SEG_L2_4_0, NULL, BLINK_OFF);
+
+		/* deactivate current menu item */
+		if (menumode.item->deactivate_fn)
+			menumode.item->deactivate_fn();
+
+		/* set active item as the selected item */
+		menumode.item = menumode.selitem;
+
+		/* activate item */
+		if (menumode.item->activate_fn)
+			menumode.item->activate_fn();
+	} else if (BIT_IS_SET(ports_pressed_btns, PORTS_BTN_UP)) {
+		menumode.selitem = menumode.selitem->next;
+		display_chars(0, LCD_SEG_L2_4_0, (uint8_t *)menumode.selitem->name, SEG_SET);
+
+	} else if (BIT_IS_SET(ports_pressed_btns, PORTS_BTN_DOWN)) {
+		menumode.selitem = menumode.selitem->prev;
+		display_chars(0, LCD_SEG_L2_4_0, (uint8_t *)menumode.selitem->name, SEG_SET);
+	}
+}
+
+static void menumode_enable(void)
+{
+	/* enable edit mode */
+	menumode.enabled = 1;
+
+	/* show MENU in the first line */
+	display_chars(0, LCD_SEG_L1_3_0, (uint8_t *)"MENU", SEG_SET);
+
+	/* turn on up/down symbols */
+	display_symbol(0, LCD_SYMB_ARROW_UP, SEG_ON);
+	display_symbol(0, LCD_SYMB_ARROW_DOWN, SEG_ON);
+
+	/* set selected item as the active item */
+	menumode.selitem = menumode.item;
+
+	/* show up blinking name of current selected item */
+	display_chars(0, LCD_SEG_L2_4_0, NULL, BLINK_ON);
+	display_chars(0, LCD_SEG_L2_4_0, (uint8_t *)menumode.selitem->name, SEG_SET);
+}
+
+static void check_buttons(void)
+{
 	if (menu_editmode.enabled) {
-		/* STAR button exits edit mode */
-		if (BIT_IS_SET(ports_pressed_btns, PORTS_BTN_STAR)) {
-			/* deselect item */
-			menu_editmode.items[menu_editmode.pos].deselect();
+		editmode_handler();
 
-			menu_editmode.complete_fn();
-			menu_editmode.enabled = 0;
+	} else if (menumode.enabled) {
+		menumode_handler();
 
-		} else if (BIT_IS_SET(ports_pressed_btns, PORTS_BTN_NUM)) {
-			/* deselect current item */
-			menu_editmode.items[menu_editmode.pos].deselect();
-
-			/* select next item */
-			menu_editmode.pos++;
-			if (! menu_editmode.items[menu_editmode.pos].set)
-				menu_editmode.pos = 0;
-			menu_editmode.items[menu_editmode.pos].select();
-
-		} else if (BIT_IS_SET(ports_pressed_btns, PORTS_BTN_UP)) {
-			menu_editmode.items[menu_editmode.pos].set(1);
-
-		} else if (BIT_IS_SET(ports_pressed_btns, PORTS_BTN_DOWN)) {
-			menu_editmode.items[menu_editmode.pos].set(-1);
-		}	
-	} else { /* not in edit mode */	
+	} else {
 		if (BIT_IS_SET(ports_pressed_btns, PORTS_BTN_LSTAR)) {
-			if (menu_item->lstar_btn_fn)
-				menu_item->lstar_btn_fn();
+			if (menumode.item->lstar_btn_fn)
+				menumode.item->lstar_btn_fn();
 
 		} else if (BIT_IS_SET(ports_pressed_btns, PORTS_BTN_STAR)) {
-			menu_item_next();
+			menumode_enable();
 
 		} else if (BIT_IS_SET(ports_pressed_btns, PORTS_BTN_LNUM)) {
-			if (menu_item->lnum_btn_fn)
-				menu_item->lnum_btn_fn();
+			if (menumode.item->lnum_btn_fn)
+				menumode.item->lnum_btn_fn();
 
 		} else if (BIT_IS_SET(ports_pressed_btns, PORTS_BTN_NUM)) {
-			if (menu_item->num_btn_fn)
-				menu_item->num_btn_fn();
+			if (menumode.item->num_btn_fn)
+				menumode.item->num_btn_fn();
 		
 		} else if (BIT_IS_SET(ports_pressed_btns, PORTS_BTN_UP | PORTS_BTN_DOWN)) {
-			if (menu_item->updown_btn_fn)
-				menu_item->updown_btn_fn();
+			if (menumode.item->updown_btn_fn)
+				menumode.item->updown_btn_fn();
 
 		} else if (BIT_IS_SET(ports_pressed_btns, PORTS_BTN_UP)) {
-			if (menu_item->up_btn_fn)
-				menu_item->up_btn_fn();
+			if (menumode.item->up_btn_fn)
+				menumode.item->up_btn_fn();
 
 		} else if (BIT_IS_SET(ports_pressed_btns, PORTS_BTN_DOWN)) {
-			if (menu_item->down_btn_fn)
-				menu_item->down_btn_fn();
+			if (menumode.item->down_btn_fn)
+				menumode.item->down_btn_fn();
 		}
 	}
 
 	ports_pressed_btns = 0;
 }
 
-void menu_add_entry(void (*up_btn_fn)(void),
+void menu_add_entry(char const * name,
+          void (*up_btn_fn)(void),
 		    void (*down_btn_fn)(void),
 		    void (*num_btn_fn)(void),
 		    void (*lstar_btn_fn)(void),
@@ -272,18 +343,22 @@ void menu_add_entry(void (*up_btn_fn)(void),
 		/* Head is empty, create new menu item linked to itself */
 		menu_p = (struct menu *) malloc(sizeof(struct menu));
 		menu_p->next = menu_p;
+		menu_p->prev = menu_p;
 		*menu_hd = menu_p;
 		
 		/* There wasnt any menu active, so we activate this one */
-		menu_item = menu_p;
+		menumode.item = menu_p;
 		activate_fn();
 	} else {
-		/* insert new item after the head */
+		/* insert new item before head */
 		menu_p = (struct menu *) malloc(sizeof(struct menu));
-		menu_p->next = (*menu_hd)->next;
-		(*menu_hd)->next = menu_p;
+		menu_p->next = (*menu_hd);
+		menu_p->prev = (*menu_hd)->prev;
+		(*menu_hd)->prev = menu_p;
+		menu_p->prev->next = menu_p;
 	}
-	
+
+	menu_p->name = name;
 	menu_p->up_btn_fn = up_btn_fn;
 	menu_p->down_btn_fn = down_btn_fn;
 	menu_p->num_btn_fn = num_btn_fn;
@@ -293,20 +368,6 @@ void menu_add_entry(void (*up_btn_fn)(void),
 	menu_p->activate_fn = activate_fn;
 	menu_p->deactivate_fn = deactivate_fn;
 }
-
-void menu_item_next(void)
-{
-	if (! menu_item)
-		return;
-
-	/* deactivate current menu item, and activate next one */
-	if (menu_item->deactivate_fn)
-		menu_item->deactivate_fn();
-	menu_item = menu_item->next;
-	if (menu_item->activate_fn)
-		menu_item->activate_fn();
-}
-
 
 void menu_editmode_start(void (* complete_fn)(void),
                          struct menu_editmode_item *items)

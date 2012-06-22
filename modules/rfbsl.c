@@ -85,7 +85,7 @@ static void rfbsl_deactivate()
 
 void rfbsl_init(void)
 {
-	menu_add_entry(NULL, NULL, NULL, NULL, NULL,
+	menu_add_entry("RFBSL", NULL, NULL, NULL, NULL, NULL,
 						&updown_press,
 						&rfbsl_activate,
 						&rfbsl_deactivate);

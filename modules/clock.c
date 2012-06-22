@@ -222,7 +222,7 @@ static void star_long_pressed()
 
 void clock_init()
 {
-	menu_add_entry(NULL, NULL,
+	menu_add_entry("CLOCK", NULL, NULL,
 			&num_pressed,
 			&star_long_pressed,
 			NULL, NULL,

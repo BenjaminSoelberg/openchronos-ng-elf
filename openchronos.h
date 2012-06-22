@@ -38,9 +38,10 @@
 /*!
 	\brief Adds an entry to the main menu.
 	\details This function is to be used by modules, so that they can be visible in the main menu. A good place to call this function is from the corresponding module's _init function.
-	\note This function is NULL safe. You can set its parameters to NULL if you don't need their functionality.
+	\note This function is NULL safe. You can set all of its parameters to NULL (except name) if you don't need their functionality.
 */
 void menu_add_entry(
+	char const * name,          /*!< item name to be displayed in the menu */
 	void (*up_btn_fn)(void),    /*!< callback for up button presses. */
 	void (*down_btn_fn)(void),  /*!< callback for down button presses. */
 	void (*num_btn_fn)(void),   /*!< callback for num button presses. */
