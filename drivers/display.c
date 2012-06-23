@@ -171,7 +171,7 @@
  **************************************************************************/
 
 /* storage for itoa function */
-static uint8_t itoa_str[8];
+static char itoa_str[8];
 
 /* pointer to active screen */
 static struct lcd_screen *display_screens;
@@ -520,28 +520,12 @@ void display_clear(uint8_t scr_nr, uint8_t line)
 }
 
 
-// *************************************************************************************************
-// @fn          _itoa
-// @brief       Generic integer to array routine. Converts integer n to string.
-//				Default conversion result has leading zeros, e.g. "00123"
-//				Option to convert leading '0' into whitespace (blanks)
-// @param       uint32_t n			integer to convert
-//				uint8_t digits		number of digits
-//				uint8_t blanks		fill up result string with number of whitespaces instead of leading zeros
-// @return      uint8_t				string
-// *************************************************************************************************
-uint8_t *_itoa(uint32_t n, uint8_t digits, uint8_t blanks)
+char *_itoa(uint32_t n, uint8_t digits)
 {
-	uint8_t i;
-	uint8_t digits1 = digits;
+	/* Preset result string */
+	memset(itoa_str, '0', 7);
 
-	// Preset result string
-	memcpy(itoa_str, "0000000", 7);
-
-	// Return empty string if number of digits is invalid (valid range for digits: 1-7)
-	if ((digits == 0) || (digits > 7)) return (itoa_str);
-
-	// Numbers 0 .. 180 can be copied from itoa_conversion_table without conversion
+	/* Numbers 0 .. 180 can be copied from itoa_conversion_table without conversion */
 	if (n <= 180) {
 		if (digits >= 3) {
 			memcpy(itoa_str + (digits - 3), itoa_conversion_table[n], 3);
@@ -554,19 +538,6 @@ uint8_t *_itoa(uint32_t n, uint8_t digits, uint8_t blanks)
 			itoa_str[digits - 1] = n % 10 + '0';
 			n /= 10;
 		} while (--digits > 0);
-	}
-
-	// Remove specified number of leading '0', always keep last one
-	i = 0;
-
-	while ((itoa_str[i] == '0') && (i < digits1 - 1)) {
-		if (blanks > 0) {
-			// Convert only specified number of leading '0'
-			itoa_str[i] = ' ';
-			blanks--;
-		}
-
-		i++;
 	}
 
 	return (itoa_str);
@@ -600,7 +571,7 @@ void display_symbol(uint8_t scr_nr, enum display_segment symbol,
 
 
 void display_char(uint8_t scr_nr, enum display_segment segment,
-                  uint8_t chr, enum display_segstate state)
+                  char chr, enum display_segstate state)
 {
 	uint8_t bits, bits1;		// Bits to write
 
@@ -653,7 +624,7 @@ void display_char(uint8_t scr_nr, enum display_segment segment,
 
 void display_chars(uint8_t scr_nr,
                    enum display_segment_array segments,
-                   uint8_t *str,
+                   char const * str,
                    enum display_segstate state)
 {
 	uint8_t i = 0;
