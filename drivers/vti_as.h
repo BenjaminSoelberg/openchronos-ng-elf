@@ -204,8 +204,9 @@ extern enum AS_FALL_STATUS as_fall_bit;
 // set 0 to switch at measurment mode at 400 Hz
 #define MDET_EXIT 1
 
-// *************************************************************************************************
-// Extern section
-
+uint8_t as_get_status();
+void as_get_data(uint8_t * data);
+void as_start(uint8_t mode);
+void as_stop(void);
 
 #endif /*VTI_AS_H_*/
