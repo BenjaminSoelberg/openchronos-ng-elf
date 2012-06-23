@@ -107,7 +107,7 @@ static void as_event(enum sys_message msg)
 	if(as_status.int_status.falldet || as_status.int_status.motiondet){
 
 		// request.flag.alarm_buzzer=1; BEEEEEEEEEEP
-		display_chars(NULL,  LCD_SEG_L2_5_0, _itoa(as_status.all_flags, 3, 0), SEG_SET);
+		display_chars(0,  LCD_SEG_L2_5_0, _itoa(as_status.all_flags, 3, 0), SEG_SET);
 
 	}
 
@@ -127,7 +127,7 @@ static void acc_activated()
 	// Show warning if acceleration sensor was not initialised properly
 		if (!as_ok)
 		{
-			display_chars(NULL, LCD_SEG_L1_1_0, (uint8_t*)"ERR", SEG_SET);
+			display_chars(0, LCD_SEG_L1_1_0, (uint8_t*)"ERR", SEG_SET);
 		}
 		else
 		{
@@ -163,14 +163,14 @@ static void acc_activated()
 
 			if (!as_ok)
 			{
-				display_chars(NULL, LCD_SEG_L1_1_0, (uint8_t*)"FAIL", SEG_SET);
+				display_chars(0, LCD_SEG_L1_1_0, (uint8_t*)"FAIL", SEG_SET);
 			}
 
 
 			// check if that is really in the mode we set
 
-			display_chars(NULL, LCD_SEG_L1_3_0, _itoa(as_read_register(ADDR_CTRL), 3, 0), SEG_SET);
-			display_chars(NULL, LCD_SEG_L2_5_0, _itoa(as_read_register(ADDR_MDFFTMR), 5, 0), SEG_SET);
+			display_chars(0, LCD_SEG_L1_3_0, _itoa(as_read_register(ADDR_CTRL), 3, 0), SEG_SET);
+			display_chars(0, LCD_SEG_L2_5_0, _itoa(as_read_register(ADDR_MDFFTMR), 5, 0), SEG_SET);
 
 
 			// Set timeout counter
@@ -196,8 +196,8 @@ static void acc_deactivated()
 	sAccel.mode = ACCEL_MODE_OFF;
 
 	/* clean up real screen */
-	display_clear(NULL, 1);
-	display_clear(NULL, 2);
+	display_clear(0, 1);
+	display_clear(0, 2);
 
 }
 
@@ -216,7 +216,7 @@ static void down_btn()
 void accelerometer_init()
 {
 
-	menu_add_entry(&up_btn, &down_btn,
+	menu_add_entry("ACCEL", &up_btn, &down_btn,
 			&num_pressed,
 			&star_long_pressed,
 			NULL,NULL,
