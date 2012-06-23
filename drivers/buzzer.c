@@ -3,6 +3,8 @@
 
     Copyright (C) 2012 Aljaž Srebrnič <a2piratesoft@gmail.com>
 
+	         http://www.openchronos-ng.sourceforge.net
+
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
