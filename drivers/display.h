@@ -293,12 +293,12 @@ void display_symbol(
 
 /*!
 	\brief Converts a decimal into a string
-	\details Takes the number <i>n</i> and returns a string representation of that number with <i>digits</i> number of digits. The returned string is padded with <i>blanks</i> number of blank spacing.
+	\details Takes the number <i>n</i> and returns a string representation of that number with <i>digits</i> number of digits.
 
 	Example:
 	\code
 	// this returns "32"
-	uint8_t *s = _itoa(32, 2, 0);
+	char * s = _itoa(32, 2);
 	\endcode
 	\return a string representation of <i>n</i>
 */

@@ -39,6 +39,7 @@
 	\brief Adds an entry to the main menu.
 	\details This function is to be used by modules, so that they can be visible in the main menu. A good place to call this function is from the corresponding module's _init function.
 	\note This function is NULL safe. You can set all of its parameters to NULL (except name) if you don't need their functionality.
+	\note The <i>name</i> string cannot be longer than 5 characters due to the LCD screen size.
 */
 void menu_add_entry(
 	char const * name,          /*!< item name to be displayed in the menu */
