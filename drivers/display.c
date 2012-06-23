@@ -630,113 +630,23 @@ void display_char(uint8_t scr_nr, enum display_segment segment,
 	}
 }
 
-
-// *************************************************************************************************
-// @fn          display_chars
-// @brief       Write to consecutive 7-segment characters.
-// @param       uint8_t segments	LCD segment array
-//				uint8_t * str		Pointer to a string
-//				uint8_t mode		SEG_ON, SEG_OFF, SEG_BLINK
-// @return      none
-// *************************************************************************************************
-void display_chars(uint8_t scr_nr, enum display_segment segments,
-                   uint8_t *str, enum display_segstate state)
+void display_chars(uint8_t scr_nr,
+                   enum display_segment_array segments,
+                   uint8_t *str,
+                   enum display_segstate state)
 {
-	uint8_t i;
-	uint8_t length = 0;			// Write length
-	uint8_t char_start;			// Starting point for consecutive write
+	uint8_t i = 0;
+	uint8_t len = (segments & 0x0f);
+	segments = 38 - (segments >> 4);
 
-	//single charakter
-	if ((segments >= LCD_SEG_L1_3) && (segments <= LCD_SEG_L2_DP)) {
-		length = 1;
-		char_start = segments;
-	}
-
-	/* TODO: Holly crap! Isn't there a more efficient way to do this? */
-	// multiple charakters
-	switch (segments) {
-		// LINE1
-	case LCD_SEG_L1_3_0:
-		length = 4;
-		char_start = LCD_SEG_L1_3;
-		break;
-
-	case LCD_SEG_L1_2_0:
-		length = 3;
-		char_start = LCD_SEG_L1_2;
-		break;
-
-	case LCD_SEG_L1_1_0:
-		length = 2;
-		char_start = LCD_SEG_L1_1;
-		break;
-
-	case LCD_SEG_L1_3_1:
-		length = 3;
-		char_start = LCD_SEG_L1_3;
-		break;
-
-	case LCD_SEG_L1_3_2:
-		length = 2;
-		char_start = LCD_SEG_L1_3;
-		break;
-
-		// LINE2
-	case LCD_SEG_L2_5_0:
-		length = 6;
-		char_start = LCD_SEG_L2_5;
-		break;
-
-	case LCD_SEG_L2_4_0:
-		length = 5;
-		char_start = LCD_SEG_L2_4;
-		break;
-
-	case LCD_SEG_L2_3_0:
-		length = 4;
-		char_start = LCD_SEG_L2_3;
-		break;
-
-	case LCD_SEG_L2_2_0:
-		length = 3;
-		char_start = LCD_SEG_L2_2;
-		break;
-
-	case LCD_SEG_L2_1_0:
-		length = 2;
-		char_start = LCD_SEG_L2_1;
-		break;
-
-	case LCD_SEG_L2_5_4:
-		length = 2;
-		char_start = LCD_SEG_L2_5;
-		break;
-
-	case LCD_SEG_L2_5_2:
-		length = 4;
-		char_start = LCD_SEG_L2_5;
-		break;
-
-	case LCD_SEG_L2_3_2:
-		length = 2;
-		char_start = LCD_SEG_L2_3;
-		break;
-
-	case LCD_SEG_L2_4_2:
-		length = 3;
-		char_start = LCD_SEG_L2_4;
-		break;
-
-	case LCD_SEG_L2_4_3:
-	default:
-		length = 2;
-		char_start = LCD_SEG_L2_4;	  //So the char_start variable can't be non-initialized.
-	}
-
-	// Write to consecutive digits
-	for (i = 0; i < length; i++) {
-		// Use single character routine to write display memory
-		display_char(scr_nr, char_start + i, (str ? *(str + i) : '8'), state);
+	for (; i < len; i++) {
+		/* stop if we find a null termination */
+		if (str) {
+			if (str[i] == '\0')
+				return;
+			display_char(scr_nr, segments + i, str[i], state);
+		 } else
+			display_char(scr_nr, segments + i, '8', state);
 	}
 }
 

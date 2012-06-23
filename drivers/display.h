@@ -55,7 +55,6 @@ enum display_segstate {
 
 /*!
 	\brief Enumeration of all ez430 chronos LCD segments
-	\note Line segments are numbered from right to left.
 */
 enum display_segment {
 	/* Symbols for Line1 */
@@ -113,25 +112,38 @@ enum display_segment {
 	LCD_SEG_L2_COL1		=	39, /*!< line2, 2nd : segment */
 	LCD_SEG_L2_COL0		=	40, /*!< line2, 1st : segment */
 	LCD_SEG_L2_DP			=	41, /*!< ?? */
+};
 
+/*!
+	\brief Enumeration of LCD segment arrays
+	\details The LCD_SEG_L1_3_2 member means the segments on line 1 from position 3 to 2 (inclusive). Segments are numbered from right to left.
+	\sa #display_chars()
+*/
+enum display_segment_array {
 	/* Line1 7-segment arrays */
-	LCD_SEG_L1_3_0			=	70, /*!< line1, segments 1-4 */
-	LCD_SEG_L1_2_0			=	71, /*!< line1, segments 1-3 */
-	LCD_SEG_L1_1_0			=	72, /*!< line1, segments 1-2 */
-	LCD_SEG_L1_3_1			=	73, /*!< line1, segments 2-4 */
-	LCD_SEG_L1_3_2			=	74, /*!< line1, segments 3-4 */
+	LCD_SEG_L1_3_2			=	0xc2, /*!< line1, segments 3-2 */
+	LCD_SEG_L1_3_1			=	0xc3, /*!< line1, segments 3-1 */
+	LCD_SEG_L1_3_0			=	0xc4, /*!< line1, segments 3-0 */
+	LCD_SEG_L1_2_1			=	0xb2, /*!< line1, segments 2-1 */
+	LCD_SEG_L1_2_0			=	0xb3, /*!< line1, segments 2-0 */
+	LCD_SEG_L1_1_0			=	0xa2, /*!< line1, segments 1-0 */
 	
 	/* Line2 7-segment arrays */
-	LCD_SEG_L2_5_0			=	90, /*!< line2, segments 1-6 */
-	LCD_SEG_L2_4_0			=	91, /*!< line2, segments 1-5 */
-	LCD_SEG_L2_3_0			=	92, /*!< line2, segments 1-4 */
-	LCD_SEG_L2_2_0			=	93, /*!< line2, segments 1-3 */
-	LCD_SEG_L2_1_0			=	94, /*!< line2, segments 1-2 */
-	LCD_SEG_L2_5_2			=	95, /*!< line2, segments 3-6 */
-	LCD_SEG_L2_3_2			=	96, /*!< line2, segments 3-4 */
-	LCD_SEG_L2_5_4			=	97, /*!< line2, segments 5-6 */
-	LCD_SEG_L2_4_2			=	98, /*!< line2, segments 3-5 */
-	LCD_SEG_L2_4_3			=	99, /*!< line2, segments 4-5 */
+	LCD_SEG_L2_5_4			=	0x52, /*!< line2, segments 5-4 */
+	LCD_SEG_L2_5_3			=	0x53, /*!< line2, segments 5-3 */
+	LCD_SEG_L2_5_2			=	0x54, /*!< line2, segments 3-2 */
+	LCD_SEG_L2_5_1			=	0x55, /*!< line2, segments 3-1 */
+	LCD_SEG_L2_5_0			=	0x56, /*!< line2, segments 1-0 */
+	LCD_SEG_L2_4_3			=	0x42, /*!< line2, segments 4-3 */
+	LCD_SEG_L2_4_2			=	0x43, /*!< line2, segments 4-2 */
+	LCD_SEG_L2_4_1			=	0x44, /*!< line2, segments 4-1 */
+	LCD_SEG_L2_4_0			=	0x45, /*!< line2, segments 4-0 */
+	LCD_SEG_L2_3_2			=	0x32, /*!< line2, segments 3-2 */
+	LCD_SEG_L2_3_1			=	0x33, /*!< line2, segments 3-1 */
+	LCD_SEG_L2_3_0			=	0x34, /*!< line2, segments 3-0 */
+	LCD_SEG_L2_2_1			=	0x22, /*!< line2, segments 2-1 */
+	LCD_SEG_L2_2_0			=	0x23, /*!< line2, segments 2-0 */
+	LCD_SEG_L2_1_0			=	0x12, /*!< line2, segments 1-0 */
 };
 
 /*!
@@ -259,7 +271,7 @@ void display_char(
 */
 void display_chars(
 	uint8_t scr_nr, /*!< the virtual screen number where to display */
-	enum display_segment segments, /*!< A segment array */
+	enum display_segment_array segments, /*!< A segment array */
 	uint8_t *str, /*!< A pointer to a vector of chars to be displayed */
 	enum display_segstate state /*!< A bitfield with state operations to be performed on the segment */
 );
