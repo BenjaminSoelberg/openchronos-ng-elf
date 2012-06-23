@@ -54,7 +54,7 @@ inline void buzzer_init(void)
 	TA1CCTL0 = OUTMOD_4;
 
 	/* Play "welcome" chord: A major */
-	note welcome[4] = {0x1901, 0x1905, 0x1908, 0x000F};
+	note welcome[4] = {0x1901, 0x1904, 0x1908, 0x000F};
 	buzzer_play(welcome);
 }
 
