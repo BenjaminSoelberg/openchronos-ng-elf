@@ -303,7 +303,7 @@ void display_symbol(
 	\return a string representation of <i>n</i>
 */
 char *_itoa(
-	uint32_t n,     /*!< the number to convert to a string */
+	int16_t n,     /*!< the number to convert to a string */
 	uint8_t digits  /*!< the number of output digits */
 );
 

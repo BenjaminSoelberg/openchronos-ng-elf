@@ -170,8 +170,10 @@
  ***************************** LOCAL STORAGE *******************************
  **************************************************************************/
 
+#define ITOA_STR_LEN 7
+
 /* storage for itoa function */
-static char itoa_str[8];
+static char itoa_str[ITOA_STR_LEN];
 
 /* pointer to active screen */
 static struct lcd_screen *display_screens;
@@ -520,22 +522,30 @@ void display_clear(uint8_t scr_nr, uint8_t line)
 }
 
 
-char *_itoa(uint32_t n, uint8_t digits)
+char *_itoa(int16_t n, uint8_t digits)
 {
-	/* Preset result string */
-	memset(itoa_str, '0', 7);
+	/* Preset result string as NULL terminated */
+	memset(itoa_str, '0', ITOA_STR_LEN - 1);
+	itoa_str[ITOA_STR_LEN - 1] = '\0';
+
+	/* Show negative sign */
+	uint8_t isneg;
+	if ( (isneg = n < 0)) {
+		itoa_str[0] = '-';
+		n = (~n) + 1;
+	}
 
 	/* Numbers 0 .. 180 can be copied from itoa_conversion_table without conversion */
 	if (n <= 180) {
 		if (digits >= 3) {
-			memcpy(itoa_str + (digits - 3), itoa_conversion_table[n], 3);
+			memcpy(itoa_str + isneg + (digits - 3), itoa_conversion_table[n], 3);
 		} else { // digits == 1 || 2
-			memcpy(itoa_str, itoa_conversion_table[n] + (3 - digits), digits);
+			memcpy(itoa_str + isneg, itoa_conversion_table[n] + (3 - digits), digits);
 		}
 	} else { // For n > 180 need to calculate string content
 		// Calculate digits from least to most significant number
 		do {
-			itoa_str[digits - 1] = n % 10 + '0';
+			itoa_str[digits + isneg - 1] = n % 10 + '0';
 			n /= 10;
 		} while (--digits > 0);
 	}
