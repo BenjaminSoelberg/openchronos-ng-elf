@@ -37,7 +37,7 @@ static void num_press()
 
 static void music_activate()
 {
-	display_chars(0, LCD_SEG_L2_4_0, (uint8_t *)"MUSIC", SEG_ON);
+	display_chars(0, LCD_SEG_L2_4_0, "MUSIC", SEG_ON);
 }
 
 static void music_deactivate()

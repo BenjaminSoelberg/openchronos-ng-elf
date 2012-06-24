@@ -241,7 +241,7 @@ void display_clear(
 void display_char(
 	uint8_t scr_nr, /*!< the virtual screen number where to display */
 	enum display_segment segment, /*!< A segment */
-	uint8_t chr, /*!< The character to be displayed */
+	char chr, /*!< The character to be displayed */
 	enum display_segstate state /*!< A bitfield with state operations to be performed on the segment */
 );
 
@@ -272,7 +272,7 @@ void display_char(
 void display_chars(
 	uint8_t scr_nr, /*!< the virtual screen number where to display */
 	enum display_segment_array segments, /*!< A segment array */
-	uint8_t *str, /*!< A pointer to a vector of chars to be displayed */
+	char const * str, /*!< A pointer to a vector of chars to be displayed */
 	enum display_segstate state /*!< A bitfield with state operations to be performed on the segment */
 );
 
@@ -293,19 +293,18 @@ void display_symbol(
 
 /*!
 	\brief Converts a decimal into a string
-	\details Takes the number <i>n</i> and returns a string representation of that number with <i>digits</i> number of digits. The returned string is padded with <i>blanks</i> number of blank spacing.
+	\details Takes the number <i>n</i> and returns a string representation of that number with <i>digits</i> number of digits.
 
 	Example:
 	\code
 	// this returns "32"
-	uint8_t *s = _itoa(32, 2, 0);
+	char * s = _itoa(32, 2);
 	\endcode
 	\return a string representation of <i>n</i>
 */
-uint8_t *_itoa(
-	uint32_t n,     /*!< the number to convert to a string */
-	uint8_t digits, /*!< the number of output digits */
-	uint8_t blanks  /*!< the number of blanks to pad the output */
+char *_itoa(
+	int16_t n,     /*!< the number to convert to a string */
+	uint8_t digits  /*!< the number of output digits */
 );
 
 #endif /* __DISPLAY_H__ */

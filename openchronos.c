@@ -252,11 +252,11 @@ static void menumode_handler(void)
 
 	} else if (BIT_IS_SET(ports_pressed_btns, PORTS_BTN_UP)) {
 		menumode.item = menumode.item->next;
-		display_chars(0, LCD_SEG_L2_4_0, (uint8_t *)menumode.item->name, SEG_SET);
+		display_chars(0, LCD_SEG_L2_4_0, menumode.item->name, SEG_SET);
 
 	} else if (BIT_IS_SET(ports_pressed_btns, PORTS_BTN_DOWN)) {
 		menumode.item = menumode.item->prev;
-		display_chars(0, LCD_SEG_L2_4_0, (uint8_t *)menumode.item->name, SEG_SET);
+		display_chars(0, LCD_SEG_L2_4_0, menumode.item->name, SEG_SET);
 	}
 }
 
@@ -270,7 +270,7 @@ static void menumode_enable(void)
 	menumode.enabled = 1;
 
 	/* show MENU in the first line */
-	display_chars(0, LCD_SEG_L1_3_0, (uint8_t *)"MENU", SEG_SET);
+	display_chars(0, LCD_SEG_L1_3_0, "MENU", SEG_SET);
 
 	/* turn on up/down symbols */
 	display_symbol(0, LCD_SYMB_ARROW_UP, SEG_ON);
@@ -278,7 +278,7 @@ static void menumode_enable(void)
 
 	/* show up blinking name of current selected item */
 	display_chars(0, LCD_SEG_L2_4_0, NULL, BLINK_ON);
-	display_chars(0, LCD_SEG_L2_4_0, (uint8_t *)menumode.item->name, SEG_SET);
+	display_chars(0, LCD_SEG_L2_4_0, menumode.item->name, SEG_SET);
 }
 
 static void check_buttons(void)
