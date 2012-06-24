@@ -3,7 +3,7 @@
 
     Copyright (C) 2012 Aljaž Srebrnič <a2piratesoft@gmail.com>
 
-	         http://www.openchronos-ng.sourceforge.net
+	http://www.openchronos-ng.sourceforge.net
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -93,7 +93,7 @@ void buzzer_play(note *notes)
 		/* Delay for DURATION(*notes) milliseconds,
 		   use LPM1 because we need SMCLK for tone generation */
 		timer0_delay(DURATION(*notes), LPM1_bits);
-		
+
 		/* Advance to the next note */
 		notes++;
 	}
