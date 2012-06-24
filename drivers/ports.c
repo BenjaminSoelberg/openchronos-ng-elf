@@ -1,6 +1,6 @@
 /*
     drivers/ports.c: Openchronos ports driver
-	 
+
 	 Copyright (C) 2012 Angelo Arrifano <miknix@gmail.com>
 
     This program is free software: you can redistribute it and/or modify
@@ -32,7 +32,7 @@
 
 #define ALL_BUTTONS				0x1F
 
-#define BIT_IS_SET(F, B) ((F) | (B)) == (F)
+#define BIT_IS_SET(F, B) (((F) | (B)) == (F))
 
 void init_buttons(void)
 {
@@ -64,7 +64,7 @@ void PORT2_ISR(void)
 {
 	static uint16_t last_press;
 
-	/* If the interrupt was not raised by a button press, then handle accel */
+	/* If the interrupt is not a button press, then handle accel */
 	if ((P2IFG & ALL_BUTTONS) == 0)
 		goto accel_handler;
 
@@ -81,7 +81,7 @@ void PORT2_ISR(void)
 	/* set pressed button IRQ triggers to falling edge,
 	 so we can detect when they are released */
 	P2IES |= buttons;
-		
+
 	/* now get mask for buttons on falling edge
 	  (except the ones we just set) */
 	uint8_t falling_mask = P2IES & ALL_BUTTONS & ~rising_mask;
@@ -97,7 +97,7 @@ void PORT2_ISR(void)
 #ifdef CONFIG_TIMER_20HZ_IRQ
 		uint16_t pressed_ticks = timer0_20hz_counter - last_press;
 #else
-		/* in case the timer is disabled, at least detect short btn presses */
+		/* in case timer is disabled, at least detect short presses */
 		uint16_t pressed_ticks = CONFIG_BUTTONS_SHORT_PRESS_TIME;
 #endif
 
