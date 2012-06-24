@@ -156,61 +156,23 @@ void as_init(void) {
 
 	// Reset global sensor flag
 	as_ok = 1;
-
+	// Init configuration parameters to measurment mode
 	as_config.range=8;
-	as_config.sampling=100;
+	as_config.sampling=SAMPLING_100_HZ;
 }
 
+
 // *************************************************************************************************
-// @fn          as_start
-// @brief       Power-up and initialize acceleration sensor
-// @param       none
+// @fn          change_mode
+// @brief       This is only called for a "warm" (as_start was already called) mode change
+// @param       mode can be [FALL_MODE, MEASUREMENT_MODE,ACTIVITY_MODE]
 // @return      none
 // *************************************************************************************************
-void as_start(uint8_t mode) {
 
-	uint8_t bConfig=0x0C;
-
-
-	// Initialize SPI interface to acceleration sensor
-	AS_SPI_CTL0 |= UCSYNC | UCMST | UCMSB // SPI master, 8 data bits,  MSB first,
-			| UCCKPH; //  clock idle low, data output on falling edge
-	AS_SPI_CTL1 |= UCSSEL1; // SMCLK as clock source
-	AS_SPI_BR0 = AS_BR_DIVIDER; // Low byte of division factor for baud rate
-	AS_SPI_BR1 = 0x00; // High byte of division factor for baud rate
-	AS_SPI_CTL1 &= ~UCSWRST; // Start SPI hardware
-
-	// Initialize interrupt pin for data read out from acceleration sensor
-	AS_INT_IES &= ~AS_INT_PIN; // Interrupt on rising edge
-
-#ifdef AS_DISCONNECT	  
-	// Enable interrupt 
-	AS_INT_DIR &= ~AS_INT_PIN; // Switch INT pin to input
-	AS_SPI_DIR &= ~AS_SDI_PIN; // Switch SDI pin to input
-	AS_SPI_REN |= AS_SDI_PIN; // Pulldown on SDI pin
-	AS_SPI_SEL |= AS_SDO_PIN + AS_SDI_PIN + AS_SCK_PIN; // Port pins to SDO, SDI and SCK function
-	AS_CSN_OUT |= AS_CSN_PIN; // Deselect acceleration sensor
-	AS_PWR_OUT |= AS_PWR_PIN; // Power on active high
-#endif
-
-	// Delay of >5ms required between switching on power and configuring sensor
-	timer0_delay(10, LPM3_bits);
-
-	// Initialize interrupt pin for data read out from acceleration sensor
-	AS_INT_IFG &= ~AS_INT_PIN; // Reset flag
-	AS_INT_IE |= AS_INT_PIN; // Enable interrupt
-
-
-	// Reset sensor
-	as_write_register(0x04, 0x02);
-	as_write_register(0x04, 0x0A);
-	as_write_register(0x04, 0x04);
-
-	// Wait 5 ms before starting sensor output
-	timer0_delay(5, LPM3_bits);
-
-
-	// Configure sensor and start to sample data
+void change_mode(uint8_t mode)
+{
+	uint8_t bConfig=0x00;
+// Configure sensor and start to sample data
 		switch (mode) {
 		case FALL_MODE:
 			if (as_config.range == 2) {
@@ -283,6 +245,56 @@ void as_start(uint8_t mode) {
 
 	// Wait 2 ms before entering modality to settle down
 	timer0_delay(2, LPM3_bits);
+
+}
+// *************************************************************************************************
+// @fn          as_start
+// @brief       Power-up and initialize acceleration sensor in measurment mode
+// @param       mode can be [FALL_MODE, MEASUREMENT_MODE,ACTIVITY_MODE]
+// @return      none
+// *************************************************************************************************
+void as_start(uint8_t mode) {
+
+	// Initialize SPI interface to acceleration sensor
+	AS_SPI_CTL0 |= UCSYNC | UCMST | UCMSB // SPI master, 8 data bits,  MSB first,
+			| UCCKPH; //  clock idle low, data output on falling edge
+	AS_SPI_CTL1 |= UCSSEL1; // SMCLK as clock source
+	AS_SPI_BR0 = AS_BR_DIVIDER; // Low byte of division factor for baud rate
+	AS_SPI_BR1 = 0x00; // High byte of division factor for baud rate
+	AS_SPI_CTL1 &= ~UCSWRST; // Start SPI hardware
+
+	// Initialize interrupt pin for data read out from acceleration sensor
+	AS_INT_IES &= ~AS_INT_PIN; // Interrupt on rising edge
+
+#ifdef AS_DISCONNECT	  
+	// Enable interrupt 
+	AS_INT_DIR &= ~AS_INT_PIN; // Switch INT pin to input
+	AS_SPI_DIR &= ~AS_SDI_PIN; // Switch SDI pin to input
+	AS_SPI_REN |= AS_SDI_PIN; // Pulldown on SDI pin
+	AS_SPI_SEL |= AS_SDO_PIN + AS_SDI_PIN + AS_SCK_PIN; // Port pins to SDO, SDI and SCK function
+	AS_CSN_OUT |= AS_CSN_PIN; // Deselect acceleration sensor
+	AS_PWR_OUT |= AS_PWR_PIN; // Power on active high
+#endif
+
+	// Delay of >5ms required between switching on power and configuring sensor
+	timer0_delay(10, LPM3_bits);
+
+	// Initialize interrupt pin for data read out from acceleration sensor
+	AS_INT_IFG &= ~AS_INT_PIN; // Reset flag
+	AS_INT_IE |= AS_INT_PIN; // Enable interrupt
+
+
+	// Reset sensor
+	as_write_register(0x04, 0x02);
+	as_write_register(0x04, 0x0A);
+	as_write_register(0x04, 0x04);
+
+	// Wait 5 ms before starting sensor output
+	timer0_delay(5, LPM3_bits);
+
+	//then select modality
+	change_mode(mode);
+	
 }
 
 // *************************************************************************************************

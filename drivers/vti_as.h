@@ -67,6 +67,7 @@ extern void as_disconnect(void);
 #else
 extern void as_init(void);
 extern void as_start(uint8_t mode);
+extern void change_mode(uint8_t mode);
 extern void as_stop(void);
 extern uint8_t as_read_register(uint8_t bAddress);
 extern uint8_t as_write_register(uint8_t bAddress, uint8_t bData);
@@ -155,7 +156,7 @@ typedef union
   struct
   {
 	uint8_t motiondet           : 2;    // MDET see AS_MOTION_STATUS
-	uint8_t falldet    		   : 1;    // FFDET see AS_FALL_STATUS
+	uint8_t falldet    	    : 1;    // FFDET see AS_FALL_STATUS
 	uint8_t reserved            : 5;    // reserved, initial value = 0h
   } int_status;
   uint8_t all_flags;            // Shortcut to all display flags (for reset)
@@ -174,6 +175,7 @@ struct As_Param
 	uint8_t			FFTHR;
 	uint8_t 		sampling;
 	uint8_t			range;
+	uint8_t			mode;
 };
 extern struct As_Param as_config;
 
@@ -204,9 +206,8 @@ extern enum AS_FALL_STATUS as_fall_bit;
 // set 0 to switch at measurment mode at 400 Hz
 #define MDET_EXIT 1
 
-uint8_t as_get_status();
-void as_get_data(uint8_t * data);
-void as_start(uint8_t mode);
-void as_stop(void);
+// *************************************************************************************************
+// Extern section
+
 
 #endif /*VTI_AS_H_*/
