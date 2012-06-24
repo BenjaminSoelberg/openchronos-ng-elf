@@ -34,20 +34,6 @@
 
 #define BIT_IS_SET(F, B) ((F) | (B)) == (F)
 
-// *************************************************************************************************
-// Defines section
-
-/* Button debounce time (ms) */
-#define BUTTONS_DEBOUNCE_TIME	5
-
-/* How long does a button need to be pressed to be long press? */
-/* in multiples of 1/10 second */
-#define BUTTONS_LONG_PRESS_TIME 3
-
-/* How long does a button need to be pressed to be a short press? */
-/* in multiples of 1/10 second */
-#define BUTTONS_SHORT_PRESS_TIME 1
-
 void init_buttons(void)
 {
 	/* Set button ports to input */
@@ -112,13 +98,13 @@ void PORT2_ISR(void)
 		uint16_t pressed_ticks = timer0_20hz_counter - last_press;
 #else
 		/* in case the timer is disabled, at least detect short btn presses */
-		uint16_t pressed_ticks = BUTTONS_SHORT_PRESS_TIME;
+		uint16_t pressed_ticks = CONFIG_BUTTONS_SHORT_PRESS_TIME;
 #endif
 
 		/* check how long btn was pressed and save the event */
-		if (pressed_ticks > BUTTONS_LONG_PRESS_TIME)
+		if (pressed_ticks > CONFIG_BUTTONS_LONG_PRESS_TIME)
 			ports_pressed_btns |= buttons << 5;
-		else if (pressed_ticks >= BUTTONS_SHORT_PRESS_TIME)
+		else if (pressed_ticks >= CONFIG_BUTTONS_SHORT_PRESS_TIME)
 			ports_pressed_btns |= buttons;
 
 		/* set buttons IRQ triggers to rising edge */

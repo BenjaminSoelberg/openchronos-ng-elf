@@ -22,6 +22,12 @@ def rand_hw():
 
 DATA = SortedDict()
 
+DATA["DEBUG"] = {
+	"name": "Debug",
+	"default": False,
+	"help": "Activates debug code",
+}
+
 DATA["CONFIG_FIXEDPOINT_MATH"] = {
 	"name": "Fixedpoint Math (EXPERIMENTAL)",
 	"depends": [],
@@ -50,10 +56,20 @@ DATA["USE_WATCHDOG"] = {
 	"help": "Protects the clock against deadlocks by rebooting it.",
 }
 
+DATA["TEXT_RTC"] = {
+	"name": "RTC driver",
+	"type": "info",
+}
+
 DATA["CONFIG_RTC_IRQ"] = {
 	"name": "Enable RTC interrupts",
 	"default": True,
 	"help": "Enables interrupts on the Real Time Clock",
+}
+
+DATA["TEXT_TIMER"] = {
+	"name": "Timer0 driver",
+	"type": "info",
 }
 
 DATA["CONFIG_TIMER_1HZ_IRQ"] = {
@@ -68,10 +84,25 @@ DATA["CONFIG_TIMER_20HZ_IRQ"] = {
 	"help": "Enables 20Hz interrupts on the hardware timer",
 }
 
-DATA["DEBUG"] = {
-	"name": "Debug",
-	"default": False,
-	"help": "Activates debug code",
+DATA["TEXT_PORTS"] = {
+	"name": "Ports driver",
+	"type": "info",
+}
+
+DATA["CONFIG_BUTTONS_LONG_PRESS_TIME"] = {
+	"name": "Button short press time",
+	"type": "text",
+	"default": "6",
+	"ifndef": True,
+	"help": "Long button press time (in multiples of 1/20 second)",
+}
+
+DATA["CONFIG_BUTTONS_SHORT_PRESS_TIME"] = {
+	"name": "Button short press time",
+	"type": "text",
+	"default": "1",
+	"ifndef": True,
+	"help": "Short button press time (in multiples of 1/20 second)",
 }
 
 ################################# MODULES ####################################
