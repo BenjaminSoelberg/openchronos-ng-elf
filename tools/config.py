@@ -385,7 +385,7 @@ class OpenChronosApp(object):
 
 		elif field["type"] == "text":
 			f = urwid.AttrWrap(urwid.Edit("%s: "%field["name"],
-					field["value"]), 
+					str(field["value"])), 
 					'editbx', 'editfc')
 			f._datafield = field
 			self.fields[key] = f
