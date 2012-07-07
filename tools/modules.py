@@ -46,7 +46,13 @@ def read_config():
 
 			default = False
 			try:
-				default = cfg.getboolean(section, 'default')
+				try:
+					default = cfg.getboolean(section, 'default')
+					ftype = 'bool'
+				except ValueError:
+					default = cfg.get(section, 'default')
+					ftype = 'text'
+
 				parent = cfg.get(section, 'parent')
 			except ConfigParser.NoOptionError:
 				pass
@@ -55,6 +61,7 @@ def read_config():
 				'name': name,
 				'depends': [],
 				'ischild': (sectNr > 0),
+				'type': ftype,
 				'default': default,
 				'help': help
 			}) )
