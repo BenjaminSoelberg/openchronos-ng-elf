@@ -93,7 +93,7 @@ struct batt sBatt;
 void reset_batt_measurement(void)
 {
 	// Start with battery voltage of 3.00V
-	sBatt.voltage = 400; //TODO: Switch back to 300!
+	sBatt.voltage = 300;
 
 	//No measurement to start
 	sBatt.has_update = FALSE;
