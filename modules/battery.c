@@ -1,9 +1,7 @@
 /*
-    modules/rfbsl.c: RFBSL module for openchronos-ng
+    battery.c: battery voltage display module
 
-    Copyright (C) 2012 Angelo Arrifano <miknix@gmail.com>
-
-	           http://www.openchronos-ng.sourceforge.net
+    Copyright (C) 2012 Matthew Excell <matt@excellclan.com>
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -51,62 +49,82 @@
 //	  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 //	  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
-// *************************************************************************************************
 
 // system
 #include <openchronos.h>
 
 // driver
-#include <drivers/display.h>
-#include <drivers/battery.h>
+#include "drivers/display.h"
+#include "drivers/battery.h"
 
-// Entry point of of the Flash Updater in BSL memory
-#define CALL_RFSBL()   ((void (*)())0x1000)()
+
+uint8_t disp = FALSE;
 
 // *************************************************************************************************
-// @fn          mx_rfbsl
-// @brief       This functions starts the RFBSL
-// @param       line		LINE1, LINE2
+// @fn          display_battery_V
+// @brief       Display routine for battery voltage.
+// @param       none
 // @return      none
 // *************************************************************************************************
-static void updown_press()
+void display_battery_V()
 {
-	if (sBatt.low_battery) return;
+	char *str;
 
-	// Exit if SimpliciTI stack is active
-	/*if (is_rf()) return;*/
 
-	// Write RAM to indicate we will be downloading the RAM Updater first
-	display_chars(0, LCD_SEG_L1_3_0, " RAM", SEG_ON);
+	// Set battery and V icon
+	display_symbol(0,LCD_SYMB_BATTERY, SEG_ON);
 
-	// Call RFBSL
-	CALL_RFSBL();
+	// Display result in xx.x format
+	str = _itoa(sBatt.voltage, 4);
+
+	display_chars(0, LCD_SEG_L2_3_0, str, SEG_ON);
+	display_symbol(0, LCD_SEG_L2_DP, SEG_ON);
 }
 
-
-// *************************************************************************************************
-// @fn          display_rfbsl
-// @brief       RFBSL display routine.
-// @param       uint8_t line			LINE2
-//				uint8_t update		DISPLAY_LINE_UPDATE_FULL
-// @return      none
-// *************************************************************************************************
-static void rfbsl_activate()
+void clear_battery_V()
 {
-	/* update screen */
-	display_chars(0, LCD_SEG_L2_5_0, " RFBSL", SEG_ON);
-}
-
-static void rfbsl_deactivate()
-{
-	/* cleanup screen */
+	// Set battery and V icon
+	display_symbol(0,LCD_SYMB_BATTERY, SEG_OFF);
 	display_clear(0, 2);
+
 }
 
-void rfbsl_init(void)
-{
-	menu_add_entry("RFBSL", NULL, NULL, NULL, NULL, NULL,
-						&updown_press,
-						&rfbsl_activate,
-						&rfbsl_deactivate);
+
+// *************************************************************************************************
+// @fn          battery_activate
+// @brief       battery display routine.
+// @param       none
+// @return      none
+// *************************************************************************************************
+static void battery_activate() {
+	display_chars(0, LCD_SEG_L1_3_0, "BAT", SEG_SET);
+#ifndef CONFIG_BATTERYMON
+	battery_measurement(); //Don't need this if the background task is compiled in
+#endif
+	display_battery_V();
+	disp = TRUE;
+}
+
+static void battery_deactivate() {
+	/* cleanup screen */
+	disp = FALSE;
+	display_clear(0, 1);
+	clear_battery_V();
+}
+
+static void battery_change() {
+	/* Display battery symbol if low */
+	display_symbol(0,LCD_SYMB_BATTERY,sBatt.low_battery ? SEG_ON : SEG_OFF);
+	if (disp) {
+		display_battery_V();
+	}
+}
+
+void battery_init(void) {
+#ifndef CONFIG_BATTERYMON
+	reset_batt_measurement(); //Don't need this if batterymon is going to do it.
+#endif
+	menu_add_entry("BATTV",NULL, NULL, NULL, NULL, NULL, NULL,
+			&battery_activate, &battery_deactivate);
+	sys_messagebus_register(&battery_change, SYS_MSG_BATT);
 }

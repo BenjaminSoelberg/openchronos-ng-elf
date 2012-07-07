@@ -41,6 +41,8 @@
 #ifndef __DISPLAY_H__
 #define __DISPLAY_H__
 
+#include <openchronos.h>
+
 /*!
 	\brief Enumeration of segment states
 */
@@ -317,6 +319,39 @@ char *blank_leading_zeroes(char *str);
 char *_itoa(
 	int16_t n,     /*!< the number to convert to a string */
 	uint8_t digits  /*!< the number of output digits */
+);
+
+/*!
+	\brief Converts an integer into a string in hex
+	\details Takes the number <i>n</i> and returns a string representation of that number with <i>digits</i> number of digits. The returned string is padded with <i>blanks</i> number of blank spacing.
+
+	Example:
+	\code
+	// this returns "4F"
+	uint8_t *s = _itoa(0x4F, 2, 0);
+	\endcode
+	\return a string representation of <i>n</i>
+*/
+char *_itox(
+	uint32_t n,     /*!< the number to convert to a string */
+	uint8_t digits /*!< the number of output digits */
+);
+
+/*!
+	\brief Converts an integer from a range into a percent string between 0 and 100
+	\details Takes the number <i>n</i> and returns a string representation of that number as a percent between low and high. The returned string is 3 characters long.
+
+	Example:
+	\code
+	// this returns "4F"
+	uint8_t *s = _itoa(0x4F, 2, 0);
+	\endcode
+	\return a string representation of <i>n</i>
+*/
+char *_itopct(
+		uint32_t low,     /*!< the 0% value */
+		uint32_t high,     /*!< the 100% value */
+		uint32_t n
 );
 
 #endif /* __DISPLAY_H__ */

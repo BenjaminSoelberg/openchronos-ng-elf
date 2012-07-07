@@ -1,3 +1,21 @@
+/*
+    battery.c: battery voltage measurement driver
+
+    Copyright (C) 2012 Matthew Excell <matt@excellclan.com>
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
 // *************************************************************************************************
 //
 //	Copyright (C) 2009 Texas Instruments Incorporated - http://www.ti.com/
@@ -38,18 +56,12 @@
 
 // *************************************************************************************************
 // Include section
-
-// system
-#include "project.h"
-#ifdef CONFIG_BATTERY
+#include <cc430x613x.h>
 
 // driver
 #include "display.h"
 #include "ports.h"
 #include "adc12.h"
-
-// logic
-#include "menu.h"
 #include "battery.h"
 
 
@@ -80,14 +92,11 @@ struct batt sBatt;
 // *************************************************************************************************
 void reset_batt_measurement(void)
 {
-	// Set flag to off
-	sBatt.state = MENU_ITEM_NOT_VISIBLE;
-
-	// Reset lobatt display counter
-	sBatt.lobatt_display = BATTERY_LOW_MESSAGE_CYCLE;
-
 	// Start with battery voltage of 3.00V
-	sBatt.voltage = 300;
+	sBatt.voltage = 400; //TODO: Switch back to 300!
+
+	//No measurement to start
+	sBatt.has_update = FALSE;
 }
 
 
@@ -118,75 +127,27 @@ void battery_measurement(void)
 		voltage = sBatt.voltage;
 	}
 
+#ifndef CONFIG_BATTERYMON_DISABLE_BATTERY_FILTER
 	// Filter battery voltage
 	sBatt.voltage = ((voltage * 2) + (sBatt.voltage * 8)) / 10;
+#else
+	//Get it raw instead for testing
+	sBatt.voltage = voltage;
+#endif
 
 	// If battery voltage falls below low battery threshold, set system flag and modify LINE2 display function pointer
 	if (sBatt.voltage < BATTERY_LOW_THRESHOLD) {
-		sys.flag.low_battery = 1;
+		sBatt.low_battery = TRUE;
 
 		// Set sticky battery icon
-		display_symbol(LCD_SYMB_BATTERY, SEG_ON);
+		//display_symbol(NULL,LCD_SYMB_BATTERY, SEG_ON);
 	} else {
-		sys.flag.low_battery = 0;
+		sBatt.low_battery = FALSE;
 
 		// Clear sticky battery icon
-		display_symbol(LCD_SYMB_BATTERY, SEG_OFF);
+		//display_symbol(NULL,LCD_SYMB_BATTERY, SEG_OFF);
 	}
 
-	// Update LINE2
-	display.flag.line2_full_update = 1;
-
-	// Indicate to display function that new value is available
-	sBatt.update_display = 1;
+	sBatt.has_update = TRUE;
 }
 
-
-
-
-// *************************************************************************************************
-// @fn          display_battery_V
-// @brief       Display routine for battery voltage.
-// @param       uint8_t line		LINE2
-//				uint8_t update		DISPLAY_LINE_UPDATE_FULL, DISPLAY_LINE_CLEAR
-// @return      none
-// *************************************************************************************************
-void display_battery_V(uint8_t line, uint8_t update)
-{
-	uint8_t *str;
-
-	// Redraw line
-	if (update == DISPLAY_LINE_UPDATE_FULL) {
-		// Set battery and V icon
-		display_symbol(LCD_SYMB_BATTERY, SEG_ON);
-
-		// Menu item is visible
-		sBatt.state = MENU_ITEM_VISIBLE;
-
-		// Display result in xx.x format
-		str = _itoa(sBatt.voltage, 3, 0);
-
-		display_chars(LCD_SEG_L2_2_0, str, SEG_ON);
-		display_symbol(LCD_SEG_L2_DP, SEG_ON);
-	}
-	else if (update == DISPLAY_LINE_UPDATE_PARTIAL && sBatt.update_display)
-	{
-		// Display result in xx.x format
-		str = _itoa(sBatt.voltage, 3, 0);
-
-		display_chars(LCD_SEG_L2_2_0, str, SEG_ON);
-			
-		sBatt.update_display = 0;
-	}
-	else if (update == DISPLAY_LINE_CLEAR)
-	{
-		// Menu item is not visible
-		sBatt.state = MENU_ITEM_NOT_VISIBLE;
-
-		// Clear function-specific symbols
-		display_symbol(LCD_SYMB_BATTERY, SEG_OFF);
-	}
-}
-
-
-#endif /* CONFIG_BATTERY */

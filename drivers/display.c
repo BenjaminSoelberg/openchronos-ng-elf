@@ -170,7 +170,7 @@
  ***************************** LOCAL STORAGE *******************************
  **************************************************************************/
 
-#define ITOA_STR_LEN 7
+#define ITOA_STR_LEN 8 //Increased to allow use for _itox as well
 
 /* storage for itoa function */
 static char itoa_str[ITOA_STR_LEN];
@@ -524,8 +524,8 @@ void display_clear(uint8_t scr_nr, uint8_t line)
 char *blank_leading_zeroes(char *str) {
 	uint8_t current = 0;
 
-	while (str[0] == '0') {
-		str[0] = ' ';
+	while (str[current] == '0') {
+		str[current] = ' ';
 	}
 	return str;
 }
@@ -561,6 +561,58 @@ char *_itoa(int16_t n, uint8_t digits)
 	return (itoa_str);
 }
 
+// *************************************************************************************************
+// @fn          _itox
+// @brief       Generic integer to array routine. Converts integer n to string in hex.
+//				Default conversion result has leading zeros, e.g. "001AF"
+//				Option to convert leading '0' into whitespace (blanks)
+// @param       uint32_t n			integer to convert
+//				uint8_t digits		number of digits - if this is fewer than needed to display "n", then the
+//									least significant digits will be the output
+// @return      uint8_t				string
+// *************************************************************************************************
+char *_itox(uint32_t n,uint8_t digits)
+{
+	uint8_t i = digits-1;
+
+	// Preset result string - reusing the one from itoa (no need for our own, really)
+	memcpy(itoa_str, "00000000", 8);
+
+	// Return empty string if number of digits is invalid (valid range for digits: 1-7)
+	if ((digits == 0) || (digits > 8)) return (itoa_str);
+
+	do {
+		itoa_str[i] = "0123456789ABCDEF"[n & 0x0F];
+		n >>= 4;
+	} while (i-- > 0);
+
+	itoa_str[digits] = 0;
+
+	return (itoa_str);
+}
+
+// *************************************************************************************************
+// @fn          _itopct
+// @brief       Converts integer n to a percent string between low and high. (uses _itoa internally)
+//				Default conversion result has leading zeros, e.g. "001AF"
+//				Option to convert leading '0' into whitespace (blanks)
+// @param       uint32_t low		0% value
+//				uint32_t high		100% value
+//				uint32_t n			integer to convert
+//
+// @return      uint8_t				string
+// *************************************************************************************************
+char *_itopct(uint32_t low,uint32_t high,uint32_t n)
+{
+
+	// Return "0" if the value is under the low
+	if (n < low) return (char *) "   0";
+
+	// Return "100" if the value is over the high
+	if (n > high) return (char *) " 100";
+
+	return _itoa((((n*100)-(low*100))/(high-low)),4);
+}
 
 void display_symbol(uint8_t scr_nr, enum display_segment symbol,
                                                enum display_segstate state)

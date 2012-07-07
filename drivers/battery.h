@@ -36,10 +36,10 @@
 #ifndef BATTERY_H_
 #define BATTERY_H_
 
+#include <openchronos.h>
 
 // *************************************************************************************************
 // Include section
-
 
 // *************************************************************************************************
 // Prototypes section
@@ -49,8 +49,8 @@ extern void reset_batt_measurement(void);
 extern void battery_measurement(void);
 
 // Menu functions
-extern void display_battery_V(uint8_t line, uint8_t update);
-
+extern void display_battery_V();
+extern void clear_battery_V();
 
 // *************************************************************************************************
 // Defines section
@@ -61,29 +61,37 @@ extern void display_battery_V(uint8_t line, uint8_t update);
 // Battery end of life voltage threshold -> disable radio, show "lobatt" message
 #define BATTERY_LOW_THRESHOLD			(240u)
 
-// Show "lobatt" message every n seconds
-#define BATTERY_LOW_MESSAGE_CYCLE		(15u)
+// Where we consider the battery full
+#define BATTERY_FULL_THRESHOLD			(300u)
 
+// Where we consider the battery empty
+#define BATTERY_EMPTY_THRESHOLD			(220u)
+
+#ifndef FALSE
+  // the classic false
+  #define FALSE (0 == 1)
+#endif
+
+#ifndef TRUE
+  // the classic true
+  #define TRUE  (1 == 1)
+#endif
 
 // *************************************************************************************************
 // Global Variable section
 /* TODO: pack this stuff!!!! */
-struct batt
-{
-	// MENU_ITEM_NOT_VISIBLE, MENU_ITEM_VISIBLE
-	menu_t	 	state;
+struct batt {
+	// Currently flagged as low? TRUE of FALSE - defined below
+	uint8_t low_battery :1;
 
-	// Counter for alternating "lobatt" display
-	uint8_t 			lobatt_display;
+	// Update available for sys_msg?
+	uint8_t has_update :1;
 
 	// Battery voltage
-	uint16_t			voltage;
+	uint16_t voltage;
 
 	// Battery voltage offset
-	int16_t			offset;
-
-	/* does the display need an update? */
-	uint8_t update_display;
+	int16_t offset;
 };
 extern struct batt sBatt;
 
