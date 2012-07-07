@@ -125,7 +125,7 @@ void batterypct_init(void) {
 #ifndef CONFIG_BATTERYMON
 	reset_batt_measurement(); //Don't need this if batterymon is going to do it.
 #endif
-	menu_add_entry("BATT",NULL, NULL, NULL, NULL, NULL, NULL,
+	menu_add_entry(" BATT",NULL, NULL, NULL, NULL, NULL, NULL,
 			&battery_activate, &battery_deactivate);
 	sys_messagebus_register(&battery_change, SYS_MSG_BATT);
 }

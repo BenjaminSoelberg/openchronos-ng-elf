@@ -1,3 +1,21 @@
+/*
+    temperature.h: Temperature driver header
+
+    Copyright (C) 2012 Matthew Excell <matt@excellclan.com>
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 // *************************************************************************************************
 //
 //	Copyright (C) 2009 Texas Instruments Incorporated - http://www.ti.com/
@@ -38,21 +56,19 @@
 
 // *************************************************************************************************
 // Include section
-
+#include <openchronos.h>
 
 // *************************************************************************************************
 // Prototypes section
 
 // internal functions
 extern void reset_temp_measurement(void);
-extern uint8_t is_temp_measurement(void);
 extern void temperature_measurement(uint8_t filter);
 
-// menu functions
-extern void mx_temperature(uint8_t line);
-extern void display_temperature(uint8_t line, uint8_t update);
-
-
+#ifndef CONFIG_TEMPERATUREMON_METRIC_ONLY
+extern int16_t convert_C_to_F(int16_t value);
+extern int16_t convert_F_to_C(int16_t value);
+#endif
 // *************************************************************************************************
 // Defines section
 
@@ -62,18 +78,32 @@ extern void display_temperature(uint8_t line, uint8_t update);
 /* TODO: pack this stuff!!!! */
 struct temp
 {
-	// MENU_ITEM_NOT_VISIBLE, MENU_ITEM_VISIBLE
-	menu_t	 	state;
-	// Temperature (°C) in 2.1 format
+	// Temperature (ï¿½C) in 2.1 format
 	int16_t		degrees;
-	// User set calibration value (°C) in 2.1 format
+	// User set calibration value (ï¿½C) in 2.1 format
 	int16_t		offset;
+	// Update available for sys_msg?
+	uint8_t has_update :1;
+#ifndef CONFIG_TEMPERATUREMON_METRIC_ONLY
+    //C or F
+    uint8_t         is_c :1;
+#endif
 
-	/* do we need to update the display? */
-	uint8_t update_display;
 };
 extern struct temp sTemp;
 
+#ifndef FALSE
+  // the classic false
+  #define FALSE (0 == 1)
+#endif
+
+#ifndef TRUE
+  // the classic true
+  #define TRUE  (1 == 1)
+#endif
+
+#define FILTER_OFF (0)
+#define FILTER_ON (1)
 
 // *************************************************************************************************
 // Extern section

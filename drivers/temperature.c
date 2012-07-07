@@ -1,3 +1,21 @@
+/*
+    temperature.c: Temperature driver
+
+    Copyright (C) 2012 Matthew Excell <matt@excellclan.com>
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 // *************************************************************************************************
 //
 //	Copyright (C) 2009 Texas Instruments Incorporated - http://www.ti.com/
@@ -40,23 +58,19 @@
 // Include section
 
 // system
-#include "project.h"
+#include <cc430x613x.h>
 
 // driver
 #include "temperature.h"
 #include "ports.h"
 #include "display.h"
 #include "adc12.h"
-//#include "timer.h"
+#include "timer.h"
 
 // *************************************************************************************************
 // Prototypes section
 uint8_t is_temp_measurement(void);
 
-#ifndef CONFIG_METRIC_ONLY
-int16_t convert_C_to_F(int16_t value);
-int16_t convert_F_to_C(int16_t value);
-#endif
 
 // *************************************************************************************************
 // Defines section
@@ -79,10 +93,7 @@ struct temp sTemp;
 // *************************************************************************************************
 void reset_temp_measurement(void)
 {
-	// Set flag to off
-	sTemp.state = MENU_ITEM_NOT_VISIBLE;
-
-	// Perform one temperature measurements with disabled filter
+	// Perform one temperature measurement with disabled filter
 	temperature_measurement(FILTER_OFF);
 }
 
@@ -99,20 +110,26 @@ void temperature_measurement(uint8_t filter)
 	volatile int32_t temperature;
 
 	// Convert internal temperature diode voltage
-	adc_result = 0; /* adc12_single_conversion(REFVSEL_0, ADC12SHT0_8, ADC12INCH_10); */
+	//adc_result = 0;
+	adc_result = adc12_single_conversion(REFVSEL_0, ADC12SHT0_8, ADC12INCH_10);
 
-	// Convert ADC value to "xx.x °C"
+	// Convert ADC value to "xx.x ï¿½C"
 	// Temperature in Celsius
 	// ((A10/4096*1500mV) - 680mV)*(1/2.25mV) = (A10/4096*667) - 302
 	// = (A10 - 1855) * (667 / 4096)
 	temperature = (((int32_t)((int32_t)adc_result - 1855)) * 667 * 10) / 4096;
 
-	// Add temperature offset
-	temperature += sTemp.offset;
+	// Add temperature offset - we do this at display - makes for easier editing
+	//temperature += sTemp.offset;
+
+	// Limit min/max temperature to +/- 50 ï¿½C
+	if (temperature > 500) temperature = 500;
+	if (temperature < -500) temperature = -500;
+
 
 	// Store measured temperature
 	if (filter == FILTER_ON) {
-		// Change temperature in 0.1° steps towards measured value
+		// Change temperature in 0.1ï¿½ steps towards measured value
 		if (temperature > sTemp.degrees)		sTemp.degrees += 1;
 		else if (temperature < sTemp.degrees)	sTemp.degrees -= 1;
 	} else {
@@ -120,23 +137,22 @@ void temperature_measurement(uint8_t filter)
 		sTemp.degrees = (int16_t)temperature;
 	}
 
-	// New data is available --> do display update
-	sTemp.update_display = 1;
+	sTemp.has_update = TRUE;
 }
 
 
 // *************************************************************************************************
 // @fn          convert_C_to_F
-// @brief       Convert °C to °F
-// @param       int16_t value		Temperature in °C
-// @return      int16_t 			Temperature in °F
+// @brief       Convert ï¿½C to ï¿½F
+// @param       int16_t value		Temperature in ï¿½C
+// @return      int16_t 			Temperature in ï¿½F
 // *************************************************************************************************
-#ifndef CONFIG_METRIC_ONLY
+#ifndef CONFIG_TEMPERATUREMON_METRIC_ONLY
 int16_t convert_C_to_F(int16_t value)
 {
 	int16_t DegF;
 
-	// Celsius in Fahrenheit = (( TCelsius × 9 ) / 5 ) + 32
+	// Celsius in Fahrenheit = (( TCelsius ï¿½ 9 ) / 5 ) + 32
 	DegF = ((value * 9 * 10) / 5 / 10) + 32 * 10;
 
 	return (DegF);
@@ -145,15 +161,15 @@ int16_t convert_C_to_F(int16_t value)
 
 // *************************************************************************************************
 // @fn          convert_F_to_C
-// @brief       Convert °F to °C
-// @param       int16_t value		Temperature in 2.1 °F
-// @return      int16_t 			Temperature in 2.1 °C
+// @brief       Convert ï¿½F to ï¿½C
+// @param       int16_t value		Temperature in 2.1 ï¿½F
+// @return      int16_t 			Temperature in 2.1 ï¿½C
 // *************************************************************************************************
 int16_t convert_F_to_C(int16_t value)
 {
 	int16_t DegC;
 
-	// TCelsius =( TFahrenheit - 32 ) × 5 / 9
+	// TCelsius =( TFahrenheit - 32 ) ï¿½ 5 / 9
 	DegC = (((value - 320) * 5)) / 9;
 
 	return (DegC);
@@ -163,19 +179,8 @@ int16_t convert_F_to_C(int16_t value)
 //#define convert_F_to_C(value) (value)
 #endif
 
-// *************************************************************************************************
-// @fn          is_temp_measurement
-// @brief       Returns TRUE if temperature measurement is enabled.
-// @param       none
-// @return      uint8_t
-// *************************************************************************************************
-uint8_t is_temp_measurement(void)
-{
-	return (sTemp.state == MENU_ITEM_VISIBLE);
-}
 
-
-// *************************************************************************************************
+/*// *************************************************************************************************
 // @fn          mx_temperature
 // @brief       Mx button handler to set the temperature offset.
 // @param       uint8_t line		LINE1
@@ -192,7 +197,7 @@ void mx_temperature(uint8_t line)
 	display_clear(1);
 	display_clear(2);
 
-	// When using English units, convert internal °C to °F before handing over value to set_value function
+	// When using English units, convert internal ï¿½C to ï¿½F before handing over value to set_value function
 #ifdef CONFIG_METRIC_ONLY
 	temperature  = sTemp.degrees;
 	temperature0 = temperature;
@@ -218,7 +223,7 @@ void mx_temperature(uint8_t line)
 		// Button STAR (short): save, then exit
 		//if (button.flag.star) {
 		if (0) {
-			// For English units, convert set °F to °C
+			// For English units, convert set ï¿½F to ï¿½C
 #ifdef CONFIG_METRIC_ONLY
 			temperature1 = temperature;
 #else
@@ -243,7 +248,7 @@ void mx_temperature(uint8_t line)
 			break;
 		}
 
-		// Display °C or °F depending on unit system
+		// Display ï¿½C or ï¿½F depending on unit system
 		if (sys.flag.use_metric_units)		display_char(LCD_SEG_L1_0, 'C', SEG_ON);
 		else								display_char(LCD_SEG_L1_0, 'F', SEG_ON);
 
@@ -251,7 +256,7 @@ void mx_temperature(uint8_t line)
 		display_symbol(LCD_UNIT_L1_DEGREE, SEG_ON);
 
 		// Set current temperature - offset is set when leaving function
-		/* TODO: set_value is gone, please port this to new API */
+		// TODO: set_value is gone, please port this to new API
 		//set_value(&temperature, 3, 1, -999, 999, SETVALUE_DISPLAY_VALUE + SETVALUE_DISPLAY_ARROWS, LCD_SEG_L1_3_1, display_value1);
 	}
 
@@ -277,7 +282,7 @@ void display_temperature(uint8_t line, uint8_t update)
 		// Menu item is visible
 		sTemp.state = MENU_ITEM_VISIBLE;
 
-		// Display °C / °F
+		// Display ï¿½C / ï¿½F
 		display_symbol(LCD_SEG_L1_DP1, SEG_ON);
 		display_symbol(LCD_UNIT_L1_DEGREE, SEG_ON);
 #ifdef CONFIG_METRIC_ONLY
@@ -298,7 +303,7 @@ void display_temperature(uint8_t line, uint8_t update)
 	else if (update == DISPLAY_LINE_UPDATE_PARTIAL && sTemp.update_display)
 	{
 		sTemp.update_display = 0;
-		// When using English units, convert °C to °F (temp*1.8+32)
+		// When using English units, convert ï¿½C to ï¿½F (temp*1.8+32)
 #ifdef CONFIG_METRIC_ONLY
 		temperature = sTemp.degrees;
 #else
@@ -324,7 +329,7 @@ void display_temperature(uint8_t line, uint8_t update)
 			display_symbol(LCD_SYMB_ARROW_DOWN, SEG_OFF);
 		}
 
-		// Limit min/max temperature to +/- 99.9 °C / °F
+		// Limit min/max temperature to +/- 99.9 ï¿½C / ï¿½F
 		if (temperature > 999) temperature = 999;
 
 		// Display result in xx.x format
@@ -340,4 +345,4 @@ void display_temperature(uint8_t line, uint8_t update)
 		display_symbol(LCD_UNIT_L1_DEGREE, SEG_OFF);
 		display_symbol(LCD_SEG_L1_DP1, SEG_OFF);
 	}
-}
+}*/

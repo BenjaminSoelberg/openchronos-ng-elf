@@ -83,7 +83,7 @@ uint16_t adc12_single_conversion(uint16_t ref, uint16_t sht, uint16_t channel)
 	ADC12IE = 0x001;                          	// ADC_IFG upon conv result-ADCMEMO
 
 	// Wait 2 ticks (66us) to allow internal reference to settle
-	timer0_delay(66,LPM0_bits);
+	timer0_delay(66,LPM3_bits);
 
 	// Start ADC12
 	ADC12CTL0 |= ADC12ENC;
@@ -95,13 +95,13 @@ uint16_t adc12_single_conversion(uint16_t ref, uint16_t sht, uint16_t channel)
 	ADC12CTL0 |= ADC12SC;
 
 	// Wait until ADC12 has finished
-	timer0_delay(170, LPM0_bits);
+	timer0_delay(170, LPM3_bits);
 
 	uint8_t loops = 0;
 
 	//We were going away and the watchdog was tripping - this should reduce the instances of that.
 	while (!adc12_data_ready && loops++ < 30) {
-		timer0_delay(66, LPM0_bits);
+		timer0_delay(66, LPM3_bits);
 	}
 
 	// Shut down ADC12
