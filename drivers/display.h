@@ -292,6 +292,18 @@ void display_symbol(
 );
 
 /*!
+	\brief Turns leading 0s in a string into spaces.
+	\details Turns leading 0s in a string into spaces. Modifies in place! (also returns the pointer for easy chaining)
+	Example:
+	\code
+	// this returns " 2"
+	char * s = blank_leading_zeroes(_itoa(2, 2));
+	\endcode
+	\return the input string
+*/
+char *blank_leading_zeroes(char *str);
+
+/*!
 	\brief Converts a decimal into a string
 	\details Takes the number <i>n</i> and returns a string representation of that number with <i>digits</i> number of digits.
 

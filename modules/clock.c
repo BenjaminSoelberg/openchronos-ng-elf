@@ -37,14 +37,43 @@ static void clock_event(enum sys_message msg)
 
 	if (msg | SYS_MSG_RTC_YEAR)
 		display_chars(1, LCD_SEG_L1_3_0, _itoa(tmp_yy, 4), SEG_SET);
+#ifdef CONFIG_CLOCK_MONTH_FIRST
+	if (msg | SYS_MSG_RTC_MONTH)
+		display_chars(0, LCD_SEG_L2_4_3, _itoa(tmp_mo, 2), SEG_SET);
+	if (msg | SYS_MSG_RTC_DAY) {
+		display_chars(0, LCD_SEG_L2_1_0, _itoa(tmp_dd, 2), SEG_SET);
+#else
 	if (msg | SYS_MSG_RTC_MONTH)
 		display_chars(0, LCD_SEG_L2_1_0, _itoa(tmp_mo, 2), SEG_SET);
 	if (msg | SYS_MSG_RTC_DAY) {
 		display_chars(0, LCD_SEG_L2_4_3, _itoa(tmp_dd, 2), SEG_SET);
+
+#endif
 		display_chars(1, LCD_SEG_L2_2_0, tmp_dws, SEG_SET);
 	}
-	if (msg | SYS_MSG_RTC_HOUR)
+	if (msg | SYS_MSG_RTC_HOUR) {
+#ifdef CONFIG_CLOCK_AMPM
+		if (tmp_hh > 12) {
+			tmp_hh = tmp_hh - 12;
+			display_symbol(0,LCD_SYMB_AM,SEG_OFF);
+			display_symbol(0,LCD_SYMB_PM,SEG_SET);
+		} else {
+			if (tmp_hh == 12) {
+				display_symbol(0,LCD_SYMB_AM,SEG_OFF);
+				display_symbol(0,LCD_SYMB_PM,SEG_SET);
+			} else {
+				display_symbol(0,LCD_SYMB_PM,SEG_OFF);
+				display_symbol(0,LCD_SYMB_AM,SEG_SET);
+			}
+			if (tmp_hh == 0) {
+				tmp_hh = 12;
+			}
+		}
 		display_chars(0, LCD_SEG_L1_3_2, _itoa(tmp_hh, 2), SEG_SET);
+#else
+		display_chars(0, LCD_SEG_L1_3_2, _itoa(tmp_hh, 2), SEG_SET);
+#endif
+	}
 	if (msg | SYS_MSG_RTC_MINUTE)
 		display_chars(0, LCD_SEG_L1_1_0, _itoa(tmp_mm, 2), SEG_SET);
 }
@@ -71,34 +100,58 @@ static void edit_yy_set(int8_t step)
 static void edit_mo_sel(void)
 {
 	lcd_screen_activate(0);
+#ifdef CONFIG_CLOCK_MONTH_FIRST
+	display_chars(0, LCD_SEG_L2_4_3, NULL, BLINK_ON);
+#else
 	display_chars(0, LCD_SEG_L2_1_0, NULL, BLINK_ON);
+#endif
 }
 static void edit_mo_dsel(void)
 {
+#ifdef CONFIG_CLOCK_MONTH_FIRST
+	display_chars(0, LCD_SEG_L2_4_3, NULL, BLINK_OFF);
+#else
 	display_chars(0, LCD_SEG_L2_1_0, NULL, BLINK_OFF);
+#endif
 }
+
 static void edit_mo_set(int8_t step)
 {
 	helpers_loop(&tmp_mo, 1, 12, step);
-
+#ifdef CONFIG_CLOCK_MONTH_FIRST
+	display_chars(0, LCD_SEG_L2_4_3, _itoa(tmp_mo, 2), SEG_SET);
+#else
 	display_chars(0, LCD_SEG_L2_1_0, _itoa(tmp_mo, 2), SEG_SET);
+#endif
 }
 
 static void edit_dd_sel(void)
 {
 	lcd_screen_activate(0);
+#ifdef CONFIG_CLOCK_MONTH_FIRST
+	display_chars(0, LCD_SEG_L2_1_0, NULL, BLINK_ON);
+#else
 	display_chars(0, LCD_SEG_L2_4_3, NULL, BLINK_ON);
+#endif
 }
+
 static void edit_dd_dsel(void)
 {
+#ifdef CONFIG_CLOCK_MONTH_FIRST
+	display_chars(0, LCD_SEG_L2_1_0, NULL, BLINK_OFF);
+#else
 	display_chars(0, LCD_SEG_L2_4_3, NULL, BLINK_OFF);
+#endif
 }
 
 static void edit_dd_set(int8_t step)
 {
 	helpers_loop(&tmp_dd, 1, rtca_get_max_days(tmp_mo, tmp_yy), step);
-
+#ifdef CONFIG_CLOCK_MONTH_FIRST
+	display_chars(0, LCD_SEG_L2_1_0, _itoa(tmp_dd, 2), SEG_SET);
+#else
 	display_chars(0, LCD_SEG_L2_4_3, _itoa(tmp_dd, 2), SEG_SET);
+#endif
 }
 
 static void edit_mm_sel(void)
@@ -128,10 +181,37 @@ static void edit_hh_dsel(void)
 }
 static void edit_hh_set(int8_t step)
 {
-	/* TODO: fix for 12/24 hr! */
 	helpers_loop(&tmp_hh, 0, 23, step);
-
+#ifdef CONFIG_CLOCK_AMPM
+	if (tmp_hh > 12) {
+		display_symbol(0,LCD_SYMB_AM,SEG_OFF);
+		display_symbol(0,LCD_SYMB_PM,SEG_SET);
+		if (tmp_hh-12 > 9) {
+			display_chars(0, LCD_SEG_L1_3_2, _itoa(tmp_hh-12, 2), SEG_SET);
+		} else {
+			display_chars(0, LCD_SEG_L1_3_2, blank_leading_zeroes(_itoa(tmp_hh-12, 2)), SEG_SET);
+		}
+	} else {
+		if (tmp_hh == 0) {
+			display_chars(0, LCD_SEG_L1_3_2, _itoa(12, 2), SEG_SET);
+		} else {
+			if (tmp_hh > 9) {
+				display_chars(0, LCD_SEG_L1_3_2, _itoa(tmp_hh, 2), SEG_SET);
+			} else {
+				display_chars(0, LCD_SEG_L1_3_2, blank_leading_zeroes(_itoa(tmp_hh, 2)), SEG_SET);
+			}
+		}
+		if (tmp_hh == 12) {
+			display_symbol(0,LCD_SYMB_AM,SEG_OFF);
+			display_symbol(0,LCD_SYMB_PM,SEG_SET);
+		} else {
+			display_symbol(0,LCD_SYMB_PM,SEG_OFF);
+			display_symbol(0,LCD_SYMB_AM,SEG_SET);
+		}
+	}
+#else
 	display_chars(0, LCD_SEG_L1_3_2, _itoa(tmp_hh, 2), SEG_SET);
+#endif
 }
 
 static void edit_save()
@@ -198,6 +278,10 @@ static void clock_deactivated()
 
 	/* clean up screen */
 	display_symbol(0, LCD_SEG_L1_COL, BLINK_OFF);
+#ifdef CONFIG_CLOCK_AMPM
+	display_symbol(0,LCD_SYMB_AM,SEG_OFF);
+	display_symbol(0,LCD_SYMB_PM,SEG_OFF);
+#endif
 	display_clear(0, 1);
 	display_clear(0, 2);
 }

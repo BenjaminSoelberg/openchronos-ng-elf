@@ -521,6 +521,14 @@ void display_clear(uint8_t scr_nr, uint8_t line)
 	}
 }
 
+char *blank_leading_zeroes(char *str) {
+	uint8_t current = 0;
+
+	while (str[0] == '0') {
+		str[0] = ' ';
+	}
+	return str;
+}
 
 char *_itoa(int16_t n, uint8_t digits)
 {
