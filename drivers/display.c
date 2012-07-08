@@ -56,7 +56,7 @@
 
 #include <openchronos.h>
 #include <string.h>
-
+#include <stdlib.h>
 #include "display.h"
 
 /* LCD controller memory map */
@@ -170,10 +170,10 @@
  ***************************** LOCAL STORAGE *******************************
  **************************************************************************/
 
-#define ITOA_STR_LEN 8 //Increased to allow use for _itox as well
+#define SPRINTF_STR_LEN 8
 
 /* storage for itoa function */
-static char itoa_str[ITOA_STR_LEN];
+static char sprintf_str[SPRINTF_STR_LEN];
 
 /* pointer to active screen */
 static struct lcd_screen *display_screens;
@@ -334,23 +334,6 @@ static const uint8_t segments_bitmask[] = {
 	LCD_SEG_L2_COL1_MASK,
 	LCD_SEG_L2_COL0_MASK,
 	LCD_SEG_L2_DP_MASK,
-};
-
-
-/* Quick integer to array conversion table for most common integer values */
-static const uint8_t itoa_conversion_table[][3] = {
-	"000", "001", "002", "003", "004", "005", "006", "007", "008", "009", "010", "011", "012", "013", "014", "015",
-	"016", "017", "018", "019", "020", "021", "022", "023", "024", "025", "026", "027", "028", "029", "030", "031",
-	"032", "033", "034", "035", "036", "037", "038", "039", "040", "041", "042", "043", "044", "045", "046", "047",
-	"048", "049", "050", "051", "052", "053", "054", "055", "056", "057", "058", "059", "060", "061", "062", "063",
-	"064", "065", "066", "067", "068", "069", "070", "071", "072", "073", "074", "075", "076", "077", "078", "079",
-	"080", "081", "082", "083", "084", "085", "086", "087", "088", "089", "090", "091", "092", "093", "094", "095",
-	"096", "097", "098", "099", "100", "101", "102", "103", "104", "105", "106", "107", "108", "109", "110", "111",
-	"112", "113", "114", "115", "116", "117", "118", "119", "120", "121", "122", "123", "124", "125", "126", "127",
-	"128", "129", "130", "131", "132", "133", "134", "135", "136", "137", "138", "139", "140", "141", "142", "143",
-	"144", "145", "146", "147", "148", "149", "150", "151", "152", "153", "154", "155", "156", "157", "158", "159",
-	"160", "161", "162", "163", "164", "165", "166", "167", "168", "169", "170", "171", "172", "173", "174", "175",
-	"176", "177", "178", "179", "180",
 };
 
 /***************************************************************************
@@ -521,74 +504,69 @@ void display_clear(uint8_t scr_nr, uint8_t line)
 	}
 }
 
-char *blank_leading_zeroes(char *str) {
-	uint8_t current = 0;
-
-	while (str[current] == '0') {
-		str[current] = ' ';
-	}
-	return str;
-}
-
-char *_itoa(int16_t n, uint8_t digits)
-{
-	/* Preset result string as NULL terminated */
-	memset(itoa_str, '0', ITOA_STR_LEN - 1);
-	itoa_str[ITOA_STR_LEN - 1] = '\0';
-
-	/* Show negative sign */
-	uint8_t isneg;
-	if ( (isneg = n < 0)) {
-		itoa_str[0] = '-';
-		n = (~n) + 1;
-	}
-
-	/* Numbers 0 .. 180 can be copied from itoa_conversion_table without conversion */
-	if (n <= 180) {
-		if (digits >= 3) {
-			memcpy(itoa_str + isneg + (digits - 3), itoa_conversion_table[n], 3);
-		} else { // digits == 1 || 2
-			memcpy(itoa_str + isneg, itoa_conversion_table[n] + (3 - digits), digits);
+char *_sprintf(const char *fmt, int16_t n) {
+	int8_t i = 0;
+	int8_t j = 0;
+		
+	while (1) {
+		/* copy chars until end of string or a int substitution is found */ 
+		while (fmt[i] != '%') {
+			if (fmt[i] == '\0' || j == SPRINTF_STR_LEN - 2) {
+				sprintf_str[j] = '\0';
+				return sprintf_str;
+			}
+			sprintf_str[j++] = fmt[i++];
 		}
-	} else { // For n > 180 need to calculate string content
-		// Calculate digits from least to most significant number
-		do {
-			itoa_str[digits + isneg - 1] = n % 10 + '0';
-			n /= 10;
-		} while (--digits > 0);
+		i++;
+
+		int8_t digits = 0;
+		int8_t zpad = ' ';
+		/* parse int substitution */
+		while (fmt[i] != 's' && fmt[i] != 'u' && fmt[i] != 'x') {
+			if (fmt[i] == '0')
+				zpad = '0';
+			else
+				digits = fmt[i] - '0';
+			i++;
+		}
+
+		/* show sign */
+		if (fmt[i] == 's') {
+			if (n < 0) {
+				sprintf_str[j++] = '-';
+				n = (~n) + 1;
+			} else
+				sprintf_str[j++] = ' ';
+		}
+
+		j += digits - 1;
+		int8_t j1 = j + 1;
+
+		/* convert int to string */
+		if (fmt[i] == 'x') {
+			do {
+				sprintf_str[j--] = "0123456789ABCDEF"[n & 0x0F];
+				n >>= 4;
+				digits--;
+			} while (n > 0);
+		} else {
+			do {
+				sprintf_str[j--] = n % 10 + '0';
+				n /= 10;
+				digits--;
+			} while (n > 0);
+		}
+
+		/* pad the remaining */
+		while (digits > 0) {
+			sprintf_str[j--] = zpad;
+			digits--;
+		}
+
+		j = j1;
 	}
 
-	return (itoa_str);
-}
-
-// *************************************************************************************************
-// @fn          _itox
-// @brief       Generic integer to array routine. Converts integer n to string in hex.
-//				Default conversion result has leading zeros, e.g. "001AF"
-//				Option to convert leading '0' into whitespace (blanks)
-// @param       uint32_t n			integer to convert
-//				uint8_t digits		number of digits - if this is fewer than needed to display "n", then the
-//									least significant digits will be the output
-// @return      uint8_t				string
-// *************************************************************************************************
-char *_itox(uint32_t n,uint8_t digits)
-{
-	uint8_t i = digits-1;
-
-	// Preset result string - reusing the one from itoa (no need for our own, really)
-	memcpy(itoa_str, "00000000", 8);
-
-	// Return empty string if number of digits is invalid (valid range for digits: 1-7)
-	if ((digits == 0) || (digits > 8)) return (itoa_str);
-
-	do {
-		itoa_str[i] = "0123456789ABCDEF"[n & 0x0F];
-		n >>= 4;
-	} while (i-- > 0);
-
-	itoa_str[digits] = 0;
-
-	return (itoa_str);
+	return sprintf_str;
 }
 
 // *************************************************************************************************
@@ -611,7 +589,7 @@ char *_itopct(uint32_t low,uint32_t high,uint32_t n)
 	// Return "100" if the value is over the high
 	if (n > high) return (char *) " 100";
 
-	return _itoa((((n*100)-(low*100))/(high-low)),4);
+	return _sprintf("%04u", (((n*100)-(low*100))/(high-low)));
 }
 
 void display_symbol(uint8_t scr_nr, enum display_segment symbol,

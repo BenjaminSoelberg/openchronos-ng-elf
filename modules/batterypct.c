@@ -76,7 +76,7 @@ void display_battery_pct()
 	display_symbol(0,LCD_SYMB_PERCENT, SEG_ON);
 
 	// Display result in xxx% format
-	str = blank_leading_zeroes(_itopct(BATTERY_EMPTY_THRESHOLD, BATTERY_FULL_THRESHOLD, sBatt.voltage));
+	str = _itopct(BATTERY_EMPTY_THRESHOLD, BATTERY_FULL_THRESHOLD, sBatt.voltage);
 
 	display_chars(0, LCD_SEG_L1_3_0, str, SEG_ON);
 }

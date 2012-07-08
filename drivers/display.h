@@ -267,8 +267,8 @@ void display_char(
 	\endcode
 	Also, passing NULL as the <i>str</i> argument is equivalent of passing a vector of '8' characters. Consider the previous example, where the string "8888" can equivalently be replaced with NULL.
 
-	\note See #_itoa() on how to convert decimals into a string.
-	\sa #display_char(), #_itoa()
+	\note See #_sprintf() on how to convert decimals into a string.
+	\sa #display_char(), #_sprintf()
 */
 void display_chars(
 	uint8_t scr_nr, /*!< the virtual screen number where to display */
@@ -293,47 +293,37 @@ void display_symbol(
 );
 
 /*!
-	\brief Turns leading 0s in a string into spaces.
-	\details Turns leading 0s in a string into spaces. Modifies in place! (also returns the pointer for easy chaining)
+	\brief pseudo sprintf function
+	\details Returns a pointer to the string containing the number <i>n</i> formatted according to <i>fmt</i>. The format is NOT compatible with stdio's format.
 	Example:
 	\code
-	// this returns " 2"
-	char * s = blank_leading_zeroes(_itoa(2, 2));
+	// returns " 8"
+	_sprintf("%2u", 8);
+	
+	// returns "0020"
+	_sprintf("%04u", 20);
+
+	// returns "-048"
+	_sprintf("%03s", -48);
+
+	// returns " 048"
+	_sprintf("%03s", 48);
+
+	// returns "0xff"
+	_sprintf("0x%02", 0xff);
+
+	// returns "st1x"
+	_sprintf("st%1ux", 1)
 	\endcode
-	\return the input string
+	
+	<b>WARNING:</b> You must always specify the number of digits or bad results will happen! "%u" formats are not allowed! 
+
+	\return a pointer to a string
 */
-char *blank_leading_zeroes(char *str);
 
-/*!
-	\brief Converts a decimal into a string
-	\details Takes the number <i>n</i> and returns a string representation of that number with <i>digits</i> number of digits.
-
-	Example:
-	\code
-	// this returns "32"
-	char * s = _itoa(32, 2);
-	\endcode
-	\return a string representation of <i>n</i>
-*/
-char *_itoa(
-	int16_t n,     /*!< the number to convert to a string */
-	uint8_t digits  /*!< the number of output digits */
-);
-
-/*!
-	\brief Converts an integer into a string in hex
-	\details Takes the number <i>n</i> and returns a string representation of that number with <i>digits</i> number of digits. The returned string is padded with <i>blanks</i> number of blank spacing.
-
-	Example:
-	\code
-	// this returns "4F"
-	uint8_t *s = _itoa(0x4F, 2, 0);
-	\endcode
-	\return a string representation of <i>n</i>
-*/
-char *_itox(
-	uint32_t n,     /*!< the number to convert to a string */
-	uint8_t digits /*!< the number of output digits */
+char *_sprintf(
+	const char *fmt, /*!< the format specifier */
+	int16_t n        /*!< the number to be used in the format specifier */
 );
 
 /*!

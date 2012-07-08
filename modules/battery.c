@@ -75,7 +75,7 @@ void display_battery_V()
 	display_symbol(0,LCD_SYMB_BATTERY, SEG_ON);
 
 	// Display result in xx.x format
-	str = _itoa(sBatt.voltage, 4);
+	str = _sprintf("%4u", sBatt.voltage);
 
 	display_chars(0, LCD_SEG_L2_3_0, str, SEG_ON);
 	display_symbol(0, LCD_SEG_L2_DP, SEG_ON);

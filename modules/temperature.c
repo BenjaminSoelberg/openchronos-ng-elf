@@ -76,7 +76,6 @@ uint8_t temp_edit = FALSE;
 // *************************************************************************************************
 void display_temperature()
 {
-	char *str;
 	int16_t temperature;
 
 	// Display �C / �F
@@ -122,12 +121,7 @@ void display_temperature()
 	*/
 
 	// Display result in xx.x format
-	if (temperature < 0) {
-		str = blank_leading_zeroes(_itoa(temperature/10, 2)); //Room for the negative sign
-	} else {
-		str = blank_leading_zeroes(_itoa(temperature/10, 3));
-	}
-	display_chars(0, LCD_SEG_L1_3_1, str, SEG_ON);
+	display_chars(0, LCD_SEG_L1_3_1, _sprintf("%2s", temperature/10), SEG_ON);
 }
 
 void clear_temperature()
