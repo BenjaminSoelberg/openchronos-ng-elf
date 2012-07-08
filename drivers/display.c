@@ -397,8 +397,8 @@ void lcd_init(void)
 	// Frame frequency = 512Hz/2/4 = 64Hz, LCD mux 4, LCD on
 	LCDBCTL0 = (LCDDIV0 + LCDDIV1 + LCDDIV2) | (LCDPRE0 + LCDPRE1) | LCD4MUX | LCDON;
 
-	// LCB_BLK_FREQ = ACLK/8/4096 = 1Hz
-	LCDBBLKCTL = LCDBLKPRE0 | LCDBLKPRE1 | LCDBLKDIV0 | LCDBLKDIV1 | LCDBLKDIV2 | LCDBLKMOD0;
+	// LCB_BLK_FREQ = ACLK/8/2048 = 2Hz
+	LCDBBLKCTL = LCDBLKPRE1 | LCDBLKDIV0 | LCDBLKDIV1 | LCDBLKDIV2 | LCDBLKMOD0;
 
 	// I/O to COM outputs
 	P5SEL |= (BIT5 | BIT6 | BIT7);
@@ -748,16 +748,5 @@ void clear_blink_mem(void)
 }
 
 
-// *************************************************************************************************
-// @fn          set_blink_rate
-// @brief       Set blink rate register bits.
-// @param       none
-// @return      none
-// *************************************************************************************************
-void set_blink_rate(uint8_t bits)
-{
-	LCDBBLKCTL &= ~(BIT7 | BIT6 | BIT5);
-	LCDBBLKCTL |= bits;
-}
 
 

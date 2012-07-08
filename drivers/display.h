@@ -203,7 +203,6 @@ void lcd_screen_activate(
 void start_blink(void);
 void stop_blink(void);
 void clear_blink_mem(void);
-void set_blink_rate(uint8_t bits);
 
 /*!
 	\brief Clears the screen
