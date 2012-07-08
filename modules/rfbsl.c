@@ -71,11 +71,6 @@
 // *************************************************************************************************
 static void updown_press()
 {
-	if (sBatt.low_battery) return;
-
-	// Exit if SimpliciTI stack is active
-	/*if (is_rf()) return;*/
-
 	// Write RAM to indicate we will be downloading the RAM Updater first
 	display_chars(0, LCD_SEG_L1_3_0, " RAM", SEG_ON);
 

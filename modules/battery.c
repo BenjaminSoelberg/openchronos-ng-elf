@@ -23,18 +23,18 @@
 #include "drivers/battery.h"
 
 
-static uint8_t batt_v_disp = FALSE;
+static uint8_t batt_v_disp;
 
 
 static void display_battery(void)
 {
 	/* display battery percentage on line one */
 	display_chars(0, LCD_SEG_L1_3_0, _itopct(BATTERY_EMPTY_THRESHOLD,
-		   BATTERY_FULL_THRESHOLD, sBatt.voltage), SEG_ON);
+		   BATTERY_FULL_THRESHOLD, battery_info.voltage), SEG_ON);
 
 	/* display battery voltage in line two (xx.x format) */
 	display_chars(0, LCD_SEG_L2_3_0,
-	      _sprintf("%4u", sBatt.voltage), SEG_SET);
+	      _sprintf("%4u", battery_info.voltage), SEG_SET);
 }
 
 
@@ -52,30 +52,30 @@ static void battery_activate(void)
 
 	/* refresh display */
 	display_battery();
-	batt_v_disp = TRUE;
+	batt_v_disp = 1;
 }
 
 static void battery_deactivate(void)
 {
 	/* cleanup screen */
-	batt_v_disp = FALSE;
+	batt_v_disp = 0;
 	display_clear(0, 1);
 	display_clear(0, 2);
 
 	/* clear static symbols */
 	display_symbol(0, LCD_SEG_L2_DP, SEG_OFF);
 	display_symbol(0, LCD_SYMB_PERCENT, SEG_OFF);
-	if (!sBatt.low_battery)
+	if (battery_info.voltage >= BATTERY_LOW_THRESHOLD)
 		display_symbol(0, LCD_SYMB_BATTERY, SEG_OFF);
 }
 
 #ifdef CONFIG_BATTERY_MONITOR
-static void minute_event(void)
+static void minute_event(enum sys_message event)
 {
 	battery_measurement();
 
 	/* Display blinking battery symbol if low */
-	if (sBatt.low_battery)
+	if (battery_info.voltage < BATTERY_LOW_THRESHOLD)
 		display_symbol(0, LCD_SYMB_BATTERY, SEG_ON | BLINK_ON);
 
 	if (batt_v_disp)
@@ -85,7 +85,7 @@ static void minute_event(void)
 
 void battery_init(void)
 {
-	reset_batt_measurement();
+	battery_measurement_reset();
 	menu_add_entry(" BATT", NULL, NULL, NULL, NULL, NULL, NULL,
 		&battery_activate, &battery_deactivate);
 #ifdef CONFIG_BATTERY_MONITOR
