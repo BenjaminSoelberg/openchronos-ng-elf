@@ -589,7 +589,7 @@ char *_itopct(uint32_t low,uint32_t high,uint32_t n)
 	// Return "100" if the value is over the high
 	if (n > high) return (char *) " 100";
 
-	return _sprintf("%04u", (((n*100)-(low*100))/(high-low)));
+	return _sprintf("%3u", (((n*100)-(low*100))/(high-low)));
 }
 
 void display_symbol(uint8_t scr_nr, enum display_segment symbol,

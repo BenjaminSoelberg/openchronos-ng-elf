@@ -29,7 +29,7 @@ static uint8_t batt_v_disp;
 static void display_battery(void)
 {
 	/* display battery percentage on line one */
-	display_chars(0, LCD_SEG_L1_3_0, _itopct(BATTERY_EMPTY_THRESHOLD,
+	display_chars(0, LCD_SEG_L1_2_0, _itopct(BATTERY_EMPTY_THRESHOLD,
 		   BATTERY_FULL_THRESHOLD, battery_info.voltage), SEG_ON);
 
 	/* display battery voltage in line two (xx.x format) */
