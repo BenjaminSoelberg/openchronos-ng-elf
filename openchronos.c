@@ -73,7 +73,6 @@
 #include <drivers/pmm.h>
 #include <drivers/rf1a.h>
 #include <drivers/rtca.h>
-#include <drivers/battery.h>
 #include <drivers/temperature.h>
 
 #define BIT_IS_SET(F, B)  ((F) | (B)) == (F)
@@ -180,11 +179,6 @@ void check_events(void)
 	if(as_last_interrupt){
 		msg |= SYS_MSG_AS_INT;
 		as_last_interrupt = 0;
-	}
-
-	if (sBatt.has_update) {
-		msg |= SYS_MSG_BATT;
-		sBatt.has_update = FALSE;
 	}
 
 	if (sTemp.has_update) {

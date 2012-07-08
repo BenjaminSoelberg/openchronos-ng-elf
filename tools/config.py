@@ -105,6 +105,18 @@ DATA["CONFIG_BUTTONS_SHORT_PRESS_TIME"] = {
 	"help": "Short button press time (in multiples of 1/20 second)",
 }
 
+DATA["TEXT_BATTERY"] = {
+	"name": "Battery driver",
+	"type": "info",
+}
+
+DATA["CONFIG_BATTERYMON_DISABLE_BATTERY_FILTER"] = {
+	"name": "Disables battery filter [FOR TESTING]",
+	"default": True,
+	"help": "Reports the straight voltage value from measurement instead of the 'smoothed' one.",
+}
+
+
 ################################# MODULES ####################################
 
 DATA["TEXT_MODULES"] = {

@@ -66,7 +66,7 @@ static uint8_t batt_v_disp = FALSE;
 // @param       none
 // @return      none
 // *************************************************************************************************
-void display_battery_V()
+static void display_battery()
 {
 	/* display battery percentage on line one */
 	display_chars(0, LCD_SEG_L1_3_0, _itopct(BATTERY_EMPTY_THRESHOLD,
@@ -84,13 +84,13 @@ void display_battery_V()
 // @return      none
 // *************************************************************************************************
 static void battery_activate() {
-#ifndef CONFIG_BATTERYMON
+#ifndef CONFIG_BATTERY_MONITOR
 	battery_measurement(); //Don't need this if the background task is compiled in
 #endif
 	display_symbol(0,LCD_SYMB_BATTERY, SEG_ON);
 	display_symbol(0, LCD_SEG_L2_DP, SEG_ON);
 	display_symbol(0,LCD_SYMB_PERCENT, SEG_ON);
-	display_battery_V();
+	display_battery();
 	batt_v_disp = TRUE;
 }
 
@@ -106,21 +106,25 @@ static void battery_deactivate() {
 		display_symbol(0, LCD_SYMB_BATTERY, SEG_OFF);
 }
 
-static void battery_change() {
+#ifdef CONFIG_BATTERY_MONITOR
+static void minute_event() {
+	battery_measurement();
+
 	/* Display blinking battery symbol if low */
 	if (sBatt.low_battery)
 		display_symbol(0, LCD_SYMB_BATTERY, SEG_ON | BLINK_ON);
 
 	if (batt_v_disp) {
-		display_battery_V();
+		display_battery();
 	}
 }
+#endif
 
 void battery_init(void) {
-#ifndef CONFIG_BATTERYMON
-	reset_batt_measurement(); //Don't need this if batterymon is going to do it.
-#endif
+	reset_batt_measurement();
 	menu_add_entry(" BATT", NULL, NULL, NULL, NULL, NULL, NULL,
 		&battery_activate, &battery_deactivate);
-	sys_messagebus_register(&battery_change, SYS_MSG_BATT);
+#ifdef CONFIG_BATTERY_MONITOR
+	sys_messagebus_register(&minute_event, SYS_MSG_RTC_MINUTE);
+#endif
 }
