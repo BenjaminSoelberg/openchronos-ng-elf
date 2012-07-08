@@ -58,7 +58,7 @@
 #include "drivers/battery.h"
 
 
-uint8_t batt_v_disp = FALSE;
+static uint8_t batt_v_disp = FALSE;
 
 // *************************************************************************************************
 // @fn          display_battery_V
@@ -68,25 +68,12 @@ uint8_t batt_v_disp = FALSE;
 // *************************************************************************************************
 void display_battery_V()
 {
-	char *str;
-
-
-	// Set battery and V icon
-	display_symbol(0,LCD_SYMB_BATTERY, SEG_ON);
-
-	// Display result in xx.x format
-	str = _sprintf("%4u", sBatt.voltage);
-
-	display_chars(0, LCD_SEG_L2_3_0, str, SEG_ON);
-	display_symbol(0, LCD_SEG_L2_DP, SEG_ON);
-}
-
-void clear_battery_V()
-{
-	// Set battery and V icon
-	display_symbol(0,LCD_SYMB_BATTERY, SEG_OFF);
-	display_clear(0, 2);
-
+	/* display battery percentage on line one */
+	display_chars(0, LCD_SEG_L1_3_0, _itopct(BATTERY_EMPTY_THRESHOLD,
+		                       BATTERY_FULL_THRESHOLD, sBatt.voltage), SEG_ON);
+	
+	/* display battery voltage in line two (xx.x format) */
+	display_chars(0, LCD_SEG_L2_3_0, _sprintf("%4u", sBatt.voltage), SEG_SET);
 }
 
 
@@ -97,10 +84,12 @@ void clear_battery_V()
 // @return      none
 // *************************************************************************************************
 static void battery_activate() {
-	display_chars(0, LCD_SEG_L1_3_0, "BAT", SEG_SET);
 #ifndef CONFIG_BATTERYMON
 	battery_measurement(); //Don't need this if the background task is compiled in
 #endif
+	display_symbol(0,LCD_SYMB_BATTERY, SEG_ON);
+	display_symbol(0, LCD_SEG_L2_DP, SEG_ON);
+	display_symbol(0,LCD_SYMB_PERCENT, SEG_ON);
 	display_battery_V();
 	batt_v_disp = TRUE;
 }
@@ -109,14 +98,20 @@ static void battery_deactivate() {
 	/* cleanup screen */
 	batt_v_disp = FALSE;
 	display_clear(0, 1);
-	clear_battery_V();
+	display_clear(0, 2);
+	
+	display_symbol(0, LCD_SEG_L2_DP, SEG_OFF);
+	display_symbol(0, LCD_SYMB_PERCENT, SEG_OFF);
+	if (! sBatt.low_battery)
+		display_symbol(0, LCD_SYMB_BATTERY, SEG_OFF);
 }
 
 static void battery_change() {
-	/* Display battery symbol if low */
-	display_symbol(0,LCD_SYMB_BATTERY,sBatt.low_battery ? SEG_ON : SEG_OFF);
+	/* Display blinking battery symbol if low */
+	if (sBatt.low_battery)
+		display_symbol(0, LCD_SYMB_BATTERY, SEG_ON | BLINK_ON);
+
 	if (batt_v_disp) {
-		display_clear(0, 2);
 		display_battery_V();
 	}
 }
@@ -125,7 +120,7 @@ void battery_init(void) {
 #ifndef CONFIG_BATTERYMON
 	reset_batt_measurement(); //Don't need this if batterymon is going to do it.
 #endif
-	menu_add_entry("BATTV",NULL, NULL, NULL, NULL, NULL, NULL,
-			&battery_activate, &battery_deactivate);
+	menu_add_entry(" BATT", NULL, NULL, NULL, NULL, NULL, NULL,
+		&battery_activate, &battery_deactivate);
 	sys_messagebus_register(&battery_change, SYS_MSG_BATT);
 }
