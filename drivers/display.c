@@ -240,6 +240,11 @@ static const uint8_t lcd_font[] = {
 	SEG_B + SEG_C +     +SEG_E + SEG_F + SEG_G, // Displays "X" as H
 	SEG_B + SEG_C + SEG_D +      SEG_F + SEG_G, // Displays "Y"
 	SEG_A + SEG_B +      SEG_D + SEG_E +      SEG_G, // Displays "Z" same as 2
+	SEG_B + SEG_E + SEG_G, //Displays "[" as _|`
+	0,                     //Displays "\" ( )
+	SEG_C + SEG_F + SEG_G, //Displays "]" as `|_
+	SEG_A,                 //Displays "^"
+	SEG_D                 //Displays "_"
 };
 
 
@@ -641,7 +646,7 @@ void display_char(uint8_t scr_nr, enum display_segment segment,
 		uint8_t bitmask = segments_bitmask[segment];
 
 		// Get bits from font set
-		if ((chr >= 0x30) && (chr <= 0x5A)) {
+		if ((chr >= 0x30) && (chr <= 0x5F)) {
 			// Use font set
 			bits = lcd_font[chr - 0x30];
 		} else if (chr == 0x2D) {
