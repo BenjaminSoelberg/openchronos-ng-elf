@@ -293,6 +293,16 @@ void display_symbol(
 );
 
 /*!
+	\brief pseudo printf function
+	\details Displays in screen <i>scr_nr</i>, at segments <i>segments</i>, the string containing the number <i>n</i> formatted according to <i>fmt</i>. This function is equivalent to calling display_chars(scr_nr, segments, _sprintf(fmt, n), SEG_SET).
+	\sa #display_chars, #_sprintf
+*/
+
+#define _printf(scr_nr, segments, fmt, n) \
+	display_chars((scr_nr), (segments), _sprintf((fmt), (n)), SEG_SET)
+
+
+/*!
 	\brief pseudo sprintf function
 	\details Returns a pointer to the string containing the number <i>n</i> formatted according to <i>fmt</i>. The format is NOT compatible with stdio's format.
 	Example:

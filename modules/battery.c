@@ -33,8 +33,7 @@ static void display_battery(void)
 		   BATTERY_FULL_THRESHOLD, battery_info.voltage), SEG_ON);
 
 	/* display battery voltage in line two (xx.x format) */
-	display_chars(0, LCD_SEG_L2_3_0,
-	      _sprintf("%4u", battery_info.voltage), SEG_SET);
+	_printf(0, LCD_SEG_L2_3_0, "%4u", battery_info.voltage);
 }
 
 

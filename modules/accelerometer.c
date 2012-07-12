@@ -204,11 +204,11 @@ static void up_btn()
 			break;
 
 		case VIEW_SET_PARAMS:
-			display_chars(0,LCD_SEG_L1_3_0 , _sprintf("%04x", as_read_register(ADDR_CTRL)), SEG_SET);
+			_printf(0,LCD_SEG_L1_3_0 , "%04x", as_read_register(ADDR_CTRL));
 			break;
 
 		case VIEW_STATUS:
-			display_chars(0,LCD_SEG_L1_3_0, _sprintf("%1u", as_status.all_flags), SEG_SET);
+			_printf(0,LCD_SEG_L1_3_0, "%1u", as_status.all_flags);
 	
 			break;
 
@@ -318,7 +318,7 @@ static void as_event(enum sys_message msg)
 		//Check the vti register for status information
 		as_status.all_flags=as_get_status();
 		//TODO For debugging only
-		display_chars(0, LCD_SEG_L1_1_0, _sprintf("%1u", as_status.all_flags), SEG_SET);	
+		_printf(0, LCD_SEG_L1_1_0, "%1u", as_status.all_flags);	
 		buzzer_play(smb);
 		//if we were in free fall or motion detection mode check for the event
 		if(as_status.int_status.falldet || as_status.int_status.motiondet){
@@ -347,7 +347,7 @@ static void as_event(enum sys_message msg)
 	if (msg | SYS_MSG_TIMER_1HZ)
 	{
 	/*check the status register for debugging purposes */
-	display_chars(0, LCD_SEG_L1_1_0, _sprintf("%1u", as_read_register(ADDR_INT_STATUS)), SEG_SET);	
+	_printf(0, LCD_SEG_L1_1_0, "%1u", as_read_register(ADDR_INT_STATUS));	
 	/* update menu screen */
 	lcd_screen_activate(0);
 	}
@@ -426,8 +426,8 @@ void print_debug()
 {
 		// check if that is really in the mode we set
 		
-		display_chars(0, LCD_SEG_L1_3_0, _sprintf("%03x", as_read_register(ADDR_CTRL)), SEG_SET);
-		display_chars(0, LCD_SEG_L2_5_0, _sprintf("%05x", as_read_register(ADDR_MDFFTMR)), SEG_SET);
+		_printf(0, LCD_SEG_L1_3_0, "%03x", as_read_register(ADDR_CTRL));
+		_printf(0, LCD_SEG_L2_5_0, "%05x", as_read_register(ADDR_MDFFTMR));
 
 }
 

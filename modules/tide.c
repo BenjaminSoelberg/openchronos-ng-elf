@@ -138,17 +138,15 @@ void drawScreen(void)
 	/* line1 time */
 	if (leftUntilHigh < leftUntilLow) {
 		/* show time till high */
-		display_chars(0, LCD_SEG_L1_3_2, _sprintf("%02u", highTide.hoursLeft), SEG_SET);
-
-		display_chars(0, LCD_SEG_L1_1_0, _sprintf("%02u", highTide.minutesLeft), SEG_SET);
+		_printf(0, LCD_SEG_L1_3_2, "%02u", highTide.hoursLeft);
+		_printf(0, LCD_SEG_L1_1_0, "%02u", highTide.minutesLeft);
 
 		display_symbol(0, LCD_SYMB_MAX, SEG_ON);
 
 	} else {
 		/* show time till low */
-		display_chars(0, LCD_SEG_L1_3_2, _sprintf("%02u", lowTide.hoursLeft), SEG_SET);
-
-		display_chars(0, LCD_SEG_L1_1_0, _sprintf("%02u", lowTide.minutesLeft), SEG_SET);
+		_printf(0, LCD_SEG_L1_3_2, "%02u", lowTide.hoursLeft);
+		_printf(0, LCD_SEG_L1_1_0, "%02u", lowTide.minutesLeft);
 
 		display_symbol(0, LCD_UNIT_L2_MI, SEG_ON);
 	}
@@ -160,9 +158,8 @@ void drawScreen(void)
 
 	/** screen 1 **/
 	/* line 1 time till low */
-	display_chars(1, LCD_SEG_L1_3_2, _sprintf("%02u", lowTide.hoursLeft), SEG_SET);
-
-	display_chars(1, LCD_SEG_L1_1_0, _sprintf("%02u", lowTide.minutesLeft), SEG_SET);
+	_printf(1, LCD_SEG_L1_3_2, "%02u", lowTide.hoursLeft);
+	_printf(1, LCD_SEG_L1_1_0, "%02u", lowTide.minutesLeft);
 
 	display_symbol(1, LCD_UNIT_L2_MI, SEG_ON);
 
@@ -171,9 +168,8 @@ void drawScreen(void)
 												% twentyFourHoursInMinutes;
 	struct Tide lowTideTime = timeFromMinutes(lowTideTimeInMinutes);
 
-	display_chars(1, LCD_SEG_L2_3_2, _sprintf("%02u", lowTideTime.hoursLeft), SEG_SET);
-
-	display_chars(1, LCD_SEG_L2_1_0, _sprintf("%02u", lowTideTime.minutesLeft), SEG_SET);
+	_printf(1, LCD_SEG_L2_3_2, "%02u", lowTideTime.hoursLeft);
+	_printf(1, LCD_SEG_L2_1_0, "%02u", lowTideTime.minutesLeft);
 
 	blinkCol(1, 1);
 	blinkCol(1, 2);
@@ -181,9 +177,8 @@ void drawScreen(void)
 
 	/** screen 2 **/
 	/* Line 1 time high */
-	display_chars(2, LCD_SEG_L1_3_2, _sprintf("%02u", highTide.hoursLeft), SEG_SET);
-
-	display_chars(2, LCD_SEG_L1_1_0, _sprintf("%02u", highTide.minutesLeft), SEG_SET);
+	_printf(2, LCD_SEG_L1_3_2, "%02u", highTide.hoursLeft);
+	_printf(2, LCD_SEG_L1_1_0, "%02u", highTide.minutesLeft);
 	display_symbol(2, LCD_SYMB_MAX, SEG_ON);
 
 	/* line 2 calculate time of next high */
@@ -191,8 +186,8 @@ void drawScreen(void)
 												% twentyFourHoursInMinutes;
 	struct Tide highTideTime = timeFromMinutes(highTideTimeInMinutes);
 
-	display_chars(2, LCD_SEG_L2_3_2, _sprintf("%02u", highTideTime.hoursLeft), SEG_SET);
-	display_chars(2, LCD_SEG_L2_1_0, _sprintf("%02u", highTideTime.minutesLeft), SEG_SET);
+	_printf(2, LCD_SEG_L2_3_2, "%02u", highTideTime.hoursLeft);
+	_printf(2, LCD_SEG_L2_1_0, "%02u", highTideTime.minutesLeft);
 
 	blinkCol(2, 1);
 	blinkCol(2, 2);
@@ -235,7 +230,7 @@ void editHHDeselect(void)
 void editHHSet(int8_t step)
 {
 	helpers_loop(&(enteredTimeOfNextLow.hoursLeft), 0, 23, step);
-	display_chars(0, LCD_SEG_L1_3_2, _sprintf("%02u", enteredTimeOfNextLow.hoursLeft), SEG_SET);
+	_printf(0, LCD_SEG_L1_3_2, "%02u", enteredTimeOfNextLow.hoursLeft);
 }
 
 void editMMSelect(void)
@@ -251,7 +246,7 @@ void editMMDeselect(void)
 void editMMSet(int8_t step)
 {
 	helpers_loop(&(enteredTimeOfNextLow.minutesLeft), 0, 59, step);
-	display_chars(0, LCD_SEG_L1_1_0, _sprintf("%02u", enteredTimeOfNextLow.minutesLeft), SEG_SET);
+	_printf(0, LCD_SEG_L1_1_0, "%02u", enteredTimeOfNextLow.minutesLeft);
 }
 
 static struct menu_editmode_item editModeItems[] = {
@@ -289,8 +284,8 @@ void longStarButton(void)
 	enteredTimeOfNextLow = timeFromMinutes((nowInMinutes + leftUntilLow) % twentyFourHoursInMinutes);
 
 	editModeActivated = 1;
-	display_chars(0, LCD_SEG_L1_3_2, _sprintf("%02u", enteredTimeOfNextLow.hoursLeft), SEG_SET);
-	display_chars(0, LCD_SEG_L1_1_0, _sprintf("%02u", enteredTimeOfNextLow.minutesLeft), SEG_SET);
+	_printf(0, LCD_SEG_L1_3_2, "%02u", enteredTimeOfNextLow.hoursLeft);
+	_printf(0, LCD_SEG_L1_1_0, "%02u", enteredTimeOfNextLow.minutesLeft);
 	blinkCol(0, 1);
 	menu_editmode_start(&endEditing, editModeItems);
 }

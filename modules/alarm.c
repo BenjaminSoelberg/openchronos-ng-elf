@@ -41,8 +41,8 @@ static void refresh_screen()
 {
 	rtca_get_alarm(&tmp_hh, &tmp_mm);
 
-	display_chars(0, LCD_SEG_L1_1_0, _sprintf("%02u", tmp_mm), SEG_SET);
-	display_chars(0, LCD_SEG_L1_3_2, _sprintf("%02u", tmp_hh), SEG_SET);
+	_printf(0, LCD_SEG_L1_1_0, "%02u", tmp_mm);
+	_printf(0, LCD_SEG_L1_3_2, "%02u", tmp_hh);
 }
 
 static void alarm_event(enum sys_message msg)
@@ -65,7 +65,7 @@ static void edit_hh_set(int8_t step)
 {
 	/* TODO: fix for 12/24 hr! */
 	helpers_loop(&tmp_hh, 0, 23, step);
-	display_chars(0, LCD_SEG_L1_3_2, _sprintf("%02u", tmp_hh), SEG_SET);
+	_printf(0, LCD_SEG_L1_3_2, "%02u", tmp_hh);
 }
 
 static void edit_mm_sel(void)
@@ -81,7 +81,7 @@ static void edit_mm_dsel(void)
 static void edit_mm_set(int8_t step)
 {
 	helpers_loop(&tmp_mm, 0, 59, step);
-	display_chars(0, LCD_SEG_L1_1_0, _sprintf("%02u", tmp_mm), SEG_SET);
+	_printf(0, LCD_SEG_L1_1_0, "%02u", tmp_mm);
 }
 
 static void edit_save(void)
