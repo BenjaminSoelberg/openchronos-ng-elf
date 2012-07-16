@@ -28,8 +28,10 @@ static void display_battery(void)
 	display_chars(0, LCD_SEG_L1_2_0, _itopct(BATTERY_EMPTY_THRESHOLD,
 		   BATTERY_FULL_THRESHOLD, battery_info.voltage), SEG_ON);
 
+#ifdef CONFIG_BATTERY_SHOW_VOLTAGE
 	/* display battery voltage in line two (xx.x format) */
 	_printf(0, LCD_SEG_L2_3_0, "%4u", battery_info.voltage);
+#endif
 }
 
 static void battery_event(enum sys_message event)
@@ -47,8 +49,10 @@ static void battery_activate(void)
 #endif
 
 	/* display static symbols */
-	display_symbol(0, LCD_SYMB_BATTERY, SEG_ON);
+#ifdef CONFIG_BATTERY_SHOW_VOLTAGE
 	display_symbol(0, LCD_SEG_L2_DP,    SEG_ON);
+#endif
+	display_symbol(0, LCD_SYMB_BATTERY, SEG_ON);
 	display_symbol(0, LCD_SYMB_PERCENT, SEG_ON);
 
 	/* refresh display */
@@ -63,10 +67,14 @@ static void battery_deactivate(void)
 
 	/* cleanup screen */
 	display_clear(0, 1);
+#ifdef CONFIG_BATTERY_SHOW_VOLTAGE
 	display_clear(0, 2);
+#endif
 
 	/* clear static symbols */
+#ifdef CONFIG_BATTERY_SHOW_VOLTAGE
 	display_symbol(0, LCD_SEG_L2_DP, SEG_OFF);
+#endif
 	display_symbol(0, LCD_SYMB_PERCENT, SEG_OFF);
 	display_symbol(0, LCD_SYMB_BATTERY, SEG_OFF);
 }
