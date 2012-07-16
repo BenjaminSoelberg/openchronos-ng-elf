@@ -45,7 +45,7 @@ static void music_deactivate()
 	display_clear(0, 2);
 }
 
-void music_init(void)
+void mod_music_init(void)
 {
 	menu_add_entry("MUSIC", NULL, NULL, &num_press, NULL, NULL, NULL,
 						&music_activate,

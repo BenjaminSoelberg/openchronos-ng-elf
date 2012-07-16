@@ -328,7 +328,7 @@ void deactivate(void)
 	display_clear(0, 0);
 }
 
-void tide_init(void)
+void mod_tide_init(void)
 {
 	sys_messagebus_register(&minuteTick, SYS_MSG_RTC_MINUTE);
 	menu_add_entry("TIDE", &buttonUp, &buttonDown, NULL, &longStarButton, NULL, NULL, &activate, &deactivate);

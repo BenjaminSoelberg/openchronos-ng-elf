@@ -154,7 +154,7 @@ static void star_long_pressed()
 }
 
 
-void alarm_init()
+void mod_alarm_init()
 {
 	menu_add_entry("ALARM", NULL, NULL,
 			&num_pressed,

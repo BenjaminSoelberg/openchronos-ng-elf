@@ -82,7 +82,7 @@ static void minute_event(enum sys_message event)
 }
 #endif
 
-void battery_init(void)
+void mod_battery_init(void)
 {
 	battery_measurement_reset();
 	menu_add_entry(" BATT", NULL, NULL, NULL, NULL, NULL, NULL,

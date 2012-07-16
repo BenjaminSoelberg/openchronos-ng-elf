@@ -196,7 +196,7 @@ static void edit_temp_offset() {
 	display_chars(0,LCD_SEG_L1_3_0,NULL,temp_edit ? BLINK_ON : BLINK_OFF);
 }
 
-void temperature_init(void) {
+void mod_temperature_init(void) {
 	temp_edit = FALSE;
 #ifndef CONFIG_TEMPERATUREMON
 	reset_temp_measurement(); //Don't need this if temperaturemon is going to do it.

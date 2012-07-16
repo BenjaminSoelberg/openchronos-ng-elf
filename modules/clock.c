@@ -302,7 +302,7 @@ static void star_long_pressed()
 	menu_editmode_start(&edit_save, edit_items);
 }
 
-void clock_init()
+void mod_clock_init()
 {
 	menu_add_entry("CLOCK", NULL, NULL,
 			&num_pressed,

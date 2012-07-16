@@ -466,7 +466,7 @@ static void acc_deactivated()
 
 
 
-void accelerometer_init()
+void mod_accelerometer_init()
 {
 
 	//if this is called only one time after reboot there are some important things to initialise

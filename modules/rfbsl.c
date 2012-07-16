@@ -98,7 +98,7 @@ static void rfbsl_deactivate()
 	display_clear(0, 2);
 }
 
-void rfbsl_init(void)
+void mod_rfbsl_init(void)
 {
 	menu_add_entry("RFBSL", NULL, NULL, NULL, NULL, NULL,
 						&updown_press,

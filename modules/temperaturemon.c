@@ -62,7 +62,7 @@ static void measure_temp(enum sys_message msg) {
 
 
 
-void temperaturemon_init(void) {
+void mod_temperaturemon_init(void) {
 	reset_temp_measurement();
 	sys_messagebus_register(&measure_temp, SYS_MSG_RTC_MINUTE);
 }
