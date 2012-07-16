@@ -52,14 +52,16 @@
 ****************************************************************************/
 #include <openchronos.h>
 
+#include "display.h"
 #include "battery.h"
 
 #include "ports.h"
 #include "adc12.h"
 
-void battery_measurement_reset(void)
+void battery_init(void)
 {
-	/* Start with battery voltage of 3.00V */
+	/* Start with battery voltage estimate of 3.00V and avoid low
+	  battery warnings until the voltage estimate does not converge. */
 	battery_info.voltage = 300;
 }
 
@@ -93,5 +95,9 @@ void battery_measurement(void)
 	/* Get it raw instead for testing */
 	battery_info.voltage = voltage;
 #endif
+
+	/* Display blinking battery symbol if low */
+	if (battery_info.voltage < BATTERY_LOW_THRESHOLD)
+		display_symbol(0, LCD_SYMB_BATTERY, SEG_ON | BLINK_ON);
 }
 

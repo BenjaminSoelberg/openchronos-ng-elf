@@ -117,7 +117,8 @@ enum sys_message {
 	/* sensor/interrups */
 	SYS_MSG_AS_INT =	BIT9,
 	SYS_MSG_PS_INT =	BITA,
-	SYS_MSG_TEMP =		BITB,
+	SYS_MSG_BATT =    BITB,
+	SYS_MSG_TEMP =		BITC,
 };
 
 /*!

@@ -74,6 +74,7 @@
 #include <drivers/rf1a.h>
 #include <drivers/rtca.h>
 #include <drivers/temperature.h>
+#include <drivers/battery.h>
 
 #define BIT_IS_SET(F, B)  ((F) | (B)) == (F)
 
@@ -180,6 +181,14 @@ void check_events(void)
 		msg |= SYS_MSG_AS_INT;
 		as_last_interrupt = 0;
 	}
+
+#ifdef CONFIG_BATTERY_MONITOR
+	/* drivers/battery */
+	if ((msg & SYS_MSG_RTC_MINUTE) == SYS_MSG_RTC_MINUTE) {
+		msg |= SYS_MSG_BATT;
+		battery_measurement();
+	}
+#endif
 
 	if (sTemp.has_update) {
 		msg |= SYS_MSG_TEMP;
@@ -518,6 +527,9 @@ void init_application(void)
 	// ---------------------------------------------------------------------
 	// Init pressure sensor
 	ps_init();
+
+	/* drivers/battery */
+	battery_init();
 
 #ifdef CONFIG_INFOMEM
 	if (infomem_ready() == -2) {

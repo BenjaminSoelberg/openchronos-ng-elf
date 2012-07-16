@@ -110,6 +110,12 @@ DATA["TEXT_BATTERY"] = {
 	"type": "info",
 }
 
+DATA["CONFIG_BATTERY_MONITOR"] = {
+	"name": "Background Battery Monitor",
+	"default": False,
+	"help": "Monitors the battery voltage every minute and displays a warning on low battery. Also used by the battery to auto-refresh display, if enabled.",
+}
+
 DATA["CONFIG_BATTERYMON_DISABLE_BATTERY_FILTER"] = {
 	"name": "Disables battery filter [FOR TESTING]",
 	"default": True,

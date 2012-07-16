@@ -38,7 +38,7 @@
 
 #include <openchronos.h>
 
-void battery_measurement_reset(void);
+void battery_init(void);
 void battery_measurement(void);
 
 /* Battery high voltage threshold */

@@ -22,10 +22,6 @@
 #include "drivers/display.h"
 #include "drivers/battery.h"
 
-
-static uint8_t batt_v_disp;
-
-
 static void display_battery(void)
 {
 	/* display battery percentage on line one */
@@ -36,10 +32,16 @@ static void display_battery(void)
 	_printf(0, LCD_SEG_L2_3_0, "%4u", battery_info.voltage);
 }
 
+static void battery_event(enum sys_message event)
+{
+	display_battery();
+}
 
 static void battery_activate(void)
 {
-#ifndef CONFIG_BATTERY_MONITOR
+#ifdef CONFIG_BATTERY_MONITOR
+	sys_messagebus_register(&battery_event, SYS_MSG_BATT);
+#else
 	/* don't need this if the background task is compiled in */
 	battery_measurement();
 #endif
@@ -51,43 +53,26 @@ static void battery_activate(void)
 
 	/* refresh display */
 	display_battery();
-	batt_v_disp = 1;
 }
 
 static void battery_deactivate(void)
 {
+#ifdef CONFIG_BATTERY_MONITOR
+	sys_messagebus_unregister(&battery_event);
+#endif
+
 	/* cleanup screen */
-	batt_v_disp = 0;
 	display_clear(0, 1);
 	display_clear(0, 2);
 
 	/* clear static symbols */
 	display_symbol(0, LCD_SEG_L2_DP, SEG_OFF);
 	display_symbol(0, LCD_SYMB_PERCENT, SEG_OFF);
-	if (battery_info.voltage >= BATTERY_LOW_THRESHOLD)
-		display_symbol(0, LCD_SYMB_BATTERY, SEG_OFF);
+	display_symbol(0, LCD_SYMB_BATTERY, SEG_OFF);
 }
-
-#ifdef CONFIG_BATTERY_MONITOR
-static void minute_event(enum sys_message event)
-{
-	battery_measurement();
-
-	/* Display blinking battery symbol if low */
-	if (battery_info.voltage < BATTERY_LOW_THRESHOLD)
-		display_symbol(0, LCD_SYMB_BATTERY, SEG_ON | BLINK_ON);
-
-	if (batt_v_disp)
-		display_battery();
-}
-#endif
 
 void mod_battery_init(void)
 {
-	battery_measurement_reset();
 	menu_add_entry(" BATT", NULL, NULL, NULL, NULL, NULL, NULL,
 		&battery_activate, &battery_deactivate);
-#ifdef CONFIG_BATTERY_MONITOR
-	sys_messagebus_register(&minute_event, SYS_MSG_RTC_MINUTE);
-#endif
 }
