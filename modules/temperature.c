@@ -57,7 +57,7 @@
 #include "drivers/display.h"
 #include "drivers/temperature.h"
 
-uint8_t temp_edit = FALSE;
+uint8_t temp_edit = 0;
 
 
 // *************************************************************************************************
@@ -82,7 +82,7 @@ void display_temperature()
 	display_symbol(0,LCD_SEG_L1_DP1, SEG_ON);
 	display_symbol(0,LCD_UNIT_L1_DEGREE, SEG_ON);
 	display_clear(0, 1);
-#ifdef CONFIG_TEMPERATUREMON_METRIC_ONLY
+#ifdef CONFIG_TEMPERATURE_METRIC_ONLY
 	display_char(0, LCD_SEG_L1_0, 'C', SEG_ON);
 #else
 	if (sTemp.is_c) {
@@ -93,7 +93,7 @@ void display_temperature()
 #endif
 
 	// When using English units, convert �C to �F (temp*1.8+32)
-#ifdef CONFIG_TEMPERATUREMON_METRIC_ONLY
+#ifdef CONFIG_TEMPERATURE_METRIC_ONLY
 		temperature = sTemp.degrees + sTemp.offset;
 #else
 
@@ -133,11 +133,15 @@ void clear_temperature()
 	display_chars(0,LCD_SEG_L1_3_0,NULL,BLINK_OFF);
 }
 
-static void temp_change() {
-	/* Display if active */
+static void measure_temp(enum sys_message msg) {
+	if (temp_edit)
+		return;
+
+	temperature_measurement(1);
 	display_clear(0, 1);
 	display_temperature();
 }
+
 
 // *************************************************************************************************
 // @fn          temperature_activate
@@ -146,27 +150,22 @@ static void temp_change() {
 // *************************************************************************************************
 static void temperature_activate() {
 	display_chars(0, LCD_SEG_L2_3_0, "TEMP", SEG_SET);
-#ifndef CONFIG_TEMPERATUREMON
-	temperature_measurement(FILTER_ON); //Don't need this if the background task is compiled in
-#endif
 	display_temperature();
-	sys_messagebus_register(&temp_change, SYS_MSG_TEMP);
+	sys_messagebus_register(&measure_temp, SYS_MSG_TIMER_4S);
 }
 
 static void temperature_deactivate() {
 	/* cleanup screen */
-	sys_messagebus_unregister(&temp_change);
+	sys_messagebus_unregister(&measure_temp);
 	display_clear(0, 2);
 	display_chars(0,LCD_SEG_L1_3_0,NULL,BLINK_OFF);
-	temp_edit = FALSE;
+	temp_edit = 0;
 	clear_temperature();
-
 }
 
 static void temp_change_units() {
-#ifndef CONFIG_TEMPERATUREMON_METRIC_ONLY
+#ifndef CONFIG_TEMPERATURE_METRIC_ONLY
 	sTemp.is_c = !sTemp.is_c;
-	temperature_activate();
 #endif
 }
 
@@ -197,10 +196,7 @@ static void edit_temp_offset() {
 }
 
 void mod_temperature_init(void) {
-	temp_edit = FALSE;
-#ifndef CONFIG_TEMPERATUREMON
-	reset_temp_measurement(); //Don't need this if temperaturemon is going to do it.
-#endif
+	temp_edit = 0;
 	menu_add_entry(" TEMP",&temp_button_up, &temp_button_down, NULL, &edit_temp_offset, NULL, NULL,
 			&temperature_activate, &temperature_deactivate);
 }

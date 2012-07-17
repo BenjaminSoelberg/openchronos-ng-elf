@@ -22,6 +22,8 @@ def rand_hw():
 
 DATA = SortedDict()
 
+# GLOBAL CONFIG ##############################################################
+
 DATA["DEBUG"] = {
 	"name": "Debug",
 	"default": False,
@@ -56,6 +58,8 @@ DATA["USE_WATCHDOG"] = {
 	"help": "Protects the clock against deadlocks by rebooting it.",
 }
 
+# RTC DRIVER #################################################################
+
 DATA["TEXT_RTC"] = {
 	"name": "RTC driver",
 	"type": "info",
@@ -66,6 +70,8 @@ DATA["CONFIG_RTC_IRQ"] = {
 	"default": True,
 	"help": "Enables interrupts on the Real Time Clock",
 }
+
+# TIMER0 DRIVER ##############################################################
 
 DATA["TEXT_TIMER"] = {
 	"name": "Timer0 driver",
@@ -83,6 +89,8 @@ DATA["CONFIG_TIMER_20HZ_IRQ"] = {
 	"default": True,
 	"help": "Enables 20Hz interrupts on the hardware timer",
 }
+
+# PORTS DRIVER ###############################################################
 
 DATA["TEXT_PORTS"] = {
 	"name": "Ports driver",
@@ -105,6 +113,8 @@ DATA["CONFIG_BUTTONS_SHORT_PRESS_TIME"] = {
 	"help": "Short button press time (in multiples of 1/20 second)",
 }
 
+# BATTERY DRIVER #############################################################
+
 DATA["TEXT_BATTERY"] = {
 	"name": "Battery driver",
 	"type": "info",
@@ -122,8 +132,20 @@ DATA["CONFIG_BATTERYMON_DISABLE_BATTERY_FILTER"] = {
 	"help": "Reports the straight voltage value from measurement instead of the 'smoothed' one.",
 }
 
+# TEMPERATURE SENSOR DRIVER ##################################################
 
-################################# MODULES ####################################
+DATA["TEXT_TEMPERATURE"] = {
+	"name": "Temperature sensor driver",
+	"type": "info"
+}
+
+DATA["CONFIG_TEMPERATURE_METRIC_ONLY"] = {
+	"name": "Only show in degrees C",
+	"default": False,
+	"help": "Don't build code to convert to F.",
+}
+
+# AUTOMATICALLY GENERATED MODULE LIST ########################################
 
 DATA["TEXT_MODULES"] = {
 	"name": "Modules",

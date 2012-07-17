@@ -62,10 +62,10 @@
 // Prototypes section
 
 // internal functions
-extern void reset_temp_measurement(void);
+extern void temperature_init(void);
 extern void temperature_measurement(uint8_t filter);
 
-#ifndef CONFIG_TEMPERATUREMON_METRIC_ONLY
+#ifndef CONFIG_TEMPERATURE_METRIC_ONLY
 extern int16_t convert_C_to_F(int16_t value);
 extern int16_t convert_F_to_C(int16_t value);
 #endif
@@ -82,28 +82,13 @@ struct temp
 	int16_t		degrees;
 	// User set calibration value (�C) in 2.1 format
 	int16_t		offset;
-	// Update available for sys_msg?
-	uint8_t has_update :1;
-#ifndef CONFIG_TEMPERATUREMON_METRIC_ONLY
+#ifndef CONFIG_TEMPERATURE_METRIC_ONLY
     //C or F
     uint8_t         is_c :1;
 #endif
 
 };
 extern struct temp sTemp;
-
-#ifndef FALSE
-  // the classic false
-  #define FALSE (0 == 1)
-#endif
-
-#ifndef TRUE
-  // the classic true
-  #define TRUE  (1 == 1)
-#endif
-
-#define FILTER_OFF (0)
-#define FILTER_ON (1)
 
 // *************************************************************************************************
 // Extern section

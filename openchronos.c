@@ -190,11 +190,6 @@ void check_events(void)
 	}
 #endif
 
-	if (sTemp.has_update) {
-		msg |= SYS_MSG_TEMP;
-		sTemp.has_update = FALSE;
-	}
-
 	{
 		struct sys_messagebus *p = messagebus;
 
@@ -530,6 +525,9 @@ void init_application(void)
 
 	/* drivers/battery */
 	battery_init();
+
+	/* drivers/temperature */
+	temperature_init();
 
 #ifdef CONFIG_INFOMEM
 	if (infomem_ready() == -2) {

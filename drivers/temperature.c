@@ -57,9 +57,6 @@
 // *************************************************************************************************
 // Include section
 
-// system
-#include <cc430x613x.h>
-
 // driver
 #include "temperature.h"
 #include "ports.h"
@@ -91,10 +88,10 @@ struct temp sTemp;
 // @param       none
 // @return      none
 // *************************************************************************************************
-void reset_temp_measurement(void)
+void temperature_init(void)
 {
 	// Perform one temperature measurement with disabled filter
-	temperature_measurement(FILTER_OFF);
+	temperature_measurement(0);
 }
 
 
@@ -128,7 +125,7 @@ void temperature_measurement(uint8_t filter)
 
 
 	// Store measured temperature
-	if (filter == FILTER_ON) {
+	if (filter) {
 		// Change temperature in 0.1� steps towards measured value
 		if (temperature > sTemp.degrees)		sTemp.degrees += 1;
 		else if (temperature < sTemp.degrees)	sTemp.degrees -= 1;
@@ -136,8 +133,6 @@ void temperature_measurement(uint8_t filter)
 		// Override filter
 		sTemp.degrees = (int16_t)temperature;
 	}
-
-	sTemp.has_update = TRUE;
 }
 
 
@@ -147,7 +142,7 @@ void temperature_measurement(uint8_t filter)
 // @param       int16_t value		Temperature in �C
 // @return      int16_t 			Temperature in �F
 // *************************************************************************************************
-#ifndef CONFIG_TEMPERATUREMON_METRIC_ONLY
+#ifndef CONFIG_TEMPERATURE_METRIC_ONLY
 int16_t convert_C_to_F(int16_t value)
 {
 	int16_t DegF;
