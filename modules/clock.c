@@ -3,7 +3,7 @@
 
     Copyright (C) 2012 Angelo Arrifano <miknix@gmail.com>
 
-	           http://www.openchronos-ng.sourceforge.net
+				http://www.openchronos-ng.sourceforge.net
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -28,7 +28,7 @@
 
 static uint16_t tmp_yy;
 static uint8_t tmp_mo, tmp_dw, tmp_dd, tmp_hh, tmp_mm, tmp_ss;
-static char const * tmp_dws;
+static char const *tmp_dws;
 
 static void clock_event(enum sys_message msg)
 {
@@ -59,19 +59,18 @@ static void clock_event(enum sys_message msg)
 #ifdef CONFIG_CLOCK_AMPM
 		if (tmp_hh > 12) {
 			tmp_hh = tmp_hh - 12;
-			display_symbol(0,LCD_SYMB_AM,SEG_OFF);
-			display_symbol(0,LCD_SYMB_PM,SEG_SET);
+			display_symbol(0, LCD_SYMB_AM, SEG_OFF);
+			display_symbol(0, LCD_SYMB_PM, SEG_SET);
 		} else {
 			if (tmp_hh == 12) {
-				display_symbol(0,LCD_SYMB_AM,SEG_OFF);
-				display_symbol(0,LCD_SYMB_PM,SEG_SET);
+				display_symbol(0, LCD_SYMB_AM, SEG_OFF);
+				display_symbol(0, LCD_SYMB_PM, SEG_SET);
 			} else {
-				display_symbol(0,LCD_SYMB_PM,SEG_OFF);
-				display_symbol(0,LCD_SYMB_AM,SEG_SET);
+				display_symbol(0, LCD_SYMB_PM, SEG_OFF);
+				display_symbol(0, LCD_SYMB_AM, SEG_SET);
 			}
-			if (tmp_hh == 0) {
+			if (tmp_hh == 0)
 				tmp_hh = 12;
-			}
 		}
 		_printf(0, LCD_SEG_L1_3_2, "%2u", tmp_hh);
 #else
@@ -188,25 +187,24 @@ static void edit_hh_set(int8_t step)
 	helpers_loop(&tmp_hh, 0, 23, step);
 #ifdef CONFIG_CLOCK_AMPM
 	if (tmp_hh > 12) {
-		display_symbol(0,LCD_SYMB_AM,SEG_OFF);
-		display_symbol(0,LCD_SYMB_PM,SEG_SET);
+		display_symbol(0, LCD_SYMB_AM, SEG_OFF);
+		display_symbol(0, LCD_SYMB_PM, SEG_SET);
 		_printf(0, LCD_SEG_L1_3_2, "%02u", tmp_hh-12);
 	} else {
 		if (tmp_hh == 0) {
 			_printf(0, LCD_SEG_L1_3_2, "%02u", 12);
 		} else {
-			if (tmp_hh > 9) {
+			if (tmp_hh > 9)
 				_printf(0, LCD_SEG_L1_3_2, "%02u", tmp_hh);
-			} else {
+			else
 				_printf(0, LCD_SEG_L1_3_2, "%02u", tmp_hh);
-			}
 		}
 		if (tmp_hh == 12) {
-			display_symbol(0,LCD_SYMB_AM,SEG_OFF);
-			display_symbol(0,LCD_SYMB_PM,SEG_SET);
+			display_symbol(0, LCD_SYMB_AM, SEG_OFF);
+			display_symbol(0, LCD_SYMB_PM, SEG_SET);
 		} else {
-			display_symbol(0,LCD_SYMB_PM,SEG_OFF);
-			display_symbol(0,LCD_SYMB_AM,SEG_SET);
+			display_symbol(0, LCD_SYMB_PM, SEG_OFF);
+			display_symbol(0, LCD_SYMB_AM, SEG_SET);
 		}
 	}
 #else
@@ -245,15 +243,15 @@ static struct menu_editmode_item edit_items[] = {
 /************************ menu callbacks **********************************/
 static void clock_activated()
 {
-	sys_messagebus_register(&clock_event, SYS_MSG_RTC_MINUTE \
-													| SYS_MSG_RTC_HOUR \
-													| SYS_MSG_RTC_DAY \
-													| SYS_MSG_RTC_MONTH
+	sys_messagebus_register(&clock_event, SYS_MSG_RTC_MINUTE
+						| SYS_MSG_RTC_HOUR
+						| SYS_MSG_RTC_DAY
+						| SYS_MSG_RTC_MONTH
 #ifdef CONFIG_CLOCK_BLINKCOL
-													| SYS_MSG_RTC_SECOND
+						| SYS_MSG_RTC_SECOND
 #endif
-													);
-	
+	);
+
 	/* create two screens, the first is always the active one */
 	lcd_screens_create(2);
 
@@ -279,8 +277,8 @@ static void clock_deactivated()
 	/* clean up screen */
 	display_symbol(0, LCD_SEG_L1_COL, SEG_OFF);
 #ifdef CONFIG_CLOCK_AMPM
-	display_symbol(0,LCD_SYMB_AM,SEG_OFF);
-	display_symbol(0,LCD_SYMB_PM,SEG_OFF);
+	display_symbol(0, LCD_SYMB_AM, SEG_OFF);
+	display_symbol(0, LCD_SYMB_PM, SEG_OFF);
 #endif
 	display_clear(0, 1);
 	display_clear(0, 2);
