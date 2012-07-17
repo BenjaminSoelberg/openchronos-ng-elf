@@ -60,9 +60,9 @@
 
 void battery_init(void)
 {
-	/* Start with battery voltage estimate of 3.00V and avoid low
-	  battery warnings until the voltage estimate does not converge. */
-	battery_info.voltage = 300;
+	/* Start with battery voltage estimate of full and avoid low
+	  battery warnings until the voltage estimate converges. */
+	battery_info.voltage = BATTERY_FULL_THRESHOLD;
 }
 
 
@@ -87,7 +87,7 @@ void battery_measurement(void)
 	if (voltage > BATTERY_HIGH_THRESHOLD)
 		voltage = battery_info.voltage;
 
-#ifndef CONFIG_BATTERYMON_DISABLE_BATTERY_FILTER
+#ifndef CONFIG_BATTERY_DISABLE_FILTER
 	/* Filter battery voltage */
 	battery_info.voltage = ((voltage << 1)
 			+ (battery_info.voltage << 3)) / 10;

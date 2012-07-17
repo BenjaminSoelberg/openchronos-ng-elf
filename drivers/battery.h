@@ -48,8 +48,8 @@ void battery_measurement(void);
    show "lobatt" message */
 #define BATTERY_LOW_THRESHOLD			(240u)
 
-/* Where we consider the battery full */
-#define BATTERY_FULL_THRESHOLD			(300u)
+/* Where we consider the battery full - A guess, but a pretty safe one at this point*/
+#define BATTERY_FULL_THRESHOLD			(310u)
 
 /* Where we consider the battery empty */
 #define BATTERY_EMPTY_THRESHOLD			(220u)

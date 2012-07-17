@@ -126,7 +126,7 @@ DATA["CONFIG_BATTERY_MONITOR"] = {
 	"help": "Monitors the battery voltage every minute and displays a warning on low battery. Also used by the battery to auto-refresh display, if enabled.",
 }
 
-DATA["CONFIG_BATTERYMON_DISABLE_BATTERY_FILTER"] = {
+DATA["CONFIG_BATTERY_DISABLE_FILTER"] = {
 	"name": "Disables battery filter [FOR TESTING]",
 	"default": True,
 	"help": "Reports the straight voltage value from measurement instead of the 'smoothed' one.",
