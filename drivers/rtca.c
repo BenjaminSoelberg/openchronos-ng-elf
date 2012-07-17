@@ -241,11 +241,14 @@ void RTC_A_ISR(void)
 	/* count system time */
 	rtca_time.sys++;
 
-	/* only continue on time event or alarm event */
-	if (iv != RTCIV_RTCTEVIFG && iv != RTCIV_RTCAIFG)
-		return;
-
 	enum rtca_tevent ev = 0;
+
+	/* second event (from the read ready interrupt flag) */
+	if (iv == RTCIV_RTCRDYIFG) {
+		ev = RTCA_EV_SECOND;
+		goto finish;
+	}
+
 	{
 		if (iv != RTCIV_RTCTEVIFG)	/* Minute changed! */
 			goto finish;

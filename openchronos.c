@@ -172,7 +172,7 @@ void check_events(void)
 
 	/* drivers/timer */
 	if (timer0_last_event) {
-		msg |= timer0_last_event << 6;
+		msg |= timer0_last_event << 7;
 		timer0_last_event = 0;
 	}
 

@@ -300,7 +300,7 @@ static void as_event(enum sys_message msg)
 {
 
 
-	if (msg | SYS_MSG_RTC_MINUTE)
+	if ( (msg & SYS_MSG_RTC_MINUTE) == SYS_MSG_RTC_MINUTE)
 	{
 		if(sAccel.mode == ACCEL_MODE_ON) sAccel.timeout--;
 		//if timeout is over disable the accelerometer
@@ -313,7 +313,7 @@ static void as_event(enum sys_message msg)
 		}
 
 	}
-	if (msg | SYS_MSG_AS_INT)
+	if ( (msg & SYS_MSG_AS_INT) == SYS_MSG_AS_INT)
 	{
 		//Check the vti register for status information
 		as_status.all_flags=as_get_status();
@@ -344,13 +344,13 @@ static void as_event(enum sys_message msg)
 		}
 	}
 	/* The 1 Hz timer is used to refresh the menu screen */
-	//if (msg | SYS_MSG_TIMER_1HZ)
-	//{
+	if ( (msg & SYS_MSG_RTC_SECOND) == SYS_MSG_RTC_SECOND)
+	{
 	/*check the status register for debugging purposes */
-	//_printf(0, LCD_SEG_L1_1_0, "%1u", as_read_register(ADDR_INT_STATUS));	
+	_printf(0, LCD_SEG_L1_1_0, "%1u", as_read_register(ADDR_INT_STATUS));	
 	/* update menu screen */
-	//lcd_screen_activate(0);
-	//}
+	lcd_screen_activate(0);
+	}
 
 }
 
@@ -360,7 +360,7 @@ static void acc_activated()
 
 
 	//register to the system bus for vti events as well as the RTC minute events
-	//sys_messagebus_register(&as_event, SYS_MSG_AS_INT | SYS_MSG_RTC_MINUTE | SYS_MSG_TIMER_1HZ);
+	sys_messagebus_register(&as_event, SYS_MSG_AS_INT | SYS_MSG_RTC_MINUTE | SYS_MSG_RTC_SECOND);
 
 
 	/* create two screens, the first is always the active one */
