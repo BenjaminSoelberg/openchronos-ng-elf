@@ -35,6 +35,10 @@ static void clock_event(enum sys_message msg)
 	rtca_get_time(&tmp_hh, &tmp_mm, &tmp_ss);
 	rtca_get_date(&tmp_yy, &tmp_mo, &tmp_dd, &tmp_dw, &tmp_dws);
 
+#ifdef CONFIG_CLOCK_BLINKCOL
+	display_symbol(0, LCD_SEG_L1_COL, ((tmp_ss & 0x01) ? SEG_ON : SEG_OFF));
+#endif
+
 	if (msg | SYS_MSG_RTC_YEAR)
 		_printf(1, LCD_SEG_L1_3_0, "%04u", tmp_yy);
 #ifdef CONFIG_CLOCK_MONTH_FIRST
@@ -244,25 +248,25 @@ static void clock_activated()
 	sys_messagebus_register(&clock_event, SYS_MSG_RTC_MINUTE \
 													| SYS_MSG_RTC_HOUR \
 													| SYS_MSG_RTC_DAY \
-													| SYS_MSG_RTC_MONTH);	
+													| SYS_MSG_RTC_MONTH
+#ifdef CONFIG_CLOCK_BLINKCOL
+													| SYS_MSG_RTC_SECOND
+#endif
+													);
 	
 	/* create two screens, the first is always the active one */
 	lcd_screens_create(2);
 
 	/* display stuff that won't change with time */
-#ifdef CONFIG_CLOCK_BLINKCOL
-	display_symbol(0, LCD_SEG_L1_COL, SEG_ON | BLINK_ON);
-#else
 	display_symbol(0, LCD_SEG_L1_COL, SEG_ON);
-#endif
 	display_char(0, LCD_SEG_L2_2, '-', SEG_SET);
 
 	/* update screens with fake event */
-	clock_event(RTCA_EV_YEAR
-					| RTCA_EV_MONTH
-					| RTCA_EV_DAY
-					| RTCA_EV_HOUR
-					| RTCA_EV_MINUTE);
+	clock_event(SYS_MSG_RTC_YEAR
+					| SYS_MSG_RTC_MONTH
+					| SYS_MSG_RTC_DAY
+					| SYS_MSG_RTC_HOUR
+					| SYS_MSG_RTC_MINUTE);
 }
 
 static void clock_deactivated()
@@ -273,7 +277,7 @@ static void clock_deactivated()
 	lcd_screens_destroy();
 
 	/* clean up screen */
-	display_symbol(0, LCD_SEG_L1_COL, BLINK_OFF);
+	display_symbol(0, LCD_SEG_L1_COL, SEG_OFF);
 #ifdef CONFIG_CLOCK_AMPM
 	display_symbol(0,LCD_SYMB_AM,SEG_OFF);
 	display_symbol(0,LCD_SYMB_PM,SEG_OFF);
@@ -298,6 +302,12 @@ static void star_long_pressed()
 	/* Save the current time in edit_buffer */
 	rtca_get_time(&tmp_hh, &tmp_mm, &tmp_ss);
 	rtca_get_date(&tmp_yy, &tmp_mo, &tmp_dd, &tmp_dw, &tmp_dws);
+
+#ifdef CONFIG_CLOCK_BLINKCOL
+	/* the blinking dots feature might hide the two dots, we display them
+	  here just in case */
+	display_symbol(0, LCD_SEG_L1_COL, SEG_ON);
+#endif
 
 	menu_editmode_start(&edit_save, edit_items);
 }
