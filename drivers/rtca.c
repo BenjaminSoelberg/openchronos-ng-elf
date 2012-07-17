@@ -3,7 +3,7 @@
 
     Copyright (C) 2011-2012 Angelo Arrifano <miknix@gmail.com>
 
-	            http://www.openchronos-ng.sourceforge.net
+				http://www.openchronos-ng.sourceforge.net
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -39,26 +39,13 @@
 #define BASE_YEAR 1984 /* not a leap year, so no need to add 1 */
 #define LEAPS_SINCE_YEAR(Y) (((Y) - BASE_YEAR) + ((Y) - BASE_YEAR) / 4);
 
-static struct {
-	uint32_t sys;   /* system time: number of seconds since power on */
-	uint16_t year;  /* cache of RTC year register */
-	uint8_t mon;    /* cache of RTC month register */
-	uint8_t day;    /* cache of RTC day register */
-	uint8_t dow;    /* cache of RTC day of week register */
-	uint8_t hour;   /* cache of RTC hour register */
-	uint8_t min;    /* cache of RTC minutes register */
-	uint8_t sec;    /* cache of RTC seconds register */
-} rtca_time = { 0, 0, 1, 1, 0, 0, 0, 0 };
-
-
-/* Day of week strings */
-static char const * const rtca_dow_str[] = {
-	"SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"
-};
-
-
 void rtca_init(void)
 {
+	/* prevent starting with invalid date */
+	rtca_time.year = 2012;
+	rtca_time.mon = 1;
+	rtca_time.day = 1;
+
 #ifdef CONFIG_RTC_IRQ
 	/* Enable calendar mode (date/time registers are automatically reset)
 	and enable read ready interrupts
@@ -103,27 +90,15 @@ uint8_t rtca_get_max_days(uint8_t month, uint16_t year)
 	return 0;
 }
 
-uint32_t rtca_get_systime(void)
-{
-	return rtca_time.sys;
-}
-
-void rtca_get_time(uint8_t *hour, uint8_t *min, uint8_t *sec)
-{
-	*sec = rtca_time.sec;
-	*min = rtca_time.min;
-	*hour = rtca_time.hour;
-}
-
-void rtca_set_time(uint8_t hour, uint8_t min, uint8_t sec)
+void rtca_set_time()
 {
 	/* Stop RTC timekeeping for a while */
 	rtca_stop();
 
 	/* update RTC registers */
-	RTCSEC = (rtca_time.sec = sec);
-	RTCMIN = (rtca_time.min = min);
-	RTCHOUR = (rtca_time.hour = hour);
+	RTCSEC = rtca_time.sec;
+	RTCMIN = rtca_time.min;
+	RTCHOUR = rtca_time.hour;
 
 	/* Resume RTC time keeping */
 	rtca_start();
@@ -156,33 +131,23 @@ void rtca_disable_alarm()
 	RTCCTL01 &= ~RTCAIE;
 }
 
-void rtca_get_date(uint16_t *year, uint8_t *mon, uint8_t *day,
-                   uint8_t *dow, char const **dow_str)
-{
-	*dow_str = rtca_dow_str[rtca_time.dow];
-	*dow = rtca_time.dow;
-	*day = rtca_time.day;
-	*mon = rtca_time.mon;
-	*year = rtca_time.year;
-}
-
-void rtca_set_date(uint16_t year, uint8_t mon, uint8_t day)
+void rtca_set_date()
 {
 	uint8_t dow;
 
 	/* Stop RTC timekeeping for a while */
 	rtca_stop();
 
-	dow = LEAPS_SINCE_YEAR(year);
+	dow = LEAPS_SINCE_YEAR(rtca_time.year);
 
-	if ((29 == rtca_get_max_days(2, year)) && (mon < 3))
+	if ((29 == rtca_get_max_days(2, rtca_time.year)) && (rtca_time.mon < 3))
 		dow--; /* if this is a leap year but before February 29 */
 
 	/* add day of current month */
-	dow += day;
+	dow += rtca_time.day;
 
 	/* add this month's dow value */
-	switch (mon) {
+	switch (rtca_time.mon) {
 	case 5:
 		dow += 1;
 		break;
@@ -215,18 +180,19 @@ void rtca_set_date(uint16_t year, uint8_t mon, uint8_t day)
 	dow = dow % 7;
 
 	/* update RTC registers and local cache */
-	RTCDAY = (rtca_time.day = day);
+	RTCDAY = rtca_time.day;
 	RTCDOW = (rtca_time.dow = dow);
-	RTCMON = (rtca_time.mon = mon);
-	rtca_time.year = year;
-	RTCYEARL = year & 0xff;
-	RTCYEARH = year >> 8;
+	RTCMON = rtca_time.mon;
+	RTCYEARL = rtca_time.year & 0xff;
+	RTCYEARH = rtca_time.year >> 8;
 
 	/* Resume RTC time keeping */
 	rtca_start();
 
 #if (CONFIG_DST > 0)
-	dst_calculate_dates(year, mon, day);	/* calculate new DST switch dates */
+	/* this is broken */
+	/* calculate new DST switch dates */
+	/* dst_calculate_dates(year, mon, day); */
 #endif
 }
 __attribute__((interrupt(RTC_A_VECTOR)))
@@ -286,7 +252,7 @@ void RTC_A_ISR(void)
 finish:
 	/* store event */
 	rtca_last_event = ev;
-	
+
 	/* exit from LPM3, give execution back to mainloop */
 	_BIC_SR_IRQ(LPM3_bits);
 }

@@ -70,14 +70,11 @@ uint16_t timeInMinutes(struct Tide aTide)
 uint16_t timeNowInMinutes(void)
 {
 	struct Tide timeNow;
-	uint8_t hour, min, sec;
-	/* get time from the system */
-	rtca_get_time(&hour, &min, &sec);
 
-	timeNow.hoursLeft = hour;
-	timeNow.minutesLeft = min;
-	if (sec > 30)
-		min++;
+	timeNow.hoursLeft = rtca_time.hour;
+	timeNow.minutesLeft = rtca_time.min;
+	if (rtca_time.sec > 30)
+		timeNow.minutesLeft++;
 	return timeInMinutes(timeNow);
 }
 

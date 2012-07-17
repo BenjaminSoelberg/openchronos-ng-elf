@@ -26,39 +26,34 @@
 #include <drivers/rtca.h>
 #include <drivers/display.h>
 
-static uint16_t tmp_yy;
-static uint8_t tmp_mo, tmp_dw, tmp_dd, tmp_hh, tmp_mm, tmp_ss;
-static char const *tmp_dws;
-
 static void clock_event(enum sys_message msg)
 {
-	rtca_get_time(&tmp_hh, &tmp_mm, &tmp_ss);
-	rtca_get_date(&tmp_yy, &tmp_mo, &tmp_dd, &tmp_dw, &tmp_dws);
-
 #ifdef CONFIG_CLOCK_BLINKCOL
-	display_symbol(0, LCD_SEG_L1_COL, ((tmp_ss & 0x01) ? SEG_ON : SEG_OFF));
+	display_symbol(0, LCD_SEG_L1_COL,
+	     ((rtca_time.sec & 0x01) ? SEG_ON : SEG_OFF));
 #endif
 
 	if (msg | SYS_MSG_RTC_YEAR)
-		_printf(1, LCD_SEG_L1_3_0, "%04u", tmp_yy);
+		_printf(1, LCD_SEG_L1_3_0, "%04u", rtca_time.year);
 #ifdef CONFIG_CLOCK_MONTH_FIRST
 	if (msg | SYS_MSG_RTC_MONTH)
-		_printf(0, LCD_SEG_L2_4_3, "%02u", tmp_mo);
+		_printf(0, LCD_SEG_L2_4_3, "%02u", rtca_time.mon);
 	if (msg | SYS_MSG_RTC_DAY) {
-		_printf(0, LCD_SEG_L2_1_0, "%02u", tmp_dd);
+		_printf(0, LCD_SEG_L2_1_0, "%02u", rtca_time.day);
 #else
 	if (msg | SYS_MSG_RTC_MONTH)
-		_printf(0, LCD_SEG_L2_1_0, "%02u", tmp_dd);
+		_printf(0, LCD_SEG_L2_1_0, "%02u", rtca_time.mon);
 	if (msg | SYS_MSG_RTC_DAY) {
-		_printf(0, LCD_SEG_L2_4_3, "%02u", tmp_mo);
+		_printf(0, LCD_SEG_L2_4_3, "%02u", rtca_time.day);
 
 #endif
-		_printf(1, LCD_SEG_L2_2_0, tmp_dws, SEG_SET);
+		_printf(1, LCD_SEG_L2_2_0, rtca_dow_str[rtca_time.dow], SEG_SET);
 	}
 	if (msg | SYS_MSG_RTC_HOUR) {
 #ifdef CONFIG_CLOCK_AMPM
+		uint8_t tmp_hh = rtca_time.hour;
 		if (tmp_hh > 12) {
-			tmp_hh = tmp_hh - 12;
+			tmp_hh -= 12;
 			display_symbol(0, LCD_SYMB_AM, SEG_OFF);
 			display_symbol(0, LCD_SYMB_PM, SEG_SET);
 		} else {
@@ -74,11 +69,11 @@ static void clock_event(enum sys_message msg)
 		}
 		_printf(0, LCD_SEG_L1_3_2, "%2u", tmp_hh);
 #else
-		_printf(0, LCD_SEG_L1_3_2, "%02u", tmp_hh);
+		_printf(0, LCD_SEG_L1_3_2, "%02u", rtca_time.hour);
 #endif
 	}
 	if (msg | SYS_MSG_RTC_MINUTE)
-		_printf(0, LCD_SEG_L1_1_0, "%02u", tmp_mm);
+		_printf(0, LCD_SEG_L1_1_0, "%02u", rtca_time.min);
 }
 
 /********************* edit mode callbacks ********************************/
@@ -94,10 +89,10 @@ static void edit_yy_dsel(void)
 static void edit_yy_set(int8_t step)
 {
 	/* this allows setting years between 2012 and 2022 */
-	*((uint8_t *)&tmp_yy + 1) = 0x07;
-	helpers_loop((uint8_t *)&tmp_yy, 220, 230, step);
+	*((uint8_t *)&rtca_time.year + 1) = 0x07;
+	helpers_loop((uint8_t *)&rtca_time.year, 220, 230, step);
 
-	_printf(1, LCD_SEG_L1_3_0, "%04u", tmp_yy);
+	_printf(1, LCD_SEG_L1_3_0, "%04u", rtca_time.year);
 }
 
 static void edit_mo_sel(void)
@@ -120,11 +115,11 @@ static void edit_mo_dsel(void)
 
 static void edit_mo_set(int8_t step)
 {
-	helpers_loop(&tmp_mo, 1, 12, step);
+	helpers_loop(&rtca_time.mon, 1, 12, step);
 #ifdef CONFIG_CLOCK_MONTH_FIRST
-	_printf(0, LCD_SEG_L2_4_3, "%02u", tmp_mo);
+	_printf(0, LCD_SEG_L2_4_3, "%02u", rtca_time.mon);
 #else
-	_printf(0, LCD_SEG_L2_1_0, "%02u", tmp_mo);
+	_printf(0, LCD_SEG_L2_1_0, "%02u", rtca_time.mon);
 #endif
 }
 
@@ -149,11 +144,11 @@ static void edit_dd_dsel(void)
 
 static void edit_dd_set(int8_t step)
 {
-	helpers_loop(&tmp_dd, 1, rtca_get_max_days(tmp_mo, tmp_yy), step);
+	helpers_loop(&rtca_time.day, 1, rtca_get_max_days(rtca_time.mon, rtca_time.year), step);
 #ifdef CONFIG_CLOCK_MONTH_FIRST
-	_printf(0, LCD_SEG_L2_1_0, "%02u", tmp_dd);
+	_printf(0, LCD_SEG_L2_1_0, "%02u", rtca_time.day);
 #else
-	_printf(0, LCD_SEG_L2_4_3, "%02u", tmp_dd);
+	_printf(0, LCD_SEG_L2_4_3, "%02u", rtca_time.day);
 #endif
 }
 
@@ -168,9 +163,9 @@ static void edit_mm_dsel(void)
 }
 static void edit_mm_set(int8_t step)
 {
-	helpers_loop(&tmp_mm, 0, 59, step);
+	helpers_loop(&rtca_time.min, 0, 59, step);
 
-	_printf(0, LCD_SEG_L1_1_0, "%02u", tmp_mm);
+	_printf(0, LCD_SEG_L1_1_0, "%02u", rtca_time.min);
 }
 
 static void edit_hh_sel(void)
@@ -184,8 +179,9 @@ static void edit_hh_dsel(void)
 }
 static void edit_hh_set(int8_t step)
 {
-	helpers_loop(&tmp_hh, 0, 23, step);
+	helpers_loop(&rtca_time.hour, 0, 23, step);
 #ifdef CONFIG_CLOCK_AMPM
+	uint8_t tmp_hh = rtca_time.hour;
 	if (tmp_hh > 12) {
 		display_symbol(0, LCD_SYMB_AM, SEG_OFF);
 		display_symbol(0, LCD_SYMB_PM, SEG_SET);
@@ -207,16 +203,18 @@ static void edit_hh_set(int8_t step)
 			display_symbol(0, LCD_SYMB_AM, SEG_SET);
 		}
 	}
+	rtca_time.hour = tmp_hh;
 #else
-	_printf(0, LCD_SEG_L1_3_2, "%02u", tmp_hh);
+	_printf(0, LCD_SEG_L1_3_2, "%02u", rtca_time.hour);
 #endif
 }
 
 static void edit_save()
 {
 	/* Here we return from the edit mode, fill in the new values! */
-	rtca_set_time(tmp_hh, tmp_mm, 0);
-	rtca_set_date(tmp_yy, tmp_mo, tmp_dd);
+	rtca_time.sec = 0;
+	rtca_set_time();
+	rtca_set_date();
 
 	/* turn off only SOME blinking segments */
 	display_chars(0, LCD_SEG_L1_3_0, NULL, BLINK_OFF);
@@ -296,10 +294,6 @@ static void star_long_pressed()
 {
 	/* stop the hardware RTC */
 	rtca_stop();
-
-	/* Save the current time in edit_buffer */
-	rtca_get_time(&tmp_hh, &tmp_mm, &tmp_ss);
-	rtca_get_date(&tmp_yy, &tmp_mo, &tmp_dd, &tmp_dw, &tmp_dws);
 
 #ifdef CONFIG_CLOCK_BLINKCOL
 	/* the blinking dots feature might hide the two dots, we display them
