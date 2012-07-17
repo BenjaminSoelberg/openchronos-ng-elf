@@ -189,10 +189,10 @@ void timer0_A1_ISR(void)
 		goto exit_lpm3;
 	}
 
-	/* 1Hz timer, nothing to do yet */
+	/* 1Hz timer, ticked by overflow interrupts */
 	if (flag == TA0IV_TA0IFG) {
 		/* store event */
-		timer0_last_event |= TIMER0_EVENT_PROG;
+		timer0_last_event |= TIMER0_EVENT_1HZ;
 		
 		goto exit_lpm3;
 	}
