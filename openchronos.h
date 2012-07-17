@@ -111,7 +111,7 @@ enum sys_message {
 	SYS_MSG_RTC_MONTH		= BIT4, /*!< month event from the hardware RTC. */
 	SYS_MSG_RTC_YEAR		= BIT5, /*!< year event from the hardware RTC. */
 	/* drivers/timer */
-	SYS_MSG_TIMER_1HZ		= BIT6, /*!< 1HZ event from the hardware TIMER_0. */
+	SYS_MSG_TIMER_4S		= BIT6, /*!< 4s (period) event from the hardware TIMER_0. */
 	SYS_MSG_TIMER_20HZ	= BIT7, /*!< 20HZ event from the hardware TIMER_0. */
 	SYS_MSG_TIMER_PROG	= BIT8, /*!< programmable event from TIMER_0. */
 	/* sensor/interrups */

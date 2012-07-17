@@ -1,7 +1,7 @@
 /*!
 	\file timer.h
 	\brief openchronos-ng timer driver
-	\details This driver takes care of the Timer0 hardware timer. From this hardware timer the driver produces two hardware-based timers running at 20Hz and 1Hz. The events produced by those timers are available in #sys_message. Beyound the fixed frequency timers, this driver also implements a programmable timer and a programmable delay.
+	\details This driver takes care of the Timer0 hardware timer. From this hardware timer the driver produces two hardware-based timers running at 20Hz and 4s (period). The events produced by those timers are available in #sys_message. Beyound the fixed frequency timers, this driver also implements a programmable timer and a programmable delay.
 	\note If you are looking to timer events, then see #sys_message
 */
 
@@ -56,9 +56,9 @@ void timer0_delay(
 	\brief Bitfield of events produced by this driver
 */
 enum timer0_event {
-	TIMER0_EVENT_1HZ	= BIT0,	/*!< 1Hz event */
-	TIMER0_EVENT_20HZ	= BIT1,	/*!< 20Hz event */
-	TIMER0_EVENT_PROG	= BIT2	/*!< programmable timer event */
+	TIMER0_EVENT_4S    = BIT0,	/*!< 0.24Hz ~ 4.1s period event */
+	TIMER0_EVENT_20HZ	 = BIT1,	/*!< 20Hz event */
+	TIMER0_EVENT_PROG	 = BIT2	/*!< programmable timer event */
 };
 
 /*!

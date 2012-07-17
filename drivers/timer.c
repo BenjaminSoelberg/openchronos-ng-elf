@@ -58,7 +58,7 @@
 	 TA0CCR2: Unused
 	 TA0CCR3: programable timer
 	 TA0CCR4: delay timer
-	OVERFLOW: 1Hz timer */
+	OVERFLOW: 0.244Hz timer ~ 4.1ms */
 
 /* source is 32kHz with /2 divider */
 #define TIMER0_FREQ 16000
@@ -74,10 +74,9 @@ static uint16_t timer0_20hz_ticks;
 /* programable timer */
 static uint16_t timer0_prog_ticks;
 
-/* this function setups a 1Hz timer ticked every overflow interrupt */
 void timer0_init(void)
 {
-#ifdef CONFIG_TIMER_1HZ_IRQ
+#ifdef CONFIG_TIMER_4S_IRQ
 	/* Enable overflow interrupts */
 	TA0CTL |= TAIE;
 #endif
@@ -189,10 +188,10 @@ void timer0_A1_ISR(void)
 		goto exit_lpm3;
 	}
 
-	/* 1Hz timer, ticked by overflow interrupts */
+	/* 0.24Hz timer, ticked by overflow interrupts */
 	if (flag == TA0IV_TA0IFG) {
 		/* store event */
-		timer0_last_event |= TIMER0_EVENT_1HZ;
+		timer0_last_event |= TIMER0_EVENT_4S;
 		
 		goto exit_lpm3;
 	}
