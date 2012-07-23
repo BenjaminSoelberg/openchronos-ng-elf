@@ -11,14 +11,13 @@ CC_DMACH	= -D__MSP430_6137__ -DMRFI_CC430 -D__CC430F6137__
 CFLAGS		+= $(CC_CMACH) $(CC_DMACH) -Wall
 CFLAGS		+= -fno-force-addr -finline-limit=1 -fno-schedule-insns
 CFLAGS		+= -fshort-enums -Wl,-Map=output.map
+LDFLAGS		=
 
-# uncomment the following lines for size optimization
-CFLAGS		+= -Os -fdata-sections -ffunction-sections -fomit-frame-pointer
-LDFLAGS		= -Wl,--gc-sections -Wl,-s
+CFLAGS_REL	+= -Os -fdata-sections -ffunction-sections -fomit-frame-pointer
+LDFLAGS_REL	+= -Wl,--gc-sections -Wl,-s
 
-# uncomment the following lines for debugging
-#CFLAGS		+= -O1 -ggdb
-#LDFLAGS		= -Wl,--gc-sections
+CFLAGS_DBG	+= -O1 -ggdb
+LDFLAGS_DBG	+= -Wl,--gc-sections
 
 # linker flags and include directories
 INCLUDES	+= -I./ -Igcc/

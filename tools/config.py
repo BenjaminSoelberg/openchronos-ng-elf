@@ -24,10 +24,10 @@ DATA = SortedDict()
 
 # GLOBAL CONFIG ##############################################################
 
-DATA["DEBUG"] = {
-	"name": "Debug",
+DATA["CONFIG_DEBUG"] = {
+	"name": "Build debug code",
 	"default": False,
-	"help": "Activates debug code",
+	"help": "Sets CFLAGS and LDFLAGS for debugging",
 }
 
 DATA["CONFIG_FIXEDPOINT_MATH"] = {

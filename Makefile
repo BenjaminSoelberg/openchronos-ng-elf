@@ -33,6 +33,19 @@ openchronos.dep: $(SRCS)
 	@makedepend $(INCLUDES) -Y -f $@ $^ &> /dev/null
 	@rm -f $@.bak
 
+#
+# Append specific CFLAGS/LDFLAGS
+DEBUG := $(shell grep "^\#define CONFIG_DEBUG" config.h)
+ifeq ($(DEBUG),)
+TARGET	:= RELEASE
+CFLAGS	+= $(CFLAGS_REL)
+LDFLAGS	+= $(LDFLAGS_REL)
+else
+TARGET	:= DEBUG
+CFLAGS	+= $(CFLAGS_DBG)
+LDFLAGS	+= $(LDFLAGS_DBG)
+endif
+
 # rebuild if CFLAGS changed, as suggested in:
 # http://stackoverflow.com/questions/3236145/force-gnu-make-to-rebuild-objects-affected-by-compiler-definition/3237349#3237349
 openchronos.cflags: force
@@ -43,7 +56,7 @@ $(OBJS): openchronos.cflags
 # Top rules
 
 openchronos.elf: even_in_range.o $(OBJS)
-	@echo -e "\n>> Building $@"
+	@echo -e "\n>> Building $@ as target $(TARGET)"
 	@$(CC) $(CFLAGS) $(LDFLAGS) $(INCLUDES) -o $@ $+	
 
 openchronos.txt: openchronos.elf
@@ -70,7 +83,6 @@ config.h:
 config:
 	$(PYTHON) tools/config.py
 	$(PYTHON) tools/make_modinit.py
-	@echo "Don't forget to do a make clean!" && true
 
 install: openchronos.txt
 	contrib/ChronosTool.py rfbsl $<
@@ -79,7 +91,7 @@ clean: $(SUBDIRS)
 	@for subdir in $(SUBDIRS); do \
 		echo "Cleaning $$subdir .."; rm -f $$subdir/*.o; \
 	done
-	@rm -f *.o openchronos.elf openchronos.txt output.map
+	@rm -f *.o openchronos.{elf,txt,cflags,dep} output.map
 
 doc:
 	rm -rf doc/*
@@ -89,4 +101,4 @@ httpdoc: doc
 	rsync -vr doc/ $(USER)@web.sourceforge.net:/home/project-web/openchronos-ng/htdocs/api/
 
 
-include openchronos.dep
+-include openchronos.dep
