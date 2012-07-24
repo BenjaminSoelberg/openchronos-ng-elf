@@ -46,16 +46,11 @@ def read_config():
 
 			default = False
 			try:
-				try:
-					default = cfg.getboolean(section, 'default')
-					ftype = 'bool'
-				except ValueError:
-					default = cfg.get(section, 'default')
-					ftype = 'text'
-
-				parent = cfg.get(section, 'parent')
-			except ConfigParser.NoOptionError:
-				pass
+				default = cfg.getboolean(section, 'default')
+				ftype = 'bool'
+			except ValueError:
+				default = cfg.get(section, 'default')
+				ftype = 'text'
 
 			DATA.append( ("CONFIG_%s" % (section), {
 				'name': name,
