@@ -12,14 +12,6 @@ from sorteddict import SortedDict
 
 import modules
 
-# {0x79, 0x56, 0x34, 0x12}
-def rand_hw():
-	res = []
-	for i in range(4):
-		res.append(random.randint(1, 254))
-	res.sort(reverse=True)
-	return "{" + ",".join([hex(x) for x in res]) + "}"
-
 DATA = SortedDict()
 
 # GLOBAL CONFIG ##############################################################
@@ -36,15 +28,6 @@ DATA["CONFIG_FIXEDPOINT_MATH"] = {
 	"default": False,
 	"help": "Tries to use fix point aritmetric. If no module is using it, it reduces the code size dramaticly.",
 }
-
-DATA["THIS_DEVICE_ADDRESS"] = {
-	"name": "Hardware address",
-	"type": "text",
-	"default": rand_hw(),
-	"ifndef": True,
-	"help": "Default Radio Hardware Address to use on the device",
-}
-
 
 DATA["USE_LCD_CHARGE_PUMP"] = {
 	"name": "Use LCD Charge Pump (6 bytes)",
