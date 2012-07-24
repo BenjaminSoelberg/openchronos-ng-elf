@@ -237,13 +237,12 @@ class OpenChronosApp(object):
 			unhandled_input=unhandled).run()
 
 	def generate_widget(self, key, field):
-		indent = ''
-		if field.has_key('ischild') and field['ischild']:
-			indent = ' +- '
 		if field.get("type", "bool") == "bool":
-			f = urwid.AttrWrap(urwid.CheckBox("%s%s" % (indent,field["name"]),
+			f = urwid.AttrWrap(urwid.CheckBox(field["name"],
 				state=field["value"]),'opt','optsel')
 			f._datafield = field
+			if field.has_key('ischild') and field['ischild']:
+				f = urwid.Padding(f, width=77, left=3)
 			self.fields[key] = f
 			self.list_content.append(f)
 
@@ -292,23 +291,20 @@ class OpenChronosApp(object):
 
 	def save_config(self):
 		for key,field in self.fields.iteritems():
+			while isinstance(field, urwid.AttrMap) \
+			or isinstance(field, urwid.Padding):
+				field = field.original_widget
+
 			if isinstance(field, (tuple, list)):
 				for item in field:
 					if hasattr(item, "get_state"):
 						if item.get_state():
 							# found the set radio button
 							DATA[key]["value"] = item.value
-								# look up the 
-			elif isinstance(field, urwid.Text):
-				pass
-			elif isinstance(field, urwid.AttrMap):
-				wid = field.original_widget
-				if isinstance(wid, urwid.Edit):
-					DATA[key]["value"] = wid.get_edit_text()
-				else:
-					DATA[key]["value"] = wid.get_state()
-			else:
-				raise ValueError, "Unhandled type"
+			elif isinstance(field, urwid.Edit):
+				DATA[key]["value"] = field.get_edit_text()
+			elif isinstance(field, urwid.CheckBox):
+				DATA[key]["value"] = field.get_state()
 
 		fp = open("config.h", "w")
 		fp.write("// !!!! DO NOT EDIT !!!, use: make config\n")
