@@ -14,7 +14,12 @@ import modules
 
 DATA = SortedDict()
 
-# GLOBAL CONFIG ##############################################################
+# GENERAL CONFIG ############################################################
+
+DATA["TEXT_GENERAL"] = {
+	"name": "General options",
+	"type": "info",
+}
 
 DATA["CONFIG_DEBUG"] = {
 	"name": "Build debug code",
@@ -199,8 +204,8 @@ class OpenChronosApp(object):
 		list_content.append(urwid.Divider(div_char=u"\u2550", top=1, bottom=1))
 		list_content.append(
 		urwid.Padding(urwid.GridFlow(
-			[urwid.AttrWrap(urwid.Button("Save", ok_pressed), 'buttn','buttnf'),
-			 urwid.AttrWrap(urwid.Button("Abort", abort_pressed), 'buttn','buttnf')],
+			[urwid.AttrWrap(urwid.Button("Save", ok_pressed), 'opt','optsel'),
+			 urwid.AttrWrap(urwid.Button("Abort", abort_pressed), 'opt','optsel')],
 			15, 4, 4, 'center'),
 			('fixed left',4), ('fixed right',3)))
 
@@ -215,16 +220,11 @@ class OpenChronosApp(object):
 
 		screen = urwid.raw_display.Screen()
 		palette = [
-			('body','black','light gray', 'standout'),
-			('reverse','light gray','black'),
-			('header','white','dark red', 'bold'),
-			('important','dark blue','light gray',('standout','underline')),
-			('editfc','white', 'dark blue', 'bold'),
-			('editbx','light gray', 'dark blue'),
-			('editcp','black','light gray', 'standout'),
-			('bright','dark gray','light gray', ('bold','standout')),
-			('buttn','black','dark cyan'),
-			('buttnf','white','dark blue','bold'),
+			('header',	'white',	'dark red', 	'bold'),
+			('info',	'black',	'dark cyan'),
+			('body',	'black',	'dark gray'),
+			('optsel',	'white',	'dark blue'),
+			('opt',		'black',	'light gray'),
 			]
 
 
@@ -242,7 +242,7 @@ class OpenChronosApp(object):
 			indent = ' +- '
 		if field.get("type", "bool") == "bool":
 			f = urwid.AttrWrap(urwid.CheckBox("%s%s" % (indent,field["name"]),
-				state=field["value"]),'buttn','buttnf')
+				state=field["value"]),'opt','optsel')
 			f._datafield = field
 			self.fields[key] = f
 			self.list_content.append(f)
@@ -263,7 +263,7 @@ class OpenChronosApp(object):
 				f = urwid.AttrWrap(urwid.RadioButton(
 					field["radio_button_group"],
 					unicode(txt), state=value==field["value"]),
-					'buttn','buttnf')
+					'opt','optsel')
 				f._datafield = field
 				f.value = value
 				choice_items.append(f)
@@ -275,13 +275,14 @@ class OpenChronosApp(object):
 		elif field["type"] == "text":
 			f = urwid.AttrWrap(urwid.Edit("%s: "%field["name"],
 					str(field["value"])), 
-					'editbx', 'editfc')
+					'opt', 'optsel')
 			f._datafield = field
 			self.fields[key] = f
 			self.list_content.append(f)
 
 		elif field["type"] == "info":
-			f = urwid.Text(field["name"])
+			f = urwid.AttrWrap(urwid.Text(field["name"]),
+					'info', 'info')
 			f._datafield = field
 			self.fields[key] = f
 			self.list_content.append(f)
