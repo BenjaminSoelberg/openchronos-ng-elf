@@ -67,9 +67,9 @@ DATA["TEXT_TIMER"] = {
 }
 
 DATA["CONFIG_TIMER_4S_IRQ"] = {
-	"name": "Enable 1Hz timer interrupts",
+	"name": "Enable 0.244Hz timer interrupts",
 	"default": True,
-	"help": "Enables 1Hz interrupts on the hardware timer",
+	"help": "Enables 0.244Hz interrupts on the hardware timer",
 }
 
 DATA["CONFIG_TIMER_20HZ_IRQ"] = {
