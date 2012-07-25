@@ -52,7 +52,12 @@ def read_config():
 				default = cfg.get(section, 'default')
 				ftype = 'text'
 
-			depends = []
+			# build dependency field
+			try:
+				depstr = cfg.get(section, 'depends')
+				depends = map((lambda x: x.strip(" \t")), depstr.split(','))
+			except ConfigParser.NoOptionError:
+				depends = []
 			if sectNr > 0:
 				depends.append( "CONFIG_%s" % (parent) )
 
