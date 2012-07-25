@@ -182,17 +182,33 @@ def widget_changed_callback(wid, state):
 		if cfgname in field['depends']:
 			deps.append(key)
 
+	changeddeps = []
 	for depkey in deps:
 		depwid = WIDMAP[depkey]
 		if isinstance(depwid, urwid.Padding):
 			depwid = depwid.original_widget
-		if state:
+
+		psel = depwid.original_widget.selectable()
+		if state and wid.selectable():
 			depwid.set_attr_map({None: 'opt'})
 			depwid.original_widget._selectable = True
 		else:
 			depwid.set_attr_map({None: 'optd'})
 			depwid.original_widget._selectable = False
+			changeddeps.append( depwid.original_widget )
 
+		if psel != depwid.original_widget.selectable():
+			changeddeps.append( depwid.original_widget )
+
+	# recursively disable widgets depending on the ones we just disabled
+	for depwid in changeddeps:
+		if isinstance(depwid, urwid.Edit):
+			val = depwid.get_edit_text()
+		elif isinstance(depwid, urwid.CheckBox):
+			val = depwid.get_state()
+		else:
+			continue
+		widget_changed_callback(depwid, val)
 
 class CheckBoxWidget(urwid.CheckBox):
 	def __init__(self, *args, **kwargs):
