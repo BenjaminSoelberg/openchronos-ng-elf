@@ -240,9 +240,9 @@ class OpenChronosApp(object):
 		if field.get("type", "bool") == "bool":
 			f = urwid.AttrWrap(urwid.CheckBox(field["name"],
 				state=field["value"]),'opt','optsel')
-			f._datafield = field
 			if field.has_key('ischild') and field['ischild']:
 				f = urwid.Padding(f, width=77, left=3)
+			f._datafield = field
 			self.fields[key] = f
 			self.list_content.append(f)
 
