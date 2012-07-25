@@ -30,7 +30,6 @@ DATA["CONFIG_DEBUG"] = {
 
 DATA["CONFIG_FIXEDPOINT_MATH"] = {
 	"name": "Fixedpoint Math (EXPERIMENTAL)",
-	"depends": [],
 	"default": False,
 	"help": "Tries to use fix point aritmetric. If no module is using it, it reduces the code size dramaticly.",
 }
@@ -112,6 +111,7 @@ DATA["TEXT_BATTERY"] = {
 DATA["CONFIG_BATTERY_MONITOR"] = {
 	"name": "Background Battery Monitor",
 	"default": False,
+	'depends': [ 'CONFIG_RTC_IRQ' ],
 	"help": "Monitors the battery voltage every minute and displays a warning on low battery. Also used by the battery to auto-refresh display, if enabled.",
 }
 
