@@ -13,6 +13,7 @@ from sorteddict import SortedDict
 import modules
 
 DATA = SortedDict()
+WIDMAP = {}
 
 # GENERAL CONFIG ############################################################
 
@@ -159,41 +160,80 @@ class HelpListWalker(urwid.SimpleListWalker):
 		self.app = app
 		super(HelpListWalker, self).__init__(*args, **kwargs)
 
-
 	def set_focus(self, focus):
-		if hasattr(self[focus], "_datafield") and \
-											"help" in self[focus]._datafield:
-			self.app.help_widget.set_text(self[focus]._datafield["help"])
-		else:
+		if not hasattr(self[focus], "_widget"):
 			self.app.help_widget.set_text("")
+		else:
+			wid = self[focus]._widget
+			if "help" in wid._datafield:
+				self.app.help_widget.set_text(wid._datafield["help"])
 		return super(HelpListWalker, self).set_focus(focus)
 
-class HelpGridFlow(urwid.GridFlow):
-	def __init__(self, app, *args, **kwargs):
-		self.app = app
-		super(HelpGridFlow, self).__init__(*args, **kwargs)
+def widget_changed_callback(wid, state):
+	global WIDMAP, DATA
 
+	cfgname = wid._datakey
 
-	def set_focus(self, focus):
-		if hasattr(focus, "_datafield") and \
-												"help" in focus._datafield:
-			self.app.help_widget.set_text(focus._datafield["help"])
+	deps = []
+	for key,field in DATA.iteritems():
+		if not 'depends' in field:
+			continue
+
+		if cfgname in field['depends']:
+			deps.append(key)
+
+	for depkey in deps:
+		depwid = WIDMAP[depkey]
+		if isinstance(depwid, urwid.Padding):
+			depwid = depwid.original_widget
+		if state:
+			depwid.set_attr_map({None: 'opt'})
+			depwid.original_widget._selectable = True
 		else:
-			self.app.help_widget.set_text("")
-		return super(HelpGridFlow, self).set_focus(focus)
+			depwid.set_attr_map({None: 'optd'})
+			depwid.original_widget._selectable = False
 
+
+class CheckBoxWidget(urwid.CheckBox):
+	def __init__(self, *args, **kwargs):
+		self._selectable = True
+		urwid.CheckBox.__init__(self, *args, **kwargs)
+
+	def selectable(self):
+		return self._selectable
+
+class EditWidget(urwid.Edit):
+	def __init__(self, *args, **kwargs):
+		self._selectable = True
+		urwid.Edit.__init__(self, *args, **kwargs)
+
+	def selectable(self):
+		return self._selectable
 
 class OpenChronosApp(object):
 	def main(self):
-		self.fields = {}
+		global DATA
+
 		text_header = (u"OpenChronos config  \u2503  "
 					   u"UP / DOWN / PAGE UP / PAGE DOWN scroll.  F8 aborts.")
 
 		self.list_content = list_content = []
-
 		for key,field in DATA.iteritems():
 			# generate gui forms depending on type
 			self.generate_widget(key,field)
+
+		# rescan widgets and disable/enable them based on their dependencies
+		for key,wid in WIDMAP.iteritems():
+			if not hasattr(wid, '_widget'):
+				continue
+			wid = wid._widget
+			if isinstance(wid, urwid.Edit):
+				val = wid.get_edit_text()
+			elif isinstance(wid, urwid.CheckBox):
+				val = wid.get_state()
+			else:
+				continue
+			widget_changed_callback(wid, val)
 
 		def ok_pressed(*args, **kwargs):
 			raise urwid.ExitMainLoop()
@@ -211,7 +251,6 @@ class OpenChronosApp(object):
 
 
 		header = urwid.AttrWrap(urwid.Text(text_header), 'header')
-		#header = urwid.Padding(urwid.BigText("OpenChronos", urwid.HalfBlock5x4Font()))
 		walker = HelpListWalker(self, list_content)
 		listbox = urwid.ListBox(walker)
 		self.help_widget = urwid.Text("")
@@ -225,6 +264,7 @@ class OpenChronosApp(object):
 			('body',	'black',	'dark gray'),
 			('optsel',	'white',	'dark blue'),
 			('opt',		'black',	'light gray'),
+			('optd',	'black',	'dark gray'),
 			]
 
 
@@ -232,79 +272,60 @@ class OpenChronosApp(object):
 			if key == 'f8':
 				#raise urwid.ExitMainLoop()
 				sys.exit(0)
-
+		
 		urwid.MainLoop(frame, palette, screen,
 			unhandled_input=unhandled).run()
 
 	def generate_widget(self, key, field):
+		global WIDMAP
+
 		if field.get("type", "bool") == "bool":
-			f = urwid.AttrWrap(urwid.CheckBox(field["name"],
-				state=field["value"]),'opt','optsel')
+			wid = CheckBoxWidget(field["name"], field["value"])
+			urwid.connect_signal(wid, "change", widget_changed_callback)
+			wid._datakey = key
+			wid._datafield = field
+			f = urwid.AttrWrap(wid, 'opt','optsel')
 			if field.has_key('ischild') and field['ischild']:
 				f = urwid.Padding(f, width=77, left=3)
-			f._datafield = field
-			self.fields[key] = f
+			f._widget = wid
+			WIDMAP[key] = f
 			self.list_content.append(f)
 
-		elif field["type"] == "choices":
-			try:
-				value = field["values"].index(field["value"])
-			except ValueError:
-				value = field["default"]
-			field["radio_button_group"] = []
-			f = urwid.Text(field["name"])
-			f._datafield = field
-			choice_items = [f]
-			for dat in field["values"]:
-				txt = value = dat
-				if isinstance(dat, tuple):
-					value, txt = dat
-				f = urwid.AttrWrap(urwid.RadioButton(
-					field["radio_button_group"],
-					unicode(txt), state=value==field["value"]),
-					'opt','optsel')
-				f._datafield = field
-				f.value = value
-				choice_items.append(f)
-			hgf = HelpGridFlow(self, choice_items, 20, 3, 1, 'left')
-			self.fields[key] = choice_items
-			hgf.focus_cell = hgf.cells[1]
-			self.list_content.append(hgf)
-
 		elif field["type"] == "text":
-			f = urwid.AttrWrap(urwid.Edit("%s: "%field["name"],
-					str(field["value"])), 
-					'opt', 'optsel')
-			f._datafield = field
-			self.fields[key] = f
+			wid = EditWidget("%s: "%field["name"], str(field["value"]))
+			urwid.connect_signal(wid, "change", widget_changed_callback)
+			wid._datakey = key
+			wid._datafield = field
+			f = urwid.AttrWrap(wid, 'opt', 'optsel')
+			f._widget = wid
+			WIDMAP[key] = f
 			self.list_content.append(f)
 
 		elif field["type"] == "info":
-			f = urwid.AttrWrap(urwid.Text(field["name"]),
-					'info', 'info')
-			f._datafield = field
-			self.fields[key] = f
+			wid = urwid.Text(field["name"])
+			wid._datakey = key
+			wid._datafield = field
+			f = urwid.AttrWrap(wid, 'info', 'info')
+			f._widget = wid
+			WIDMAP[key] = f
 			self.list_content.append(f)
 
 	def get_config(self):
 		return DATA
 
 	def save_config(self):
-		for key,field in self.fields.iteritems():
-			while isinstance(field, urwid.AttrMap) \
-			or isinstance(field, urwid.Padding):
-				field = field.original_widget
+		global WIDMAP, DATA
 
-			if isinstance(field, (tuple, list)):
-				for item in field:
-					if hasattr(item, "get_state"):
-						if item.get_state():
-							# found the set radio button
-							DATA[key]["value"] = item.value
-			elif isinstance(field, urwid.Edit):
-				DATA[key]["value"] = field.get_edit_text()
-			elif isinstance(field, urwid.CheckBox):
-				DATA[key]["value"] = field.get_state()
+		for key,field in WIDMAP.iteritems():
+			if not hasattr(field, '_widget'):
+				continue
+
+			wid = field._widget
+
+			if isinstance(wid, urwid.Edit):
+				DATA[key]["value"] = wid.get_edit_text()
+			elif isinstance(wid, urwid.CheckBox):
+				DATA[key]["value"] = wid.get_state()
 
 		fp = open("config.h", "w")
 		fp.write("// !!!! DO NOT EDIT !!!, use: make config\n")
@@ -329,9 +350,10 @@ class OpenChronosApp(object):
 
 
 	def load_config(self):
+		global DATA
+
 		def set_default():
 			for key,dat in DATA.iteritems():
-				#print dat
 				if not "value" in dat and "default" in dat:
 					dat["value"] = dat["default"]
 

@@ -52,9 +52,13 @@ def read_config():
 				default = cfg.get(section, 'default')
 				ftype = 'text'
 
+			depends = []
+			if sectNr > 0:
+				depends.append( "CONFIG_%s" % (parent) )
+
 			DATA.append( ("CONFIG_%s" % (section), {
 				'name': name,
-				'depends': [],
+				'depends': depends,
 				'ischild': (sectNr > 0),
 				'type': ftype,
 				'default': default,
