@@ -26,7 +26,7 @@
 #include <drivers/display.h>
 
 
-uint laps=0;
+uint laps;
 
 void drawLapcounterScreen(void)
 {
@@ -58,7 +58,8 @@ static void num_long_pressed()
 
 static void down_press()
 {
-	if(laps > 0) laps--;
+	if (laps > 0)
+		laps--;
 	drawLapcounterScreen();
 }
 static void up_press()
@@ -70,13 +71,15 @@ static void up_press()
 
 void mod_lapcounter_init(void)
 {
+	laps = 0;
+
 	menu_add_entry(" LAP ",
-			&up_press,			//	void (*up_btn_fn)(void),
-			&down_press,		//	void (*down_btn_fn)(void),
-			NULL, 				//	void (*num_btn_fn)(void),
-			NULL,				//	void (*lstar_btn_fn)(void),
-			&num_long_pressed,	//	void (*lnum_btn_fn)(void),
-			NULL,				//	void (*updown_btn_fn)(void),
+			&up_press,			/*	void (*up_btn_fn)(void)     */
+			&down_press,		/*	void (*down_btn_fn)(void)   */
+			NULL, 				/*	void (*num_btn_fn)(void)    */
+			NULL,				/*	void (*lstar_btn_fn)(void)  */
+			&num_long_pressed,	/*	void (*lnum_btn_fn)(void)   */
+			NULL,				/*	void (*updown_btn_fn)(void) */
 			&lapcounter_activated,
 			&lapcounter_deactivated);
 }
