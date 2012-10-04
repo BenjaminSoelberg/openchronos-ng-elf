@@ -1,6 +1,7 @@
 /*
  modules/stopwatch.c
 
+ Copyright (C) 2012   Ricardo Martin Marcucci
  Copyright (C) 2012   Robert Hoeller <rhh.privat@googlemail.com>
 
  This program is free software: you can redistribute it and/or modify
