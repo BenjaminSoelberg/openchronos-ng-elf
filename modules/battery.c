@@ -41,12 +41,9 @@ static void battery_event(enum sys_message event)
 
 static void battery_activate(void)
 {
-#ifdef CONFIG_BATTERY_MONITOR
-	sys_messagebus_register(&battery_event, SYS_MSG_BATT);
-#else
-	/* don't need this if the background task is compiled in */
 	battery_measurement();
-#endif
+
+	sys_messagebus_register(&battery_event, SYS_MSG_BATT);
 
 	/* display static symbols */
 #ifdef CONFIG_BATTERY_SHOW_VOLTAGE
@@ -61,9 +58,7 @@ static void battery_activate(void)
 
 static void battery_deactivate(void)
 {
-#ifdef CONFIG_BATTERY_MONITOR
 	sys_messagebus_unregister(&battery_event);
-#endif
 
 	/* cleanup screen */
 	display_clear(0, 1);
