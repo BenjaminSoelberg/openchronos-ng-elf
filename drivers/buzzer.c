@@ -48,7 +48,7 @@ uint16_t base_notes[13] = {
 inline void buzzer_init(void)
 {
 	/* Reset TA1R, TA1 runs from 32768Hz ACLK */
-	TA1CTL = TACLR | TASSEL__SMCLK;
+	TA1CTL = TACLR | TASSEL__SMCLK | MC__STOP;
 
 	/* Enable IRQ, set output mode "toggle" */
 	TA1CCTL0 = OUTMOD_4;
@@ -61,7 +61,7 @@ inline void buzzer_init(void)
 inline void buzzer_stop(void)
 {
 	/* Stop PWM timer */
-	TA1CTL &= ~MC__STOP;
+	TA1CTL &= ~MC_3;
 
 	/* Disable buzzer PWM output */
 	P2OUT &= ~BIT7;
@@ -81,7 +81,7 @@ void buzzer_play(note *notes)
 	while (PITCH(*notes) != 0x000F) {
 		if (PITCH(*notes) == 0) {
 			/* Stop the timer! We are playing a rest */
-			TA1CTL &= ~MC__STOP;
+			TA1CTL &= ~MC_3;
 		} else {
 			/* Set PWM frequency */
 			TA1CCR0 = base_notes[PITCH(*notes)] >> OCTAVE(*notes);
