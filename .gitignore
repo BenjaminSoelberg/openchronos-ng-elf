@@ -14,3 +14,4 @@ config.h
 .pida-metadata
 TAGS
 output.map
+cscope.out
