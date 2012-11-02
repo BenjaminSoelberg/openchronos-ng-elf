@@ -8,12 +8,13 @@ PYTHON := $(shell which python2 || which python)
 .PHONY: clean
 .PHONY: install
 .PHONY: config
+.PHONY: new_timestamp
 .PHONY: depend
 .PHONY: doc
 .PHONY: httpdoc
 .PHONY: force
 
-all: depend config.h openchronos.txt
+all: new_timestamp depend config.h openchronos.txt
 
 #
 # Build list of sources and objects to build
@@ -79,6 +80,9 @@ modinit.c:
 
 config.h:
 	@echo "Please do a 'make config' first!" && false
+
+new_timestamp:
+	@ ./tools/update_rtca_now.sh
 
 config:
 	$(PYTHON) tools/config.py

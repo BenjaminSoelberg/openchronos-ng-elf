@@ -23,6 +23,7 @@
 	basic alarm is implemented (bell at 08:30). */
 
 #include "rtca.h"
+#include "rtca_now.h"
 
 #if (CONFIG_DST > 0)
 #include "dst.h"
@@ -41,10 +42,14 @@
 
 void rtca_init(void)
 {
-	/* prevent starting with invalid date */
-	rtca_time.year = 2012;
-	rtca_time.mon = 1;
-	rtca_time.day = 1;
+
+	rtca_time.year = COMPILE_YEAR;
+	rtca_time.mon = COMPILE_MON;
+	rtca_time.day = COMPILE_DAY;
+	rtca_time.dow = COMPILE_DOW;
+	rtca_time.hour = COMPILE_HOUR;
+	rtca_time.min = COMPILE_MIN;
+	rtca_time.sec = 59;
 
 #ifdef CONFIG_RTC_IRQ
 	/* Enable calendar mode (date/time registers are automatically reset)
@@ -52,6 +57,15 @@ void rtca_init(void)
 	and set time event interrupts at each minute
 	also enable alarm interrupts */
 	RTCCTL01 |= RTCMODE | RTCRDYIE | RTCAIE;
+
+	RTCSEC = rtca_time.sec;
+	RTCMIN = rtca_time.min;
+	RTCHOUR = rtca_time.hour;
+	RTCDAY = rtca_time.day;
+	RTCDOW = rtca_time.dow;
+	RTCMON = rtca_time.mon;
+	RTCYEARL = rtca_time.year & 0xff;
+	RTCYEARH = rtca_time.year >> 8;
 
 	/* Enable the RTC */
 	rtca_start();

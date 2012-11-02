@@ -1,5 +1,6 @@
 doc
 modinit.c
+drivers/rtca_now.h
 openchronos.txt
 openchronos.elf
 openchronos.dep
