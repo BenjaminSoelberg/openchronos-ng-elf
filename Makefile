@@ -3,18 +3,18 @@ SUBDIRS = drivers modules
 include Common.mk
 
 PYTHON := $(shell which python2 || which python)
+BASH := $(shell which bash || which bash)
 
 .PHONY: all
 .PHONY: clean
 .PHONY: install
 .PHONY: config
-.PHONY: new_timestamp
 .PHONY: depend
 .PHONY: doc
 .PHONY: httpdoc
 .PHONY: force
 
-all: new_timestamp depend config.h openchronos.txt
+all: drivers/rtca_now.h depend config.h openchronos.txt
 
 #
 # Build list of sources and objects to build
@@ -81,8 +81,8 @@ modinit.c:
 config.h:
 	@echo "Please do a 'make config' first!" && false
 
-new_timestamp:
-	@ ./tools/update_rtca_now.sh
+drivers/rtca_now.h:
+	@$(BASH) ./tools/update_rtca_now.sh
 
 config:
 	$(PYTHON) tools/config.py
