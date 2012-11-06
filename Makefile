@@ -82,6 +82,7 @@ config.h:
 	@echo "Please do a 'make config' first!" && false
 
 drivers/rtca_now.h:
+	@echo "Generating $@"
 	@$(BASH) ./tools/update_rtca_now.sh
 
 config:
@@ -96,6 +97,7 @@ clean: $(SUBDIRS)
 		echo "Cleaning $$subdir .."; rm -f $$subdir/*.o; \
 	done
 	@rm -f *.o openchronos.{elf,txt,cflags,dep} output.map
+	@rm -f drivers/rtca_now.h
 
 doc:
 	rm -rf doc/*
