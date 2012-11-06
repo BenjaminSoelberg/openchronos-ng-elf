@@ -484,10 +484,7 @@ void init_application(void)
 
 	// Init the hardwre real time clock (RTC_A)
 	rtca_init();
-#if (CONFIG_DST > 0)
-	/* Initialize the DST. IMPORTANT: DST DEPENDS ON RTCA! */
-	dst_init();
-#endif
+
 	// ---------------------------------------------------------------------
 	// Configure ports
 

@@ -25,8 +25,8 @@
 #include "rtca.h"
 #include "rtca_now.h"
 
-#if (CONFIG_DST > 0)
-#include "dst.h"
+#ifdef CONFIG_RTC_DST
+#include "rtc_dst.h"
 #endif
 
 #include <stdlib.h>
@@ -73,6 +73,12 @@ void rtca_init(void)
 	/* Enable minutes interrupts */
 	RTCCTL01 |= RTCTEVIE;
 #endif
+
+#ifdef CONFIG_RTC_DST
+	/* initialize DST module */
+	rtc_dst_init();
+#endif
+
 }
 
 /* returns number of days for a given month */
@@ -203,10 +209,9 @@ void rtca_set_date()
 	/* Resume RTC time keeping */
 	rtca_start();
 
-#if (CONFIG_DST > 0)
-	/* this is broken */
+#ifdef CONFIG_RTC_DST
 	/* calculate new DST switch dates */
-	/* dst_calculate_dates(year, mon, day); */
+	rtc_dst_calculate_dates(rtca_time.year, rtca_time.mon, rtca_time.day, rtca_time.hour);
 #endif
 }
 __attribute__((interrupt(RTC_A_VECTOR)))
@@ -243,6 +248,10 @@ void RTC_A_ISR(void)
 		ev |= RTCA_EV_HOUR;
 		rtca_time.hour = RTCHOUR;
 
+#ifdef CONFIG_RTC_DST
+		rtc_dst_hourly_update();
+#endif
+
 		if (rtca_time.hour != 0)	/* Day changed */
 			goto finish;
 
@@ -261,6 +270,10 @@ void RTC_A_ISR(void)
 
 		ev |= RTCA_EV_YEAR;
 		rtca_time.year = RTCYEARL | (RTCYEARH << 8);
+#ifdef CONFIG_RTC_DST
+		/* calculate new DST switch dates */
+		rtc_dst_calculate_dates(rtca_time.year, rtca_time.mon, rtca_time.day, rtca_time.hour);
+#endif
 	}
 
 finish:
