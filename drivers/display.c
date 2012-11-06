@@ -59,6 +59,9 @@
 #include <stdlib.h>
 #include "display.h"
 
+/* Swap nibble */
+#define SWAP_NIBBLE(x)              ((((x) << 4) & 0xF0) | (((x) >> 4) & 0x0F))
+
 /* LCD controller memory map */
 #define LCD_MEM_1          			((uint8_t*)0x0A20)
 #define LCD_MEM_2          			((uint8_t*)0x0A21)
@@ -622,12 +625,9 @@ void display_symbol(uint8_t scr_nr, enum display_segment symbol,
 	}
 }
 
-
-void display_char(uint8_t scr_nr, enum display_segment segment,
-                  char chr, enum display_segstate state)
+void display_bits(uint8_t scr_nr, enum display_segment segment,
+                  uint8_t bits  , enum display_segstate state)
 {
-	uint8_t bits, bits1;		// Bits to write
-
 	// Write to single 7-segment character
 	if ((segment >= LCD_SEG_L1_3) && (segment <= LCD_SEG_L2_DP)) {
 		// Get LCD memory address for segment from table
@@ -642,37 +642,40 @@ void display_char(uint8_t scr_nr, enum display_segment segment,
 			blkmem = display_screens[scr_nr].blkmem + offset;
 		}
 
-		// Get bitmask for character from table
-		uint8_t bitmask = segments_bitmask[segment];
-
-		// Get bits from font set
-		if ((chr >= 0x30) && (chr <= 0x5F)) {
-			// Use font set
-			bits = lcd_font[chr - 0x30];
-		} else if (chr == 0x2D) {
-			// '-' not in font set
-			bits = BIT1;
-		} else {
-			// Other characters map to ' ' (blank)
-			bits = 0;
-		}
+        // Get bitmask for character from table
+        uint8_t bitmask = segments_bitmask[segment];
 
 		// When addressing LINE2 7-segment characters need to swap high- and low-nibble,
 		// because LCD COM/SEG assignment is mirrored against LINE1
 		if (segment >= LCD_SEG_L2_5) {
-			bits1 = ((bits << 4) & 0xF0) | ((bits >> 4) & 0x0F);
-			bits = bits1;
-
-			// When addressing LCD_SEG_L2_5, need to convert ASCII '1' and 'L' to 1 bit,
-			// because LCD COM/SEG assignment is special for this incomplete character
-			if (segment == LCD_SEG_L2_5) {
-				if ((chr == '1') || (chr == 'L')) bits = BIT7;
-			}
+			bits = SWAP_NIBBLE(bits);
 		}
 
 		// Physically write to LCD memory
 		write_lcd_mem(segmem, blkmem, bits, bitmask, state);
 	}
+}
+
+void display_char(uint8_t scr_nr, enum display_segment segment,
+                  char chr, enum display_segstate state)
+{
+     uint8_t bits = 0;       // Bits to write (default ' ' blank)
+ 
+     // Get bits from font set
+     if ((chr >= 0x30) && (chr <= 0x5A)) {
+         // Use font set
+         bits = lcd_font[chr - 0x30];
+     } else if (chr == 0x2D) {
+         // '-' not in font set
+         bits = BIT1;
+     }
+ 
+     // When addressing LCD_SEG_L2_5, need to convert ASCII '1' and 'L' to 1 bit,
+     // because LCD COM/SEG assignment is special for this incomplete character
+     if (segment == LCD_SEG_L2_5 && (chr == '1' || chr == 'L')) bits = SWAP_NIBBLE(BIT7);
+ 
+     // Write bits to memory
+     display_bits(scr_nr, segment, bits, state);
 }
 
 void display_chars(uint8_t scr_nr,

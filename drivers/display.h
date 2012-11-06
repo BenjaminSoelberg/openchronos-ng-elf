@@ -213,6 +213,18 @@ void display_clear(
 	uint8_t line /*!< If zero, clears the entire screen (symbols and lines).<br />If one, clears the first line.<br />If two, clears the second line. */
 );
 
+/* 
+    \brief Display a custom collection of segments
+    \details Changes the <i>state</i> of <i>segment</i> state according to user specified <i>bits</i>. If no virtual screens are created, the argument <i>scr_nr</i> is ignored, otherwise it selects which screen the operation will affect.
+    \sa #display_char()
+*/
+void display_bits(
+	uint8_t scr_nr, /*!< the virtual screen number where to display */
+	enum display_segment segment, /*!< A segment */
+	uint8_t bits, /*!< The bits of the segment */
+	enum display_segstate state /*!< A bitfield with state operations to be performed on the segment */
+);
+
 /*!
 	\brief Displays a single character
 	\details Changes the <i>state</i> of <i>segment</i> state according to bits calculated from <i>chr</i>. If no virtual screens are created, the argument <i>scr_nr</i> is ignored, otherwise it selects which screen the operation will affect.
