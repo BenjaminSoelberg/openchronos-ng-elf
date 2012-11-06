@@ -1,7 +1,7 @@
-# vim: ts=4 :
+# vim: ts=4 noexpandtab
 # encoding: utf-8
 #
-#           Copyright (C) 2012 Angelo Arrifano <miknix@gmail.com>
+#		   Copyright (C) 2012 Angelo Arrifano <miknix@gmail.com>
 #
 # This file is part of OpenChronos. This file is free software: you can
 # redistribute it and/or modify it under the terms of the GNU General Public
@@ -40,42 +40,38 @@ def read_config():
 				name = cfg.get(section, 'name')
 				help = cfg.get(section, 'help')
 			except ConfigParser.NoOptionError:
-				print "%s:%s: Error: name, help are mandatory!" \
-													% (cfgname, section)
+				print "%s:%s: Error: name, help are mandatory!" % (cfgname, section)
 				continue
+		   
+			item = {
+				'name'   : name,
+				'help'   : help,
+				'ischild': (sectNr > 0)
+			}
 
-			default = False
-			try:
-				default = cfg.getboolean(section, 'default')
-				ftype = 'bool'
-			except ValueError:
-				default = cfg.get(section, 'default')
-				ftype = 'text'
+			opt =  {'type': "bool", 'default': "", 'depends': "", 'encoding': None}
+			for key,default in opt.iteritems():
+				try:
+					item[key] = cfg.get(section, key)
+				except ConfigParser.NoOptionError:
+					if default != None:
+						item[key] = default
+						
+			# build dependency array from string
+			item['depends'] = filter(None, map(lambda x: x.strip(), item['depends'].split(',')))
+			if sectNr > 0: item['depends'].append( "CONFIG_%s" % (parent) )
+				
+			# Special treatment for booleans
+			if item['type'] == "bool":
+				item['default'] = bool(item['default'])
 
-			# build dependency field
-			try:
-				depstr = cfg.get(section, 'depends')
-				depends = map((lambda x: x.strip(" \t")), depstr.split(','))
-			except ConfigParser.NoOptionError:
-				depends = []
-			if sectNr > 0:
-				depends.append( "CONFIG_%s" % (parent) )
-
-			DATA.append( ("CONFIG_%s" % (section), {
-				'name': name,
-				'depends': depends,
-				'ischild': (sectNr > 0),
-				'type': ftype,
-				'default': default,
-				'help': help
-			}) )
+			DATA.append( ("CONFIG_%s" % (section), item) )
 			if sectNr == 0 and section != parent:
 				print "%s: Warn: The [%s] section must be the first!" \
-													% (cfgname, parent)
-			if len(section) < len(parent) \
-									or section[:len(parent)] != parent:
+						% (cfgname, item['parent'])
+			if not section.startswith(parent):
 				print "%s:%s: Warn: section name should have prefix '%s_'" \
-												% (cfgname, section, parent)
+						% (cfgname, section, parent)
 
 			sectNr += 1
 
