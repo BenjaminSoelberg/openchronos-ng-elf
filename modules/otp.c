@@ -73,7 +73,7 @@ static uint8_t  hmac_sha[SHA1_DIGEST_LENGTH];
 #define FG(n)       T = T32(R32(A,5) + f##n(B,C,D) + E + *WP++ + CONST##n);	\
                 	E = D; D = C; C = R32(B,30); B = A; A = T
 
-void sha1_transform()
+static void sha1_transform()
 {
 	int i;
 	uint8_t *dp;
@@ -116,7 +116,7 @@ void sha1_transform()
 
 }
 
-void sha1(const uint8_t* data, uint32_t len, uint8_t digest[20])
+static void sha1(const uint8_t* data, uint32_t len, uint8_t digest[20])
 {
 	int i;
 	int count;
@@ -176,7 +176,7 @@ void sha1(const uint8_t* data, uint32_t len, uint8_t digest[20])
 }
 
 //data is in hmac_tmp_key + 64
-uint8_t* hmac_sha1(uint8_t *data)
+static uint8_t* hmac_sha1(uint8_t *data)
 {
 	int i;
 
@@ -220,26 +220,22 @@ uint32_t simple_mktime(int year, int month, int day, int hour, int minute, int s
 	return result;
 }
 
-static uint8_t  otp_data[] = {0,0,0,0,0,0,0,0};
-
-static uint8_t  otp_counter[] = {
-    SEG_A+SEG_F+SEG_E+SEG_D+SEG_C+SEG_B,
-    SEG_A+SEG_F+SEG_E+SEG_D+SEG_C,
-    SEG_A+SEG_F+SEG_E+SEG_D,
-    SEG_A+SEG_F+SEG_E,
-    SEG_A+SEG_F,
-    SEG_A};
-
-
-const char *key  = CONFIG_OTP_KEY;
-
-static uint32_t last_time    = 0;
-static uint8_t  last_segment = 0; 
+const  char     *key          = CONFIG_OTP_KEY;
+static uint32_t  last_time    = 0;
+static uint8_t   otp_data[]   = {0,0,0,0,0,0,0,0};
+static uint8_t   indicator[]  = {
+    SEG_A+SEG_F+SEG_E+SEG_D+SEG_C+SEG_B, SEG_B,
+    SEG_A+SEG_F+SEG_E+SEG_D+SEG_C,       SEG_C,
+    SEG_A+SEG_F+SEG_E+SEG_D,             SEG_D,
+    SEG_A+SEG_F+SEG_E,                   SEG_E,
+    SEG_A+SEG_F,                         SEG_F,
+    SEG_A,                               SEG_A
+};
 
 static uint32_t calculate_otp(uint32_t time)
 {
 	uint32_t val = 0;
-	int i;
+    int i;
 
 	memcpy(hmac_key, key, HMAC_KEY_LENGTH);
 
@@ -264,18 +260,16 @@ static uint32_t calculate_otp(uint32_t time)
 
 static void clock_event(enum sys_message msg)
 {
-    // Check if remeaining-time-indicator-until-next-code must be redrawn
+    // Check how long the current code is valid 
     uint8_t segment = (rtca_time.sec / 5) % 6;
-    if(segment != last_segment) {
-        last_segment = segment;
         
-        // Draw indicator in lower-left corner
-        display_bits(0, LCD_SEG_L2_4, otp_counter[segment], SEG_SET);
-    }
+    // Draw indicator in lower-left corner
+    display_bits(0, LCD_SEG_L2_4, indicator[2*segment  ], SEG_SET);
+    display_bits(0, LCD_SEG_L2_4, indicator[2*segment+1], BLINK_SET);
 
     // Calculate timestamp
 	uint32_t time = simple_mktime(rtca_time.year, rtca_time.mon - 1, rtca_time.day,
-                                  rtca_time.hour, rtca_time.min, rtca_time.sec);
+                                  rtca_time.hour, rtca_time.min    , rtca_time.sec);
 	time = (time - CONFIG_OTP_OFFSET * 3600) / 30;
 
     // Check if new code must be calculated
@@ -297,9 +291,8 @@ static void otp_activated()
 {
     sys_messagebus_register(&clock_event, SYS_MSG_RTC_SECOND);
 
-    // Generate a new OTP 
-    last_segment = -1;
-    last_time    =  0;
+    // Force generate & display a new OTP 
+    last_time = 0;
     clock_event(RTCA_EV_SECOND);
 }
 
