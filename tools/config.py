@@ -60,16 +60,16 @@ DATA["CONFIG_RTC_IRQ"] = {
 }
 
 DATA["CONFIG_RTC_DST"] = {
-	"name": "DST", 
+	"name": "DST",
 	"default": True,
 	'depends': [ 'CONFIG_RTC_IRQ' ],
-	"help": "Automatically adjusts real-time clock for daylight savings time", 
+	"help": "Automatically adjusts real-time clock for daylight savings time",
 }
 
 DATA["CONFIG_RTC_DST_ZONE"] = {
-	"name": "DST zone for automatic adjustment", 
+	"name": "DST zone for automatic adjustment",
 	"type": "text",
-	"default": 1, 
+	"default": 1,
 	'depends': [ 'CONFIG_RTC_DST' ],
 	"help": "DST Zone: 1=DST_US, 2=DST_MEX, 3=DST_BRZ, 4=DST_EU, 5=DST_AUS, 6=DST_NZ"
 }
@@ -101,7 +101,7 @@ DATA["TEXT_PORTS"] = {
 }
 
 DATA["CONFIG_BUTTONS_LONG_PRESS_TIME"] = {
-	"name": "Button short press time",
+	"name": "Button long press time",
 	"type": "text",
 	"default": "6",
 	"ifndef": True,
@@ -303,7 +303,7 @@ class OpenChronosApp(object):
 			if key == 'f8':
 				#raise urwid.ExitMainLoop()
 				sys.exit(0)
-		
+
 		urwid.MainLoop(frame, palette, screen,
 			unhandled_input=unhandled).run()
 
