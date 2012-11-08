@@ -126,14 +126,14 @@ void rtca_set_time()
 
 void rtca_get_alarm(uint8_t *hour, uint8_t *min)
 {
-	*hour = RTCAHOUR & 0x7F;
-	*min  = RTCAMIN  & 0x7F;
+	*hour = RTCAHOUR & 0x1F;
+	*min  = RTCAMIN  & 0x3F;
 }
 
 void rtca_set_alarm(uint8_t hour, uint8_t min)
 {
-	RTCAHOUR = hour & 0x7F;
-	RTCAMIN  = min  & 0x7F;
+	RTCAHOUR = (RTCAHOUR & 0x80) | hour;
+	RTCAMIN  = (RTCAMIN & 0x80) | min;
 }
 
 void rtca_enable_alarm()
@@ -234,6 +234,11 @@ void RTC_A_ISR(void)
 		goto finish;
 	}
 
+	if (iv == RTCIV_RTCAIFG) {
+		ev = RTCA_EV_ALARM;
+		goto finish;
+	}
+
 	{
 		if (iv != RTCIV_RTCTEVIFG)	/* Minute changed! */
 			goto finish;
@@ -277,8 +282,9 @@ void RTC_A_ISR(void)
 	}
 
 finish:
-	/* store event */
-	rtca_last_event = ev;
+	/* append events, since ISR could be triggered
+	 multipe times until rtca_last_event gets parsed */
+	rtca_last_event |= ev;
 
 	/* exit from LPM3, give execution back to mainloop */
 	_BIC_SR_IRQ(LPM3_bits);
