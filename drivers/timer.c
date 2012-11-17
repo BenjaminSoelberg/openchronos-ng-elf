@@ -55,7 +55,7 @@
 /* HARDWARE TIMER ASSIGNMENT:
 	 TA0CCR0: 20Hz timer
 	 TA0CCR1: Unused
-	 TA0CCR2: Unused
+	 TA0CCR2: callback timer (for buzzer)
 	 TA0CCR3: programable timer
 	 TA0CCR4: delay timer
 	OVERFLOW: 0.244Hz timer ~ 4.1ms */
@@ -74,6 +74,8 @@ static uint16_t timer0_20hz_ticks;
 
 /* programable timer */
 static uint16_t timer0_prog_ticks;
+
+static void (*delay_callback)(void) = NULL;
 
 void timer0_init(void)
 {
@@ -125,6 +127,37 @@ void timer0_delay(uint16_t duration, uint16_t LPM_bits)
 	/* disable interrupt */
 	TA0CCTL4 &= ~CCIE;
 }
+
+void timer0_delay_callback_destroy(void)
+{
+	/* abort a delay without calling callback */
+	/* disable interrupt */
+	TA0CCTL4 &= ~CCIE;
+	//TA0CCTL2 &= ~CCIE;
+	TA0CCTL2 = 0;
+
+	/* clear callback */
+	delay_callback = NULL;
+ }
+
+void timer0_delay_callback(uint16_t duration, void(*cbfn)(void))
+{
+	timer0_delay_callback_destroy();
+
+	/* setup where to go on completion */
+	delay_callback = cbfn;
+
+	/* Set next CCR match */
+	TA0CCR2 = TA0R + TIMER0_TICKS_FROM_MS(duration);
+
+	/* clear any pending interrupt? */
+	TA0CCTL2 = 0;
+
+	/* enable interrupt */
+	//TA0CCTL2 |= CCIE;
+	TA0CCTL2 = CCIE;
+}
+
 
 /* programable timer:
 	duration is in miliseconds, min=1, max=1000 */
@@ -188,6 +221,25 @@ void timer0_A1_ISR(void)
 		delay_finished = 1;
 		goto exit_lpm3;
 	}
+
+	/* one-shot delay timer with callback */
+	if (flag == TA0IV_TA0CCR2) {
+		/* disable interrupt */
+		TA0CCTL2 &= ~CCIE;
+
+		/* maybe call vector */
+		if (delay_callback) {
+			void (*tmpfn)(void) = delay_callback;
+			/* reset timer so it's not called again */
+			delay_callback = NULL;
+			/* but then it may be re-set by callback fn */
+			tmpfn();
+		}
+
+		/* return to LPM3 (don't mess with SR bits) */
+		return;
+	}
+
 
 	/* 0.24Hz timer, ticked by overflow interrupts */
 	if (flag == TA0IV_TA0IFG) {

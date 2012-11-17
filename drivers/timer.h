@@ -53,6 +53,24 @@ void timer0_delay(
 );
 
 /*!
+      \brief schedule a callback after a delay
+ */
+
+/*!
+	\brief 1ms - 1s programmable delay to callback
+	\details schedules a callback to the provided function after \b duration milliseconds.  Does not suspend other interrupts.
+ */
+void timer0_delay_callback(
+	uint16_t duration, /*!< delay duration in ms */
+	void(*cbfn)(void) /*!< pointer to function to call on completion */
+);
+
+/*!
+	\brief abort any pending delay callback
+ */
+void timer0_delay_callback_destroy(void);
+
+/*!
 	\brief Bitfield of events produced by this driver
 */
 enum timer0_event {
