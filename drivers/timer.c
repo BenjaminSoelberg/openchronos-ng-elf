@@ -95,12 +95,12 @@ void timer0_init(void)
 /* This function was based on original Texas Instruments implementation,
    see LICENSE-TI for more information. */
 void timer0_delay(uint16_t duration, uint16_t LPM_bits)
-{	
+{
 	delay_finished = 0;
 
 	/* Set next CCR match */
 	TA0CCR4 = TA0R + TIMER0_TICKS_FROM_MS(duration);
-	
+
 	/* enable interrupt */
 	TA0CCTL4 |= CCIE;
 
@@ -133,7 +133,7 @@ void timer0_create_prog_timer(uint16_t duration)
 
 	/* set timer to start as soon as possible */
 	TA0CCR3 = TA0R + timer0_prog_ticks;
-	
+
 	/* enable timer */
 	TA0CCTL3 |= CCIE;
 }
@@ -170,7 +170,7 @@ void timer0_A1_ISR(void)
 {
 	/* reading TA0IV automatically resets the interrupt flag */
 	uint8_t flag = TA0IV;
-	
+
 	/* programable timer */
 	if (flag == TA0IV_TA0CCR3) {
 		/* setup timer for next time */
@@ -178,7 +178,7 @@ void timer0_A1_ISR(void)
 
 		/* store event */
 		timer0_last_event |= TIMER0_EVENT_PROG;
-		
+
 		goto exit_lpm3;
 	}
 
@@ -192,7 +192,7 @@ void timer0_A1_ISR(void)
 	if (flag == TA0IV_TA0IFG) {
 		/* store event */
 		timer0_last_event |= TIMER0_EVENT_4S;
-		
+
 		goto exit_lpm3;
 	}
 
