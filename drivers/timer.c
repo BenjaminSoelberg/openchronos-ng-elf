@@ -60,8 +60,8 @@
 	 TA0CCR4: delay timer
 	OVERFLOW: 0.244Hz timer ~ 4.1ms */
 
-/* source is 32kHz with /2 divider */
-#define TIMER0_FREQ 16000
+/* source is ACLK=32768Hz (nominal) with /2 divider */
+#define TIMER0_FREQ 16384
 
 /* converts microseconds to clock ticks */
 #define TIMER0_TICKS_FROM_MS(T) ((TIMER0_FREQ / 1000) * (T))
