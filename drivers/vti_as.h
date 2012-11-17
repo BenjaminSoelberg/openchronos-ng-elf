@@ -63,9 +63,7 @@
 
 /******************************************************************************/
 /* Prototypes section */
-#ifndef CONFIG_ACCELEROMETER
 extern void as_disconnect(void);
-#else
 extern void as_init(void);
 extern void as_start(uint8_t mode);
 extern void change_mode(uint8_t mode);
@@ -81,7 +79,6 @@ extern void write_MDTHR(uint8_t msec);
 extern void write_FFTMR(uint8_t mgrav);
 extern void write_MDTMR(uint8_t mgrav);
 extern void write_FFTHR(uint8_t mgrav);
-#endif
 
 
 /******************************************************************************/
