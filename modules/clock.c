@@ -28,14 +28,14 @@
 
 static void clock_event(enum sys_message msg)
 {
-#ifdef CONFIG_CLOCK_BLINKCOL
+#ifdef CONFIG_MOD_CLOCK_BLINKCOL
 	display_symbol(0, LCD_SEG_L1_COL,
 	     ((rtca_time.sec & 0x01) ? SEG_ON : SEG_OFF));
 #endif
 
 	if (msg | SYS_MSG_RTC_YEAR)
 		_printf(1, LCD_SEG_L1_3_0, "%04u", rtca_time.year);
-#ifdef CONFIG_CLOCK_MONTH_FIRST
+#ifdef CONFIG_MOD_CLOCK_MONTH_FIRST
 	if (msg | SYS_MSG_RTC_MONTH)
 		_printf(0, LCD_SEG_L2_4_3, "%02u", rtca_time.mon);
 	if (msg | SYS_MSG_RTC_DAY) {
@@ -50,7 +50,7 @@ static void clock_event(enum sys_message msg)
 		_printf(1, LCD_SEG_L2_2_0, rtca_dow_str[rtca_time.dow], SEG_SET);
 	}
 	if (msg | SYS_MSG_RTC_HOUR) {
-#ifdef CONFIG_CLOCK_AMPM
+#ifdef CONFIG_MOD_CLOCK_AMPM
 		uint8_t tmp_hh = rtca_time.hour;
 		if (tmp_hh > 12) {
 			tmp_hh -= 12;
@@ -98,7 +98,7 @@ static void edit_yy_set(int8_t step)
 static void edit_mo_sel(void)
 {
 	lcd_screen_activate(0);
-#ifdef CONFIG_CLOCK_MONTH_FIRST
+#ifdef CONFIG_MOD_CLOCK_MONTH_FIRST
 	display_chars(0, LCD_SEG_L2_4_3, NULL, BLINK_ON);
 #else
 	display_chars(0, LCD_SEG_L2_1_0, NULL, BLINK_ON);
@@ -106,7 +106,7 @@ static void edit_mo_sel(void)
 }
 static void edit_mo_dsel(void)
 {
-#ifdef CONFIG_CLOCK_MONTH_FIRST
+#ifdef CONFIG_MOD_CLOCK_MONTH_FIRST
 	display_chars(0, LCD_SEG_L2_4_3, NULL, BLINK_OFF);
 #else
 	display_chars(0, LCD_SEG_L2_1_0, NULL, BLINK_OFF);
@@ -116,7 +116,7 @@ static void edit_mo_dsel(void)
 static void edit_mo_set(int8_t step)
 {
 	helpers_loop(&rtca_time.mon, 1, 12, step);
-#ifdef CONFIG_CLOCK_MONTH_FIRST
+#ifdef CONFIG_MOD_CLOCK_MONTH_FIRST
 	_printf(0, LCD_SEG_L2_4_3, "%02u", rtca_time.mon);
 #else
 	_printf(0, LCD_SEG_L2_1_0, "%02u", rtca_time.mon);
@@ -126,7 +126,7 @@ static void edit_mo_set(int8_t step)
 static void edit_dd_sel(void)
 {
 	lcd_screen_activate(0);
-#ifdef CONFIG_CLOCK_MONTH_FIRST
+#ifdef CONFIG_MOD_CLOCK_MONTH_FIRST
 	display_chars(0, LCD_SEG_L2_1_0, NULL, BLINK_ON);
 #else
 	display_chars(0, LCD_SEG_L2_4_3, NULL, BLINK_ON);
@@ -135,7 +135,7 @@ static void edit_dd_sel(void)
 
 static void edit_dd_dsel(void)
 {
-#ifdef CONFIG_CLOCK_MONTH_FIRST
+#ifdef CONFIG_MOD_CLOCK_MONTH_FIRST
 	display_chars(0, LCD_SEG_L2_1_0, NULL, BLINK_OFF);
 #else
 	display_chars(0, LCD_SEG_L2_4_3, NULL, BLINK_OFF);
@@ -145,7 +145,7 @@ static void edit_dd_dsel(void)
 static void edit_dd_set(int8_t step)
 {
 	helpers_loop(&rtca_time.day, 1, rtca_get_max_days(rtca_time.mon, rtca_time.year), step);
-#ifdef CONFIG_CLOCK_MONTH_FIRST
+#ifdef CONFIG_MOD_CLOCK_MONTH_FIRST
 	_printf(0, LCD_SEG_L2_1_0, "%02u", rtca_time.day);
 #else
 	_printf(0, LCD_SEG_L2_4_3, "%02u", rtca_time.day);
@@ -180,7 +180,7 @@ static void edit_hh_dsel(void)
 static void edit_hh_set(int8_t step)
 {
 	helpers_loop(&rtca_time.hour, 0, 23, step);
-#ifdef CONFIG_CLOCK_AMPM
+#ifdef CONFIG_MOD_CLOCK_AMPM
 	uint8_t tmp_hh = rtca_time.hour;
 	if (tmp_hh > 12) {
 		display_symbol(0, LCD_SYMB_AM, SEG_OFF);
@@ -245,7 +245,7 @@ static void clock_activated()
 						| SYS_MSG_RTC_HOUR
 						| SYS_MSG_RTC_DAY
 						| SYS_MSG_RTC_MONTH
-#ifdef CONFIG_CLOCK_BLINKCOL
+#ifdef CONFIG_MOD_CLOCK_BLINKCOL
 						| SYS_MSG_RTC_SECOND
 #endif
 	);
@@ -274,7 +274,7 @@ static void clock_deactivated()
 
 	/* clean up screen */
 	display_symbol(0, LCD_SEG_L1_COL, SEG_OFF);
-#ifdef CONFIG_CLOCK_AMPM
+#ifdef CONFIG_MOD_CLOCK_AMPM
 	display_symbol(0, LCD_SYMB_AM, SEG_OFF);
 	display_symbol(0, LCD_SYMB_PM, SEG_OFF);
 #endif
@@ -295,7 +295,7 @@ static void star_long_pressed()
 	/* stop the hardware RTC */
 	rtca_stop();
 
-#ifdef CONFIG_CLOCK_BLINKCOL
+#ifdef CONFIG_MOD_CLOCK_BLINKCOL
 	/* the blinking dots feature might hide the two dots, we display them
 	  here just in case */
 	display_symbol(0, LCD_SEG_L1_COL, SEG_ON);
