@@ -60,7 +60,7 @@
 /* The code below is optimized to this value, DO NOT CHANGE */
 #define TEMPORAL_FILTER_WINDOW 4
 
-static uint16_t adcresult[TEMPORAL_FILTER_WINDOW];
+static uint8_t adcresult[TEMPORAL_FILTER_WINDOW];
 static uint8_t adcresult_idx = 0;
 
 void temperature_init(void)
@@ -84,9 +84,9 @@ void temperature_measurement(void)
 		adcresult_idx = 0;
 
 	/* Calculate temporal mean value */
-	temperature.value = ((uint32_t)adcresult[0]
-		+ (uint32_t)adcresult[1] + (uint32_t)adcresult[2]
-		+ (uint32_t)adcresult[3]) >> 2;
+	temperature.value = (temperature.value & 0xff00)
+		| (((uint16_t)adcresult[0] + (uint16_t)adcresult[1]
+		+ (uint16_t)adcresult[2] + (uint16_t)adcresult[3]) >> 2);
 }
 
 
