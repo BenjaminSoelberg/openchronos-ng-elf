@@ -1,6 +1,7 @@
 /*
     temperature.c: Temperature driver
 
+    Copyright (C) 2012 Angelo Arrifano <miknix@gmail.com>
     Copyright (C) 2012 Matthew Excell <matt@excellclan.com>
 
     This program is free software: you can redistribute it and/or modify
@@ -56,79 +57,62 @@
 #include "adc12.h"
 #include "timer.h"
 
-/* TODO: This must go away */
-struct temp sTemp;
+/* The code below is optimized to this value, DO NOT CHANGE */
+#define TEMPORAL_FILTER_WINDOW 4
 
+static uint16_t adcresult[TEMPORAL_FILTER_WINDOW];
+static uint8_t adcresult_idx = 0;
 
 void temperature_init(void)
 {
-	/* Perform one temperature measurement with disabled filter */
-	temperature_measurement(0);
+	temperature.value = adc12_single_conversion(REFVSEL_0,
+						ADC12SHT0_8, ADC12INCH_10);
+
+	adcresult[0] = temperature.value;
+	adcresult[1] = temperature.value;
+	adcresult[2] = temperature.value;
+	adcresult[3] = temperature.value;
 }
 
 
-void temperature_measurement(uint8_t filter)
+void temperature_measurement(void)
 {
-	uint16_t adc_result;
-	int32_t temperature;
-
 	/* Convert internal temperature diode voltage */
-	adc_result = adc12_single_conversion(REFVSEL_0, ADC12SHT0_8,
-								ADC12INCH_10);
+	adcresult[adcresult_idx++] = adc12_single_conversion(REFVSEL_0,
+						ADC12SHT0_8, ADC12INCH_10);
+	if (adcresult_idx == TEMPORAL_FILTER_WINDOW)
+		adcresult_idx = 0;
 
-	/* Convert ADC value to "xx.x C"
-	Temperature in Celsius
-	  ((A10/4096*1500mV) - 680mV)*(1/2.25mV) = (A10/4096*667) - 302
-	  = (A10 - 1855) * (667 / 4096) */
-	temperature = (((int32_t)((int32_t)adc_result - 1855)) * 667 * 10)
-								/ 4096;
-
-	/* FIXME: Wrong, offset should be compensated in the driver */
-	/* Add temperature offset - we do this at display
-	   makes for easier editing */
-	/* temperature += sTemp.offset; */
-
-	/* Limit min/max temperature to +/- 50 C */
-	if (temperature > 500)
-		temperature = 500;
-	if (temperature < -500)
-		temperature = -500;
-
-	/* Store measured temperature */
-	if (filter) {
-		/* Change temperature in 0.1 steps towards measured value */
-		if (temperature > sTemp.degrees)
-			sTemp.degrees += 1;
-		else if (temperature < sTemp.degrees)
-			sTemp.degrees -= 1;
-	} else {
-		/* Override filter */
-		sTemp.degrees = (int16_t)temperature;
-	}
+	/* Calculate temporal mean value */
+	temperature.value = ((uint32_t)adcresult[0]
+		+ (uint32_t)adcresult[1] + (uint32_t)adcresult[2]
+		+ (uint32_t)adcresult[3]) >> 2;
 }
 
 
-#ifndef CONFIG_TEMPERATURE_METRIC_ONLY
-int16_t convert_C_to_F(int16_t value)
+void temperature_get_C(int16_t *temp)
 {
-	int16_t DegF;
-
-	/* Celsius in Fahrenheit = (( TCelsius * 9 ) / 5 ) + 32 */
-	DegF = ((value * 9 * 10) / 5 / 10) + 32 * 10;
-
-	return DegF;
+	/* from page 67, slas554f.pdf:
+	((A10/4096*1500mV) - 680mV)*(1/2.25mV)
+	   = (A10/4096*667) - 302
+	   = (A10 - 1855) * (667 / 4096) */
+	*temp = (((int32_t)temperature.value + temperature.offset - 1855)
+		* 667 * 10) / 4096;
 }
 
-
-int16_t convert_F_to_C(int16_t value)
+void temperature_get_F(int16_t *temp)
 {
-	int16_t DegC;
+	/* from page 67 (slas554f.pdf):
+	offset:
+	  680mV is 0C with 2.25mV/C
+	  if 0F is -17.78C then 0F = (680-17.78*2.25) = 640mV
+	scale:
+	  if 2.25mV/C then 2.25*(5/9)=1.25mV/F
 
-	/* TCelsius =( TFahrenheit - 32 ) * 5 / 9 */
-	DegC = (((value - 320) * 5)) / 9;
-
-	return DegC;
+	((A10/4096*1500mV) - 640mV)*(1/1.25mV) =
+	  = (A10/4096*1200) - 512
+	  = (A10 - 1748) * (1200 / 4096) */
+	*temp = (((int32_t)temperature.value + temperature.offset - 1748)
+		* 1200 * 10) / 4096;
 }
-#endif
-
 

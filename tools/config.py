@@ -143,10 +143,10 @@ DATA["TEXT_TEMPERATURE"] = {
 	"type": "info"
 }
 
-DATA["CONFIG_TEMPERATURE_METRIC_ONLY"] = {
-	"name": "Only show in degrees C",
-	"default": False,
-	"help": "Don't build code to convert to F.",
+DATA["CONFIG_TEMPERATURE_METRIC"] = {
+	"name": "Show in degrees C",
+	"default": True,
+	"help": "Show in degrees C if enabled, F otherwise.",
 }
 
 # AUTOMATICALLY GENERATED MODULE LIST ########################################

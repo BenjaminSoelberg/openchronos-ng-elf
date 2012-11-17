@@ -23,24 +23,13 @@
 #include <openchronos.h>
 
 void temperature_init(void);
-void temperature_measurement(uint8_t filter);
+void temperature_measurement(void);
+void temperature_get_C(int16_t *temp);
+void temperature_get_F(int16_t *temp);
 
-#ifndef CONFIG_TEMPERATURE_METRIC_ONLY
-int16_t convert_C_to_F(int16_t value);
-int16_t convert_F_to_C(int16_t value);
-#endif
-
-/* TODO: pack this stuff!!!! */
-struct temp {
-	/* Temperature (oC) in 2.1 format */
-	int16_t		degrees;
-	/* User set calibration value (oC) in 2.1 format */
-	int16_t		offset;
-#ifndef CONFIG_TEMPERATURE_METRIC_ONLY
-	/* C or F */
-	uint8_t         is_c:1;
-#endif
-
-} sTemp;
+struct {
+	uint16_t value;
+	int16_t offset;
+} temperature;
 
 #endif /* __TEMPERATURE_H__ */

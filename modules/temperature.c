@@ -76,33 +76,23 @@ uint8_t temp_edit = 0;
 // *************************************************************************************************
 void display_temperature()
 {
-	int16_t temperature;
+	int16_t temp;
 
 	// Display �C / �F
 	display_symbol(0,LCD_SEG_L1_DP1, SEG_ON);
 	display_symbol(0,LCD_UNIT_L1_DEGREE, SEG_ON);
 	display_clear(0, 1);
-#ifdef CONFIG_TEMPERATURE_METRIC_ONLY
+#ifdef CONFIG_TEMPERATURE_METRIC
 	display_char(0, LCD_SEG_L1_0, 'C', SEG_ON);
 #else
-	if (sTemp.is_c) {
-		display_char(0, LCD_SEG_L1_0, 'C', SEG_ON);
-	} else {
-		display_char(0, LCD_SEG_L1_0, 'F', SEG_ON);
-	}
+	display_char(0, LCD_SEG_L1_0, 'F', SEG_ON);
 #endif
 
 	// When using English units, convert �C to �F (temp*1.8+32)
-#ifdef CONFIG_TEMPERATURE_METRIC_ONLY
-		temperature = sTemp.degrees + sTemp.offset;
+#ifdef CONFIG_TEMPERATURE_METRIC
+	temperature_get_C(&temp);
 #else
-
-	if (!sTemp.is_c) {
-		temperature = convert_C_to_F(sTemp.degrees + sTemp.offset);
-	} else {
-		temperature = sTemp.degrees + sTemp.offset;
-	}
-
+	temperature_get_F(&temp);
 #endif
 
 	/*Let's just display it with a sign.
@@ -121,7 +111,7 @@ void display_temperature()
 	*/
 
 	// Display result in xx.x format
-	display_chars(0, LCD_SEG_L1_3_1, _sprintf("%2s", temperature/10), SEG_ON);
+	display_chars(0, LCD_SEG_L1_3_1, _sprintf("%2s", temp/10), SEG_ON);
 }
 
 void clear_temperature()
@@ -137,7 +127,7 @@ static void measure_temp(enum sys_message msg) {
 	if (temp_edit)
 		return;
 
-	temperature_measurement(1);
+	temperature_measurement();
 	display_clear(0, 1);
 	display_temperature();
 }
@@ -163,28 +153,17 @@ static void temperature_deactivate() {
 	clear_temperature();
 }
 
-static void temp_change_units() {
-#ifndef CONFIG_TEMPERATURE_METRIC_ONLY
-	sTemp.is_c = !sTemp.is_c;
-#endif
-}
-
-
 static void temp_button_up() {
 	if (temp_edit) {
-		sTemp.offset = sTemp.offset+10;
+		temperature.offset++;
 		display_temperature();
-	} else {
-		temp_change_units();
 	}
 }
 
 static void temp_button_down() {
 	if (temp_edit) {
-		sTemp.offset = sTemp.offset-10;
+		temperature.offset--;
 		display_temperature();
-	} else {
-		temp_change_units();
 	}
 }
 
