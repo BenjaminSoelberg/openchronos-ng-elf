@@ -64,7 +64,8 @@
 #define TIMER0_FREQ 16384
 
 /* converts microseconds to clock ticks */
-#define TIMER0_TICKS_FROM_MS(T) ((TIMER0_FREQ / 1000) * (T))
+#define TIMER0_TICKS_FROM_MS(T) ((((uint32_t)TIMER0_FREQ) * (uint32_t)T) \
+                               / ((uint32_t)1000))
 
 static volatile uint8_t delay_finished;
 
