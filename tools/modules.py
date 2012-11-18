@@ -42,7 +42,7 @@ def read_config():
 			except ConfigParser.NoOptionError:
 				print "%s:%s: Error: name, help are mandatory!" % (cfgname, section)
 				continue
-		   
+
 			item = {
 				'name'   : name,
 				'help'   : help,
@@ -56,16 +56,16 @@ def read_config():
 				except ConfigParser.NoOptionError:
 					if default != None:
 						item[key] = default
-						
+
 			# build dependency array from string
 			item['depends'] = filter(None, map(lambda x: x.strip(), item['depends'].split(',')))
-			if sectNr > 0: item['depends'].append( "CONFIG_%s" % (parent) )
-				
+			if sectNr > 0: item['depends'].append( "CONFIG_MOD_%s" % (parent) )
+
 			# Special treatment for booleans
 			if item['type'] == "bool":
 				item['default'] = bool(item['default'])
 
-			DATA.append( ("CONFIG_%s" % (section), item) )
+			DATA.append( ("CONFIG_MOD_%s" % (section), item) )
 			if sectNr == 0 and section != parent:
 				print "%s: Warn: The [%s] section must be the first!" \
 						% (cfgname, item['parent'])

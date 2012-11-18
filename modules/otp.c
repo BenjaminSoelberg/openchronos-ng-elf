@@ -220,7 +220,7 @@ uint32_t simple_mktime(int year, int month, int day, int hour, int minute, int s
 	return result;
 }
 
-const  char     *key          = CONFIG_OTP_KEY;
+const  char     *key          = CONFIG_MOD_OTP_KEY;
 static uint32_t  last_time    = 0;
 static uint8_t   otp_data[]   = {0,0,0,0,0,0,0,0};
 static uint8_t   indicator[]  = {
@@ -270,7 +270,7 @@ static void clock_event(enum sys_message msg)
     // Calculate timestamp
 	uint32_t time = simple_mktime(rtca_time.year, rtca_time.mon - 1, rtca_time.day,
                                   rtca_time.hour, rtca_time.min    , rtca_time.sec);
-	time = (time - CONFIG_OTP_OFFSET * 3600) / 30;
+	time = (time - CONFIG_MOD_OTP_OFFSET * 3600) / 30;
 
     // Check if new code must be calculated
     if(time != last_time) {
