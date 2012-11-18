@@ -67,6 +67,7 @@ void temperature_init(void)
 {
 	temperature.value = adc12_single_conversion(REFVSEL_0,
 						ADC12SHT0_8, ADC12INCH_10);
+	temperature.offset = CONFIG_TEMPERATURE_OFFSET;
 
 	adcresult[0] = temperature.value;
 	adcresult[1] = temperature.value;

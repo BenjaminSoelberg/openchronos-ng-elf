@@ -143,6 +143,14 @@ DATA["TEXT_TEMPERATURE"] = {
 	"type": "info"
 }
 
+DATA["CONFIG_TEMPERATURE_OFFSET"] = {
+	"name": "Compensation offset",
+    "type": "text",
+	"default": "-260",
+	"ifndef": True,
+	"help": "Compensate the sensor raw output value with this offset",
+}
+
 DATA["CONFIG_TEMPERATURE_METRIC"] = {
 	"name": "Show in degrees C",
 	"default": True,
