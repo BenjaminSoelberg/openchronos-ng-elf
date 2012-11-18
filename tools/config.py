@@ -328,6 +328,8 @@ class OpenChronosApp(object):
 			wid._datakey = key
 			wid._datafield = field
 			f = urwid.AttrWrap(wid, 'opt', 'optsel')
+			if field.has_key('ischild') and field['ischild']:
+				f = urwid.Padding(f, width=77, left=3)
 			f._widget = wid
 			WIDMAP[key] = f
 			self.list_content.append(f)
