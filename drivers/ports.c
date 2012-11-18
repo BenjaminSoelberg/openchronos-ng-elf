@@ -75,8 +75,10 @@ void PORT2_ISR(void)
 	 the ones that were just pressed */
 	uint8_t buttons = P2IFG & rising_mask;
 
+#ifdef CONFIG_TIMER_20HZ_IRQ
 	if (buttons)
 		last_press = timer0_20hz_counter;
+#endif
 
 	/* set pressed button IRQ triggers to falling edge,
 	 so we can detect when they are released */
