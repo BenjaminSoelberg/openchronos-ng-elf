@@ -33,23 +33,23 @@ static void clock_event(enum sys_message msg)
 	     ((rtca_time.sec & 0x01) ? SEG_ON : SEG_OFF));
 #endif
 
-	if (msg | SYS_MSG_RTC_YEAR)
+	if (msg & SYS_MSG_RTC_YEAR)
 		_printf(1, LCD_SEG_L1_3_0, "%04u", rtca_time.year);
 #ifdef CONFIG_MOD_CLOCK_MONTH_FIRST
-	if (msg | SYS_MSG_RTC_MONTH)
+	if (msg & SYS_MSG_RTC_MONTH)
 		_printf(0, LCD_SEG_L2_4_3, "%02u", rtca_time.mon);
-	if (msg | SYS_MSG_RTC_DAY) {
+	if (msg & SYS_MSG_RTC_DAY) {
 		_printf(0, LCD_SEG_L2_1_0, "%02u", rtca_time.day);
 #else
-	if (msg | SYS_MSG_RTC_MONTH)
+	if (msg & SYS_MSG_RTC_MONTH)
 		_printf(0, LCD_SEG_L2_1_0, "%02u", rtca_time.mon);
-	if (msg | SYS_MSG_RTC_DAY) {
+	if (msg & SYS_MSG_RTC_DAY) {
 		_printf(0, LCD_SEG_L2_4_3, "%02u", rtca_time.day);
 
 #endif
 		_printf(1, LCD_SEG_L2_2_0, rtca_dow_str[rtca_time.dow], SEG_SET);
 	}
-	if (msg | SYS_MSG_RTC_HOUR) {
+	if (msg & SYS_MSG_RTC_HOUR) {
 #ifdef CONFIG_MOD_CLOCK_AMPM
 		uint8_t tmp_hh = rtca_time.hour;
 		if (tmp_hh > 12) {
@@ -72,7 +72,7 @@ static void clock_event(enum sys_message msg)
 		_printf(0, LCD_SEG_L1_3_2, "%02u", rtca_time.hour);
 #endif
 	}
-	if (msg | SYS_MSG_RTC_MINUTE)
+	if (msg & SYS_MSG_RTC_MINUTE)
 		_printf(0, LCD_SEG_L1_1_0, "%02u", rtca_time.min);
 }
 
