@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# vim: ft=sh
+# LOOK AT ME!! HERE!!
+#   to use this as a [re-commit hook, add the following line in .git/hooks/pre-commit:
+#	./contrib/pre-commit || exit 1
+#   or, alternatively, execute the following command FROM THE TOP LEVEL of the repository:
+#   echo "./contrib/pre-commit || exit 1" >> .git/hooks/pre-commit
+#
+
+echo "Running checkpatch.pl to check syntax..."
+status=0
+for file in $(git diff --cached --name-only $against | grep "\.[ch]$"); do
+    ./contrib/checkpatch.pl --no-tree -f $file
+    if [[ ! $? = 0 ]]; then
+	exit 1
+    fi
+done

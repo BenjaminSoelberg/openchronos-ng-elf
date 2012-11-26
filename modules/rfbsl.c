@@ -1,3 +1,23 @@
+/*
+    modules/rfbsl.c: RFBSL module for openchronos-ng
+
+    Copyright (C) 2012 Angelo Arrifano <miknix@gmail.com>
+
+	           http://www.openchronos-ng.sourceforge.net
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 // *************************************************************************************************
 //
 //	Copyright (C) 2009 Texas Instruments Incorporated - http://www.ti.com/
@@ -38,6 +58,7 @@
 
 // driver
 #include <drivers/display.h>
+#include <drivers/battery.h>
 
 // Entry point of of the Flash Updater in BSL memory
 #define CALL_RFSBL()   ((void (*)())0x1000)()
@@ -50,14 +71,8 @@
 // *************************************************************************************************
 static void updown_press()
 {
-	/* TODO: we need to reimplement this */
-	//if (sys.flag.low_battery) return;
-
-	// Exit if SimpliciTI stack is active
-	/*if (is_rf()) return;*/
-
 	// Write RAM to indicate we will be downloading the RAM Updater first
-	display_chars(NULL, LCD_SEG_L1_3_0, (uint8_t *)" RAM", SEG_ON);
+	display_chars(0, LCD_SEG_L1_3_0, " RAM", SEG_ON);
 
 	// Call RFBSL
 	CALL_RFSBL();
@@ -74,18 +89,18 @@ static void updown_press()
 static void rfbsl_activate()
 {
 	/* update screen */
-	display_chars(NULL, LCD_SEG_L2_5_0, (uint8_t *)" RFBSL", SEG_ON);
+	display_chars(0, LCD_SEG_L2_5_0, " RFBSL", SEG_ON);
 }
 
 static void rfbsl_deactivate()
 {
 	/* cleanup screen */
-	display_clear(NULL, 2);
+	display_clear(0, 2);
 }
 
-void rfbsl_init(void)
+void mod_rfbsl_init(void)
 {
-	menu_add_entry(NULL, NULL, NULL, NULL, NULL,
+	menu_add_entry("RFBSL", NULL, NULL, NULL, NULL, NULL,
 						&updown_press,
 						&rfbsl_activate,
 						&rfbsl_deactivate);

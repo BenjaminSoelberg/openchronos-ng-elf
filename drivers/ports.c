@@ -1,6 +1,6 @@
 /*
     drivers/ports.c: Openchronos ports driver
-	 
+
 	 Copyright (C) 2012 Angelo Arrifano <miknix@gmail.com>
 
     This program is free software: you can redistribute it and/or modify
@@ -32,20 +32,7 @@
 
 #define ALL_BUTTONS				0x1F
 
-#define BIT_IS_SET(F, B) ((F) | (B)) == (F)
-
-// *************************************************************************************************
-// Defines section
-
-// Macro for button IRQ
-#define IRQ_TRIGGERED(flags, bit)		((flags & bit) == bit)
-
-/* Button debounce time (ms) */
-#define BUTTONS_DEBOUNCE_TIME	5
-
-/* How long does a button need to be pressed to be long press? */
-/* in multiples of 1/10 second */
-#define BUTTONS_LONG_PRESS_TIME 3
+#define BIT_IS_SET(F, B) (((F) | (B)) == (F))
 
 void init_buttons(void)
 {
@@ -77,9 +64,9 @@ void PORT2_ISR(void)
 {
 	static uint16_t last_press;
 
-	/* If the interrupt was not raised by a button press, then return */
+	/* If the interrupt is not a button press, then handle accel */
 	if ((P2IFG & ALL_BUTTONS) == 0)
-		return;
+		goto accel_handler;
 
 	/* get mask for buttons in rising edge */
 	uint8_t rising_mask = ~P2IES & ALL_BUTTONS;
@@ -88,22 +75,15 @@ void PORT2_ISR(void)
 	 the ones that were just pressed */
 	uint8_t buttons = P2IFG & rising_mask;
 
+#ifdef CONFIG_TIMER_20HZ_IRQ
 	if (buttons)
-		last_press = timer0_10hz_counter;
-
-	#ifdef CONFIG_ACCELEROMETER
-	// Accelerometer is on rising edge in the default configuration
-	if (IRQ_TRIGGERED(buttons, AS_INT_PIN))
-	{
-		// Get data from sensor
-		as_last_interrupt = 1;
-	}
-	#endif
+		last_press = timer0_20hz_counter;
+#endif
 
 	/* set pressed button IRQ triggers to falling edge,
 	 so we can detect when they are released */
 	P2IES |= buttons;
-		
+
 	/* now get mask for buttons on falling edge
 	  (except the ones we just set) */
 	uint8_t falling_mask = P2IES & ALL_BUTTONS & ~rising_mask;
@@ -116,12 +96,18 @@ void PORT2_ISR(void)
 	if (buttons) {
 		buttons |= P2IES;
 
-		/* check if button was pressed long enough */
-		if (timer0_10hz_counter - last_press > BUTTONS_LONG_PRESS_TIME)
-			buttons <<= 5;
-		
-		/* save pressed buttons */
-		ports_pressed_btns |= buttons;
+#ifdef CONFIG_TIMER_20HZ_IRQ
+		uint16_t pressed_ticks = timer0_20hz_counter - last_press;
+#else
+		/* in case timer is disabled, at least detect short presses */
+		uint16_t pressed_ticks = CONFIG_BUTTONS_SHORT_PRESS_TIME;
+#endif
+
+		/* check how long btn was pressed and save the event */
+		if (pressed_ticks > CONFIG_BUTTONS_LONG_PRESS_TIME)
+			ports_pressed_btns |= buttons << 5;
+		else if (pressed_ticks >= CONFIG_BUTTONS_SHORT_PRESS_TIME)
+			ports_pressed_btns |= buttons;
 
 		/* set buttons IRQ triggers to rising edge */
 		P2IES &= ~ALL_BUTTONS;
@@ -130,7 +116,12 @@ void PORT2_ISR(void)
 		_BIC_SR_IRQ(LPM3_bits);
 	}
 
-
+accel_handler:
+	#ifdef CONFIG_ACCELEROMETER
+	/* Check if accelerometer interrupt flag */
+	if ((P2IFG & AS_INT_PIN) == AS_INT_PIN)
+		as_last_interrupt = 1;
+	#endif
 
 	/* A write to the interrupt vector, automatically clears the
 	 latest interrupt */

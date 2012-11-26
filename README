@@ -27,7 +27,7 @@ to understand.
 * python
 
 == Recommended Toolchain ==
-msp430-gcc-4.6.3
-msp430-binutils-2.21.1a
-msp430-libc-20120224
 
+gcc-4.4.3
+binutils-2.20.1
+libc-20120430

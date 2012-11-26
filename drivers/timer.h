@@ -1,7 +1,7 @@
 /*!
 	\file timer.h
 	\brief openchronos-ng timer driver
-	\details This driver takes care of the Timer0 hardware timer. From this hardware timer the driver produces two hardware-based timers running at 10Hz and 1Hz. The events produced by those timers are available in #sys_message. Beyound the fixed frequency timers, this driver also implements a programmable timer and a programmable delay.
+	\details This driver takes care of the Timer0 hardware timer. From this hardware timer the driver produces two hardware-based timers running at 20Hz and 4s (period). The events produced by those timers are available in #sys_message. Beyound the fixed frequency timers, this driver also implements a programmable timer and a programmable delay.
 	\note If you are looking to timer events, then see #sys_message
 */
 
@@ -19,11 +19,11 @@
 void timer0_init(void);
 
 /*!
-	\brief 10Hz counter.
-	\details This is a counter variable, its value is updated at 10Hz. You can use this to measure timings.
-	\note counter overflows should be relatively safe since they only happen once each 6553.6 seconds. However you should handle overflows if your application cannot accept sporadic failures in measurement.
+	\brief 20Hz counter.
+	\details This is a counter variable, its value is updated at 20Hz. You can use this to measure timings.
+	\note counter overflows should be relatively safe since they only happen once each 3276.8 seconds. However you should handle overflows if your application cannot accept sporadic failures in measurement.
 */
-volatile uint16_t timer0_10hz_counter;
+volatile uint16_t timer0_20hz_counter;
 
 /*!
 	\brief creates a 1000Hz - 1Hz programmable timer
@@ -37,26 +37,46 @@ void timer0_create_prog_timer(
 
 /*!
 	\brief destroys a running programmable timer
-	\sa timer0_destroy_prog_timer
+	\sa timer0_create_prog_timer
 */
 void timer0_destroy_prog_timer();
 
 /*!
 	\brief 1ms - 1s programmable delay
 	\details delays execution for \b duration milliseconds. During the delay, interrupts are still generated but #sys_message only broadcasts the events after the delay has finished.
+	The second argument is put directly into the _STATUS_ register. This could of course disrupt the state of the watch. Please be careful and take a look at http://mspgcc.sourceforge.net/manual/x1028.html for information regarding the _STATUS_ register.
 	\note Please avoid using this. No processing is done in the background during the delay, which can have impact in modules that require a responsive system.
 */
 void timer0_delay(
-	uint16_t duration /*!< delay duration between 1 and 1000 milliseconds */
+	uint16_t duration, /*!< delay duration between 1 and 1000 milliseconds */
+			uint16_t LPM_bits  /*!< LPM bits to put in the status register, so the user can choose LPM level */
 );
+
+/*!
+      \brief schedule a callback after a delay
+ */
+
+/*!
+	\brief 1ms - 1s programmable delay to callback
+	\details schedules a callback to the provided function after \b duration milliseconds.  Does not suspend other interrupts.
+ */
+void timer0_delay_callback(
+	uint16_t duration, /*!< delay duration in ms */
+	void(*cbfn)(void) /*!< pointer to function to call on completion */
+);
+
+/*!
+	\brief abort any pending delay callback
+ */
+void timer0_delay_callback_destroy(void);
 
 /*!
 	\brief Bitfield of events produced by this driver
 */
 enum timer0_event {
-	TIMER0_EVENT_1HZ	= BIT0,	/*!< 1Hz event */
-	TIMER0_EVENT_10HZ	= BIT1,	/*!< 10Hz event */
-	TIMER0_EVENT_PROG	= BIT2	/*!< programmable timer event */
+	TIMER0_EVENT_4S    = BIT0,	/*!< 0.24Hz ~ 4.1s period event */
+	TIMER0_EVENT_20HZ	 = BIT1,	/*!< 20Hz event */
+	TIMER0_EVENT_PROG	 = BIT2	/*!< programmable timer event */
 };
 
 /*!

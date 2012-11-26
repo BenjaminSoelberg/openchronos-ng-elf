@@ -3,6 +3,8 @@
 
     Copyright (C) 2012 Angelo Arrifano <miknix@gmail.com>
 
+	            http://www.openchronos-ng.sourceforge.net
+
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
@@ -51,31 +53,33 @@
 #include "timer.h"
 
 /* HARDWARE TIMER ASSIGNMENT:
-	 TA0CCR0: 100ms timer
+	 TA0CCR0: 20Hz timer
 	 TA0CCR1: Unused
-	 TA0CCR2: Unused
+	 TA0CCR2: callback timer (for buzzer)
 	 TA0CCR3: programable timer
 	 TA0CCR4: delay timer
-	OVERFLOW: 1Hz timer */
+	OVERFLOW: 0.244Hz timer ~ 4.1ms */
 
-/* source is 32kHz with /2 divider */
-#define TIMER0_FREQ 16000
+/* source is ACLK=32768Hz (nominal) with /2 divider */
+#define TIMER0_FREQ 16384
 
 /* converts microseconds to clock ticks */
-#define TIMER0_TICKS_FROM_MS(T) (TIMER0_FREQ / 1000) * (T)
+#define TIMER0_TICKS_FROM_MS(T) ((((uint32_t)TIMER0_FREQ) * (uint32_t)T) \
+                               / ((uint32_t)1000))
 
 static volatile uint8_t delay_finished;
 
-/* 10hz timer */
-static uint16_t timer0_10hz_ticks;
+/* 20hz timer */
+static uint16_t timer0_20hz_ticks;
 
 /* programable timer */
 static uint16_t timer0_prog_ticks;
 
-/* this function setups a 1Hz timer ticked every overflow interrupt */
+static void (*delay_callback)(void) = NULL;
+
 void timer0_init(void)
 {
-#ifdef CONFIG_TIMER_1HZ_IRQ
+#ifdef CONFIG_TIMER_4S_IRQ
 	/* Enable overflow interrupts */
 	TA0CTL |= TAIE;
 #endif
@@ -83,24 +87,22 @@ void timer0_init(void)
 	/* select external 32kHz source, /2 divider, continous mode */
 	TA0CTL |= TASSEL__ACLK | ID__2 | MC__CONTINOUS;
 
-#ifdef CONFIG_TIMER_10HZ_IRQ
-	/* setup and enable 100ms (10Hz) timer */
-	timer0_10hz_ticks = TIMER0_TICKS_FROM_MS(100);
-	TA0CCR0 = TA0R + timer0_10hz_ticks;
+#ifdef CONFIG_TIMER_20HZ_IRQ
+	/* setup and enable 20Hz timer */
+	timer0_20hz_ticks = TIMER0_TICKS_FROM_MS(50);
+	TA0CCR0 = TA0R + timer0_20hz_ticks;
 	TA0CCTL0 |= CCIE;
 #endif
 }
 
 /* This function was based on original Texas Instruments implementation,
    see LICENSE-TI for more information. */
-void timer0_delay(uint16_t duration)
+void timer0_delay(uint16_t duration, uint16_t LPM_bits)
 {
-	uint16_t ticks = TIMER0_TICKS_FROM_MS(duration);
-	
 	delay_finished = 0;
 
 	/* Set next CCR match */
-	TA0CCR4 = TA0R + ticks;
+	TA0CCR4 = TA0R + TIMER0_TICKS_FROM_MS(duration);
 
 	/* enable interrupt */
 	TA0CCTL4 |= CCIE;
@@ -108,7 +110,7 @@ void timer0_delay(uint16_t duration)
 	/* Wait for interrupt */
 	while (1) {
 		/* enter low power mode */
-		_BIS_SR(LPM3_bits + GIE);
+		_BIS_SR(LPM_bits + GIE);
 		__no_operation();
 
 #ifdef USE_WATCHDOG
@@ -123,8 +125,39 @@ void timer0_delay(uint16_t duration)
 	}
 
 	/* disable interrupt */
-	TA0CCTL4 |= CCIE;
+	TA0CCTL4 &= ~CCIE;
 }
+
+void timer0_delay_callback_destroy(void)
+{
+	/* abort a delay without calling callback */
+	/* disable interrupt */
+	TA0CCTL4 &= ~CCIE;
+	//TA0CCTL2 &= ~CCIE;
+	TA0CCTL2 = 0;
+
+	/* clear callback */
+	delay_callback = NULL;
+ }
+
+void timer0_delay_callback(uint16_t duration, void(*cbfn)(void))
+{
+	timer0_delay_callback_destroy();
+
+	/* setup where to go on completion */
+	delay_callback = cbfn;
+
+	/* Set next CCR match */
+	TA0CCR2 = TA0R + TIMER0_TICKS_FROM_MS(duration);
+
+	/* clear any pending interrupt? */
+	TA0CCTL2 = 0;
+
+	/* enable interrupt */
+	//TA0CCTL2 |= CCIE;
+	TA0CCTL2 = CCIE;
+}
+
 
 /* programable timer:
 	duration is in miliseconds, min=1, max=1000 */
@@ -134,7 +167,7 @@ void timer0_create_prog_timer(uint16_t duration)
 
 	/* set timer to start as soon as possible */
 	TA0CCR3 = TA0R + timer0_prog_ticks;
-	
+
 	/* enable timer */
 	TA0CCTL3 |= CCIE;
 }
@@ -153,13 +186,13 @@ void timer0_A0_ISR(void)
 {
 	/* TODO: Do we need to reset the interrupt flag ? */
 	/* setup timer for next time */
-	TA0CCR0 = TA0R + timer0_10hz_ticks;
+	TA0CCR0 = TA0R + timer0_20hz_ticks;
 
-	/* increase 10hz counter */
-	timer0_10hz_counter++;
+	/* increase 20hz counter */
+	timer0_20hz_counter++;
 
-	/* store 10hz timer event */
-	timer0_last_event |= TIMER0_EVENT_10HZ;
+	/* store 20hz timer event */
+	timer0_last_event |= TIMER0_EVENT_20HZ;
 
 	/* exit from LPM3, give execution back to mainloop */
 	_BIC_SR_IRQ(LPM3_bits);
@@ -171,7 +204,7 @@ void timer0_A1_ISR(void)
 {
 	/* reading TA0IV automatically resets the interrupt flag */
 	uint8_t flag = TA0IV;
-	
+
 	/* programable timer */
 	if (flag == TA0IV_TA0CCR3) {
 		/* setup timer for next time */
@@ -179,21 +212,40 @@ void timer0_A1_ISR(void)
 
 		/* store event */
 		timer0_last_event |= TIMER0_EVENT_PROG;
-		
+
 		goto exit_lpm3;
 	}
 
 	/* delay timer */
 	if (flag == TA0IV_TA0CCR4) {
 		delay_finished = 1;
+		goto exit_lpm3;
+	}
+
+	/* one-shot delay timer with callback */
+	if (flag == TA0IV_TA0CCR2) {
+		/* disable interrupt */
+		TA0CCTL2 &= ~CCIE;
+
+		/* maybe call vector */
+		if (delay_callback) {
+			void (*tmpfn)(void) = delay_callback;
+			/* reset timer so it's not called again */
+			delay_callback = NULL;
+			/* but then it may be re-set by callback fn */
+			tmpfn();
+		}
+
+		/* return to LPM3 (don't mess with SR bits) */
 		return;
 	}
 
-	/* 1Hz timer, nothing to do yet */
+
+	/* 0.24Hz timer, ticked by overflow interrupts */
 	if (flag == TA0IV_TA0IFG) {
 		/* store event */
-		timer0_last_event |= TIMER0_EVENT_PROG;
-		
+		timer0_last_event |= TIMER0_EVENT_4S;
+
 		goto exit_lpm3;
 	}
 

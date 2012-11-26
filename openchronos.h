@@ -38,9 +38,11 @@
 /*!
 	\brief Adds an entry to the main menu.
 	\details This function is to be used by modules, so that they can be visible in the main menu. A good place to call this function is from the corresponding module's _init function.
-	\note This function is NULL safe. You can set its parameters to NULL if you don't need their functionality.
+	\note This function is NULL safe. You can set all of its parameters to NULL (except name) if you don't need their functionality.
+	\note The <i>name</i> string cannot be longer than 5 characters due to the LCD screen size.
 */
 void menu_add_entry(
+	char const * name,          /*!< item name to be displayed in the menu */
 	void (*up_btn_fn)(void),    /*!< callback for up button presses. */
 	void (*down_btn_fn)(void),  /*!< callback for down button presses. */
 	void (*num_btn_fn)(void),   /*!< callback for num button presses. */
@@ -51,50 +53,48 @@ void menu_add_entry(
 	void (*deactivate_fn)(void) /*!< callback for when the user switches out from this entry in the menu. */
 );
 
-void menu_item_next(void);
+/*!
+	\brief A item structure for menu_editmode_start.
+*/
+struct menu_editmode_item {
+	void (* select)(void);     /*!< item selected callback */
+	void (* deselect)(void);   /*!< item deselected callback */
+	void (* set)(int8_t step); /*!< set value of item callback */
+};
 
 /*!
 	\brief Enters edit mode.
-	\details The edit mode is a mechanism that allows the user to change values being displayed in the screen. For example, if a clock alarm is being displayed, then edit mode can be used to increase/decrease the values of hours and minutes. A good place to call this function is from the module's lstar_btn_fn function (see menu_add_entry()).
+	\details The edit mode is a mechanism that allows the user to change values being displayed in the screen. For example, if a clock alarm is being displayed, then edit mode can be used to increase/decrease the values of hours and minutes. A good place to call this function is from the module's lstar_btn_fn function (see menu_add_entry()).<br />
+	See modules/alarm.c for an example how to use this.
 */
 void menu_editmode_start(
-	/*! callback for up/down button presses; a integer is passed as argument telling how much to increment or decrement a value. */
-	void (* value_fn)(int8_t),
-	/*! callback for when the users selects another value in the screen. At this function you should take care of stopping blinking of previous value and start blinking the newly selected value. */
-	void (* next_item_fn)(void),
 	/*! callback for when the user exits from the edit mode.*/
-	void (* complete_fn)(void)
+	void (* complete_fn)(void),
+	/*! A vector of #menu_editmode_item, it must be NULL terminated! */
+	struct menu_editmode_item *items
 );
 
 /* Include function defined in even_in_range.s TODO: do we even need this?? */
 unsigned short __even_in_range(unsigned short __value, unsigned short __bound);
 
 /*!
-	\brief Handy prototype typedef for helpers_loop_up() and helpers_loop_down() functions.
+	\brief Handy prototype typedef for helpers_loop() function.
 */
-typedef void(* helpers_loop_fn_t)(uint8_t *, uint8_t, uint8_t);
+typedef void(* helpers_loop_fn_t)(uint8_t *, uint8_t, uint8_t, int8_t);
 
 /*!
-	\brief Increment value by one without exiting the [lower, upper] interval.
-	\details Increment value by one without exiting the [lower, upper] interval. If the value meets the upper bound, it is restarted from lower bound.
+	\brief Increment/decrements value by one without exiting the [lower, upper] interval.
+	\details Increment/decrements value by one without exiting the [lower, upper] interval. If the value meets the upper bound, it is restarted from lower bound. If the value meets the lower bound, it is restarded from the upper bound.<br />
+	Note: For now, only steps of -1 and 1 are considered.
 	\sa menu_editmode_start
 */
-void helpers_loop_up(
+void helpers_loop(
 	uint8_t *value, /*!< value a pointer to the variable to be incremented. */
 	uint8_t lower,  /*!< lower the lower bound for the loop interval. */
-	uint8_t upper   /*!< upper the upper bound for the loop interval. */
+	uint8_t upper,  /*!< upper the upper bound for the loop interval. */
+	int8_t step     /*!< 1 for incrementing value, -1 for a decrement */
 );
 
-/*!
-	\brief Decrement value by one without exiting the [lower, upper] interval.
-	\details Decrement value by one without exiting the [lower, upper] interval. If the value meets the lower bound, it is restarted from upper bound.
-	\sa menu_editmode_start
-*/
-void helpers_loop_down(
-	uint8_t *value, /*!< value a pointer to the variable to be decremented. */
-	uint8_t lower,  /*!< lower the lower bound for the loop interval. */
-	uint8_t upper   /*!< upper the upper bound for the loop interval. */
-);
 
 /*!
 	\brief List of possible message types for the message bus.
@@ -105,18 +105,20 @@ void helpers_loop_down(
 enum sys_message {
 	/* drivers/rtca */
 	SYS_MSG_RTC_ALARM		= BIT0, /*!< alarm event from the hardware RTC. */
-	SYS_MSG_RTC_MINUTE	= BIT1, /*!< minute event from the hardware RTC. */
-	SYS_MSG_RTC_HOUR		= BIT2, /*!< hour event from the hardware RTC. */
-	SYS_MSG_RTC_DAY		= BIT3, /*!< day event from the hardware RTC. */
-	SYS_MSG_RTC_MONTH		= BIT4, /*!< month event from the hardware RTC. */
-	SYS_MSG_RTC_YEAR		= BIT5, /*!< year event from the hardware RTC. */
+	SYS_MSG_RTC_SECOND	= BIT1, /*!< second event from the hardware RTC. */
+	SYS_MSG_RTC_MINUTE	= BIT2, /*!< minute event from the hardware RTC. */
+	SYS_MSG_RTC_HOUR		= BIT3, /*!< hour event from the hardware RTC. */
+	SYS_MSG_RTC_DAY		= BIT4, /*!< day event from the hardware RTC. */
+	SYS_MSG_RTC_MONTH		= BIT5, /*!< month event from the hardware RTC. */
+	SYS_MSG_RTC_YEAR		= BIT6, /*!< year event from the hardware RTC. */
 	/* drivers/timer */
-	SYS_MSG_TIMER_1HZ		= BIT6, /*!< 1HZ event from the hardware TIMER_0. */
-	SYS_MSG_TIMER_10HZ	= BIT7, /*!< 10HZ event from the hardware TIMER_0. */
-	SYS_MSG_TIMER_PROG	= BIT8, /*!< programmable event from TIMER_0. */
+	SYS_MSG_TIMER_4S		= BIT7, /*!< 4s (period) event from the hardware TIMER_0. */
+	SYS_MSG_TIMER_20HZ	= BIT8, /*!< 20HZ event from the hardware TIMER_0. */
+	SYS_MSG_TIMER_PROG	= BIT9, /*!< programmable event from TIMER_0. */
 	/* sensor/interrups */
-	SYS_MSG_AS_INT =	BIT9,
-	SYS_MSG_PS_INT =	BITA,
+	SYS_MSG_AS_INT =	BITA,
+	SYS_MSG_PS_INT =	BITB,
+	SYS_MSG_BATT =    BITC,
 };
 
 /*!

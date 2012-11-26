@@ -22,29 +22,43 @@
 
 #include <openchronos.h>
 
-enum rtca_tevent{
+enum rtca_tevent {
 	RTCA_EV_ALARM	= BIT0,
-	RTCA_EV_MINUTE	= BIT1,
-	RTCA_EV_HOUR	= BIT2,
-	RTCA_EV_DAY		= BIT3,
-	RTCA_EV_MONTH	= BIT4,
-	RTCA_EV_YEAR	= BIT5
+	RTCA_EV_SECOND = BIT1,
+	RTCA_EV_MINUTE	= BIT2,
+	RTCA_EV_HOUR	= BIT3,
+	RTCA_EV_DAY		= BIT4,
+	RTCA_EV_MONTH	= BIT5,
+	RTCA_EV_YEAR	= BIT6
 };
+
+/* Day of week strings */
+static char const * const rtca_dow_str[] = {
+	"SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"
+};
+
+struct {
+	uint32_t sys;   /* system time: number of seconds since power on */
+	uint16_t year;  /* cache of RTC year register */
+	uint8_t mon;    /* cache of RTC month register */
+	uint8_t day;    /* cache of RTC day register */
+	uint8_t dow;    /* cache of RTC day of week register */
+	uint8_t hour;   /* cache of RTC hour register */
+	uint8_t min;    /* cache of RTC minutes register */
+	uint8_t sec;    /* cache of RTC seconds register */
+} rtca_time;
+
+#define rtca_stop()		(RTCCTL01 |=  RTCHOLD)
+#define rtca_start()		(RTCCTL01 &= ~RTCHOLD)
 
 /* the ev variable holds the time event, see enum rtca_tevent for more info.
 please add -fshort-enums to CFLAGS to store rtca_tevent as only a byte */
 void rtca_init(void);
-void rtca_tevent_fn_register(void (*fn)(enum rtca_tevent));
-void rtca_tevent_fn_unregister(void (*fn)(enum rtca_tevent));
 
 uint8_t rtca_get_max_days(uint8_t month, uint16_t year);
-uint32_t rtca_get_systime(void);
 
-void rtca_get_time(uint8_t *hour, uint8_t *min, uint8_t *sec);
-void rtca_set_time(uint8_t hour, uint8_t min, uint8_t sec);
-
-void rtca_get_date(uint16_t *year, uint8_t *mon, uint8_t *day, uint8_t *dow);
-void rtca_set_date(uint16_t year, uint8_t mon, uint8_t day);
+void rtca_set_time();
+void rtca_set_date();
 
 void rtca_get_alarm(uint8_t *hour, uint8_t *min);
 void rtca_set_alarm(uint8_t hour, uint8_t min);
