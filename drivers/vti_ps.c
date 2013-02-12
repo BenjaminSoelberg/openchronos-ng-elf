@@ -45,6 +45,10 @@
 // driver
 #include "vti_ps.h"
 //#include "timer.h"
+
+//TODO: see what we should do with tis
+#define CONFIG_FIXEDPOINT_MATH
+
 #ifdef CONFIG_FIXEDPOINT_MATH
 #include "dsp.h"
 #endif
