@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 ###################################################################################################
 # ChronosTool.py
 # Tool for programming TI eZ430-Chronos watches

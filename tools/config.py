@@ -28,12 +28,6 @@ DATA["CONFIG_DEBUG"] = {
 	"help": "Sets CFLAGS and LDFLAGS for debugging",
 }
 
-DATA["CONFIG_FIXEDPOINT_MATH"] = {
-	"name": "Fixedpoint Math (EXPERIMENTAL)",
-	"default": False,
-	"help": "Tries to use fix point aritmetric. If no module is using it, it reduces the code size dramaticly.",
-}
-
 DATA["USE_LCD_CHARGE_PUMP"] = {
 	"name": "Use LCD Charge Pump (6 bytes)",
 	"default": False,

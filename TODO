@@ -1,8 +1,0 @@
-* read_calibration_values() was removed from openchronos.c, find out where to
-put this and make it work again.
-* temperature measurement is borken.
-* pressure measurement is borken.
-* imperial/metric selection is borken.
-* low battery check is borken.
-* simpliciTI is deactivated.
-* Allow dependecies to be specified in modules/MODULE.cfg
