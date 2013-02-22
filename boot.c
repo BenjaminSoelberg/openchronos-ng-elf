@@ -123,7 +123,11 @@ void _init8(void)
 
 	lcd_init();
 
-	display_chars(0, LCD_SEG_L1_3_0, "BOOT", SEG_ON);
+	/* Write 'boot' to the screen without using display functions */
+	LCDM2 = 199; /* 'b' */
+	LCDM3 = 198; /* 'o' */
+	LCDM4 = 198; /* 'o' */
+	LCDM6 = 135; /* 't' */
 
 	/* Enable global interrupts */
 	__enable_interrupt();
