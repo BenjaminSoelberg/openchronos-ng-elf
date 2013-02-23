@@ -18,11 +18,23 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+/*
+   Developer note: I thought about using SYSRIVECT, to override the
+	interrupt handler of PORT2 (buttons). This would allow temporarily
+	replacing the interrupt vector in RAM at boot, providing button
+	interrupts needed to wake up the system from low power.
+	Unfortunately this would require to modify the linker script to
+	reserve 128 bytes at the TOP of the RAM for the new interrupt vector.
+	Since we are not handling watchdog timer interrupts in the main program,
+	I thought we could use it as a source of external events to wakeup the
+	CPU from low power mode and check buttons state.
+*/
+
 
 #include "openchronos.h"
 #include "drivers/pmm.h"
 
-// Entry point of of the Flash Updater in BSL memory
+/* Entry point of of the Flash Updater in BSL memory */
 #define CALL_RFSBL()   ((void (*)())0x1000)()
 
 #define ALL_BUTTONS 0x1F
@@ -92,15 +104,6 @@ inline void initialize_buttons()
 	/* Enable internal pull-downs */
 	P2OUT &= ~ALL_BUTTONS;
 	P2REN |= ALL_BUTTONS;
-
-	/* IRQ triggers on rising edge */
-	P2IES &= ~ALL_BUTTONS;
-
-	/* Reset IRQ flags */
-	P2IFG &= ~ALL_BUTTONS;
-
-	/* Enable button interrupts */
-	P2IE |= ALL_BUTTONS;
 }
 
 inline void initialize_lcd()
@@ -141,6 +144,16 @@ inline void initialize_lcd()
 #endif
 }
 
+inline void jump_to_rfbsl()
+{
+	/* clear display memory (useful to know if rfbsl failed) */
+	LCDBMEMCTL |= LCDCLRBM + LCDCLRM;
+
+	/* finally jump to the BSL memory address */
+	CALL_RFSBL();
+}
+
+
 /* put bootmenu in the init8 section which is executed before main */
 __attribute__ ((naked, section (".init8")))
 void _init8(void)
@@ -176,19 +189,36 @@ void _init8(void)
 	LCDM4 = 198; /* 'o' */
 	LCDM6 = 135; /* 't' */
 
+	/* configure watchdog interrupt timer, used for polling buttons */
+	{
+		/* ACLK timer source, 250ms timer mode, resume watchdog */
+		WDTCTL = WDT_ADLY_250;
+
+		/* Enable watchdog timer interrupts */
+		SFRIE1 |= WDTIE;
+	}
+
 	/* Enable global interrupts */
 	__enable_interrupt();
 
 	/* loop if no button is pressed, enter RFBSL if backlight is pressed */
 	do {
-		/* Enter LPM3 */
-		_BIS_SR(LPM3_bits + GIE);
+		_BIS_SR(LPM3_bits | GIE);
 
-		if ((P2IN & BTN_BL_PIN) == BTN_BL_PIN)
-			CALL_RFSBL();
+		if ((P2IN & ALL_BUTTONS) == BTN_BL_PIN)
+			jump_to_rfbsl();
+
 	} while ((P2IN & ALL_BUTTONS) == 0);
 
 	/* Disable them again, they will be re-enabled later on in main() */
 	__disable_interrupt();
+
+}
+
+__attribute__((interrupt(WDT_VECTOR)))
+void WDT_ISR(void)
+{
+	/* exit from LPM3 after interrupt */
+	_BIC_SR_IRQ(LPM3_bits);
 }
 
