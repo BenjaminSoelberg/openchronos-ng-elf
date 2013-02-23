@@ -376,35 +376,6 @@ static void write_lcd_mem(uint8_t *segmem, uint8_t *blkmem,
  **************************** EXPORTED FUNCTIONS ***************************
  **************************************************************************/
 
-void lcd_init(void)
-{
-	// Clear entire display memory
-	LCDBMEMCTL |= LCDCLRBM + LCDCLRM;
-
-	// LCD_FREQ = ACLK/12/8 = 341.3Hz flickers in the sun
-	// LCD_FREQ = ACLK/10/8 = 409.6Hz still flickers in the sun when watch is moving (might be negligible)
-
-	// LCD_FREQ = ACLK/8/8 = 512Hz no flickering, even when watch is moving
-	// Frame frequency = 512Hz/2/4 = 64Hz, LCD mux 4, LCD on
-	LCDBCTL0 = (LCDDIV0 + LCDDIV1 + LCDDIV2) | (LCDPRE0 + LCDPRE1) | LCD4MUX | LCDON;
-
-	// LCB_BLK_FREQ = ACLK/8/2048 = 2Hz
-	LCDBBLKCTL = LCDBLKPRE1 | LCDBLKDIV0 | LCDBLKDIV1 | LCDBLKDIV2 | LCDBLKMOD0;
-
-	// I/O to COM outputs
-	P5SEL |= (BIT5 | BIT6 | BIT7);
-	P5DIR |= (BIT5 | BIT6 | BIT7);
-
-	// Activate LCD output
-	LCDBPCTL0 = 0xFFFF;                         // Select LCD segments S0-S15
-	LCDBPCTL1 = 0x00FF;                         // Select LCD segments int16_t-S22
-
-#ifdef USE_LCD_CHARGE_PUMP
-	// Charge pump voltage generated internally, internal bias (V2-V4) generation
-	LCDBVCTL = LCDCPEN | VLCD_2_72;
-#endif
-}
-
 /*
 	lcd_screens_create()
 */

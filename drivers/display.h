@@ -149,14 +149,6 @@ enum display_segment_array {
 };
 
 /*!
-	\brief Initializes the display
-	\details This functions is called once upon system initialization.
-	\note Modules are strictly forbidden to call this function.
-	\internal
-*/
-void lcd_init(void);
-
-/*!
 	\brief Virtual LCD screen
 	\sa #lcd_screens_create()
 */
