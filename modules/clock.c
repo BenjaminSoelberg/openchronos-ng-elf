@@ -47,7 +47,8 @@ static void clock_event(enum sys_message msg)
 		_printf(0, LCD_SEG_L2_4_3, "%02u", rtca_time.day);
 
 #endif
-		_printf(1, LCD_SEG_L2_2_0, rtca_dow_str[rtca_time.dow], SEG_SET);
+		_printf(1, LCD_SEG_L2_2_0, rtca_dow_str[rtca_time.dow],
+								SEG_SET);
 	}
 	if (msg & SYS_MSG_RTC_HOUR) {
 #ifdef CONFIG_MOD_CLOCK_AMPM
@@ -76,6 +77,12 @@ static void clock_event(enum sys_message msg)
 		_printf(0, LCD_SEG_L1_1_0, "%02u", rtca_time.min);
 }
 
+/* update screens with fake event */
+static inline void update_screen()
+{
+	clock_event(SYS_MSG_RTC_YEAR | SYS_MSG_RTC_MONTH | SYS_MSG_RTC_DAY
+				| SYS_MSG_RTC_HOUR  | SYS_MSG_RTC_MINUTE);
+}
 /********************* edit mode callbacks ********************************/
 static void edit_yy_sel(void)
 {
@@ -144,7 +151,8 @@ static void edit_dd_dsel(void)
 
 static void edit_dd_set(int8_t step)
 {
-	helpers_loop(&rtca_time.day, 1, rtca_get_max_days(rtca_time.mon, rtca_time.year), step);
+	helpers_loop(&rtca_time.day, 1, rtca_get_max_days(rtca_time.mon,
+						rtca_time.year), step);
 #ifdef CONFIG_MOD_CLOCK_MONTH_FIRST
 	_printf(0, LCD_SEG_L2_1_0, "%02u", rtca_time.day);
 #else
@@ -226,6 +234,9 @@ static void edit_save()
 
 	/* start the RTC */
 	rtca_start();
+
+	/* update screens with fake event */
+	update_screen();
 }
 
 /* edit mode item table */
@@ -258,11 +269,7 @@ static void clock_activated()
 	display_char(0, LCD_SEG_L2_2, '-', SEG_SET);
 
 	/* update screens with fake event */
-	clock_event(SYS_MSG_RTC_YEAR
-					| SYS_MSG_RTC_MONTH
-					| SYS_MSG_RTC_DAY
-					| SYS_MSG_RTC_HOUR
-					| SYS_MSG_RTC_MINUTE);
+	update_screen();
 }
 
 static void clock_deactivated()
