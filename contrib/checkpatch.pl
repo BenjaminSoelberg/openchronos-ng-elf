@@ -15,13 +15,13 @@ my $V = '0.31';
 use Getopt::Long qw(:config no_auto_abbrev);
 
 my $quiet = 0;
-my $tree = 1;
+my $tree = 0;
 my $chk_signoff = 1;
 my $chk_patch = 1;
 my $tst_only;
 my $emacs = 0;
 my $terse = 0;
-my $file = 0;
+my $file = 1;
 my $check = 0;
 my $summary = 1;
 my $mailback = 0;
@@ -2653,11 +2653,11 @@ sub process {
 			}
 		}
 
-# no volatiles please
-		my $asm_volatile = qr{\b(__asm__|asm)\s+(__volatile__|volatile)\b};
-		if ($line =~ /\bvolatile\b/ && $line !~ /$asm_volatile/) {
-			WARN("Use of volatile is usually wrong: see Documentation/volatile-considered-harmful.txt\n" . $herecurr);
-		}
+## no volatiles please
+#		my $asm_volatile = qr{\b(__asm__|asm)\s+(__volatile__|volatile)\b};
+#		if ($line =~ /\bvolatile\b/ && $line !~ /$asm_volatile/) {
+#			WARN("Use of volatile is usually wrong: see Documentation/volatile-considered-harmful.txt\n" . $herecurr);
+#		}
 
 # warn about #if 0
 		if ($line =~ /^.\s*\#\s*if\s+0\b/) {
