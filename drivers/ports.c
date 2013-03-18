@@ -41,36 +41,16 @@ volatile enum ports_buttons ports_down_btns;
 /* contains confirmed button presses (long and short) */
 volatile enum ports_buttons ports_pressed_btns;
 
-void init_buttons(void)
-{
-	/* Set button ports to input */
-	P2DIR &= ~ALL_BUTTONS;
-
-	/* Enable internal pull-downs */
-	P2OUT &= ~ALL_BUTTONS;
-	P2REN |= ALL_BUTTONS;
-
-	/* IRQ triggers on rising edge */
-	P2IES &= ~ALL_BUTTONS;
-
-	/* Reset IRQ flags */
-	P2IFG &= ~ALL_BUTTONS;
-
-	/* Enable button interrupts */
-	P2IE |= ALL_BUTTONS;
-}
-
-
-uint8_t timer_20Hz_isRequested;
-uint16_t last_press;
+static uint8_t timer_20Hz_requested;
+static uint16_t last_press;
 
 /* 0 bit = ignore until release */
-uint8_t silent_until_release = 0xff;
+static uint8_t silent_until_release = 0xff;
 
 /*
   20 Hz callback for figuring out the buttons
 */
-void callback_20Hz(enum sys_message msg)
+static void callback_20Hz(enum sys_message msg)
 {
 	static uint8_t last_state;
 	uint8_t buttons = P2IN & ALL_BUTTONS;
@@ -96,16 +76,36 @@ void callback_20Hz(enum sys_message msg)
 	if (!buttons) {
 		/* turn 20 Hz callback off */
 		sys_messagebus_unregister(&callback_20Hz);
-		timer_20Hz_isRequested = 0;
+		timer_20Hz_requested = 0;
 	}
 }
+
+void init_buttons(void)
+{
+	/* Set button ports to input */
+	P2DIR &= ~ALL_BUTTONS;
+
+	/* Enable internal pull-downs */
+	P2OUT &= ~ALL_BUTTONS;
+	P2REN |= ALL_BUTTONS;
+
+	/* IRQ triggers on rising edge */
+	P2IES &= ~ALL_BUTTONS;
+
+	/* Reset IRQ flags */
+	P2IFG &= ~ALL_BUTTONS;
+
+	/* Enable button interrupts */
+	P2IE |= ALL_BUTTONS;
+}
+
 
 /*
   official function to ask for buttons
 */
-uint8_t ports_button_isPressed(uint8_t btn, uint8_t longpressCanOccur)
+uint8_t ports_button_pressed(uint8_t btn, uint8_t with_longpress)
 {
-	if (longpressCanOccur) {
+	if (with_longpress) {
 		return BIT_IS_SET(ports_pressed_btns, btn);
 	} else {
 		if (BIT_IS_SET(ports_down_btns, btn)) {
@@ -139,11 +139,11 @@ void PORT2_ISR(void)
 	/* If the interrupt is a button press */
 	if (P2IFG & ALL_BUTTONS) {
 		/* turn on 20 Hz callback*/
-		if (!timer_20Hz_isRequested) {
+		if (!timer_20Hz_requested) {
 			last_press = timer0_20hz_counter;
 			sys_messagebus_register(&callback_20Hz,
 						SYS_MSG_TIMER_20HZ);
-			timer_20Hz_isRequested = 1;
+			timer_20Hz_requested = 1;
 		}
 	}
 
