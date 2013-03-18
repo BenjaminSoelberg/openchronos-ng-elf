@@ -1,3 +1,4 @@
+/* (c) <MartinAusChemnitz@gmx.net>, GNU GPL3 */
 /*
     Copyright (C) 2009 Texas Instruments Incorporated - http://www.ti.com/
 
@@ -55,7 +56,8 @@ enum ports_buttons {
 };
 
 /* exclusive for openchronos.c, modules should NOT use this directly */
-volatile enum ports_buttons ports_pressed_btns;
+uint8_t ports_button_isPressed(uint8_t btn, uint8_t longpressCanOccur);
+void ports_buttons_clear(void);
 
 void init_buttons(void);
 
