@@ -1,6 +1,6 @@
 /*
     openchronos.c: openchronos-ng main loop & user interface
-	 
+
 	 Copyright (C) 2012 Angelo Arrifano <miknix@gmail.com>
 
 	          http://www.openchronos-ng.sourceforge.net
@@ -244,15 +244,15 @@ static void menumode_handler(void)
 	if (BIT_IS_SET(ports_pressed_btns, PORTS_BTN_STAR)) {
 		/* exit mode mode */
 		menumode.enabled = 0;
-	
+
 		/* clear both lines but keep symbols! */
 		display_clear(0, 1);
 		display_clear(0, 2);
-		
+
 		/* turn off up/down symbols */
 		display_symbol(0, LCD_SYMB_ARROW_UP, SEG_OFF);
 		display_symbol(0, LCD_SYMB_ARROW_DOWN, SEG_OFF);
-		
+
 		/* stop blinking name of current selected module */
 		display_chars(0, LCD_SEG_L2_4_0, NULL, BLINK_OFF);
 
@@ -314,7 +314,7 @@ static void check_buttons(void)
 		} else if (BIT_IS_SET(ports_pressed_btns, PORTS_BTN_NUM)) {
 			if (menumode.item->num_btn_fn)
 				menumode.item->num_btn_fn();
-		
+
 		} else if (BIT_IS_SET(ports_pressed_btns, PORTS_BTN_UP | PORTS_BTN_DOWN)) {
 			if (menumode.item->updown_btn_fn)
 				menumode.item->updown_btn_fn();
@@ -351,7 +351,7 @@ void menu_add_entry(char const * name,
 		menu_p->next = menu_p;
 		menu_p->prev = menu_p;
 		*menu_hd = menu_p;
-		
+
 		/* There wasnt any menu active, so we activate this one */
 		menumode.item = menu_p;
 		activate_fn();
@@ -444,8 +444,8 @@ void init_application(void)
         __delay_cycles(62500);
         __delay_cycles(62500);
 #endif
-  
-	// Loop until XT1 & DCO stabilizes, use do-while to insure that 
+
+	// Loop until XT1 & DCO stabilizes, use do-while to insure that
 	// body is executed at least once
 	do {
 		UCSCTL7 &= ~(XT2OFFG + XT1LFOFFG + XT1HFOFFG + DCOFFG);
@@ -512,7 +512,7 @@ void init_application(void)
 	// ---------------------------------------------------------------------
 	// Configure Timer0 for use by the clock and delay functions
 	timer0_init();
-	
+
 	/* Init buzzer */
 	buzzer_init();
 
@@ -540,7 +540,7 @@ void init_application(void)
 int main(void)
 {
 	// Init MCU
-	init_application();	
+	init_application();
 
 #ifdef CONFIG_TEST
 	// Branch to welcome screen

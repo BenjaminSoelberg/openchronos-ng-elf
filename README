@@ -1,33 +1,18 @@
-openchronos-ng - http://openchronos-ng.sourceforge.net/
+openchronos-ng - http://openchronos-ng.sourceforge.net
 
-== Status ==
-In progress..
-
-This is a major rework of the entire system. For now, only this is working:
-* clock (based on hardware time keeping, no more inaccuracy).
-* alarm (also based on hardware).
-* RFBSL wireless update.
-
-It might not look a lot and it isn't because most of the work was done in the
-core openchronos. Basically, at core level, this was what has been done:
-* Implementation of a system wide message bus.
-* Implementation of a RTC driver (for clock and alarm).
-* Rework of timer and ports drivers.
-* Implementation of a module system (drop in applications).
-* Rework of the display routines.
-* Rework of the menu system.
-* Rework of the buzzer system: it can now play RTTTL (nokia tunes) melodies.
-
-In summary, you should expect the code to be more stable, smaller and easier
-to understand.
-
-== Requirements ==
-
-* msp430 toolchain (DO NOT USE msp430-gcc4, IT IS DEPRECATED)
-* python
+Modular opensource firmware for the TI eZ430 Chronos.
+Please check our homepage for the most up to date information.
 
 == Recommended Toolchain ==
 
-gcc-4.4.3
-binutils-2.20.1
-libc-20120430
+We recommend you to use the following versions for your toolchain,
+since certain version combinations can result in buggy code!
+
+msp430-binutils-2.22_p20120911
+msp430-gcc-4.6.3_p20120406
+msp430-libc-20120716
+msp430mcu-20120716
+
+and for debugging:
+msp430-gdb-7.2_p20111205
+mspdebug-0.21
