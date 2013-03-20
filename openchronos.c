@@ -214,14 +214,14 @@ void check_events(void)
 static void editmode_handler(void)
 {
 	/* STAR button exits edit mode */
-	if (ports_button_isPressed(PORTS_BTN_STAR, 0)) {
+	if (BIT_IS_SET(ports_pressed_btns, PORTS_BTN_STAR)) {
 		/* deselect item */
 		menu_editmode.items[menu_editmode.pos].deselect();
 
 		menu_editmode.complete_fn();
 		menu_editmode.enabled = 0;
 
-	} else if (ports_button_isPressed(PORTS_BTN_NUM, 0)) {
+	} else if (BIT_IS_SET(ports_pressed_btns, PORTS_BTN_NUM)) {
 		/* deselect current item */
 		menu_editmode.items[menu_editmode.pos].deselect();
 
@@ -229,19 +229,19 @@ static void editmode_handler(void)
 		menu_editmode.pos++;
 		if (! menu_editmode.items[menu_editmode.pos].set)
 			menu_editmode.pos = 0;
-			menu_editmode.items[menu_editmode.pos].select();
+		menu_editmode.items[menu_editmode.pos].select();
 
-		} else if (ports_button_isPressed(PORTS_BTN_UP, 0)) {
-			menu_editmode.items[menu_editmode.pos].set(1);
+	} else if (BIT_IS_SET(ports_pressed_btns, PORTS_BTN_UP)) {
+		menu_editmode.items[menu_editmode.pos].set(1);
 
-		} else if (ports_button_isPressed(PORTS_BTN_DOWN, 0)) {
-			menu_editmode.items[menu_editmode.pos].set(-1);
+	} else if (BIT_IS_SET(ports_pressed_btns, PORTS_BTN_DOWN)) {
+		menu_editmode.items[menu_editmode.pos].set(-1);
 	}
 }
 
 static void menumode_handler(void)
 {
-	if (ports_button_isPressed(PORTS_BTN_STAR, 0)) {
+	if (BIT_IS_SET(ports_pressed_btns, PORTS_BTN_STAR)) {
 		/* exit mode mode */
 		menumode.enabled = 0;
 
@@ -260,11 +260,11 @@ static void menumode_handler(void)
 		if (menumode.item->activate_fn)
 			menumode.item->activate_fn();
 
-	} else if (ports_button_isPressed(PORTS_BTN_UP, 0)) {
+	} else if (BIT_IS_SET(ports_pressed_btns, PORTS_BTN_UP)) {
 		menumode.item = menumode.item->next;
 		display_chars(0, LCD_SEG_L2_4_0, menumode.item->name, SEG_SET);
 
-	} else if (ports_button_isPressed(PORTS_BTN_DOWN, 0)) {
+	} else if (BIT_IS_SET(ports_pressed_btns, PORTS_BTN_DOWN)) {
 		menumode.item = menumode.item->prev;
 		display_chars(0, LCD_SEG_L2_4_0, menumode.item->name, SEG_SET);
 	}
@@ -300,36 +300,36 @@ static void check_buttons(void)
 		menumode_handler();
 
 	} else {
-		if (ports_button_isPressed(PORTS_BTN_LSTAR, 1)) {
+		if (BIT_IS_SET(ports_pressed_btns, PORTS_BTN_LSTAR)) {
 			if (menumode.item->lstar_btn_fn)
 				menumode.item->lstar_btn_fn();
 
-		} else if (ports_button_isPressed(PORTS_BTN_STAR, !!(menumode.item->lstar_btn_fn))) {
+		} else if (BIT_IS_SET(ports_pressed_btns, PORTS_BTN_STAR)) {
 			menumode_enable();
 
-		} else if (ports_button_isPressed(PORTS_BTN_LNUM, 1)) {
+		} else if (BIT_IS_SET(ports_pressed_btns, PORTS_BTN_LNUM)) {
 			if (menumode.item->lnum_btn_fn)
 				menumode.item->lnum_btn_fn();
 
-		} else if (ports_button_isPressed(PORTS_BTN_NUM, !!(menumode.item->lnum_btn_fn))) {
+		} else if (BIT_IS_SET(ports_pressed_btns, PORTS_BTN_NUM)) {
 			if (menumode.item->num_btn_fn)
 				menumode.item->num_btn_fn();
 
-		} else if (ports_button_isPressed(PORTS_BTN_UP | PORTS_BTN_DOWN, 0)) {
+		} else if (BIT_IS_SET(ports_pressed_btns, PORTS_BTN_UP | PORTS_BTN_DOWN)) {
 			if (menumode.item->updown_btn_fn)
 				menumode.item->updown_btn_fn();
 
-		} else if (ports_button_isPressed(PORTS_BTN_UP, 0)) {
+		} else if (BIT_IS_SET(ports_pressed_btns, PORTS_BTN_UP)) {
 			if (menumode.item->up_btn_fn)
 				menumode.item->up_btn_fn();
 
-		} else if (ports_button_isPressed(PORTS_BTN_DOWN, 0)) {
+		} else if (BIT_IS_SET(ports_pressed_btns, PORTS_BTN_DOWN)) {
 			if (menumode.item->down_btn_fn)
 				menumode.item->down_btn_fn();
 		}
 	}
 
-	ports_buttons_clear();
+	ports_pressed_btns = 0;
 }
 
 void menu_add_entry(char const * name,

@@ -1,4 +1,3 @@
-/* (c) <MartinAusChemnitz@gmx.net>, GNU GPL3 */
 /*
     drivers/ports.c: Openchronos ports driver
 
@@ -35,12 +34,6 @@
 
 #define BIT_IS_SET(F, B) (((F) | (B)) == (F))
 
-/* contains buttons currently held down */
-volatile enum ports_buttons ports_down_btns;
-
-/* contains confirmed button presses (long and short) */
-volatile enum ports_buttons ports_pressed_btns;
-
 void init_buttons(void)
 {
 	/* Set button ports to input */
@@ -60,73 +53,6 @@ void init_buttons(void)
 	P2IE |= ALL_BUTTONS;
 }
 
-
-uint8_t timer_20Hz_isRequested;
-uint16_t last_press;
-
-/* 0 bit = ignore until release */
-uint8_t silent_until_release = 0xff;
-
-/*
-  20 Hz callback for figuring out the buttons
-*/
-void callback_20Hz(enum sys_message msg)
-{
-	static uint8_t last_state;
-	uint8_t buttons = P2IN & ALL_BUTTONS;
-
-	ports_down_btns |= ((last_state ^ buttons) & buttons)
-			& silent_until_release;
-	/*                  (buttons that changed) */
-	uint8_t released = ((last_state ^ buttons) & ~buttons)
-			& silent_until_release;
-	silent_until_release |= ~buttons;
-	last_state = buttons;
-
-	uint16_t pressed_ticks = timer0_20hz_counter - last_press;
-	/* check how long btn was pressed and save the event */
-	if (pressed_ticks > CONFIG_BUTTONS_LONG_PRESS_TIME) {
-		/* suppress */
-		silent_until_release &= ~buttons;
-		ports_pressed_btns |= buttons << 5;
-	} else {
-		ports_pressed_btns |= released;
-	}
-
-	if (!buttons) {
-		/* turn 20 Hz callback off */
-		sys_messagebus_unregister(&callback_20Hz);
-		timer_20Hz_isRequested = 0;
-	}
-}
-
-/*
-  official function to ask for buttons
-*/
-uint8_t ports_button_isPressed(uint8_t btn, uint8_t longpressCanOccur)
-{
-	if (longpressCanOccur) {
-		return BIT_IS_SET(ports_pressed_btns, btn);
-	} else {
-		if (BIT_IS_SET(ports_down_btns, btn)) {
-			/* suppress */
-			silent_until_release &= ~btn;
-			return 1;
-		} else {
-			return 0;
-		}
-	}
-}
-
-/*
-  official function to ignore all other button presses up to now
-*/
-void ports_buttons_clear(void)
-{
-	ports_down_btns = 0;
-	ports_pressed_btns = 0;
-}
-
 /*
   Interrupt service routine for
     - buttons
@@ -136,18 +62,61 @@ void ports_buttons_clear(void)
 __attribute__((interrupt(PORT2_VECTOR)))
 void PORT2_ISR(void)
 {
-	/* If the interrupt is a button press */
-	if (P2IFG & ALL_BUTTONS) {
-		/* turn on 20 Hz callback*/
-		if (!timer_20Hz_isRequested) {
-			last_press = timer0_20hz_counter;
-			sys_messagebus_register(&callback_20Hz,
-						SYS_MSG_TIMER_20HZ);
-			timer_20Hz_isRequested = 1;
-		}
+	static uint16_t last_press;
+
+	/* If the interrupt is not a button press, then handle accel */
+	if ((P2IFG & ALL_BUTTONS) == 0)
+		goto accel_handler;
+
+	/* get mask for buttons in rising edge */
+	uint8_t rising_mask = ~P2IES & ALL_BUTTONS;
+
+	/* for those, check which ones raised the interrupt, these are
+	 the ones that were just pressed */
+	uint8_t buttons = P2IFG & rising_mask;
+
+#ifdef CONFIG_TIMER_20HZ_IRQ
+	if (buttons)
+		last_press = timer0_20hz_counter;
+#endif
+
+	/* set pressed button IRQ triggers to falling edge,
+	 so we can detect when they are released */
+	P2IES |= buttons;
+
+	/* now get mask for buttons on falling edge
+	  (except the ones we just set) */
+	uint8_t falling_mask = P2IES & ALL_BUTTONS & ~rising_mask;
+
+	/* now for those check which ones raised the interrupt, these are
+	  the ones that were just released */
+	buttons = P2IFG & falling_mask;
+
+	/* if a single button was released, then release all the others */
+	if (buttons) {
+		buttons |= P2IES;
+
+#ifdef CONFIG_TIMER_20HZ_IRQ
+		uint16_t pressed_ticks = timer0_20hz_counter - last_press;
+#else
+		/* in case timer is disabled, at least detect short presses */
+		uint16_t pressed_ticks = CONFIG_BUTTONS_SHORT_PRESS_TIME;
+#endif
+
+		/* check how long btn was pressed and save the event */
+		if (pressed_ticks > CONFIG_BUTTONS_LONG_PRESS_TIME)
+			ports_pressed_btns |= buttons << 5;
+		else if (pressed_ticks >= CONFIG_BUTTONS_SHORT_PRESS_TIME)
+			ports_pressed_btns |= buttons;
+
+		/* set buttons IRQ triggers to rising edge */
+		P2IES &= ~ALL_BUTTONS;
+
+		/* Exit from LPM3 on RETI */
+		_BIC_SR_IRQ(LPM3_bits);
 	}
 
-	/* Handle accelerometer */
+accel_handler:
 	#ifdef CONFIG_ACCELEROMETER
 	/* Check if accelerometer interrupt flag */
 	if ((P2IFG & AS_INT_PIN) == AS_INT_PIN)
