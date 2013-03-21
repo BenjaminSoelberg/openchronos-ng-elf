@@ -94,20 +94,12 @@ DATA["TEXT_PORTS"] = {
 	"type": "info",
 }
 
-DATA["CONFIG_BUTTONS_LONG_PRESS_TIME"] = {
-	"name": "Button long press time",
+DATA["CONFIG_BUTTONS_AVG_WIN"] = {
+	"name": "Button averaging window size",
 	"type": "text",
-	"default": "6",
+	"default": "4",
 	"ifndef": True,
-	"help": "Long button press time (in multiples of 1/20 second)",
-}
-
-DATA["CONFIG_BUTTONS_SHORT_PRESS_TIME"] = {
-	"name": "Button short press time",
-	"type": "text",
-	"default": "1",
-	"ifndef": True,
-	"help": "Short button press time (in multiples of 1/20 second)",
+	"help": "The size of the averaging window (in multiples of 1/20 second)",
 }
 
 # BATTERY DRIVER #############################################################
