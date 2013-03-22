@@ -2,7 +2,7 @@
 /*
     drivers/ports.c: Openchronos ports driver
 
-	 Copyright (C) 2012 Angelo Arrifano <miknix@gmail.com>
+	 Copyright (C) 2012-2013 Angelo Arrifano <miknix@gmail.com>
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -33,47 +33,18 @@
 
 #define ALL_BUTTONS				0x1F
 
-#define BIT_IS_SET(F, B) (((F) | (B)) == (F))
-
-/* contains buttons currently held down */
-volatile enum ports_buttons ports_down_btns;
-
-/* contains confirmed button presses (long and short) */
-volatile enum ports_buttons ports_pressed_btns;
-
 static uint8_t timer_20Hz_requested;
-static uint16_t last_press;
-
-/* 0 bit = ignore until release */
-static uint8_t silent_until_release = 0xff;
+static uint16_t btns_last_press;
 
 /*
   20 Hz callback for figuring out the buttons
 */
 static void callback_20Hz(enum sys_message msg)
 {
-	static uint8_t last_state;
-	uint8_t buttons = P2IN & ALL_BUTTONS;
+	/* save buttons that went from pressed to released */
+	ports_btns_state = P2IN & ALL_BUTTONS;
 
-	ports_down_btns |= ((last_state ^ buttons) & buttons)
-			& silent_until_release;
-	/*                  (buttons that changed) */
-	uint8_t released = ((last_state ^ buttons) & ~buttons)
-			& silent_until_release;
-	silent_until_release |= ~buttons;
-	last_state = buttons;
-
-	uint16_t pressed_ticks = timer0_20hz_counter - last_press;
-	/* check how long btn was pressed and save the event */
-	if (pressed_ticks > CONFIG_BUTTONS_LONG_PRESS_TIME) {
-		/* suppress */
-		silent_until_release &= ~buttons;
-		ports_pressed_btns |= buttons << 5;
-	} else {
-		ports_pressed_btns |= released;
-	}
-
-	if (!buttons) {
+	if (!ports_btns_state) {
 		/* turn 20 Hz callback off */
 		sys_messagebus_unregister(&callback_20Hz);
 		timer_20Hz_requested = 0;
@@ -82,12 +53,7 @@ static void callback_20Hz(enum sys_message msg)
 
 void init_buttons(void)
 {
-	/* Set button ports to input */
-	P2DIR &= ~ALL_BUTTONS;
-
-	/* Enable internal pull-downs */
-	P2OUT &= ~ALL_BUTTONS;
-	P2REN |= ALL_BUTTONS;
+	/* Some initialization is done at boot.c */
 
 	/* IRQ triggers on rising edge */
 	P2IES &= ~ALL_BUTTONS;
@@ -100,32 +66,6 @@ void init_buttons(void)
 }
 
 
-/*
-  official function to ask for buttons
-*/
-uint8_t ports_button_pressed(uint8_t btn, uint8_t with_longpress)
-{
-	if (with_longpress) {
-		return BIT_IS_SET(ports_pressed_btns, btn);
-	} else {
-		if (BIT_IS_SET(ports_down_btns, btn)) {
-			/* suppress */
-			silent_until_release &= ~btn;
-			return 1;
-		} else {
-			return 0;
-		}
-	}
-}
-
-/*
-  official function to ignore all other button presses up to now
-*/
-void ports_buttons_clear(void)
-{
-	ports_down_btns = 0;
-	ports_pressed_btns = 0;
-}
 
 /*
   Interrupt service routine for
@@ -136,11 +76,19 @@ void ports_buttons_clear(void)
 __attribute__((interrupt(PORT2_VECTOR)))
 void PORT2_ISR(void)
 {
-	/* If the interrupt is a button press */
-	if (P2IFG & ALL_BUTTONS) {
-		/* turn on 20 Hz callback*/
+	uint8_t buttons = P2IFG & ALL_BUTTONS;
+
+	/* If the interrupt is a button press
+	   and is not already in pressed state
+	   and is outside of debouncing interval */
+	if (buttons && buttons ^ ports_btns_state
+				&& timer0_20hz_counter - btns_last_press
+					>= CONFIG_BTNS_DEBOUNCE_TIME) {
+
+		btns_last_press = timer0_20hz_counter;
+		ports_btns_state |= buttons;
+
 		if (!timer_20Hz_requested) {
-			last_press = timer0_20hz_counter;
 			sys_messagebus_register(&callback_20Hz,
 						SYS_MSG_TIMER_20HZ);
 			timer_20Hz_requested = 1;

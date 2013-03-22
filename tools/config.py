@@ -94,20 +94,12 @@ DATA["TEXT_PORTS"] = {
 	"type": "info",
 }
 
-DATA["CONFIG_BUTTONS_LONG_PRESS_TIME"] = {
-	"name": "Button long press time",
+DATA["CONFIG_BTNS_DEBOUNCE_TIME"] = {
+	"name": "Debouncing time for button interrupts",
 	"type": "text",
-	"default": "6",
+	"default": "2",
 	"ifndef": True,
-	"help": "Long button press time (in multiples of 1/20 second)",
-}
-
-DATA["CONFIG_BUTTONS_SHORT_PRESS_TIME"] = {
-	"name": "Button short press time",
-	"type": "text",
-	"default": "1",
-	"ifndef": True,
-	"help": "Short button press time (in multiples of 1/20 second)",
+	"help": "Debouncing time for button interrupts (N*(1/20) ms)",
 }
 
 # BATTERY DRIVER #############################################################

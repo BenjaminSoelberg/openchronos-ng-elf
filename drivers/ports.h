@@ -42,22 +42,8 @@
 #define PORTS_BTN_BL_PIN		(BIT3)
 #define PORTS_BTN_UP_PIN		(BIT4)
 
-enum ports_buttons {
-	PORTS_BTN_DOWN		= PORTS_BTN_DOWN_PIN,
-	PORTS_BTN_NUM		= PORTS_BTN_NUM_PIN,
-	PORTS_BTN_STAR		= PORTS_BTN_STAR_PIN,
-	PORTS_BTN_BL		= PORTS_BTN_BL_PIN,
-	PORTS_BTN_UP		= PORTS_BTN_UP_PIN,
-	PORTS_BTN_LDOWN	= BIT5,
-	PORTS_BTN_LNUM		= BIT6,
-	PORTS_BTN_LSTAR	= BIT7,
-	PORTS_BTN_LBL		= BIT8,
-	PORTS_BTN_LUP		= BIT9,
-};
-
 /* exclusive for openchronos.c, modules should NOT use this directly */
-uint8_t ports_button_pressed(uint8_t btn, uint8_t with_longpress);
-void ports_buttons_clear(void);
+volatile uint8_t ports_btns_state;
 
 void init_buttons(void);
 
