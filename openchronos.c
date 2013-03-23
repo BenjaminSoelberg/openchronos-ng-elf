@@ -246,10 +246,16 @@ static void editmode_handler(void)
 	} else if (BTN_PRESSED(BTN_UP) || (BTN_ONHOLD(BTN_UP)
 			&& timer0_20hz_counter - btns_last_press > 3)) {
 		menu_editmode.items[menu_editmode.pos].set(1);
+		
+		/* we need this here for the BTN_ONHOLD case */
+		btns_last_press = timer0_20hz_counter;
 
 	} else if (BTN_PRESSED(BTN_DOWN) || (BTN_ONHOLD(BTN_DOWN)
 			&& timer0_20hz_counter - btns_last_press > 3)) {
 		menu_editmode.items[menu_editmode.pos].set(-1);
+		
+		/* we need this here for the BTN_ONHOLD case */
+		btns_last_press = timer0_20hz_counter;
 	}
 }
 
