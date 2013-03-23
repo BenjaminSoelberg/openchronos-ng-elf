@@ -76,8 +76,6 @@
 #include <drivers/temperature.h>
 #include <drivers/battery.h>
 
-#define BIT_IS_SET(F, B)  ((F) | (B)) == (F)
-
 /* Menu definitions and declarations */
 struct menu {
 	/* menu item name */
