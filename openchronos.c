@@ -220,10 +220,10 @@ void check_events(void)
 #define BTN_ONHOLD(B) ((ports_btns_state)>>(B) & 0x01)
 
 static uint8_t btns_last_state;
+static uint16_t btns_last_press;
 
 static void editmode_handler(void)
 {
-	static uint16_t last_btn_press;
 
 	/* STAR button exits edit mode */
 	if (BTN_PRESSED(BTN_STAR)) {
@@ -244,14 +244,12 @@ static void editmode_handler(void)
 			menu_editmode.items[menu_editmode.pos].select();
 
 	} else if (BTN_PRESSED(BTN_UP) || (BTN_ONHOLD(BTN_UP)
-			&& timer0_20hz_counter - last_btn_press > 3)) {
+			&& timer0_20hz_counter - btns_last_press > 3)) {
 		menu_editmode.items[menu_editmode.pos].set(1);
-		last_btn_press = timer0_20hz_counter;
 
 	} else if (BTN_PRESSED(BTN_DOWN) || (BTN_ONHOLD(BTN_DOWN)
-			&& timer0_20hz_counter - last_btn_press > 3)) {
+			&& timer0_20hz_counter - btns_last_press > 3)) {
 		menu_editmode.items[menu_editmode.pos].set(-1);
-		last_btn_press = timer0_20hz_counter;
 	}
 }
 
@@ -348,6 +346,8 @@ static void drive_menu(void)
 	}
 
 finish:
+	if ((ports_btns_state ^ btns_last_state) & ports_btns_state)
+		btns_last_press = timer0_20hz_counter;
 	btns_last_state = ports_btns_state;
 }
 
