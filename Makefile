@@ -56,15 +56,12 @@ $(OBJS): openchronos.cflags
 #
 # Top rules
 
-openchronos.elf: even_in_range.o $(OBJS)
-	@echo -e "\n>> Building $@ as target $(TARGET)"
+openchronos.elf: $(OBJS)
+	@echo "\n>> Building $@ as target $(TARGET)"
 	@$(CC) $(CFLAGS) $(LDFLAGS) $(INCLUDES) -o $@ $+	
 
 openchronos.txt: openchronos.elf
 	$(PYTHON) tools/memory.py -i $< -o $@
-
-even_in_range.o: even_in_range.s
-	$(AS) $< -o $@
 
 modinit.o: modinit.c
 	@echo "CC $<"
@@ -96,7 +93,7 @@ clean: $(SUBDIRS)
 	@for subdir in $(SUBDIRS); do \
 		echo "Cleaning $$subdir .."; rm -f $$subdir/*.o; \
 	done
-	@rm -f *.o openchronos.{elf,txt,cflags,dep} output.map
+	@rm -f *.o openchronos.elf openchronos.txt openchronos.cflags openchronos.dep output.map
 	@rm -f drivers/rtca_now.h
 
 doc:

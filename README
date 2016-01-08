@@ -14,6 +14,8 @@ for the first time), you have the choice to either enter flash mode
 We recommend you to use the following versions for your toolchain,
 since certain version combinations can result in buggy code!
 
+TODO (link to ti and show env vars and update all below here!!!)
+
 msp430-binutils-2.22_p20120911
 msp430-gcc-4.6.3_p20120406
 msp430-libc-20120716

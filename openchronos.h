@@ -33,6 +33,8 @@
 
 #include <stdlib.h>
 
+#include <stdint.h>
+
 #include "config.h"
 
 /*!
@@ -73,9 +75,6 @@ void menu_editmode_start(
 	/*! A vector of #menu_editmode_item, it must be NULL terminated! */
 	struct menu_editmode_item *items
 );
-
-/* Include function defined in even_in_range.s TODO: do we even need this?? */
-unsigned short __even_in_range(unsigned short __value, unsigned short __bound);
 
 /*!
 	\brief Handy prototype typedef for helpers_loop() function.
