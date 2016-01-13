@@ -1,7 +1,7 @@
 ### Machine flags
 #
 CC_CMACH	= -mmcu=cc430f6137
-CC_DMACH	= -D__MSP430_6137__ -DMRFI_CC430 -D__CC430F6137__
+CC_DMACH	= 
 ### Build flags
 #
 # -fdata-sections, -ffunction-sections and -Wl,--gc-sections -Wl,-s
@@ -10,13 +10,13 @@ CC_DMACH	= -D__MSP430_6137__ -DMRFI_CC430 -D__CC430F6137__
 #
 CFLAGS		+= $(CC_CMACH) $(CC_DMACH) -Wall
 CFLAGS		+= -fno-force-addr -finline-limit=1 -fno-schedule-insns
-CFLAGS		+= -fshort-enums -Wl,-Map=output.map
+CFLAGS		+= -mhwmult=none -fshort-enums -Wl,-Map=output.map
 LDFLAGS		= -L$(MSP430_TI)/include
 
 CFLAGS_REL	+= -Os -fdata-sections -ffunction-sections -fomit-frame-pointer
 LDFLAGS_REL	+= -Wl,--gc-sections -Wl,-s
 
-CFLAGS_DBG	+= -O1 -ggdb
+CFLAGS_DBG	+= -O0 -g3 -gdwarf-2 -ggdb
 LDFLAGS_DBG	+= -Wl,--gc-sections
 
 # linker flags and include directories
