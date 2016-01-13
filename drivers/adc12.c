@@ -127,12 +127,7 @@ uint16_t adc12_single_conversion(uint16_t ref, uint16_t sht, uint16_t channel)
 // @return      none
 // *************************************************************************************************
 //pfs wrapped the following to accommodate mspgcc compiler
-#ifdef __GNUC__
 __attribute__((interrupt(ADC12_VECTOR)))
-#else
-#pragma vector = ADC12_VECTOR
-__interrupt
-#endif
 void ADC12ISR(void)
 {
 	switch (__even_in_range(ADC12IV, 34)) {
