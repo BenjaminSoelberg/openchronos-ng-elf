@@ -148,8 +148,8 @@ inline void jump_to_rfbsl()
 
 
 /* put bootmenu in the init8 section which is executed before main */
-__attribute__ ((naked, section(".crt_0042"), used))
-void _init8(void)
+__attribute__((naked, section(".crt_0042"), used))
+static void init8(void)
 {
 	/* Stop watchdog timer */
 	WDTCTL = WDTPW + WDTHOLD;
