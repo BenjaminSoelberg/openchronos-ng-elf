@@ -26,6 +26,12 @@
 #include <drivers/rtca.h>
 #include <drivers/display.h>
 
+#ifdef CONFIG_MOD_CLOCK_AMPM
+static uint8_t use_CLOCK_AMPM = 1;
+#else
+static uint8_t use_CLOCK_AMPM = 0;
+#endif
+
 static void clock_event(enum sys_message msg)
 {
 #ifdef CONFIG_MOD_CLOCK_BLINKCOL
@@ -51,27 +57,27 @@ static void clock_event(enum sys_message msg)
 								SEG_SET);
 	}
 	if (msg & SYS_MSG_RTC_HOUR) {
-#ifdef CONFIG_MOD_CLOCK_AMPM
-		uint8_t tmp_hh = rtca_time.hour;
-		if (tmp_hh > 12) {
-			tmp_hh -= 12;
-			display_symbol(0, LCD_SYMB_AM, SEG_OFF);
-			display_symbol(0, LCD_SYMB_PM, SEG_SET);
-		} else {
-			if (tmp_hh == 12) {
+		if (use_CLOCK_AMPM) { 
+			uint8_t tmp_hh = rtca_time.hour;
+			if (tmp_hh > 12) {
+				tmp_hh -= 12;
 				display_symbol(0, LCD_SYMB_AM, SEG_OFF);
 				display_symbol(0, LCD_SYMB_PM, SEG_SET);
 			} else {
-				display_symbol(0, LCD_SYMB_PM, SEG_OFF);
-				display_symbol(0, LCD_SYMB_AM, SEG_SET);
+				if (tmp_hh == 12) {
+					display_symbol(0, LCD_SYMB_AM, SEG_OFF);
+					display_symbol(0, LCD_SYMB_PM, SEG_SET);
+				} else {
+					display_symbol(0, LCD_SYMB_PM, SEG_OFF);
+					display_symbol(0, LCD_SYMB_AM, SEG_SET);
+				}
+				if (tmp_hh == 0)
+					tmp_hh = 12;
 			}
-			if (tmp_hh == 0)
-				tmp_hh = 12;
+			_printf(0, LCD_SEG_L1_3_2, "%2u", tmp_hh);
+		} else {
+			_printf(0, LCD_SEG_L1_3_2, "%02u", rtca_time.hour);
 		}
-		_printf(0, LCD_SEG_L1_3_2, "%2u", tmp_hh);
-#else
-		_printf(0, LCD_SEG_L1_3_2, "%02u", rtca_time.hour);
-#endif
 	}
 	if (msg & SYS_MSG_RTC_MINUTE)
 		_printf(0, LCD_SEG_L1_1_0, "%02u", rtca_time.min);
@@ -188,33 +194,33 @@ static void edit_hh_dsel(void)
 static void edit_hh_set(int8_t step)
 {
 	helpers_loop(&rtca_time.hour, 0, 23, step);
-#ifdef CONFIG_MOD_CLOCK_AMPM
-	uint8_t tmp_hh = rtca_time.hour;
-	if (tmp_hh > 12) {
-		display_symbol(0, LCD_SYMB_AM, SEG_OFF);
-		display_symbol(0, LCD_SYMB_PM, SEG_SET);
-		_printf(0, LCD_SEG_L1_3_2, "%02u", tmp_hh-12);
-	} else {
-		if (tmp_hh == 0) {
-			_printf(0, LCD_SEG_L1_3_2, "%02u", 12);
-		} else {
-			if (tmp_hh > 9)
-				_printf(0, LCD_SEG_L1_3_2, "%02u", tmp_hh);
-			else
-				_printf(0, LCD_SEG_L1_3_2, "%02u", tmp_hh);
-		}
-		if (tmp_hh == 12) {
+	if (use_CLOCK_AMPM) { // TODO:Send print hh event with blink and delete this whole block?
+		uint8_t tmp_hh = rtca_time.hour;
+		if (tmp_hh > 12) {
 			display_symbol(0, LCD_SYMB_AM, SEG_OFF);
 			display_symbol(0, LCD_SYMB_PM, SEG_SET);
+			_printf(0, LCD_SEG_L1_3_2, "%02u", tmp_hh-12);
 		} else {
-			display_symbol(0, LCD_SYMB_PM, SEG_OFF);
-			display_symbol(0, LCD_SYMB_AM, SEG_SET);
+			if (tmp_hh == 0) {
+				_printf(0, LCD_SEG_L1_3_2, "%02u", 12);
+			} else {
+				if (tmp_hh > 9)
+					_printf(0, LCD_SEG_L1_3_2, "%02u", tmp_hh);
+				else
+					_printf(0, LCD_SEG_L1_3_2, "%02u", tmp_hh);
+			}
+			if (tmp_hh == 12) {
+				display_symbol(0, LCD_SYMB_AM, SEG_OFF);
+				display_symbol(0, LCD_SYMB_PM, SEG_SET);
+			} else {
+				display_symbol(0, LCD_SYMB_PM, SEG_OFF);
+				display_symbol(0, LCD_SYMB_AM, SEG_SET);
+			}
 		}
+		rtca_time.hour = tmp_hh;
+	} else {
+		_printf(0, LCD_SEG_L1_3_2, "%02u", rtca_time.hour);
 	}
-	rtca_time.hour = tmp_hh;
-#else
-	_printf(0, LCD_SEG_L1_3_2, "%02u", rtca_time.hour);
-#endif
 }
 
 static void edit_save()
@@ -281,10 +287,10 @@ static void clock_deactivated()
 
 	/* clean up screen */
 	display_symbol(0, LCD_SEG_L1_COL, SEG_OFF);
-#ifdef CONFIG_MOD_CLOCK_AMPM
-	display_symbol(0, LCD_SYMB_AM, SEG_OFF);
-	display_symbol(0, LCD_SYMB_PM, SEG_OFF);
-#endif
+	if (use_CLOCK_AMPM) { 
+		display_symbol(0, LCD_SYMB_AM, SEG_OFF);
+		display_symbol(0, LCD_SYMB_PM, SEG_OFF);
+	}
 	display_clear(0, 1);
 	display_clear(0, 2);
 }
