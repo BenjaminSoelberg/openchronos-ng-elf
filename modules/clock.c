@@ -35,8 +35,9 @@ static uint8_t use_CLOCK_AMPM = 0;
 static void clock_event(enum sys_message msg)
 {
 #ifdef CONFIG_MOD_CLOCK_BLINKCOL
-	display_symbol(0, LCD_SEG_L1_COL,
-	     ((rtca_time.sec & 0x01) ? SEG_ON : SEG_OFF));
+	if (msg & SYS_MSG_RTC_SECOND)
+		display_symbol(0, LCD_SEG_L1_COL,
+			((rtca_time.sec & 0x01) ? SEG_ON : SEG_OFF));
 #endif
 
 	if (msg & SYS_MSG_RTC_YEAR)
@@ -89,6 +90,7 @@ static inline void update_screen()
 	clock_event(SYS_MSG_RTC_YEAR | SYS_MSG_RTC_MONTH | SYS_MSG_RTC_DAY
 				| SYS_MSG_RTC_HOUR  | SYS_MSG_RTC_MINUTE);
 }
+
 /********************* edit mode callbacks ********************************/
 static void edit_yy_sel(void)
 {
@@ -105,7 +107,7 @@ static void edit_yy_set(int8_t step)
 	*((uint8_t *)&rtca_time.year + 1) = 0x07;
 	helpers_loop((uint8_t *)&rtca_time.year, 220, 230, step);
 
-	_printf(1, LCD_SEG_L1_3_0, "%04u", rtca_time.year);
+	update_screen();
 }
 
 static void edit_mo_sel(void)
@@ -129,11 +131,8 @@ static void edit_mo_dsel(void)
 static void edit_mo_set(int8_t step)
 {
 	helpers_loop(&rtca_time.mon, 1, 12, step);
-#ifdef CONFIG_MOD_CLOCK_MONTH_FIRST
-	_printf(0, LCD_SEG_L2_4_3, "%02u", rtca_time.mon);
-#else
-	_printf(0, LCD_SEG_L2_1_0, "%02u", rtca_time.mon);
-#endif
+
+	update_screen();
 }
 
 static void edit_dd_sel(void)
@@ -159,11 +158,7 @@ static void edit_dd_set(int8_t step)
 {
 	helpers_loop(&rtca_time.day, 1, rtca_get_max_days(rtca_time.mon,
 						rtca_time.year), step);
-#ifdef CONFIG_MOD_CLOCK_MONTH_FIRST
-	_printf(0, LCD_SEG_L2_1_0, "%02u", rtca_time.day);
-#else
-	_printf(0, LCD_SEG_L2_4_3, "%02u", rtca_time.day);
-#endif
+	update_screen();
 }
 
 static void edit_mm_sel(void)
@@ -179,7 +174,7 @@ static void edit_mm_set(int8_t step)
 {
 	helpers_loop(&rtca_time.min, 0, 59, step);
 
-	_printf(0, LCD_SEG_L1_1_0, "%02u", rtca_time.min);
+	update_screen();
 }
 
 static void edit_hh_sel(void)
@@ -194,33 +189,8 @@ static void edit_hh_dsel(void)
 static void edit_hh_set(int8_t step)
 {
 	helpers_loop(&rtca_time.hour, 0, 23, step);
-	if (use_CLOCK_AMPM) { // TODO:Send print hh event with blink and delete this whole block?
-		uint8_t tmp_hh = rtca_time.hour;
-		if (tmp_hh > 12) {
-			display_symbol(0, LCD_SYMB_AM, SEG_OFF);
-			display_symbol(0, LCD_SYMB_PM, SEG_SET);
-			_printf(0, LCD_SEG_L1_3_2, "%02u", tmp_hh-12);
-		} else {
-			if (tmp_hh == 0) {
-				_printf(0, LCD_SEG_L1_3_2, "%02u", 12);
-			} else {
-				if (tmp_hh > 9)
-					_printf(0, LCD_SEG_L1_3_2, "%02u", tmp_hh);
-				else
-					_printf(0, LCD_SEG_L1_3_2, "%02u", tmp_hh);
-			}
-			if (tmp_hh == 12) {
-				display_symbol(0, LCD_SYMB_AM, SEG_OFF);
-				display_symbol(0, LCD_SYMB_PM, SEG_SET);
-			} else {
-				display_symbol(0, LCD_SYMB_PM, SEG_OFF);
-				display_symbol(0, LCD_SYMB_AM, SEG_SET);
-			}
-		}
-		rtca_time.hour = tmp_hh;
-	} else {
-		_printf(0, LCD_SEG_L1_3_2, "%02u", rtca_time.hour);
-	}
+
+	update_screen();
 }
 
 static void edit_12_24_display(void)
@@ -267,7 +237,8 @@ static void edit_save()
 	rtca_start();
 
 	/* update screens with fake event */
-	update_screen();
+	clock_event(SYS_MSG_RTC_YEAR | SYS_MSG_RTC_MONTH | SYS_MSG_RTC_DAY
+				| SYS_MSG_RTC_HOUR  | SYS_MSG_RTC_MINUTE | SYS_MSG_RTC_SECOND);
 }
 
 /* edit mode item table */
