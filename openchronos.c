@@ -528,6 +528,15 @@ int main(void)
  **************************************************************************/
 void helpers_loop(uint8_t *value, uint8_t lower, uint8_t upper, int8_t step)
 {
+	/* Ensure that initial value is between lower and upper interval */
+	if (*value > upper) {
+		*value = upper;
+	}
+	if (*value < lower) {
+		*value = lower;
+	}
+
+
 	/* for now only increase/decrease on steps of 1 value */
 	if (step > 0) {
 		/* prevent overflow */
@@ -537,7 +546,8 @@ void helpers_loop(uint8_t *value, uint8_t lower, uint8_t upper, int8_t step)
 		}
 
 		(*value)++;
-		if(*value -1 == upper)
+
+		if(*value - 1 == upper)
 			*value = lower;
 	} else {
 		/* prevent overflow */
@@ -547,7 +557,7 @@ void helpers_loop(uint8_t *value, uint8_t lower, uint8_t upper, int8_t step)
 		}
 
 		(*value)--;
-		if(*value +1 == lower)
+		if(*value + 1 == lower)
 			*value = upper;
 	}
 }
