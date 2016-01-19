@@ -16,7 +16,7 @@ LDFLAGS		= -L$(MSP430_TI)/include
 CFLAGS_REL	+= -Os -fdata-sections -ffunction-sections -fomit-frame-pointer
 LDFLAGS_REL	+= -Wl,--gc-sections -Wl,-s
 
-CFLAGS_DBG	+= -O0 -g3 -gdwarf-2 -ggdb
+CFLAGS_DBG	+= -O1 -g3 -gdwarf-2 -ggdb
 LDFLAGS_DBG	+= -Wl,--gc-sections
 
 # linker flags and include directories
