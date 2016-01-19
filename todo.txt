@@ -8,4 +8,4 @@ It would be nice if we didn't start in edit mode (openchronos.c)
 
 When setting date to 12-31 and then changing month to 11 then 31 isn't changed to 30 and pressing down wil set date to 32.
 
-changing from mode 24h to 12h to 24h stays at 12h
+AM symbol seems not to work

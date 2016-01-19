@@ -78,6 +78,8 @@ static void clock_event(enum sys_message msg)
 			_printf(0, LCD_SEG_L1_3_2, "%2u", tmp_hh);
 		} else {
 			_printf(0, LCD_SEG_L1_3_2, "%02u", rtca_time.hour);
+			display_symbol(0, LCD_SYMB_AM, SEG_OFF);
+			display_symbol(0, LCD_SYMB_PM, SEG_OFF);
 		}
 	}
 	if (msg & SYS_MSG_RTC_MINUTE)
@@ -213,8 +215,9 @@ static void edit_12_24_dsel(void)
 }
 static void edit_12_24_set(int8_t step)
 {
-	helpers_loop(&use_CLOCK_AMPM, 0, 1, step);
+	use_CLOCK_AMPM = !use_CLOCK_AMPM;
 	edit_12_24_display();
+	update_screen();
 }
 
 static void edit_save()
