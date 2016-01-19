@@ -8,4 +8,7 @@ It would be nice if we didn't start in edit mode (openchronos.c)
 
 When setting date to 12-31 and then changing month to 11 then 31 isn't changed to 30 and pressing down wil set date to 32.
 
-AM symbol seems not to work
+AM symbol seems not to work (atleast on my device)
+day of week doesn't change when changing year
+
+In stopwatch when having a few laps and switching between them, you are unable to go back and view end time.
