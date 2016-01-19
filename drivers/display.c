@@ -424,6 +424,10 @@ void lcd_screens_destroy(void)
 	display_screens = NULL;
 }
 
+uint8_t get_active_lcd_screen_nr(void)
+{
+	return display_activescr;
+}
 /*
 	lcd_screen_activate()
    - the memory pointed by display_screens is assumed to be on

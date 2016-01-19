@@ -180,6 +180,8 @@ void lcd_screens_create(
 */
 void lcd_screens_destroy(void);
 
+uint8_t get_active_lcd_screen_nr(void);
+
 /*!
 	\brief Activates a virtual screen
 	\details Virtual screens are used to display data outside of the real screen. See lcd_screens_create() on how to create virtual screens.<br />

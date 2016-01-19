@@ -246,12 +246,12 @@ static void edit_save()
 
 /* edit mode item table */
 static struct menu_editmode_item edit_items[] = {
+	{&edit_12_24_sel, &edit_12_24_dsel, &edit_12_24_set},
+	{&edit_hh_sel, &edit_hh_dsel, &edit_hh_set},
+	{&edit_mm_sel, &edit_mm_dsel, &edit_mm_set},
 	{&edit_yy_sel, &edit_yy_dsel, &edit_yy_set},
 	{&edit_mo_sel, &edit_mo_dsel, &edit_mo_set},
 	{&edit_dd_sel, &edit_dd_dsel, &edit_dd_set},
-	{&edit_hh_sel, &edit_hh_dsel, &edit_hh_set},
-	{&edit_mm_sel, &edit_mm_dsel, &edit_mm_set},
-	{&edit_12_24_sel, &edit_12_24_dsel, &edit_12_24_set},
 	{ NULL },
 };
 
@@ -299,7 +299,12 @@ static void clock_deactivated()
 /* Num button press callback */
 static void num_pressed()
 {
-	lcd_screen_activate(0xff);
+	uint8_t nr = get_active_lcd_screen_nr();
+	if (++nr >= 2) {
+		nr = 0;
+	}
+
+	lcd_screen_activate(nr);
 }
 
 /* Star button long press callback. */
