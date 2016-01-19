@@ -68,8 +68,8 @@ static void clock_event(enum sys_message msg)
 					display_symbol(0, LCD_SYMB_AM, SEG_OFF);
 					display_symbol(0, LCD_SYMB_PM, SEG_SET);
 				} else {
-					display_symbol(0, LCD_SYMB_PM, SEG_OFF);
 					display_symbol(0, LCD_SYMB_AM, SEG_SET);
+					display_symbol(0, LCD_SYMB_PM, SEG_OFF);
 				}
 				if (tmp_hh == 0)
 					tmp_hh = 12;
@@ -223,6 +223,30 @@ static void edit_hh_set(int8_t step)
 	}
 }
 
+static void edit_12_24_display(void)
+{
+	if (use_CLOCK_AMPM) {
+		display_chars(2, LCD_SEG_L1_3_0 , " 12H", SEG_SET);
+	} else {
+		display_chars(2, LCD_SEG_L1_3_0 , " 24H", SEG_SET);
+	}
+}
+static void edit_12_24_sel(void)
+{
+	lcd_screen_activate(2);
+	edit_12_24_display();
+	display_chars(2, LCD_SEG_L1_3_0, NULL, BLINK_ON);
+}
+static void edit_12_24_dsel(void)
+{
+	display_chars(2, LCD_SEG_L1_3_0, NULL, BLINK_OFF);
+}
+static void edit_12_24_set(int8_t step)
+{
+	helpers_loop(&use_CLOCK_AMPM, 0, 1, step);
+	edit_12_24_display();
+}
+
 static void edit_save()
 {
 	/* Here we return from the edit mode, fill in the new values! */
@@ -234,6 +258,7 @@ static void edit_save()
 	display_chars(0, LCD_SEG_L1_3_0, NULL, BLINK_OFF);
 	display_chars(0, LCD_SEG_L2_4_0, NULL, BLINK_OFF);
 	display_chars(1, LCD_SEG_L1_3_0, NULL, BLINK_OFF);
+	display_chars(2, LCD_SEG_L1_3_0, NULL, BLINK_OFF);
 
 	/* return to main screen */
 	lcd_screen_activate(0);
@@ -252,6 +277,7 @@ static struct menu_editmode_item edit_items[] = {
 	{&edit_dd_sel, &edit_dd_dsel, &edit_dd_set},
 	{&edit_hh_sel, &edit_hh_dsel, &edit_hh_set},
 	{&edit_mm_sel, &edit_mm_dsel, &edit_mm_set},
+	{&edit_12_24_sel, &edit_12_24_dsel, &edit_12_24_set},
 	{ NULL },
 };
 
@@ -268,7 +294,7 @@ static void clock_activated()
 	);
 
 	/* create two screens, the first is always the active one */
-	lcd_screens_create(2);
+	lcd_screens_create(3); // 0:time + date, 1: year + day of week, 2:temp for settings (ex 12/24h setup) 
 
 	/* display stuff that won't change with time */
 	display_symbol(0, LCD_SEG_L1_COL, SEG_ON);
