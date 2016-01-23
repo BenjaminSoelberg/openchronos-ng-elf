@@ -1,14 +1,13 @@
 It seems like the default value in .cfg files is not taken into account for atleast modules/acc*.cfg. Investigate!
 
-Someimes lockup when a button is pressed (alarm -> change on/off alarm or hour ding)
+Sometimes lockup when a button is pressed (alarm -> change on/off alarm or hour ding)
 
 It would be nice if the order of the menu items could be set. First menu could then be clock and not temp as it is on my machine. (modules/config.py)
 
 It would be nice if we didn't start in edit mode (openchronos.c)
 
-When setting date to 12-31 and then changing month to 11 then 31 isn't changed to 30 and pressing down wil set date to 32.
-
-AM symbol seems not to work (atleast on my device)
-day of week doesn't change when changing year
+AM symbol seems not to work (atleast on my device) (try enabling both am and pm at the same time, should display an am symbol look alike)
 
 In stopwatch when having a few laps and switching between them, you are unable to go back and view end time.
+
+

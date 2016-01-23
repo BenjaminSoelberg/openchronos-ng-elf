@@ -57,6 +57,7 @@ void rtca_init(void);
 
 uint8_t rtca_get_max_days(uint8_t month, uint16_t year);
 
+void rtca_update_dow();
 void rtca_set_time();
 void rtca_set_date();
 

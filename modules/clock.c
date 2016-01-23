@@ -19,7 +19,6 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 #include <openchronos.h>
 
 /* driver */
@@ -60,15 +59,15 @@ static void clock_event(enum sys_message msg)
 	if (msg & SYS_MSG_RTC_HOUR) {
 		if (use_CLOCK_AMPM) { 
 			uint8_t tmp_hh = rtca_time.hour;
-			if (tmp_hh > 12) {
+			if (tmp_hh > 12) { //PM
 				tmp_hh -= 12;
 				display_symbol(0, LCD_SYMB_AM, SEG_OFF);
 				display_symbol(0, LCD_SYMB_PM, SEG_SET);
 			} else {
-				if (tmp_hh == 12) {
+				if (tmp_hh == 12) { // PM
 					display_symbol(0, LCD_SYMB_AM, SEG_OFF);
 					display_symbol(0, LCD_SYMB_PM, SEG_SET);
-				} else {
+				} else { // AM
 					display_symbol(0, LCD_SYMB_AM, SEG_SET);
 					display_symbol(0, LCD_SYMB_PM, SEG_OFF);
 				}
@@ -93,25 +92,43 @@ static inline void update_screen()
 				| SYS_MSG_RTC_HOUR  | SYS_MSG_RTC_MINUTE);
 }
 
+/* In effect when adjusting from one month to another month with less days and the day needs to be adjusted,
+   This effect can also be seen when changing from leap year to non leap year and the date is 02-29 */
+static void auto_adjust_dd()
+{
+	uint8_t min_day = rtca_get_max_days(rtca_time.mon, rtca_time.year);
+	if (min_day < rtca_time.day) {
+		rtca_time.day = min_day;
+		update_screen();
+	}
+}
+
 /********************* edit mode callbacks ********************************/
+
+/* Year */
 static void edit_yy_sel(void)
 {
 	lcd_screen_activate(1);
 	display_chars(1, LCD_SEG_L1_3_0, NULL, BLINK_ON);
 }
+
 static void edit_yy_dsel(void)
 {
 	display_chars(1, LCD_SEG_L1_3_0, NULL, BLINK_OFF);
+	auto_adjust_dd();
 }
+
 static void edit_yy_set(int8_t step)
 {
 	/* this allows setting years between 2012 and 2022 */
 	*((uint8_t *)&rtca_time.year + 1) = 0x07;
 	helpers_loop((uint8_t *)&rtca_time.year, 220, 230, step);
 
+	rtca_update_dow();
 	update_screen();
 }
 
+/* Month */
 static void edit_mo_sel(void)
 {
 	lcd_screen_activate(0);
@@ -121,6 +138,7 @@ static void edit_mo_sel(void)
 	display_chars(0, LCD_SEG_L2_1_0, NULL, BLINK_ON);
 #endif
 }
+
 static void edit_mo_dsel(void)
 {
 #ifdef CONFIG_MOD_CLOCK_MONTH_FIRST
@@ -128,6 +146,8 @@ static void edit_mo_dsel(void)
 #else
 	display_chars(0, LCD_SEG_L2_1_0, NULL, BLINK_OFF);
 #endif
+	auto_adjust_dd();
+	rtca_update_dow();
 }
 
 static void edit_mo_set(int8_t step)
@@ -137,6 +157,7 @@ static void edit_mo_set(int8_t step)
 	update_screen();
 }
 
+/* Day */
 static void edit_dd_sel(void)
 {
 	lcd_screen_activate(0);
@@ -154,6 +175,7 @@ static void edit_dd_dsel(void)
 #else
 	display_chars(0, LCD_SEG_L2_4_3, NULL, BLINK_OFF);
 #endif
+	rtca_update_dow();
 }
 
 static void edit_dd_set(int8_t step)
@@ -163,22 +185,7 @@ static void edit_dd_set(int8_t step)
 	update_screen();
 }
 
-static void edit_mm_sel(void)
-{
-	lcd_screen_activate(0);
-	display_chars(0, LCD_SEG_L1_1_0, NULL, BLINK_ON);
-}
-static void edit_mm_dsel(void)
-{
-	display_chars(0, LCD_SEG_L1_1_0, NULL, BLINK_OFF);
-}
-static void edit_mm_set(int8_t step)
-{
-	helpers_loop(&rtca_time.min, 0, 59, step);
-
-	update_screen();
-}
-
+/* Hour */
 static void edit_hh_sel(void)
 {
 	lcd_screen_activate(0);
@@ -195,6 +202,27 @@ static void edit_hh_set(int8_t step)
 	update_screen();
 }
 
+
+/* Minute */
+static void edit_mm_sel(void)
+{
+	lcd_screen_activate(0);
+	display_chars(0, LCD_SEG_L1_1_0, NULL, BLINK_ON);
+}
+
+static void edit_mm_dsel(void)
+{
+	display_chars(0, LCD_SEG_L1_1_0, NULL, BLINK_OFF);
+}
+
+static void edit_mm_set(int8_t step)
+{
+	helpers_loop(&rtca_time.min, 0, 59, step);
+
+	update_screen();
+}
+
+/* 12h/24h */
 static void edit_12_24_display(void)
 {
 	if (use_CLOCK_AMPM) {
@@ -220,6 +248,7 @@ static void edit_12_24_set(int8_t step)
 	update_screen();
 }
 
+/* Save YMDHMS */
 static void edit_save()
 {
 	/* Here we return from the edit mode, fill in the new values! */
@@ -267,7 +296,7 @@ static void clock_activated()
 #endif
 	);
 
-	/* create two screens, the first is always the active one */
+	/* create three screens, the first is always the active one */
 	lcd_screens_create(3); // 0:time + date, 1: year + day of week, 2:temp for settings (ex 12/24h setup) 
 
 	/* display stuff that won't change with time */
@@ -295,13 +324,12 @@ static void clock_deactivated()
 	display_clear(0, 2);
 }
 
-
 /* Num button press callback */
 static void num_pressed()
 {
 	uint8_t nr = get_active_lcd_screen_nr();
 	if (++nr >= 2) {
-		nr = 0;
+		nr = 0; // Skip 12h/24h setup screen
 	}
 
 	lcd_screen_activate(nr);

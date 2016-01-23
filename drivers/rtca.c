@@ -151,12 +151,9 @@ void rtca_disable_alarm()
 	RTCCTL01 &= ~RTCAIE;
 }
 
-void rtca_set_date()
+void rtca_update_dow()
 {
 	uint8_t dow;
-
-	/* Stop RTC timekeeping for a while */
-	rtca_stop();
 
 	dow = LEAPS_SINCE_YEAR(rtca_time.year);
 
@@ -198,10 +195,19 @@ void rtca_set_date()
 	}
 
 	dow = dow % 7;
+	rtca_time.dow = dow;
+}
+
+void rtca_set_date()
+{
+	/* Stop RTC timekeeping for a while */
+	rtca_stop();
+
+	rtca_update_dow();
 
 	/* update RTC registers and local cache */
 	RTCDAY = rtca_time.day;
-	RTCDOW = (rtca_time.dow = dow);
+	RTCDOW = rtca_time.dow;
 	RTCMON = rtca_time.mon;
 	RTCYEARL = rtca_time.year & 0xff;
 	RTCYEARH = rtca_time.year >> 8;
