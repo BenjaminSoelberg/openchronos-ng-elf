@@ -61,14 +61,11 @@ static void clock_event(enum sys_message msg)
 			uint8_t tmp_hh = rtca_time.hour;
 			if (tmp_hh > 12) { //PM
 				tmp_hh -= 12;
-				display_symbol(0, LCD_SYMB_AM, SEG_OFF);
 				display_symbol(0, LCD_SYMB_PM, SEG_SET);
 			} else {
 				if (tmp_hh == 12) { // PM
-					display_symbol(0, LCD_SYMB_AM, SEG_OFF);
 					display_symbol(0, LCD_SYMB_PM, SEG_SET);
 				} else { // AM
-					display_symbol(0, LCD_SYMB_AM, SEG_SET);
 					display_symbol(0, LCD_SYMB_PM, SEG_OFF);
 				}
 				if (tmp_hh == 0)
@@ -77,7 +74,6 @@ static void clock_event(enum sys_message msg)
 			_printf(0, LCD_SEG_L1_3_2, "%2u", tmp_hh);
 		} else {
 			_printf(0, LCD_SEG_L1_3_2, "%02u", rtca_time.hour);
-			display_symbol(0, LCD_SYMB_AM, SEG_OFF);
 			display_symbol(0, LCD_SYMB_PM, SEG_OFF);
 		}
 	}
@@ -317,7 +313,6 @@ static void clock_deactivated()
 	/* clean up screen */
 	display_symbol(0, LCD_SEG_L1_COL, SEG_OFF);
 	if (use_CLOCK_AMPM) { 
-		display_symbol(0, LCD_SYMB_AM, SEG_OFF);
 		display_symbol(0, LCD_SYMB_PM, SEG_OFF);
 	}
 	display_clear(0, 1);
