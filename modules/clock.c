@@ -26,9 +26,9 @@
 #include <drivers/display.h>
 
 #ifdef CONFIG_MOD_CLOCK_AMPM
-static uint8_t use_CLOCK_AMPM = 1;
+static uint8_t use_CLOCK_AMPM:1 = 1;
 #else
-static uint8_t use_CLOCK_AMPM = 0;
+static uint8_t use_CLOCK_AMPM:1 = 0;
 #endif
 
 static void clock_event(enum sys_message msg)
