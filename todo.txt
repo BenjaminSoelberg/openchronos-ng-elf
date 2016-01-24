@@ -6,8 +6,5 @@ It would be nice if the order of the menu items could be set. First menu could t
 
 It would be nice if we didn't start in edit mode (openchronos.c)
 
-AM symbol seems not to work (atleast on my device) (try enabling both am and pm at the same time, should display an am symbol look alike)
-
 In stopwatch when having a few laps and switching between them, you are unable to go back and view end time.
-
 
