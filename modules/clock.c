@@ -111,7 +111,6 @@ static void edit_yy_sel(void)
 static void edit_yy_dsel(void)
 {
 	display_chars(1, LCD_SEG_L1_3_0, NULL, BLINK_OFF);
-	auto_adjust_dd();
 }
 
 static void edit_yy_set(int8_t step)
@@ -120,6 +119,7 @@ static void edit_yy_set(int8_t step)
 	*((uint8_t *)&rtca_time.year + 1) = 0x07;
 	helpers_loop((uint8_t *)&rtca_time.year, 220, 230, step);
 
+	auto_adjust_dd();
 	rtca_update_dow();
 	update_screen();
 }
@@ -142,14 +142,14 @@ static void edit_mo_dsel(void)
 #else
 	display_chars(0, LCD_SEG_L2_1_0, NULL, BLINK_OFF);
 #endif
-	auto_adjust_dd();
-	rtca_update_dow();
 }
 
 static void edit_mo_set(int8_t step)
 {
 	helpers_loop(&rtca_time.mon, 1, 12, step);
 
+	auto_adjust_dd();
+	rtca_update_dow();
 	update_screen();
 }
 
@@ -171,13 +171,13 @@ static void edit_dd_dsel(void)
 #else
 	display_chars(0, LCD_SEG_L2_4_3, NULL, BLINK_OFF);
 #endif
-	rtca_update_dow();
 }
 
 static void edit_dd_set(int8_t step)
 {
 	helpers_loop(&rtca_time.day, 1, rtca_get_max_days(rtca_time.mon,
 						rtca_time.year), step);
+	rtca_update_dow();
 	update_screen();
 }
 
