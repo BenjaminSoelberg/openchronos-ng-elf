@@ -153,10 +153,11 @@ void sys_messagebus_unregister(void (*callback)(enum sys_message))
 				pp->next = p->next;
 
 			free(p);
+			p = pp->next;
+		} else {
+			pp = p;
+			p = p->next;
 		}
-
-		pp = p;
-		p = p->next;
 	}
 }
 
