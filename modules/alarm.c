@@ -51,6 +51,7 @@ static void alarm_event(enum sys_message msg)
 }
 
 /*************************** edit mode callbacks **************************/
+/* Hour */
 static void edit_hh_sel(void)
 {
 	display_chars(0, LCD_SEG_L1_3_2, NULL, BLINK_ON);
@@ -68,6 +69,7 @@ static void edit_hh_set(int8_t step)
 	_printf(0, LCD_SEG_L1_3_2, "%02u", tmp_hh);
 }
 
+/* Minute */
 static void edit_mm_sel(void)
 {
 	display_chars(0, LCD_SEG_L1_1_0, NULL, BLINK_ON);
@@ -84,6 +86,7 @@ static void edit_mm_set(int8_t step)
 	_printf(0, LCD_SEG_L1_1_0, "%02u", tmp_mm);
 }
 
+/* Save */
 static void edit_save(void)
 {
 	/* Here we return from the edit mode, fill in the new values! */
