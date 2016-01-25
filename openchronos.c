@@ -147,13 +147,14 @@ void sys_messagebus_unregister(void (*callback)(enum sys_message))
 
 	while (p) {
 		if (p->fn == callback) {
-			if (!pp)
+			if (!pp) {
 				messagebus = p->next;
-			else
+				free(p);
+			} else {
 				pp->next = p->next;
-
-			free(p);
-			p = pp->next;
+				free(p);
+				p = pp->next;
+			}
 		} else {
 			pp = p;
 			p = p->next;
