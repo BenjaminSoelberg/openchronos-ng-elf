@@ -147,16 +147,27 @@ void sys_messagebus_unregister(void (*callback)(enum sys_message))
 
 	while (p) {
 		if (p->fn == callback) {
+			// If 1. element
 			if (!pp) {
+				// Remove first element by pointing to the next
 				messagebus = p->next;
+				// Free element
 				free(p);
+				// Update current pointer to point to new first element
+				p = messagebus;
 			} else {
-				pp->next = p->next;
+			// If 2. or later element
+				// Remove element by pointing previous to the next
+				pp->next = p->next; 
+				// Free element
 				free(p);
+				// Update current pointer to point to next element
 				p = pp->next;
 			}
 		} else {
+			// Updare previous pointer to current element
 			pp = p;
+			// Update current pointer to point to next elements
 			p = p->next;
 		}
 	}
