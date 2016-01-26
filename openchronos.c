@@ -132,7 +132,7 @@ void sys_messagebus_register(void (*callback)(enum sys_message),
 	struct sys_messagebus **p = &messagebus;
 
 	while (*p) {
-		p = &(*p)->next;
+		p = &(*p)->next; // Set p to address of next (not what next points to but the address of the next pointer)
 	}
 
 	*p = malloc(sizeof(struct sys_messagebus));
@@ -147,27 +147,27 @@ void sys_messagebus_unregister(void (*callback)(enum sys_message))
 
 	while (p) {
 		if (p->fn == callback) {
-			// If 1. element
-			if (!pp) {
+			if (!pp) { // If 1. element
 				// Remove first element by pointing to the next
 				messagebus = p->next;
 				// Free element
 				free(p);
-				// Update current pointer to point to new first element
+				// Set current pointer to point to new first element
 				p = messagebus;
-			} else {
-			// If 2. or later element
+				// Keep pp the same (NULL)
+			} else { // If 2. or later element
 				// Remove element by pointing previous to the next
 				pp->next = p->next; 
 				// Free element
 				free(p);
-				// Update current pointer to point to next element
+				// Set current pointer to point to next element
 				p = pp->next;
+				// Keep pp the same
 			}
 		} else {
-			// Updare previous pointer to current element
+			// Set pp (previous pointer) to current element
 			pp = p;
-			// Update current pointer to point to next elements
+			// Set p (current pointer) to next element
 			p = p->next;
 		}
 	}
