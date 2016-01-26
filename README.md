@@ -48,6 +48,12 @@ Install the following support packages from TI in order to be able to download n
 
 Linux: [http://www.ti.com/lit/zip/slac388](http://www.ti.com/lit/zip/slac388)
 
+```
+unzip slac388c.zip
+chmod +x Chronos-Setup
+./Chronos-Setup
+```
+
 Windows:[http://www.ti.com/lit/zip/slac341](http://www.ti.com/lit/zip/slac341)
 
 
