@@ -17,6 +17,7 @@ Compiler and debugger installation
 ----------------------------------
 
 Download the open source MSP430 GCC compiler from TI here:
+
 [http://www.ti.com/tool/msp430-gcc-opensource](http://www.ti.com/tool/msp430-gcc-opensource)
 
 **Please note that the installer is a 32 bit binary and will exit with no error if above dependencies isn't available on your system.**
