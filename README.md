@@ -95,10 +95,13 @@ Usefull links
 -------------
 
 If you need to reinstall the original firmware you can download a flash tool here (using windows XP):
+
 [http://www.bm-innovations.com/index.php/ez430-chronos](http://www.bm-innovations.com/index.php/ez430-chronos)
 
 Data sheet for the CC430F6137 used in the watch:
+
 [http://www.ti.com/product/CC430F6137/technicaldocuments](http://www.ti.com/product/CC430F6137/technicaldocuments)
 
 eZ430 Chronos wiki:
+
 [http://processors.wiki.ti.com/index.php/EZ430-Chronos](http://processors.wiki.ti.com/index.php/EZ430-Chronos)
