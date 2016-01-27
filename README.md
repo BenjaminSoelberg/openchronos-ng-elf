@@ -1,8 +1,23 @@
 INTRODUCTION
 ============
-openchronos-ng-elf - https://github.com/BenjaminSoelberg/openchronos-ng-elf
+
+Origin: [https://github.com/BenjaminSoelberg/openchronos-ng-elf](https://github.com/BenjaminSoelberg/openchronos-ng-elf)
 
 Modular opensource firmware for the TI eZ430 Chronos.
+
+openchronos-ng is a major rework of openchronos. Compared to openchronos it has the following features:
+
+* system message bus for system<->module communication.
+* hardware RTC timekeeping (no more clock inaccuracy).
+* rework of timer and ports drivers.
+* implementation of a module system (drop in applications).
+* rework of the display routines.
+* rework of the menu system.
+
+The firmware code is also conceptually simpler and smaller which leaves room for more modules (applications).
+
+This repository is a fork of (seems unmaintained) :
+[http://sourceforge.net/projects/openchronos-ng/](http://sourceforge.net/projects/openchronos-ng)
 
 INSTALLATION
 ============
