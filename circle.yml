@@ -1,4 +1,8 @@
 machine:
+  environment:
+    MSP430_TI: $HOME/cached/msp30-gcc-elf
+    PATH: $PATH:$MSP430_TI/bin
+
   pre:
     - sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.6 10
     - sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.9 20
@@ -9,3 +13,5 @@ dependencies:
 
   pre:
     - circleci/setup.sh
+    - echo $PATH
+    - echo $MSP430_TI
