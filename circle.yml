@@ -6,3 +6,6 @@ machine:
 dependencies:
   cache_directories:
     - "~/cached"
+
+  pre:
+    - circleci/setup.sh
