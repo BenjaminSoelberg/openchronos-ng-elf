@@ -1,8 +1,4 @@
 doc
-modinit.c
-drivers/rtca_now.h
-openchronos.txt
-openchronos.elf
 openchronos.dep
 openchronos.cflags
 *.[oa]
@@ -10,7 +6,6 @@ openchronos.cflags
 *.*~
 *.s
 *.swp
-config.h
 .pida-metadata
 TAGS
 output.map
