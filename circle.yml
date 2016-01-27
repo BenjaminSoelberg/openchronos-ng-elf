@@ -7,3 +7,9 @@ dependencies:
   cache_directories:
     - "~/cached"
 
+  pre:
+    - mkdir -p ~/cached
+    - cd ~/cached
+    - pwd
+    - wget https://github.com/BenjaminSoelberg/msp430-elf/archive/sources.zip -O msp430-elf.zip
+    - unzip msp430-elf.zip
