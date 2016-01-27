@@ -15,3 +15,5 @@ dependencies:
     - circleci/setup.sh
     - echo $PATH
     - echo $MSP430_TI
+    - make clean
+    - make
