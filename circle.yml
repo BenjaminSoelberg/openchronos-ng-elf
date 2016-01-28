@@ -1,6 +1,6 @@
 machine:
   environment:
-    MSP430_TI: $HOME/cached/msp430-gcc-elf
+    MSP430_TI: $HOME/cached/msp430-elf-gcc
     PATH: $PATH:$MSP430_TI/bin
 
   pre:
