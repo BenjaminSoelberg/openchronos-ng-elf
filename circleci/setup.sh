@@ -1,10 +1,8 @@
 #!/bin/bash
 
-if [ -d ~/cache/msp430-elf-gcc ]; then exit; fi
+if [ -d ~/cached/msp430-elf-gcc ]; then exit 0; fi
 
 mkdir -p ~/cached
-
-if [ ! -d ~/cached/msp430-elf-gcc ]; then exit 0; fi
 
 echo Downloading msp-430-elf-gcc...
 mkdir -p ~/temp
