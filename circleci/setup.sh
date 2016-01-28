@@ -1,6 +1,7 @@
-
-if [ ! -d ~/cache/msp430-elf-gcc ]; then exit; fi
 #!/bin/bash
+
+if [ -d ~/cache/msp430-elf-gcc ]; then exit; fi
+
 mkdir -p ~/cached
 
 if [ ! -d ~/cached/msp430-elf-gcc ]; then exit 0; fi
