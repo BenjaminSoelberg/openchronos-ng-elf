@@ -5,15 +5,11 @@ CACHE=$HOME/cached
 GCC_HOME=$CACHE/msp430-elf-gcc
 
 mkdir -p $CACHE
+
 mkdir -p ~/temp
 cd ~/temp
 
 if [ ! -d $GCC_HOME ]; then
-  echo Downloading msp430 includes...
-  wget https://github.com/BenjaminSoelberg/msp430-elf/archive/gcc_rh.zip -O msp430-elf-gcc_rh.zip
-  unzip msp430-elf-gcc_rh.zip
-   cp -rf msp430-elf-gcc_rh/include/* $GCC_HOME/include/
-
   echo Downloading msp430 elf gcc compiler source...
   wget https://github.com/BenjaminSoelberg/msp430-elf/archive/sources.zip -O msp430-elf-sources.zip
   unzip msp430-elf-sources.zip
@@ -29,5 +25,15 @@ if [ ! -d $GCC_HOME ]; then
 
   echo Installing msp-430-elf-gcc...
   make install
+else
+  echo MSP430 elf gcc compiler already exists, no need to install it.
 fi
 
+if [ ! -f $GCC_HOME/include/msp430.h ]; then
+  echo Downloading msp430 includes...
+  wget https://github.com/BenjaminSoelberg/msp430-elf/archive/gcc_rh.zip -O msp430-elf-gcc_rh.zip
+  unzip msp430-elf-gcc_rh.zip
+  cp -rf msp430-elf-gcc_rh/include/* $GCC_HOME/include/
+else
+  echo MSP430 includes already exists, no need to install it.
+fi
