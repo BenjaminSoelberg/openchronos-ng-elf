@@ -12,7 +12,7 @@ if [ ! -d $GCC_HOME ]; then
   echo Downloading msp430 includes...
   wget https://github.com/BenjaminSoelberg/msp430-elf/archive/gcc_rh.zip -O msp430-elf-gcc_rh.zip
   unzip msp430-elf-gcc_rh.zip
-  cp -rf msp430-elf-gcc_rh/* $GCC_HOME/
+   cp -rf msp430-elf-gcc_rh/include/* $GCC_HOME/include/
 
   echo Downloading msp430 elf gcc compiler source...
   wget https://github.com/BenjaminSoelberg/msp430-elf/archive/sources.zip -O msp430-elf-sources.zip
