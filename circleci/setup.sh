@@ -8,16 +8,13 @@ mkdir -p $CACHE
 mkdir -p ~/temp
 cd ~/temp
 
-if [ ! -d $GCC_HOME/include ]; then
+if [ ! -d $GCC_HOME ]; then
   echo Downloading msp430 includes...
   wget https://github.com/BenjaminSoelberg/msp430-elf/archive/gcc_rh.zip -O msp430-elf-gcc_rh.zip
   unzip msp430-elf-gcc_rh.zip
   cp -r msp430-elf-gcc_rh/* $GCC_HOME/
-fi
 
-if [ ! -d $GCC_HOME ]; then
   echo Downloading msp430 elf gcc compiler source...
-
   wget https://github.com/BenjaminSoelberg/msp430-elf/archive/sources.zip -O msp430-elf-sources.zip
   unzip msp430-elf-sources.zip
 
