@@ -4,7 +4,7 @@
 set CACHE=$HOME/cached
 set GCC_HOME=$CACHE/msp430-elf-gcc
 
-mkdir -p ~/cached
+mkdir -p $CACHE
 mkdir -p ~/temp
 cd ~/temp
 
@@ -25,7 +25,7 @@ if [! -d $GCC_HOME ]; then
   cd msp430-elf-sources
   mkdir -p msp430-gcc-obj
   cd  msp430-gcc-obj
-  ../tools/configure --prefix=$HOME/cached/msp430-elf-gcc --target=msp430-elf --enable-languages=c,c++ --disable-itcl --disable-tk --disable-tcl --disable-libgui --disable-gdbtk
+  ../tools/configure --prefix=$GCC_HOME --target=msp430-elf --enable-languages=c,c++ --disable-itcl --disable-tk --disable-tcl --disable-libgui --disable-gdbtk
 
   echo Compiling msp-430-elf-gcc...
   make
