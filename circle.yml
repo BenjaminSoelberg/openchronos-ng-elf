@@ -2,7 +2,6 @@ machine:
   environment:
     MSP430_TI: $HOME/cached/msp430-elf-gcc
     PATH: $PATH:$MSP430_TI/bin
-    CACHE: ~/cached
 
   pre:
     - sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.6 10
@@ -11,11 +10,10 @@ machine:
 
 dependencies:
   cache_directories:
-    - $CACHE 
+    - ~/cached 
 
   pre:
     - circleci/setup.sh # Download and build MSP430-elf-gcc if needed
-
 
   override:
     - echo Cleaning openchronos-ng-elf...
@@ -26,3 +24,8 @@ dependencies:
 test:
   override:
     - echo No tests yet.
+
+general:
+  artifacts:
+    - "openchronos.elf" # openchronos firmwaew in binary format with additional info
+    - "openchronos.txt" # openchronos firmware in TI hex format
