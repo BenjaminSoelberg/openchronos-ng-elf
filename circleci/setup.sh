@@ -1,8 +1,8 @@
 #!/bin/bash
 
 #Setup script to download and build the TI open source MSP430 elf GCC compiler
-set CACHE=$HOME/cached
-set GCC_HOME=$CACHE/msp430-elf-gcc
+CACHE=$HOME/cached
+GCC_HOME=$CACHE/msp430-elf-gcc
 
 mkdir -p $CACHE
 mkdir -p ~/temp
