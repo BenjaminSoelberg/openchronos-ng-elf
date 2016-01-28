@@ -33,3 +33,4 @@ if [ ! -d $GCC_HOME ]; then
   echo Installing msp-430-elf-gcc...
   make install
 fi
+
