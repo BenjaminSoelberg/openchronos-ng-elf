@@ -77,14 +77,7 @@ inline void initialize_cpu_12mhz()
 	changed is n x 32 x 32 x f_MCLK / f_FLL_reference. See UCS chapter in 5xx
 	UG for optimization.
 	32 x 32 x 8 MHz / 32,768 Hz = 250000 = MCLK cycles for DCO to settle */
-#if __GNUC_MINOR__ > 5 || __GNUC_PATCHLEVEL__ > 8
 	__delay_cycles(250000);
-#else
-	__delay_cycles(62500);
-	__delay_cycles(62500);
-	__delay_cycles(62500);
-	__delay_cycles(62500);
-#endif
 
 	/* Loop until XT1 & DCO stabilizes, use do-while to insure that
 	body is executed at least once */
@@ -155,8 +148,8 @@ inline void jump_to_rfbsl()
 
 
 /* put bootmenu in the init8 section which is executed before main */
-__attribute__ ((naked, section (".init8")))
-void _init8(void)
+__attribute__((naked, section(".crt_0042"), used))
+static void init8(void)
 {
 	/* Stop watchdog timer */
 	WDTCTL = WDTPW + WDTHOLD;

@@ -107,7 +107,8 @@ void drawStopWatchScreen(void) {
 			display_chars(0, LCD_SEG_L1_3_2, "LP", SEG_SET);
 			_printf(0, LCD_SEG_L1_1_0, "%2u", sSwatch_conf.lap_act +1);
 		}
-		if (sSwatch_time[SW_DISPLAYNG].minutes < 20) {
+		if (sSwatch_time[SW_DISPLAYNG].minutes < 20
+				&& sSwatch_time[SW_DISPLAYNG].hours == 0) {
 			_printf(0, LCD_SEG_L2_5_4, "%02u",
 					sSwatch_time[SW_DISPLAYNG].minutes);
 			_printf(0, LCD_SEG_L2_3_2, "%02u",

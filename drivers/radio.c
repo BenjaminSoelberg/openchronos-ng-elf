@@ -157,12 +157,7 @@ void close_radio(void)
 // @return      none
 // *************************************************************************************************
 //pfs
-#ifdef __GNUC__
 __attribute__((interrupt(CC1101_VECTOR)))
-#else
-#pragma vector = CC1101_VECTOR
-__interrupt
-#endif
 void radio_ISR(void)
 {
 	uint8_t rf1aivec = RF1AIV;

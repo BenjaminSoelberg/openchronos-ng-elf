@@ -130,7 +130,7 @@ void sys_messagebus_register(void (*callback)(enum sys_message),
 	struct sys_messagebus **p = &messagebus;
 
 	while (*p) {
-		p = &(*p)->next;
+		p = &(*p)->next; // Set p to address of next (not what next points to but the address of the next pointer)
 	}
 
 	*p = malloc(sizeof(struct sys_messagebus));
@@ -145,16 +145,29 @@ void sys_messagebus_unregister(void (*callback)(enum sys_message))
 
 	while (p) {
 		if (p->fn == callback) {
-			if (!pp)
+			if (!pp) { // If 1. element
+				// Remove first element by pointing to the next
 				messagebus = p->next;
-			else
-				pp->next = p->next;
-
-			free(p);
+				// Free element
+				free(p);
+				// Set current pointer to point to new first element
+				p = messagebus;
+				// Keep pp the same (NULL)
+			} else { // If 2. or later element
+				// Remove element by pointing previous to the next
+				pp->next = p->next; 
+				// Free element
+				free(p);
+				// Set current pointer to point to next element
+				p = pp->next;
+				// Keep pp the same
+			}
+		} else {
+			// Set pp (previous pointer) to current element
+			pp = p;
+			// Set p (current pointer) to next element
+			p = p->next;
 		}
-
-		pp = p;
-		p = p->next;
 	}
 }
 
@@ -313,6 +326,13 @@ static void menumode_enable(void)
 
 static void drive_menu(void)
 {
+#ifdef CONFIG_DEBUG_EASY_RESET
+	/* if up and down is pressed then resets the watch */
+	if (ports_button_pressed(PORTS_BTN_UP | PORTS_BTN_DOWN, 0))
+	{
+		WDTCTL = 0; // Forces a reset since a write to WDTCTL isn't allowed without the password.
+	}
+#endif
 	if (menu_editmode.enabled) {
 		editmode_handler();
 		goto finish;
@@ -550,6 +570,15 @@ int main(void)
  **************************************************************************/
 void helpers_loop(uint8_t *value, uint8_t lower, uint8_t upper, int8_t step)
 {
+	/* Ensure that initial value is between lower and upper interval */
+	if (*value > upper) {
+		*value = upper;
+	}
+	if (*value < lower) {
+		*value = lower;
+	}
+
+
 	/* for now only increase/decrease on steps of 1 value */
 	if (step > 0) {
 		/* prevent overflow */
@@ -559,7 +588,8 @@ void helpers_loop(uint8_t *value, uint8_t lower, uint8_t upper, int8_t step)
 		}
 
 		(*value)++;
-		if(*value -1 == upper)
+
+		if(*value - 1 == upper)
 			*value = lower;
 	} else {
 		/* prevent overflow */
@@ -569,7 +599,7 @@ void helpers_loop(uint8_t *value, uint8_t lower, uint8_t upper, int8_t step)
 		}
 
 		(*value)--;
-		if(*value +1 == lower)
+		if(*value + 1 == lower)
 			*value = upper;
 	}
 }

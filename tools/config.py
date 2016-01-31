@@ -40,6 +40,12 @@ DATA["USE_WATCHDOG"] = {
 	"help": "Protects the clock against deadlocks by rebooting it.",
 }
 
+DATA["CONFIG_DEBUG_EASY_RESET"] = {
+	"name": "Use easy reset by pressing two buttons at the same time",
+	"default": False,
+	"help": "Makes it fast to reboot the watch to update firmware.",
+}
+
 # RTC DRIVER #################################################################
 
 DATA["TEXT_RTC"] = {

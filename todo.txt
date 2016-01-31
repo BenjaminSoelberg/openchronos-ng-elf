@@ -1,0 +1,8 @@
+It seems like the default value in .cfg files is not taken into account for atleast modules/acc*.cfg. Investigate!
+
+It would be nice if the order of the menu items could be set. First menu could then be clock and not temp as it is on my machine. (modules/config.py)
+
+It would be nice if we didn't start in edit mode (openchronos.c)
+
+In stopwatch when having a few laps and switching between them, you are unable to go back and view end time.
+
