@@ -327,11 +327,12 @@ static void menumode_enable(void)
 static void drive_menu(void)
 {
 #ifdef CONFIG_DEBUG_EASY_RESET
+//TODO:FIXME
 	/* if up and down is pressed then resets the watch */
-	if (ports_button_pressed(PORTS_BTN_UP | PORTS_BTN_DOWN, 0))
+/*	if (ports_button_pressed(PORTS_BTN_UP | PORTS_BTN_DOWN, 0))
 	{
 		WDTCTL = 0; // Forces a reset since a write to WDTCTL isn't allowed without the password.
-	}
+	}*/
 #endif
 	if (menu_editmode.enabled) {
 		editmode_handler();
