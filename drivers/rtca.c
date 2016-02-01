@@ -18,9 +18,6 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/* TODO: The RTC supports chronologic alarms, that is, one can program the
-	alarm to bell every hour, or in a specific time and day. For now only
-	basic alarm is implemented (bell at 08:30). */
 
 #include "rtca.h"
 #include "rtca_now.h"
@@ -39,6 +36,8 @@
 /* compute number of leap years since BASE_YEAR */
 #define BASE_YEAR 1984 /* not a leap year, so no need to add 1 */
 #define LEAPS_SINCE_YEAR(Y) (((Y) - BASE_YEAR) + ((Y) - BASE_YEAR) / 4);
+
+#define AE 0x80 /* Alarm Enable bit, seems to be missing from msp430xxxxxx.h file */
 
 void rtca_init(void)
 {
@@ -132,23 +131,34 @@ void rtca_get_alarm(uint8_t *hour, uint8_t *min)
 
 void rtca_set_alarm(uint8_t hour, uint8_t min)
 {
-	RTCAHOUR = (RTCAHOUR & 0x80) | hour;
-	RTCAMIN  = (RTCAMIN & 0x80) | min;
+	/* Disable alarm interrupt while setting alarm */
+	uint8_t original_state = RTCCTL01;
+	RTCCTL01 &= ~RTCAIE;
+	/* Set hour and min while keeping current Alarm Enable state */
+	RTCAHOUR = (RTCAHOUR & AE) | hour;
+	RTCAMIN  = (RTCAMIN  & AE) | min;
+	/* Restore alarm interrupt state*/
+	RTCCTL01 = original_state;
 }
 
 void rtca_enable_alarm()
 {
+	/* Disable alarm interrupt while setting alarm */
 	RTCCTL01 &= ~RTCAIE;
-	RTCAHOUR |= 0x80;
-	RTCAMIN  |= 0x80;
+	/* Set Alarm Enable for both hour and min */
+	RTCAHOUR |= AE;
+	RTCAMIN  |= AE;
+	/* Enable alarm interrupt */
 	RTCCTL01 |= RTCAIE;
 }
 
 void rtca_disable_alarm()
 {
-	RTCAHOUR &= 0x7F;
-	RTCAMIN  &= 0x7F;
+	/* Disable alarm interrupt */
 	RTCCTL01 &= ~RTCAIE;
+	/* Clear Alarm Enable for both hour and min */
+	RTCAHOUR &= ~AE;
+	RTCAMIN  &= ~AE;
 }
 
 void rtca_update_dow()
