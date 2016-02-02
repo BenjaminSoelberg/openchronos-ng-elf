@@ -19,8 +19,10 @@
 
 #include <openchronos.h>
 
+/* drivers */
 #include "drivers/display.h"
 #include "drivers/battery.h"
+#include <drivers/messagebus.h>
 
 static void display_battery(void)
 {

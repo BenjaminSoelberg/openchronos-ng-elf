@@ -21,9 +21,10 @@
 
 #include <openchronos.h>
 
-/* driver */
+/* drivers */
 #include <drivers/display.h>
 #include <drivers/rtca.h>
+#include <drivers/messagebus.h>
 
 static union {
 	struct {

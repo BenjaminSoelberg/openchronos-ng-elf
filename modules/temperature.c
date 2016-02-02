@@ -23,6 +23,7 @@
 /* drivers */
 #include "drivers/display.h"
 #include "drivers/temperature.h"
+#include <drivers/messagebus.h>
 
 static void display_temperature(void)
 {

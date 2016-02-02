@@ -24,6 +24,7 @@
 /* drivers */
 #include "ports.h"
 #include "timer.h"
+#include "messagebus.h"
 
 #include "display.h"
 

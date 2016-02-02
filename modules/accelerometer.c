@@ -18,11 +18,13 @@
  */
 #include <openchronos.h>
 
-/* driver list */
-#include <drivers/display.h>
+/* drivers */
 #include <drivers/rtca.h>
+#include <drivers/messagebus.h>
+#include <drivers/display.h>
 #include <drivers/vti_as.h>
 #include <drivers/buzzer.h>
+
 // *************************************************************************************************
 // Defines section
 

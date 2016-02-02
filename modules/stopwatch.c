@@ -40,8 +40,10 @@
  */
 
 #include <openchronos.h>
-/* driver */
+
+/* drivers */
 #include <drivers/display.h>
+#include <drivers/messagebus.h>
 
 /* Defines */
 

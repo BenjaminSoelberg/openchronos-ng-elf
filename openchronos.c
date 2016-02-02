@@ -63,6 +63,7 @@
 #include "modinit.h"
 
 /* Driver */
+#include <drivers/messagebus.h>
 #include <drivers/display.h>
 #include <drivers/vti_as.h>
 #include <drivers/vti_ps.h>
@@ -120,59 +121,6 @@ static struct {
 	struct menu_editmode_item *items;  /* vector of editmode items */
 } menu_editmode;
 
-/* the message bus */
-static struct sys_messagebus *messagebus;
-
-/***************************************************************************
- ************************* THE SYSTEM MESSAGE BUS **************************
- **************************************************************************/
-void sys_messagebus_register(void (*callback)(enum sys_message),
-                             enum sys_message listens)
-{
-	struct sys_messagebus **p = &messagebus;
-
-	while (*p) {
-		p = &(*p)->next; // Set p to address of next (not what next points to but the address of the next pointer)
-	}
-
-	*p = malloc(sizeof(struct sys_messagebus));
-	(*p)->next = NULL;
-	(*p)->fn = callback;
-	(*p)->listens = listens;
-}
-
-void sys_messagebus_unregister(void (*callback)(enum sys_message))
-{
-	struct sys_messagebus *p = messagebus, *pp = NULL;
-
-	while (p) {
-		if (p->fn == callback) {
-			if (!pp) { // If 1. element
-				// Remove first element by pointing to the next
-				messagebus = p->next;
-				// Free element
-				free(p);
-				// Set current pointer to point to new first element
-				p = messagebus;
-				// Keep pp the same (NULL)
-			} else { // If 2. or later element
-				// Remove element by pointing previous to the next
-				pp->next = p->next; 
-				// Free element
-				free(p);
-				// Set current pointer to point to next element
-				p = pp->next;
-				// Keep pp the same
-			}
-		} else {
-			// Set pp (previous pointer) to current element
-			pp = p;
-			// Set p (current pointer) to next element
-			p = p->next;
-		}
-	}
-}
-
 void check_events(void)
 {
 	enum sys_message msg = 0;
@@ -203,21 +151,7 @@ void check_events(void)
 	}
 #endif
 
-	{
-		struct sys_messagebus *p = messagebus;
-
-		while (p) {
-			/* notify listener if he registered for any of these messages */
-			if (msg & p->listens) {
-				p->fn(msg);
-			}
-
-			/* move to next */
-			p = p->next;
-		}
-	}
-
-
+	send_events(msg);
 }
 
 /***************************************************************************
@@ -310,7 +244,8 @@ static void check_buttons(void)
 	/* if up and down is pressed then resets the watch */
 	if (ports_button_pressed(PORTS_BTN_UP | PORTS_BTN_DOWN, 0))
 	{
-		WDTCTL = 0; // Forces a reset since a write to WDTCTL isn't allowed without the password.
+      /* Forces a reset since a write to WDTCTL isn't allowed without password. */
+		WDTCTL = 0;
 	}
 #endif
 	if (menu_editmode.enabled) {

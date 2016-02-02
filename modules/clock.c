@@ -21,9 +21,10 @@
 
 #include <openchronos.h>
 
-/* driver */
+/* drivers */
 #include <drivers/rtca.h>
 #include <drivers/display.h>
+#include <drivers/messagebus.h>
 
 #ifdef CONFIG_MOD_CLOCK_AMPM
 static uint8_t use_CLOCK_AMPM = 1;

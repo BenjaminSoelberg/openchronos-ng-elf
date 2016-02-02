@@ -22,8 +22,10 @@
 #include <openchronos.h>
 #include <string.h>
 
+/* drivers */
 #include <drivers/rtca.h>
 #include <drivers/display.h>
+#include <drivers/messagebus.h>
 
 /* C is used as variable below */
 #undef C 

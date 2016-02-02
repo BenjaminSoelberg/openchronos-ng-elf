@@ -19,9 +19,10 @@
 
 #include <openchronos.h>
 
-/* driver */
+/* drivers */
 #include <drivers/rtca.h>
 #include <drivers/display.h>
+#include <drivers/messagebus.h>
 
 struct Tide {
 	uint8_t hoursLeft;	/* hours left to next low tide */
