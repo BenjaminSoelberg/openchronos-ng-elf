@@ -9,7 +9,7 @@ machine:
 dependencies:
   pre:
     - echo Downloading msp430 elf gcc compiler...
-    - wget /msp430-elf-gcc-without-mspdebug-3.05.00.00.tar.gz -O $HOME/msp430-elf-gcc-without-mspdebug-3.05.00.00.tar.gz
+    - wget https://circle-artifacts.com/gh/BenjaminSoelberg/msp430-elf/3/artifacts/0/tmp/circle-artifacts.NFuVIA8/msp430-elf-gcc-without-mspdebug-3.05.00.00.tar.gz -O $HOME/msp430-elf-gcc-without-mspdebug-3.05.00.00.tar.gz
 #    - wget /msp430-elf-gcc-without-mspdebug_3.05.00.00_ubuntu_x64.tar.gz -O $HOME/msp430-elf-gcc.tar.gz
 
     - echo Installing msp430 elf gcc compiler...
