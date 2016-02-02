@@ -1,23 +1,24 @@
 machine:
   environment:
-    MSP430_TI: $HOME/cached/msp430-elf-gcc
+    MSP430_TI: $HOME/msp430-elf-gcc
     PATH: $PATH:$MSP430_TI/bin
 
   pre:
-    - sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.6 10
-    - sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.9 20
     - echo alias ll=\'ls -al\' >> ~/.bash_profile # setup ll alias for later ssh login
 
 dependencies:
-  cache_directories:
-    - ~/cached 
-
   pre:
-    - circleci/setup.sh # Download and build MSP430-elf-gcc if needed
+    - echo Downloading msp430 elf gcc compiler...
+    - wget https://circle-artifacts.com/gh/BenjaminSoelberg/msp430-elf/3/artifacts/0/tmp/circle-artifacts.NFuVIA8/msp430-elf-gcc-without-mspdebug-3.05.00.00.tar.gz -O $HOME/msp430-elf-gcc-without-mspdebug-3.05.00.00.tar.gz
+#    - wget /msp430-elf-gcc-without-mspdebug_3.05.00.00_ubuntu_x64.tar.gz -O $HOME/msp430-elf-gcc.tar.gz
+
+    - echo Installing msp430 elf gcc compiler...
+    - cd $HOME && tar xvf msp430-elf-gcc-without-mspdebug-3.05.00.00.tar.gz
 
   override:
     - echo Cleaning openchronos-ng-elf...
     - make clean        # Clean the openchronos-ng-elf project
+
     - echo Building openchronos-ng-elf...
     - make              # Build the openchronos-ng-elf project
 
@@ -27,5 +28,5 @@ test:
 
 general:
   artifacts:
-    - "openchronos.elf" # openchronos firmwaew in binary format with additional info
+    - "openchronos.elf" # openchronos firmware in binary format with additional info
     - "openchronos.txt" # openchronos firmware in TI hex format
