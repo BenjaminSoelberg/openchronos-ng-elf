@@ -1,16 +1,12 @@
 machine:
   environment:
-    MSP430_TI: $HOME/cached/msp430-elf-gcc
+    MSP430_TI: $HOME/msp430-elf-gcc
     PATH: $PATH:$MSP430_TI/bin
 
   pre:
-    - sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.6 10
-    - sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.9 20
     - echo alias ll=\'ls -al\' >> ~/.bash_profile # setup ll alias for later ssh login
 
 dependencies:
-  cache_directories:
-    - ~/cached 
 
   pre:
     - circleci/setup.sh # Download and build MSP430-elf-gcc if needed
@@ -27,5 +23,5 @@ test:
 
 general:
   artifacts:
-    - "openchronos.elf" # openchronos firmwaew in binary format with additional info
+    - "openchronos.elf" # openchronos firmware in binary format with additional info
     - "openchronos.txt" # openchronos firmware in TI hex format
