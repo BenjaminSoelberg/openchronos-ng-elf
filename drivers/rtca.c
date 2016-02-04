@@ -245,22 +245,19 @@ void RTC_A_ISR(void)
 	enum rtca_tevent ev = 0;
 
 	/* second event (from the read ready interrupt flag) */
-	if (iv == RTCIV_RTCRDYIFG) {
+	if (iv == RTCIV_RTCRDYIFG) {	/* Did second changed */
 		ev = RTCA_EV_SECOND;
 		goto finish;
 	}
 
-	if (iv == RTCIV_RTCAIFG) {
+	if (iv == RTCIV_RTCAIFG) { 	/* Did alarm event occurred */
 		ev = RTCA_EV_ALARM;
 		goto finish;
 	}
 
+	if (iv == RTCIV_RTCTEVIFG)    /* Did minute changed */
 	{
-		if (iv != RTCIV_RTCTEVIFG)	/* Minute changed! */
-			goto finish;
-
-
-		ev |= RTCA_EV_MINUTE;
+		ev = RTCA_EV_MINUTE;
 		rtca_time.min = RTCMIN;
 
 		if (rtca_time.min != 0)		/* Hour changed */

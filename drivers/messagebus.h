@@ -32,9 +32,9 @@ enum sys_message {
 	SYS_MSG_TIMER_20HZ	= BIT8, /*!< 20HZ event from the hardware TIMER_0. */
 	SYS_MSG_TIMER_PROG	= BIT9, /*!< programmable event from TIMER_0. */
 	/* sensor/interrups */
-	SYS_MSG_AS_INT =	BITA,
-	SYS_MSG_PS_INT =	BITB,
-	SYS_MSG_BATT =    BITC,
+	SYS_MSG_AS_INT			= BITA,
+	SYS_MSG_PS_INT			= BITB,
+	SYS_MSG_BATT			= BITC,
 };
 
 /*!

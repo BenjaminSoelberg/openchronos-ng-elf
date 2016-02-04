@@ -58,7 +58,7 @@
 	 TA0CCR2: callback timer (for buzzer)
 	 TA0CCR3: programable timer
 	 TA0CCR4: delay timer
-	OVERFLOW: 0.244Hz timer ~ 4.1ms */
+	OVERFLOW: 0.244Hz timer ~ 4.1S */
 
 /* source is ACLK=32768Hz (nominal) with /2 divider */
 #define TIMER0_FREQ 16384
