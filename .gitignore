@@ -12,3 +12,7 @@ output.map
 # Ignore NetBeans stuff
 nbproject/
 cscope.out
+# intellij idea project files
+*.iml
+openchronos.elf
+openchronos.txt
