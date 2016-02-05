@@ -28,7 +28,7 @@ dependencies:
     - tar -cvzf openchronos-ng-elf-latest-firmware.tgz openchronos.txt openchronos.elf README.md
     - github-release delete -s $GITHUB_USER_TOKEN -u $CIRCLE_PROJECT_USERNAME -r $CIRCLE_PROJECT_REPONAME -t LATEST || true
     - github-release release -s $GITHUB_USER_TOKEN -u $CIRCLE_PROJECT_USERNAME -r $CIRCLE_PROJECT_REPONAME -t LATEST -n "Latest snapshot" -d "This is the latest snapshot build by CircleCI." -c $CIRCLE_BRANCH -p
-    - github-release upload -s $GITHUB_USER_TOKEN -u $CIRCLE_PROJECT_USERNAME -r $CIRCLE_PROJECT_REPONAME -t LATEST -n "Latest snapshot" -n "openchronos-ng-elf-latest-firmware.tgz" -l "openchronos-ng-elf-latest-firmware.tgz" -f openchronos-ng-elf-latest-firmware.tgz
+    - github-release upload -s $GITHUB_USER_TOKEN -u $CIRCLE_PROJECT_USERNAME -r $CIRCLE_PROJECT_REPONAME -t LATEST -n "openchronos-ng-elf-latest-firmware.tgz" -l "openchronos-ng-elf-latest-firmware.tgz" -f openchronos-ng-elf-latest-firmware.tgz
 
 test:
   override:
