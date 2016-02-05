@@ -47,6 +47,12 @@ static void refresh_screen()
 	_printf(0, LCD_SEG_L1_3_2, "%02u", tmp_hh);
 }
 
+static void beep(void)
+{
+        note welcome[4] = {0x1901, 0x000F};
+        buzzer_play(welcome);
+}
+
 static void alarm_event(enum sys_message msg)
 {
 /*	if (msg & SYS_MSG_TIMER_20HZ) {
@@ -66,12 +72,6 @@ static void hour_event(enum sys_message msg)
 		beep();
 	}
 
-}
-
-static void beep(void)
-{
-        note welcome[4] = {0x1901, 0x000F};
-        buzzer_play(welcome);
 }
 
 /*************************** edit mode callbacks **************************/
