@@ -24,6 +24,10 @@ dependencies:
     - echo Building openchronos-ng-elf...
     - make              # Build the openchronos-ng-elf project
 
+  post:
+    - export
+    - github-release delete -s $GITHUB_USER_TOKEN -u $CIRCLE_PROJECT_USERNAME -r $CIRCLE_PROJECT_REPONAME -t LATEST
+
 test:
   override:
     - echo No tests yet.
