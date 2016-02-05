@@ -7,6 +7,8 @@ machine:
 
   pre:
     - echo alias ll=\'ls -al\' >> ~/.bash_profile # setup ll alias for later ssh login
+    - go get github.com/BenjaminSoelberg/github-release
+    - github-release
 
 dependencies:
   pre:
