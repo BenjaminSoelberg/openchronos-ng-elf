@@ -14,7 +14,7 @@ dependencies:
     - wget https://circle-artifacts.com/gh/BenjaminSoelberg/msp430-elf/4/artifacts/0/tmp/circle-artifacts.QiqE80U/msp430-elf-gcc-without-mspdebug_3.05.00.00_ubuntu_x64.tar.gz -O $HOME/msp430-elf-gcc.tar.gz
 
     - echo Installing msp430 elf gcc compiler...
-    - cd $HOME && tar xvf msp430-elf-gcc.tar.gz
+    - cd $HOME && tar xvf msp430-elf-gcc.tar.gz | tail
 
   override:
     - echo Cleaning openchronos-ng-elf...
@@ -25,7 +25,7 @@ dependencies:
 
   post:
     - tar -cvzf openchronos-ng-elf-latest-firmware.tgz openchronos.txt openchronos.elf README.md
-    - github-release delete -s $GITHUB_USER_TOKEN -u $CIRCLE_PROJECT_USERNAME -r $CIRCLE_PROJECT_REPONAME -t LATEST
+    - github-release delete -s $GITHUB_USER_TOKEN -u $CIRCLE_PROJECT_USERNAME -r $CIRCLE_PROJECT_REPONAME -t LATEST || true
     - github-release delete -s $GITHUB_USER_TOKEN -u $CIRCLE_PROJECT_USERNAME -r $CIRCLE_PROJECT_REPONAME -t LATEST -n "Latest snapshot" -d "This is the latest snapshot build by CircleCI." -c $CIRCLE_BRANCH -p
 
 test:
