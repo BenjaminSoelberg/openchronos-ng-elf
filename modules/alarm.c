@@ -25,6 +25,7 @@
 #include <drivers/display.h>
 #include <drivers/rtca.h>
 #include <drivers/messagebus.h>
+#include <drivers/buzzer.h>
 
 static union {
 	struct {
@@ -48,10 +49,33 @@ static void refresh_screen()
 
 static void alarm_event(enum sys_message msg)
 {
-	/* TODO: */
+/*	if (msg & SYS_MSG_TIMER_20HZ) {
+		beep();
+	}
+*/
+	if (msg & SYS_MSG_RTC_ALARM) {
+		note welcome[5] = {0x1901, 0x1904, 0x1901, 0x1904, 0x000F};
+		buzzer_play(welcome);
+//		alarm_start();
+	}
+}
+
+static void hour_event(enum sys_message msg)
+{
+	if (msg & SYS_MSG_RTC_HOUR) {
+		beep();
+	}
+
+}
+
+static void beep(void)
+{
+        note welcome[4] = {0x1901, 0x000F};
+        buzzer_play(welcome);
 }
 
 /*************************** edit mode callbacks **************************/
+
 /* Hour */
 static void edit_hh_sel(void)
 {
@@ -123,28 +147,29 @@ static void num_pressed()
 	/* this cycles between all alarm/chime combinations and overflow */
 	alarm_state.state++;
 
-	/* Register RTC only if needed, saving CPU cycles.. */
-	if (alarm_state.state)
-		sys_messagebus_register(alarm_event, SYS_MSG_RTC_ALARM);
-	else
-		sys_messagebus_unregister(alarm_event);
-
+	rtca_disable_alarm();
+	/* Prevents double registration */
+//	sys_messagebus_unregister(alarm_event);
+	/* Register RTC alarm event only if needed, saving CPU cycles.. */
 	if (alarm_state.alarm) {
 		display_symbol(0, LCD_ICON_ALARM, SEG_ON);
-		rtca_enable_alarm();
+//		sys_messagebus_register(alarm_event, SYS_MSG_RTC_ALARM);
+//		rtca_enable_alarm();
 	} else {
 		display_symbol(0, LCD_ICON_ALARM, SEG_OFF);
-		rtca_disable_alarm();
 	}
 
+	/* Prevents double registration */
+	sys_messagebus_unregister(hour_event);
+	/* Register RTC hour event only if needed, saving CPU cycles.. */
 	if (alarm_state.chime) {
 		display_symbol(0, LCD_ICON_BEEPER2, SEG_ON);
 		display_symbol(0, LCD_ICON_BEEPER3, SEG_ON);
+		sys_messagebus_register(hour_event, SYS_MSG_RTC_HOUR);
 	} else {
 		display_symbol(0, LCD_ICON_BEEPER2, SEG_OFF);
 		display_symbol(0, LCD_ICON_BEEPER3, SEG_OFF);
 	}
-
 }
 
 
@@ -166,5 +191,4 @@ void mod_alarm_init()
 			NULL, NULL,
 			&alarm_activated,
 			&alarm_deactivated);
-
 }
