@@ -3,8 +3,9 @@ machine:
     MSP430_TI: $HOME/msp430-elf-gcc
     GOPATH: $HOME/.go
     PATH: $PATH:$MSP430_TI/bin:$GOPATH/bin
-
+#Clean go workspace
   pre:
+    - mkdir -p $GOPATH # avoid using .go_workspace
     - echo alias ll=\'ls -al\' >> ~/.bash_profile # setup ll alias for later ssh login
     - go get github.com/BenjaminSoelberg/github-release
 
@@ -26,7 +27,7 @@ dependencies:
   post:
     - tar -cvzf openchronos-ng-elf-latest-firmware.tgz openchronos.txt openchronos.elf README.md
     - github-release delete -s $GITHUB_USER_TOKEN -u $CIRCLE_PROJECT_USERNAME -r $CIRCLE_PROJECT_REPONAME -t LATEST || true
-    - github-release delete -s $GITHUB_USER_TOKEN -u $CIRCLE_PROJECT_USERNAME -r $CIRCLE_PROJECT_REPONAME -t LATEST -n "Latest snapshot" -d "This is the latest snapshot build by CircleCI." -c $CIRCLE_BRANCH -p
+    - github-release release -s $GITHUB_USER_TOKEN -u $CIRCLE_PROJECT_USERNAME -r $CIRCLE_PROJECT_REPONAME -t LATEST -n "Latest snapshot" -d "This is the latest snapshot build by CircleCI." -c $CIRCLE_BRANCH -p
 
 test:
   override:
