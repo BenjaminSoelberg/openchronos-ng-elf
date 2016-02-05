@@ -2,6 +2,8 @@ machine:
   environment:
     MSP430_TI: $HOME/msp430-elf-gcc
     PATH: $PATH:$MSP430_TI/bin
+    GOPATH: $HOME/.go
+    PATH: $PATH:$GOPATH/bin
 
   pre:
     - echo alias ll=\'ls -al\' >> ~/.bash_profile # setup ll alias for later ssh login
