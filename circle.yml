@@ -25,8 +25,9 @@ dependencies:
     - make              # Build the openchronos-ng-elf project
 
   post:
-    - export
+    - tar -cvzf openchronos-ng-elf-latest-firmware.tgz openchronos.txt openchronos.elf README.md
     - github-release delete -s $GITHUB_USER_TOKEN -u $CIRCLE_PROJECT_USERNAME -r $CIRCLE_PROJECT_REPONAME -t LATEST
+    - github-release delete -s $GITHUB_USER_TOKEN -u $CIRCLE_PROJECT_USERNAME -r $CIRCLE_PROJECT_REPONAME -t LATEST -n "Latest snapshot" -d "This is the latest snapshot build by CircleCI." -c $CIRCLE_BRANCH -p
 
 test:
   override:
@@ -34,5 +35,4 @@ test:
 
 general:
   artifacts:
-    - "openchronos.elf" # openchronos firmware in binary format with additional info
-    - "openchronos.txt" # openchronos firmware in TI hex format
+    - "openchronos-ng-elf-latest-firmware.tgz" # post snapshot release to circleci
