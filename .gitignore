@@ -14,5 +14,8 @@ nbproject/
 cscope.out
 # intellij idea project files
 *.iml
+.idea/
+*.tgz
+#Firmware files
 openchronos.elf
 openchronos.txt
