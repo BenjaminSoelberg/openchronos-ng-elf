@@ -4,8 +4,7 @@ machine:
     PATH: $PATH:$MSP430_TI/bin
 
   pre:
-    # setup ll alias for later ssh login
-    - echo alias ll=\'ls -al\' >> ~/.bash_profile
+    - echo alias ll=\'ls -al\' >> ~/.bash_profile    # setup ll alias for later ssh login
 
 dependencies:
   pre:
