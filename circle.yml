@@ -4,6 +4,7 @@ machine:
     PATH: $PATH:$MSP430_TI/bin
 
   pre:
+    - echo 123
     # setup ll alias for later ssh login
     - echo alias ll=\'ls -al\' >> ~/.bash_profile
     # Install github release go package
