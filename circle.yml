@@ -7,7 +7,8 @@ machine:
     # setup ll alias for later ssh login
     - echo alias ll=\'ls -al\' >> ~/.bash_profile
     # Install github release go package
-    - if [ ! -f $GOPATH/bin/github-release ]; then go get github.com/BenjaminSoelberg/github-release; fi
+    - echo $GOPATH
+    - if [ ! -e $GOPATH/bin/github-release ]; then go get github.com/BenjaminSoelberg/github-release; fi
     # No need for caching of source or downloaded packages
     - rm -rf $GOPATH/src $GOPATH/pkg
 
@@ -35,7 +36,7 @@ dependencies:
     - github-release release -s $GITHUB_USER_TOKEN -u $CIRCLE_PROJECT_USERNAME -r $CIRCLE_PROJECT_REPONAME -t LATEST -n "Latest snapshot" -d "This is the latest snapshot build by CircleCI." -c $CIRCLE_BRANCH -p
     # Attach pre-release firmware package
     - github-release upload -s $GITHUB_USER_TOKEN -u $CIRCLE_PROJECT_USERNAME -r $CIRCLE_PROJECT_REPONAME -t LATEST -n "openchronos-ng-elf-latest-firmware.tgz" -l "openchronos-ng-elf-latest-firmware.tgz" -f openchronos-ng-elf-latest-firmware.tgz
-
+K
 test:
   override:
     -
