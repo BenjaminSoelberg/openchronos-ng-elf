@@ -36,7 +36,7 @@ dependencies:
     - github-release release -s $GITHUB_USER_TOKEN -u $CIRCLE_PROJECT_USERNAME -r $CIRCLE_PROJECT_REPONAME -t LATEST -n "Latest snapshot" -d "This is the latest snapshot build by CircleCI." -c $CIRCLE_BRANCH -p
     # Attach pre-release firmware package
     - github-release upload -s $GITHUB_USER_TOKEN -u $CIRCLE_PROJECT_USERNAME -r $CIRCLE_PROJECT_REPONAME -t LATEST -n "openchronos-ng-elf-latest-firmware.tgz" -l "openchronos-ng-elf-latest-firmware.tgz" -f openchronos-ng-elf-latest-firmware.tgz
-K
+
 test:
   override:
     -
