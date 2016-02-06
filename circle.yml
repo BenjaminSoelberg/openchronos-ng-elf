@@ -27,7 +27,7 @@ dependencies:
   post:
     - echo Build a firmware pre-release package
     - tar -cvzf openchronos-ng-elf-latest-firmware.tgz openchronos.txt openchronos.elf README.md
-    - echo Delete LATEST pre-release if exists (the || true part ensures that circleci doesn't fail on first run where LATEST doesn't exisis
+    - echo Delete LATEST pre-release if exists
     - github-release delete -s $GITHUB_USER_TOKEN -u $CIRCLE_PROJECT_USERNAME -r $CIRCLE_PROJECT_REPONAME -t LATEST || true
     - echo Create LATEST pre-release
     - github-release release -s $GITHUB_USER_TOKEN -u $CIRCLE_PROJECT_USERNAME -r $CIRCLE_PROJECT_REPONAME -t LATEST -n "Latest snapshot" -d "This is the latest snapshot build by CircleCI." -c $CIRCLE_BRANCH -p
