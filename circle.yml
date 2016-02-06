@@ -1,38 +1,44 @@
 machine:
   environment:
     MSP430_TI: $HOME/msp430-elf-gcc
-    GOPATH: $HOME/.go
-    PATH: $PATH:$MSP430_TI/bin:$GOPATH/bin
-#Clean go workspace
+    PATH: $PATH:$MSP430_TI/bin
+
   pre:
-    - mkdir -p $GOPATH # avoid using .go_workspace
-    - echo alias ll=\'ls -al\' >> ~/.bash_profile # setup ll alias for later ssh login
-    - go get github.com/BenjaminSoelberg/github-release
+    # setup ll alias for later ssh login
+    - echo alias ll=\'ls -al\' >> ~/.bash_profile
+    # Install github release go package
+    - if [ ! -f $GOPATH/bin/github-release ]; then go get github.com/BenjaminSoelberg/github-release; fi
+    # No need for caching of source or downloaded packages
+    - rm -rf $GOPATH/src $GOPATH/pkg
 
 dependencies:
   pre:
-    - echo Downloading msp430 elf gcc compiler...
+    # Downloading msp430 elf gcc compiler...
     - wget https://circle-artifacts.com/gh/BenjaminSoelberg/msp430-elf/4/artifacts/0/tmp/circle-artifacts.QiqE80U/msp430-elf-gcc-without-mspdebug_3.05.00.00_ubuntu_x64.tar.gz -O $HOME/msp430-elf-gcc.tar.gz
 
-    - echo Installing msp430 elf gcc compiler...
+    # Installing msp430 elf gcc compiler...
     - cd $HOME && tar xvf msp430-elf-gcc.tar.gz | tail
 
   override:
-    - echo Cleaning openchronos-ng-elf...
+    - # Cleaning openchronos-ng-elf...
     - make clean        # Clean the openchronos-ng-elf project
 
-    - echo Building openchronos-ng-elf...
+    # Building openchronos-ng-elf...
     - make              # Build the openchronos-ng-elf project
 
   post:
+    # Build a firmware pre-release package
     - tar -cvzf openchronos-ng-elf-latest-firmware.tgz openchronos.txt openchronos.elf README.md
+    # Delete LATEST pre-release if exists (the || true part ensures that circleci doesn't fail on first run where LATEST doesn't exisis
     - github-release delete -s $GITHUB_USER_TOKEN -u $CIRCLE_PROJECT_USERNAME -r $CIRCLE_PROJECT_REPONAME -t LATEST || true
+    # Create LATEST pre-release
     - github-release release -s $GITHUB_USER_TOKEN -u $CIRCLE_PROJECT_USERNAME -r $CIRCLE_PROJECT_REPONAME -t LATEST -n "Latest snapshot" -d "This is the latest snapshot build by CircleCI." -c $CIRCLE_BRANCH -p
+    # Attach pre-release firmware package
     - github-release upload -s $GITHUB_USER_TOKEN -u $CIRCLE_PROJECT_USERNAME -r $CIRCLE_PROJECT_REPONAME -t LATEST -n "openchronos-ng-elf-latest-firmware.tgz" -l "openchronos-ng-elf-latest-firmware.tgz" -f openchronos-ng-elf-latest-firmware.tgz
 
 test:
   override:
-    - echo No tests yet.
+    -
 
 general:
   artifacts:
