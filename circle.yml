@@ -11,11 +11,16 @@ dependencies:
   pre:
     - echo Install github release go package
     - if [ ! -e $GOPATH/bin/github-release ]; then go get github.com/BenjaminSoelberg/github-release; fi
+
     - echo Downloading msp430 elf gcc compiler...
     - wget https://circle-artifacts.com/gh/BenjaminSoelberg/msp430-elf/4/artifacts/0/tmp/circle-artifacts.QiqE80U/msp430-elf-gcc-without-mspdebug_3.05.00.00_ubuntu_x64.tar.gz -O $HOME/msp430-elf-gcc.tar.gz
 
     - echo Installing msp430 elf gcc compiler...
     - cd $HOME && tar xvf msp430-elf-gcc.tar.gz | tail
+
+    - set
+    - export
+    - echo $GOPATH
 
   override:
     - echo Cleaning openchronos-ng-elf...
@@ -27,6 +32,7 @@ dependencies:
   post:
     - echo Build a firmware pre-release package
     - tar -cvzf openchronos-ng-elf-latest-firmware.tgz openchronos.txt openchronos.elf README.md
+
     - echo Delete LATEST pre-release if exists
     - github-release delete -s $GITHUB_USER_TOKEN -u $CIRCLE_PROJECT_USERNAME -r $CIRCLE_PROJECT_REPONAME -t LATEST || true
     - echo Create LATEST pre-release
@@ -39,7 +45,7 @@ dependencies:
 
 test:
   override:
-    - echo notests yet
+    - echo "No tests yet."
 
 general:
   artifacts:
