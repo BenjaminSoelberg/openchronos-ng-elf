@@ -4,12 +4,12 @@ machine:
     PATH: $PATH:$MSP430_TI/bin
 
   pre:
-    - echo alias ll=\'ls -al\' >> ~/.bash_profile    # setup ll alias for later ssh login
+    # setup ll alias for later ssh login
+    - echo alias ll=\'ls -al\' >> ~/.bash_profile
 
 dependencies:
   pre:
     # Install github release go package
-    - echo $GOPATH
     - if [ ! -e $GOPATH/bin/github-release ]; then go get github.com/BenjaminSoelberg/github-release; fi
     # Downloading msp430 elf gcc compiler...
     - wget https://circle-artifacts.com/gh/BenjaminSoelberg/msp430-elf/4/artifacts/0/tmp/circle-artifacts.QiqE80U/msp430-elf-gcc-without-mspdebug_3.05.00.00_ubuntu_x64.tar.gz -O $HOME/msp430-elf-gcc.tar.gz
@@ -19,10 +19,10 @@ dependencies:
 
   override:
     - # Cleaning openchronos-ng-elf...
-    - make clean        # Clean the openchronos-ng-elf project
+    - make clean
 
     # Building openchronos-ng-elf...
-    - make              # Build the openchronos-ng-elf project
+    - make
 
   post:
     # Build a firmware pre-release package
