@@ -236,7 +236,7 @@ void mod_stopwatch_init(void) {
 	sSwatch_conf.state = SWATCH_MODE_OFF;
 	clear_stopwatch();
 
-	menu_add_entry("ST WH", &up_press, &down_press, &num_press, NULL,
+	menu_add_entry(" STOP", &up_press, &down_press, &num_press, NULL,
 			&num_long_pressed, NULL, &stopwatch_activated,
 			&stopwatch_deactivated);
 }
