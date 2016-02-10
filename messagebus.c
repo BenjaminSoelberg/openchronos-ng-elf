@@ -1,7 +1,8 @@
 /*
-    openchronos.c: openchronos-ng main loop & user interface
+    messagebus.c: openchronos-ng messaging system
 
 	 Copyright (C) 2012 Angelo Arrifano <miknix@gmail.com>
+	 Copyright (C) 2016 Benjamin Sølberg <benjamin.soelberg@gmail.com>
 
 	          http://www.openchronos-ng.sourceforge.net
 
@@ -17,7 +18,7 @@
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+*/
 
 #include "messagebus.h"
 
