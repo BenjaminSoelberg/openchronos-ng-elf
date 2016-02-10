@@ -17,17 +17,12 @@
 
 // driver
 #include "rf1a.h"
+#include "utils.h"
 
 
 // *************************************************************************************************
 // Global section
 
-
-// *************************************************************************************************
-// Define section
-#define st(x)      			do { x } while (__LINE__ == -1)
-#define ENTER_CRITICAL_SECTION(x)  	st( x = __get_SR_register(); __disable_interrupt(); )
-#define EXIT_CRITICAL_SECTION(x)	__set_interrupt_state(x)
 
 
 // *************************************************************************************************

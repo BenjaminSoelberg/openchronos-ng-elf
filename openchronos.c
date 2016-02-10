@@ -2,6 +2,7 @@
     openchronos.c: openchronos-ng main loop & user interface
 
 	 Copyright (C) 2012 Angelo Arrifano <miknix@gmail.com>
+	 Copyright (C) 2016 Benjamin Sølberg <benjamin.soelberg@gmail.com>
 
 	          http://www.openchronos-ng.sourceforge.net
 

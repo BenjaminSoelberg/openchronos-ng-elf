@@ -1,10 +1,31 @@
+/*
+    menu.h: openchronos-ng menu system
+
+	 Copyright (C) 2012 Angelo Arrifano <miknix@gmail.com>
+	 Copyright (C) 2016 Benjamin Sølberg <benjamin.soelberg@gmail.com>
+
+	          http://www.openchronos-ng.sourceforge.net
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
 /*!
 	\file menu.h
 	\brief Menu include file
 */
 
 #ifndef __MENU_H__
-#define __MENUH__
+#define __MENU_H__
 
 #include <msp430.h>
 
@@ -91,4 +112,4 @@ void menu_add_entry(char const * name,
 void menu_editmode_start(void (* complete_fn)(void),
                          struct menu_editmode_item *items);
 
-#endif /* __MESSAGEBUS_H__ */
+#endif /* __MENU_H__ */
