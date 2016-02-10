@@ -76,7 +76,7 @@ static void callback_20Hz(enum sys_message msg)
 
 	if (!buttons) {
 		/* turn 20 Hz callback off */
-		sys_messagebus_unregister(&callback_20Hz);
+		sys_messagebus_unregister_all(&callback_20Hz);
 		timer_20Hz_requested = 0;
 	}
 }

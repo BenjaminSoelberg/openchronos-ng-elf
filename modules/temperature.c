@@ -18,12 +18,12 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <openchronos.h>
+#include <messagebus.h>
+#include <menu.h>
 
 /* drivers */
-#include "drivers/display.h"
-#include "drivers/temperature.h"
-#include <drivers/messagebus.h>
+#include <drivers/display.h>
+#include <drivers/temperature.h>
 
 static void display_temperature(void)
 {
@@ -84,7 +84,7 @@ static void temperature_activate(void)
 #else
 	display_char(0, LCD_SEG_L2_4, 'F', SEG_SET);
 #endif
-	
+
 	/* display -- symbol while a measure is not performed */
 	display_chars(0, LCD_SEG_L1_2_0, "---", SEG_ON);
 
@@ -93,8 +93,8 @@ static void temperature_activate(void)
 
 static void temperature_deactivate(void)
 {
-	sys_messagebus_unregister(&measure_temp);
-	
+	sys_messagebus_unregister_all(&measure_temp);
+
 	/* cleanup screen */
 	display_symbol(0, LCD_UNIT_L1_DEGREE, SEG_OFF);
 	display_symbol(0, LCD_SEG_L1_DP0, SEG_OFF);

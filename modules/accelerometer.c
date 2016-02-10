@@ -16,11 +16,11 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <openchronos.h>
+#include <messagebus.h>
+#include <menu.h>
 
 /* drivers */
 #include <drivers/rtca.h>
-#include <drivers/messagebus.h>
 #include <drivers/display.h>
 #include <drivers/vti_as.h>
 #include <drivers/buzzer.h>
@@ -70,7 +70,7 @@ struct accel
 
 	// Timeout: should be decreased with the 1 minute RTC event
 	uint16_t			timeout;
-	// Display X/Y/Z values	
+	// Display X/Y/Z values
 	uint8_t 			view_style;
 };
 extern struct accel sAccel;
@@ -117,28 +117,28 @@ uint8_t acceleration_value_is_positive(uint8_t value)
 // *************************************************************************************************
 // @fn          convert_acceleration_value_to_mgrav
 // @brief       Converts measured value to mgrav units
-// @param       u8 value	g data from sensor 
+// @param       u8 value	g data from sensor
 // @return      u16			Acceleration (mgrav)
 // *************************************************************************************************
 uint16_t convert_acceleration_value_to_mgrav(uint8_t value)
 {
 	uint16_t result;
 	uint8_t i;
-	
+
 	if (!acceleration_value_is_positive(value))
 	{
 		// Convert 2's complement negative number to positive number
 		value = ~value;
 		value += 1;
 	}
-	
+
 	result = 0;
 	for (i=0; i<7; i++)
 	{
 
 		result += ((value & (BIT(i)))>>i) * mgrav_per_bit[i];
 	}
-	
+
 	return (result);
 }
 
@@ -154,7 +154,7 @@ void update_menu()
 				display_chars(0, LCD_SEG_L1_3_0 , "MEAS", SEG_SET);
 			else if(as_config.mode==ACTIVITY_MODE)
 				display_chars(0, LCD_SEG_L1_3_0 , "ACTI", SEG_SET);
-			
+
 			display_chars(0, LCD_SEG_L2_4_0 , "MODE", SEG_SET);
 			break;
 
@@ -211,7 +211,7 @@ static void up_btn()
 
 		case VIEW_STATUS:
 			_printf(0,LCD_SEG_L1_3_0, "%1u", as_status.all_flags);
-	
+
 			break;
 
 		case VIEW_AXIS:
@@ -262,15 +262,15 @@ void display_data(uint8_t display_id)
 	// Convert X/Y/Z values to mg
 	switch (sAccel.view_style)
 	{
-		case DISPLAY_ACCEL_X: 	
+		case DISPLAY_ACCEL_X:
 			raw_data = sAccel.xyz[0];
 			display_char(display_id,LCD_SEG_L1_3, 'X', SEG_ON);
 			break;
-		case DISPLAY_ACCEL_Y: 	
+		case DISPLAY_ACCEL_Y:
 			raw_data = sAccel.xyz[1];
 			display_char(display_id,LCD_SEG_L1_3, 'Y', SEG_ON);
 			break;
-		case DISPLAY_ACCEL_Z: 	
+		case DISPLAY_ACCEL_Z:
 			raw_data = sAccel.xyz[2];
 			display_char(display_id,LCD_SEG_L1_3, 'Z', SEG_ON);
 			break;
@@ -308,7 +308,7 @@ static void as_event(enum sys_message msg)
 		//if timeout is over disable the accelerometer
 		if(sAccel.timeout<1)
 		{
-			//disable accelerometer to save power			
+			//disable accelerometer to save power
 			as_stop();
 			//update the mode to remember
 			sAccel.mode = ACCEL_MODE_OFF;
@@ -320,14 +320,14 @@ static void as_event(enum sys_message msg)
 		//Check the vti register for status information
 		as_status.all_flags=as_get_status();
 		//TODO For debugging only
-		_printf(0, LCD_SEG_L1_1_0, "%1u", as_status.all_flags);	
+		_printf(0, LCD_SEG_L1_1_0, "%1u", as_status.all_flags);
 		buzzer_play(smb);
 		//if we were in free fall or motion detection mode check for the event
 		if(as_status.int_status.falldet || as_status.int_status.motiondet){
 
 			//if such an event is detected enable the symbol
 			//display_symbol(0, LCD_ICON_ALARM , SEG_SET | BLINK_ON);
-			
+
 			//read the data
 			as_get_data(sAccel.xyz);
 			//display_data(0);
@@ -349,7 +349,7 @@ static void as_event(enum sys_message msg)
 	if ( (msg & SYS_MSG_RTC_SECOND) == SYS_MSG_RTC_SECOND)
 	{
 	/*check the status register for debugging purposes */
-	_printf(0, LCD_SEG_L1_1_0, "%1u", as_read_register(ADDR_INT_STATUS));	
+	_printf(0, LCD_SEG_L1_1_0, "%1u", as_read_register(ADDR_INT_STATUS));
 	/* update menu screen */
 	lcd_screen_activate(0);
 	}
@@ -369,7 +369,7 @@ static void acc_activated()
 	lcd_screens_create(2);
 
 	/* screen 0 will contain the menu structure and screen 1 the raw accelerometer data */
-	
+
 	// Show warning if acceleration sensor was not initialised properly
 	if (!as_ok)
 	{
@@ -397,7 +397,7 @@ static void acc_activated()
 			// Set timeout counter
 			sAccel.timeout = ACCEL_MEASUREMENT_TIMEOUT;
 
-			// Set mode for screen 
+			// Set mode for screen
 			sAccel.mode = ACCEL_MODE_ON;
 
 			// Start with mode selection
@@ -427,7 +427,7 @@ static void acc_activated()
 void print_debug()
 {
 		// check if that is really in the mode we set
-		
+
 		_printf(0, LCD_SEG_L1_3_0, "%03x", as_read_register(ADDR_CTRL));
 		_printf(0, LCD_SEG_L2_5_0, "%05x", as_read_register(ADDR_MDFFTMR));
 
@@ -446,7 +446,7 @@ static void acc_deactivated()
 	lcd_screens_destroy();
 
 	/* clean up screen */
-	
+
 	display_clear(0, 1);
 	display_clear(0, 2);
 
@@ -458,7 +458,7 @@ static void acc_deactivated()
 
 	/* otherwise shutdown all the stuff
 	** deregister from the message bus */
-	sys_messagebus_unregister(&as_event);
+	sys_messagebus_unregister_all(&as_event);
 	/* Stop acceleration sensor */
 	as_stop();
 

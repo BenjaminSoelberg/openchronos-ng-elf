@@ -19,16 +19,17 @@
     from Peter C. Gutmann's implementation as found in
     Applied Cryptography by Bruce Schneier
 */
-#include <openchronos.h>
 #include <string.h>
+
+#include <messagebus.h>
+#include <menu.h>
 
 /* drivers */
 #include <drivers/rtca.h>
 #include <drivers/display.h>
-#include <drivers/messagebus.h>
 
 /* C is used as variable below */
-#undef C 
+#undef C
 
 /* 7-segment character bit assignments */
 /* Replicated from drivers/display.c (shouldn't this be in display.h ?) */
@@ -262,9 +263,9 @@ static uint32_t calculate_otp(uint32_t time)
 
 static void clock_event(enum sys_message msg)
 {
-    // Check how long the current code is valid 
+    // Check how long the current code is valid
     uint8_t segment = (rtca_time.sec / 5) % 6;
-        
+
     // Draw indicator in lower-left corner
     display_bits(0, LCD_SEG_L2_4, indicator[2*segment  ], SEG_SET);
     display_bits(0, LCD_SEG_L2_4, indicator[2*segment+1], BLINK_SET);
@@ -282,7 +283,7 @@ static void clock_event(enum sys_message msg)
         // Draw first half on the top line
         uint16_t v = (otp_value / 1000) % 1000;
         _printf(0, LCD_SEG_L1_2_0, "%03u", v);
-        
+
         // Draw second half on the bottom line
         v = (otp_value % 1000);
         _printf(0, LCD_SEG_L2_2_0,"%03u", v);
@@ -293,14 +294,14 @@ static void otp_activated()
 {
     sys_messagebus_register(&clock_event, SYS_MSG_RTC_SECOND);
 
-    // Force generate & display a new OTP 
+    // Force generate & display a new OTP
     last_time = 0;
     clock_event(RTCA_EV_SECOND);
 }
 
 static void otp_deactivated()
 {
-    sys_messagebus_unregister(&clock_event);
+    sys_messagebus_unregister_all(&clock_event);
 
     /* clean up screen */
     display_clear(0, 1);
@@ -313,7 +314,7 @@ void mod_otp_init()
         NULL,               /* up         */
         NULL,               /* down       */
         NULL,               /* num        */
-        NULL,               /* long star  */ 
+        NULL,               /* long star  */
         NULL,               /* long num   */
         NULL,               /* up-down    */
         &otp_activated,     /* activate   */

@@ -19,9 +19,10 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <messagebus.h>
+#include <menu.h>
 
-#include <openchronos.h>
-
+/* drivers */
 #include <drivers/display.h>
 #include <drivers/buzzer.h>
 

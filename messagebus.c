@@ -43,12 +43,18 @@ void sys_messagebus_register(void (*callback)(enum sys_message),
 	(*p)->listens = listens;
 }
 
-void sys_messagebus_unregister(void (*callback)(enum sys_message))
+void sys_messagebus_unregister_all(void (*callback)(enum sys_message))
+{
+        sys_messagebus_unregister(callback, 0);
+}
+
+void sys_messagebus_unregister(void (*callback)(enum sys_message),
+                               enum sys_message listens)
 {
 	struct sys_messagebus *p = messagebus, *pp = NULL;
 
 	while (p) {
-		if (p->fn == callback) {
+		if (p->fn == callback && (listens == 0 || p->listens == listens)) {
 			if (!pp) { // If 1. element
 				// Remove first element by pointing to the next
 				messagebus = p->next;
@@ -59,7 +65,7 @@ void sys_messagebus_unregister(void (*callback)(enum sys_message))
 				// Keep pp the same (NULL)
 			} else { // If 2. or later element
 				// Remove element by pointing previous to the next
-				pp->next = p->next; 
+				pp->next = p->next;
 				// Free element
 				free(p);
 				// Set current pointer to point to next element
@@ -74,7 +80,6 @@ void sys_messagebus_unregister(void (*callback)(enum sys_message))
 		}
 	}
 }
-
 void send_events(enum sys_message msg)
 {
 	struct sys_messagebus *p = messagebus;

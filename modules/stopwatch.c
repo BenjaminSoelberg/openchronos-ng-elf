@@ -39,11 +39,11 @@
  *		- (both-arrows) --- noop
  */
 
-#include <openchronos.h>
+#include <messagebus.h>
+#include <menu.h>
 
 /* drivers */
 #include <drivers/display.h>
-#include <drivers/messagebus.h>
 
 /* Defines */
 
@@ -182,7 +182,7 @@ static void stopwatch_deactivated() {
 		return;
 	} else {
 
-		sys_messagebus_unregister(&stopwatch_event);
+		sys_messagebus_unregister_all(&stopwatch_event);
 		display_symbol(0, LCD_ICON_STOPWATCH, SEG_OFF);
 		display_symbol(0, LCD_SEG_L2_COL0, SEG_OFF);
 		display_symbol(0, LCD_SEG_L2_COL1, SEG_OFF);

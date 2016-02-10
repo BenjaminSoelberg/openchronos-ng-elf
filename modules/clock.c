@@ -19,12 +19,12 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <openchronos.h>
+#include <messagebus.h>
+#include <menu.h>
 
 /* drivers */
 #include <drivers/rtca.h>
 #include <drivers/display.h>
-#include <drivers/messagebus.h>
 
 #ifdef CONFIG_MOD_CLOCK_AMPM
 static uint8_t use_CLOCK_AMPM = 1;
@@ -58,7 +58,7 @@ static void clock_event(enum sys_message msg)
 								SEG_SET);
 	}
 	if (msg & SYS_MSG_RTC_HOUR) {
-		if (use_CLOCK_AMPM) { 
+		if (use_CLOCK_AMPM) {
 			uint8_t tmp_hh = rtca_time.hour;
 			if (tmp_hh > 12) { //PM
 				tmp_hh -= 12;
@@ -294,7 +294,7 @@ static void clock_activated()
 	);
 
 	/* create three screens, the first is always the active one */
-	lcd_screens_create(3); // 0:time + date, 1: year + day of week, 2:temp for settings (ex 12/24h setup) 
+	lcd_screens_create(3); // 0:time + date, 1: year + day of week, 2:temp for settings (ex 12/24h setup)
 
 	/* display stuff that won't change with time */
 	display_symbol(0, LCD_SEG_L1_COL, SEG_ON);
@@ -306,14 +306,14 @@ static void clock_activated()
 
 static void clock_deactivated()
 {
-	sys_messagebus_unregister(&clock_event);
+	sys_messagebus_unregister_all(&clock_event);
 
 	/* destroy virtual screens */
 	lcd_screens_destroy();
 
 	/* clean up screen */
 	display_symbol(0, LCD_SEG_L1_COL, SEG_OFF);
-	if (use_CLOCK_AMPM) { 
+	if (use_CLOCK_AMPM) {
 		display_symbol(0, LCD_SYMB_PM, SEG_OFF);
 	}
 	display_clear(0, 1);

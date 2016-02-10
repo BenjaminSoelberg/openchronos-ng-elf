@@ -65,7 +65,7 @@ void sys_messagebus_register(
 	\brief Unregisters a node from the message bus.
 	\sa sys_messagebus_register
 */
-void sys_messagebus_unregister(
+void sys_messagebus_unregister_all(
 	/*! the same callback used on sys_messagebus_register() */
 	void (*callback)(enum sys_message)
 );
@@ -73,6 +73,17 @@ void sys_messagebus_unregister(
 /*!
 	\brief Unregisters a node from the message bus.
 	\sa sys_messagebus_register
+*/
+void sys_messagebus_unregister(
+	/*! the same callback used on sys_messagebus_register() */
+	void (*callback)(enum sys_message),
+	/*! the same message used on sys_messagebus_register() */
+	enum sys_message listens
+);
+
+/*!
+	\brief Send a message to all listening nodes on the message bus.
+	\sa sys_messagebus_register, sys_messagebus_unregister
 */
 void send_events(
 	enum sys_message msg

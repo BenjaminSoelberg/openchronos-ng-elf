@@ -17,12 +17,12 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <openchronos.h>
+#include <messagebus.h>
+#include <menu.h>
 
 /* drivers */
-#include "drivers/display.h"
-#include "drivers/battery.h"
-#include <drivers/messagebus.h>
+#include <drivers/display.h>
+#include <drivers/battery.h>
 
 static void display_battery(void)
 {
@@ -60,7 +60,7 @@ static void battery_activate(void)
 
 static void battery_deactivate(void)
 {
-	sys_messagebus_unregister(&battery_event);
+	sys_messagebus_unregister_all(&battery_event);
 
 	/* cleanup screen */
 	display_clear(0, 1);
