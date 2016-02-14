@@ -58,6 +58,7 @@ enum ports_buttons {
 /* exclusive for openchronos.c, modules should NOT use this directly */
 uint8_t ports_button_pressed(uint8_t btn, uint8_t with_longpress);
 void ports_buttons_clear(void);
+void ports_buttons_poll(void);
 
 void init_buttons(void);
 

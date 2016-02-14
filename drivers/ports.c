@@ -26,8 +26,6 @@
 #include "timer.h"
 #include "messagebus.h"
 
-#include "display.h"
-
 #ifdef CONFIG_ACCELEROMETER
 #include "vti_as.h"
 #endif
@@ -42,7 +40,7 @@ volatile enum ports_buttons ports_down_btns;
 /* contains confirmed button presses (long and short) */
 volatile enum ports_buttons ports_pressed_btns;
 
-static uint8_t timer_20Hz_requested;
+volatile static uint8_t timer_20Hz_requested;
 static uint16_t last_press;
 
 /* 0 bit = ignore until release */
@@ -129,6 +127,20 @@ void ports_buttons_clear(void)
 }
 
 /*
+  Polls the button driver.
+
+  This functions exists to delay registering callbacks
+  while within PORT2_ISA and risk breaking the messagebus.
+*/
+void ports_buttons_poll(void)
+{
+       if (timer_20Hz_requested == 1) {
+ 	        sys_messagebus_register(&callback_20Hz, SYS_MSG_TIMER_20HZ);
+                timer_20Hz_requested = 2;
+        }
+}
+
+/*
   Interrupt service routine for
     - buttons
     - acceleration sensor CMA_INT
@@ -140,10 +152,8 @@ void PORT2_ISR(void)
 	/* If the interrupt is a button press */
 	if (P2IFG & ALL_BUTTONS) {
 		/* turn on 20 Hz callback*/
-		if (!timer_20Hz_requested) {
+		if (timer_20Hz_requested == 0) {
 			last_press = timer0_20hz_counter;
-			sys_messagebus_register(&callback_20Hz,
-						SYS_MSG_TIMER_20HZ);
 			timer_20Hz_requested = 1;
 		}
 	}

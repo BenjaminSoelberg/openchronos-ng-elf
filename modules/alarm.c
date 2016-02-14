@@ -19,12 +19,12 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <openchronos.h>
+#include <messagebus.h>
+#include <menu.h>
 
 /* drivers */
 #include <drivers/display.h>
 #include <drivers/rtca.h>
-#include <drivers/messagebus.h>
 #include <drivers/buzzer.h>
 
 static union {
@@ -149,18 +149,18 @@ static void num_pressed()
 
 	rtca_disable_alarm();
 	/* Prevents double registration */
-//	sys_messagebus_unregister(alarm_event);
+//	sys_messagebus_unregister(&alarm_event, SYS_MSG_RTC_ALARM);
 	/* Register RTC alarm event only if needed, saving CPU cycles.. */
 	if (alarm_state.alarm) {
 		display_symbol(0, LCD_ICON_ALARM, SEG_ON);
-//		sys_messagebus_register(alarm_event, SYS_MSG_RTC_ALARM);
+//		sys_messagebus_register(&alarm_event, SYS_MSG_RTC_ALARM);
 //		rtca_enable_alarm();
 	} else {
 		display_symbol(0, LCD_ICON_ALARM, SEG_OFF);
 	}
 
 	/* Prevents double registration */
-	sys_messagebus_unregister(hour_event);
+	sys_messagebus_unregister(&hour_event, SYS_MSG_RTC_HOUR);
 	/* Register RTC hour event only if needed, saving CPU cycles.. */
 	if (alarm_state.chime) {
 		display_symbol(0, LCD_ICON_BEEPER2, SEG_ON);

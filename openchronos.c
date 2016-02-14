@@ -116,7 +116,7 @@ static void check_buttons(void)
 {
 #ifdef CONFIG_DEBUG_EASY_RESET
 	/* if up and down is pressed then resets the watch */
-	if (ports_button_pressed(PORTS_BTN_UP | PORTS_BTN_DOWN, 1))
+	if (ports_button_pressed(PORTS_BTN_UP | PORTS_BTN_DOWN, 0))
 	{
                 /* Forces a reset since a write to WDTCTL isn't allowed without password. */
 		WDTCTL = 0;
@@ -248,6 +248,9 @@ int main(void)
 		/* Go to LPM3, wait for interrupts */
 		_BIS_SR(LPM3_bits + GIE);
 		__no_operation();
+
+		/* poll the button driver */
+		ports_buttons_poll();
 
 		/* service watchdog on wakeup */
 		#ifdef USE_WATCHDOG
