@@ -20,7 +20,7 @@
 #ifndef __RTCA_H__
 #define __RTCA_H__
 
-#include <openchronos.h>
+#include "openchronos.h"
 
 enum rtca_tevent {
 	RTCA_EV_ALARM	= BIT0,

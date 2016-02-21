@@ -17,12 +17,12 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <messagebus.h>
-#include <menu.h>
+#include "messagebus.h"
+#include "menu.h"
 
 /* drivers */
-#include <drivers/display.h>
-#include <drivers/battery.h>
+#include "drivers/display.h"
+#include "drivers/battery.h"
 
 static void display_battery(void)
 {

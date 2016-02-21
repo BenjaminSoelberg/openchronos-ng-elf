@@ -16,14 +16,14 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <messagebus.h>
-#include <menu.h>
+#include "messagebus.h"
+#include "menu.h"
 
 /* drivers */
-#include <drivers/rtca.h>
-#include <drivers/display.h>
-#include <drivers/vti_as.h>
-#include <drivers/buzzer.h>
+#include "drivers/rtca.h"
+#include "drivers/display.h"
+#include "drivers/vti_as.h"
+#include "drivers/buzzer.h"
 
 // *************************************************************************************************
 // Defines section

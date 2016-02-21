@@ -59,25 +59,25 @@
 // *************************************************************************************************
 // Include section
 
-#include <openchronos.h>
+#include "openchronos.h"
 
 #include "modinit.h"
 
 /* Driver */
-#include <messagebus.h>
-#include <menu.h>
-#include <drivers/display.h>
-#include <drivers/vti_as.h>
-#include <drivers/vti_ps.h>
-#include <drivers/radio.h>
-#include <drivers/buzzer.h>
-#include <drivers/ports.h>
-#include <drivers/timer.h>
-#include <drivers/pmm.h>
-#include <drivers/rf1a.h>
-#include <drivers/rtca.h>
-#include <drivers/temperature.h>
-#include <drivers/battery.h>
+#include "messagebus.h"
+#include "menu.h"
+#include "drivers/display.h"
+#include "drivers/vti_as.h"
+#include "drivers/vti_ps.h"
+#include "drivers/radio.h"
+#include "drivers/buzzer.h"
+#include "drivers/ports.h"
+#include "drivers/timer.h"
+#include "drivers/pmm.h"
+#include "drivers/rf1a.h"
+#include "drivers/rtca.h"
+#include "drivers/temperature.h"
+#include "drivers/battery.h"
 
 void check_events(void)
 {

@@ -50,7 +50,7 @@
 	  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ****************************************************************************/
-#include <openchronos.h>
+#include "openchronos.h"
 
 #include "display.h"
 #include "battery.h"

@@ -17,12 +17,12 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <messagebus.h>
-#include <menu.h>
+#include "messagebus.h"
+#include "menu.h"
 
 /* drivers */
-#include <drivers/rtca.h>
-#include <drivers/display.h>
+#include "drivers/rtca.h"
+#include "drivers/display.h"
 
 struct Tide {
 	uint8_t hoursLeft;	/* hours left to next low tide */

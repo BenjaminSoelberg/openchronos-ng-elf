@@ -24,7 +24,7 @@
 	\details Misc utilities
 */
 
-#include <openchronos.h>
+#include "openchronos.h"
 
 #ifndef __UTILS_H__
 #define __UTILS_H__

@@ -5,7 +5,7 @@
 	\note If you are looking to timer events, then see #sys_message
 */
 
-#include <openchronos.h>
+#include "openchronos.h"
 
 #ifndef __TIMER_H__
 #define __TIMER_H__

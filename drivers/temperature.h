@@ -20,7 +20,7 @@
 #ifndef __TEMPERATURE_H__
 #define __TEMPERATURE_H__
 
-#include <openchronos.h>
+#include "openchronos.h"
 
 void temperature_init(void);
 void temperature_measurement(void);

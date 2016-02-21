@@ -54,7 +54,7 @@
 //
 // *************************************************************************************************
 
-#include <openchronos.h>
+#include "openchronos.h"
 #include <string.h>
 #include <stdlib.h>
 #include "display.h"

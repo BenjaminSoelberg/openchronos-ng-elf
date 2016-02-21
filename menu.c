@@ -28,8 +28,8 @@
 
 #include "menu.h"
 
-#include <drivers/ports.h>
-#include <drivers/display.h>
+#include "drivers/ports.h"
+#include "drivers/display.h"
 
 #define BIT_IS_SET(F, B)  ((F) | (B)) == (F)
 

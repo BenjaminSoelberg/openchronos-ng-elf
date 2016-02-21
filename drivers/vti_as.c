@@ -58,7 +58,7 @@
 /* Include section */
 
 /* system */
-#include <openchronos.h>
+#include "openchronos.h"
 #include "vti_as.h"
 #include "timer.h"
 

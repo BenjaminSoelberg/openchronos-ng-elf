@@ -40,7 +40,7 @@
 // Include section
 
 // system
-#include <openchronos.h>
+#include "openchronos.h"
 
 // driver
 #include "adc12.h"

@@ -39,11 +39,11 @@
  *		- (both-arrows) --- noop
  */
 
-#include <messagebus.h>
-#include <menu.h>
+#include "messagebus.h"
+#include "menu.h"
 
 /* drivers */
-#include <drivers/display.h>
+#include "drivers/display.h"
 
 /* Defines */
 

@@ -36,7 +36,7 @@
 #ifndef ADC12_H_
 #define ADC12_H_
 
-#include <openchronos.h>
+#include "openchronos.h"
 
 // *************************************************************************************************
 // Include section

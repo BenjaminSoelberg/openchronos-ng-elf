@@ -5,7 +5,7 @@
  */
 
 
-#include <openchronos.h>
+#include "openchronos.h"
 
 #ifdef CONFIG_INFOMEM
 

@@ -21,12 +21,12 @@
 */
 #include <string.h>
 
-#include <messagebus.h>
-#include <menu.h>
+#include "messagebus.h"
+#include "menu.h"
 
 /* drivers */
-#include <drivers/rtca.h>
-#include <drivers/display.h>
+#include "drivers/rtca.h"
+#include "drivers/display.h"
 
 /* C is used as variable below */
 #undef C

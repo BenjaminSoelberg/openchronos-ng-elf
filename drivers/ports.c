@@ -19,7 +19,7 @@
  */
 
 
-#include <openchronos.h>
+#include "openchronos.h"
 
 /* drivers */
 #include "ports.h"

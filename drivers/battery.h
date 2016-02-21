@@ -36,7 +36,7 @@
 #ifndef __BATTERY_H__
 #define __BATTERY_H__
 
-#include <openchronos.h>
+#include "openchronos.h"
 
 void battery_init(void);
 void battery_measurement(void);
