@@ -87,12 +87,10 @@ void timer0_init(void)
 	/* select external 32kHz source, /2 divider, continous mode */
 	TA0CTL |= TASSEL__ACLK | ID__2 | MC__CONTINOUS;
 
-#ifdef CONFIG_TIMER_20HZ_IRQ
 	/* setup and enable 20Hz timer */
 	timer0_20hz_ticks = TIMER0_TICKS_FROM_MS(50);
 	TA0CCR0 = TA0R + timer0_20hz_ticks;
 	TA0CCTL0 |= CCIE;
-#endif
 }
 
 /* This function was based on original Texas Instruments implementation,

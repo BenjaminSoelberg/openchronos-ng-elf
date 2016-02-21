@@ -87,12 +87,6 @@ DATA["CONFIG_TIMER_4S_IRQ"] = {
 	"help": "Enables 0.244Hz interrupts on the hardware timer",
 }
 
-DATA["CONFIG_TIMER_20HZ_IRQ"] = {
-	"name": "Enable 20Hz timer interrupts",
-	"default": True,
-	"help": "Enables 20Hz interrupts on the hardware timer",
-}
-
 # PORTS DRIVER ###############################################################
 
 DATA["TEXT_PORTS"] = {
