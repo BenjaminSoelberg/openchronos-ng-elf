@@ -1,33 +1,24 @@
-cmake_minimum_required(VERSION 3.3)
+cmake_minimum_required(VERSION 3.2)
 
-set(MSP430_TI $ENV{MSP430_TI})
 project(openchronos_ng_elf)
 
-# --- start ---
-include(CMakeForceCompiler)
+set(SUPPORTED_DEVICES cc430f6137)
+set(EXECUTABLE_NAME openchronos)
 
-# this one is important
-set(CMAKE_SYSTEM_NAME generic)
-
-# specify the cross compiler
-CMAKE_FORCE_C_COMPILER(msp430-elf-gcc GNU)
+include(toolchains/Platform/msp430-gcc.cmake)
+include(toolchains/toolchain-msp430-gcc-ti.cmake)
 
 # where is the target environment
-set(CMAKE_FIND_ROOT_PATH ${MSP430_TI})
+set(CMAKE_FIND_ROOT_PATH $ENV{MSP430_TI})
 
 # search for programs in the build host directories
 set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
 # for libraries and headers in the target directories
 set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
 set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
-# --- end ---
 
-set(CMAKE_C_FLAGS "-mmcu=cc430f6137 -ffunction-sections -fdata-sections -Wall")
+include_directories(. drivers modules)
 
-include_directories(${MSP430_TI}/include)
+set(SRC openchronos.c drivers modules menu.c messagebus.c modinit.c)
 
-include_directories(.)
-include_directories(drivers)
-include_directories(modules)
-
-add_executable(openchronos_ng_elf openchronos.c)
+add_msp430_executable(openchronos "" ${SRC})
