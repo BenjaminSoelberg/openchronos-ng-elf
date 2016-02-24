@@ -81,18 +81,18 @@
 
 void check_events(void)
 {
-	enum sys_message msg = 0;
+	enum sys_message msg = SYS_MSG_NONE;
 
 	/* drivers/rtca */
 	if (rtca_last_event) {
 		msg |= rtca_last_event;
-		rtca_last_event = 0;
+		rtca_last_event = RTCA_EV_NONE;
 	}
 
 	/* drivers/timer */
 	if (timer0_last_event) {
 		msg |= timer0_last_event << 7;
-		timer0_last_event = 0;
+		timer0_last_event = TIMER0_EVENT_NONE;
 	}
 
 	/* drivers/accelerometer */

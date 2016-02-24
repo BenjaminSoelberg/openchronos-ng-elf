@@ -40,22 +40,23 @@
 /* WARNING: the enum values are optimized to work with some drivers.
 	If you need to add a new entry, append it to the end! */
 enum sys_message {
-	/* drivers/rtca */
-	SYS_MSG_RTC_ALARM		= BIT0, /*!< alarm event from the hardware RTC. */
-	SYS_MSG_RTC_SECOND	= BIT1, /*!< second event from the hardware RTC. */
-	SYS_MSG_RTC_MINUTE	= BIT2, /*!< minute event from the hardware RTC. */
-	SYS_MSG_RTC_HOUR		= BIT3, /*!< hour event from the hardware RTC. */
-	SYS_MSG_RTC_DAY		= BIT4, /*!< day event from the hardware RTC. */
-	SYS_MSG_RTC_MONTH		= BIT5, /*!< month event from the hardware RTC. */
-	SYS_MSG_RTC_YEAR		= BIT6, /*!< year event from the hardware RTC. */
-	/* drivers/timer */
-	SYS_MSG_TIMER_4S		= BIT7, /*!< 4s (period) event from the hardware TIMER_0. */
-	SYS_MSG_TIMER_20HZ	= BIT8, /*!< 20HZ event from the hardware TIMER_0. */
-	SYS_MSG_TIMER_PROG	= BIT9, /*!< programmable event from TIMER_0. */
-	/* sensor/interrups */
-	SYS_MSG_AS_INT			= BITA,
-	SYS_MSG_PS_INT			= BITB,
-	SYS_MSG_BATT			= BITC,
+    /* drivers/rtca */
+    SYS_MSG_NONE       = 0,    /*!< Empty event. */
+    SYS_MSG_RTC_ALARM  = BIT0, /*!< alarm event from the hardware RTC. */
+    SYS_MSG_RTC_SECOND = BIT1, /*!< second event from the hardware RTC. */
+    SYS_MSG_RTC_MINUTE = BIT2, /*!< minute event from the hardware RTC. */
+    SYS_MSG_RTC_HOUR   = BIT3, /*!< hour event from the hardware RTC. */
+    SYS_MSG_RTC_DAY    = BIT4, /*!< day event from the hardware RTC. */
+    SYS_MSG_RTC_MONTH  = BIT5, /*!< month event from the hardware RTC. */
+    SYS_MSG_RTC_YEAR   = BIT6, /*!< year event from the hardware RTC. */
+    /* drivers/timer */
+    SYS_MSG_TIMER_4S   = BIT7, /*!< 4s (period) event from the hardware TIMER_0. */
+    SYS_MSG_TIMER_20HZ = BIT8, /*!< 20HZ event from the hardware TIMER_0. */
+    SYS_MSG_TIMER_PROG = BIT9, /*!< programmable event from TIMER_0. */
+    /* sensor/interrups */
+    SYS_MSG_AS_INT     = BITA,
+    SYS_MSG_PS_INT     = BITB,
+    SYS_MSG_BATT       = BITC,
 };
 
 /*!

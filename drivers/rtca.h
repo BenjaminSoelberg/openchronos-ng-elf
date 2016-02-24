@@ -23,8 +23,9 @@
 #include "openchronos.h"
 
 enum rtca_tevent {
+	RTCA_EV_NONE    = 0,
 	RTCA_EV_ALARM	= BIT0,
-	RTCA_EV_SECOND = BIT1,
+	RTCA_EV_SECOND  = BIT1,
 	RTCA_EV_MINUTE	= BIT2,
 	RTCA_EV_HOUR	= BIT3,
 	RTCA_EV_DAY		= BIT4,
