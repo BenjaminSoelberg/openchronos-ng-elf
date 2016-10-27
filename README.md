@@ -123,6 +123,11 @@ If you need to reinstall the original firmware you can download a flash tool her
 
 [http://www.bm-innovations.com/index.php/ez430-chronos](http://www.bm-innovations.com/index.php/ez430-chronos)
 
+If you are on windows 7/8/10 and wish to update the watch via bm-innovations Flash tool then download the FET drivers 
+(MSP430Drivers-1_00_00_01-windows-installer.exe	confirmed working on Win10) from:
+
+[http://software-dl.ti.com/msp430/msp430_public_sw/mcu/msp430/MSP430_FET_Drivers/latest/index_FDS.html]
+
 Data sheet for the CC430F6137 used in the watch:
 
 [http://www.ti.com/product/CC430F6137/technicaldocuments](http://www.ti.com/product/CC430F6137/technicaldocuments)
