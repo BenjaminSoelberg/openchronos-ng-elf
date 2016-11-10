@@ -4,6 +4,7 @@ INTRODUCTION
 Origin: [https://github.com/BenjaminSoelberg/openchronos-ng-elf](https://github.com/BenjaminSoelberg/openchronos-ng-elf)
 
 Latest build status on Circle CI : [![Circle CI](https://circleci.com/gh/BenjaminSoelberg/openchronos-ng-elf.svg?style=svg)](https://circleci.com/gh/BenjaminSoelberg/openchronos-ng-elf)
+
 Releases and snapshot, including firmware can be found here : [https://github.com/BenjaminSoelberg/openchronos-ng-elf/releases](https://github.com/BenjaminSoelberg/openchronos-ng-elf/releases)
 
 Modular opensource firmware for the TI eZ430 Chronos.
@@ -126,7 +127,7 @@ If you need to reinstall the original firmware you can download a flash tool her
 If you are on windows 7/8/10 and wish to update the watch via bm-innovations Flash tool then download the FET drivers 
 (MSP430Drivers-1_00_00_01-windows-installer.exe	confirmed working on Win10) from:
 
-[http://software-dl.ti.com/msp430/msp430_public_sw/mcu/msp430/MSP430_FET_Drivers/latest/index_FDS.html]
+[http://software-dl.ti.com/msp430/msp430_public_sw/mcu/msp430/MSP430_FET_Drivers/latest/index_FDS.html](http://software-dl.ti.com/msp430/msp430_public_sw/mcu/msp430/MSP430_FET_Drivers/latest/index_FDS.html)
 
 Data sheet for the CC430F6137 used in the watch:
 
