@@ -9,14 +9,10 @@
 
 	\section devs_sec For developers..
 	If you are a module developer please take a look to the following topics, we choose them for you because they are the most important when starting a new module.
-
 	<ol>
 		<li>First have a look to <a href="http://sourceforge.net/p/openchronos-ng/wiki/Module%20build%20system/">our wiki</a> to understand how to create a module (including its sources) and make it appear in the openchronos menu config. It is really simple and should not take much of your time.</li>
-
 		<li>Then have a look to menu_add_entry(), this is what you should call during module initialization to make it appear in the system menu. It is also in this function where you specify the module functions that are to be called when the user presses the ez430 chronos buttons.</li>
-
 		<li>Your module is now receiving input but what about output? Have a look to drivers/display.h, you can display strings using #display_chars() and turn ON/OFF symbols using #display_symbol(). </li>
-
 		<li>Finally, if your module needs to execute some code periodically, then have a look to sys_messagebus_register() and #sys_message, on how to make your module listen for system events, like 1Hz events from the hardware timer.</li>
 	</ol>
 */
@@ -30,13 +26,9 @@
 #define __EZCHRONOS_H__
 
 #include <msp430.h>
-
 #include <stdlib.h>
-
 #include <stdint.h>
-
 #include "config.h"
-
 
 /*!
 	\brief Handy prototype typedef for helpers_loop() function.

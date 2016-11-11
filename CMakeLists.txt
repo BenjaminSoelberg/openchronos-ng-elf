@@ -19,6 +19,15 @@ set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
 
 include_directories(. drivers modules)
 
-set(SOURCE_FILES openchronos.c config.h boot.c menu.c messagebus.c modinit.c drivers modules)
+set(SOURCE_FILES
+        openchronos.c
+        config.h
+        boot.c
+        menu.c
+        messagebus.c
+        modinit.c
+        drivers
+        modules/alarm.c
+        modules)
 
 add_msp430_executable(openchronos "" ${SOURCE_FILES})

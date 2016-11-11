@@ -20,10 +20,23 @@
 import os
 import ConfigParser
 
+
+#My python foo isn't strong enough
+def get_menu_order(mod):
+	cfgname = "modules/%s.cfg" % (mod)
+	cfg = ConfigParser.RawConfigParser()
+	cfg.read(cfgname)
+	try:
+		return cfg.get(cfg.sections()[0], 'menu_order')
+	except ConfigParser.NoOptionError:
+		return 999
+
+
 def get_modules():
 	mods = os.listdir('modules/')
 	mods = filter( (lambda x: x[-2:] == '.c'), mods)
 	mods = map( (lambda x: x[:-2]), mods)
+	mods = sorted(mods, key=get_menu_order)
 	return mods
 
 def read_config():
