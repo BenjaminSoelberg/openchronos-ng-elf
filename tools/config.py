@@ -41,7 +41,7 @@ DATA["USE_WATCHDOG"] = {
 }
 
 DATA["CONFIG_DEBUG_EASY_RESET"] = {
-	"name": "Use easy reset by pressing two buttons at the same time",
+	"name": "Use Easy Reset by pressing the up and down buttons at the same time",
 	"default": False,
 	"help": "Makes it fast to reboot the watch to update firmware.",
 }
