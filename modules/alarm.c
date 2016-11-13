@@ -138,12 +138,12 @@ static void num_pressed()
 
 	rtca_disable_alarm();
 	/* Prevents double registration */
-//	sys_messagebus_unregister(&alarm_event, SYS_MSG_RTC_ALARM);
+	sys_messagebus_unregister(&alarm_event, SYS_MSG_RTC_ALARM);
 	/* Register RTC alarm event only if needed, saving CPU cycles.. */
 	if (alarm_state.alarm) {
 		display_symbol(0, LCD_ICON_ALARM, SEG_ON);
-//		sys_messagebus_register(&alarm_event, SYS_MSG_RTC_ALARM);
-//		rtca_enable_alarm();
+		sys_messagebus_register(&alarm_event, SYS_MSG_RTC_ALARM);
+// Not ready for prime time yet!		rtca_enable_alarm();
 	} else {
 		display_symbol(0, LCD_ICON_ALARM, SEG_OFF);
 	}
