@@ -49,6 +49,9 @@ struct {
 	uint8_t sec;    /* cache of RTC seconds register */
 } rtca_time;
 
+// Holds 12h/24h choice
+uint8_t display_am_pm;
+
 #define rtca_stop()		(RTCCTL01 |=  RTCHOLD)
 #define rtca_start()		(RTCCTL01 &= ~RTCHOLD)
 

@@ -37,9 +37,14 @@
 
 #define AE 0x80 /* Alarm Enable bit, seems to be missing from msp430xxxxxx.h file */
 
+#ifdef CONFIG_MOD_CLOCK_AMPM
+uint8_t display_am_pm = 1;
+#else
+uint8_t display_am_pm = 0;
+#endif
+
 void rtca_init(void)
 {
-
 	rtca_time.year = COMPILE_YEAR;
 	rtca_time.mon = COMPILE_MON;
 	rtca_time.day = COMPILE_DAY;
@@ -75,36 +80,36 @@ void rtca_init(void)
 	/* initialize DST module */
 	rtc_dst_init();
 #endif
-
 }
 
 /* returns number of days for a given month */
 uint8_t rtca_get_max_days(uint8_t month, uint16_t year)
 {
 	switch (month) {
-	case 1:
-	case 3:
-	case 5:
-	case 7:
-	case 8:
-	case 10:
-	case 12:
-		return 31;
+		case 1:
+		case 3:
+		case 5:
+		case 7:
+		case 8:
+		case 10:
+		case 12:
+			return 31;
 
-	case 4:
-	case 6:
-	case 9:
-	case 11:
-		return 30;
+		case 4:
+		case 6:
+		case 9:
+		case 11:
+			return 30;
 
-	case 2:
-		if (IS_LEAP_YEAR(year))
-			return 29;
-		else
-			return 28;
+		case 2:
+			if (IS_LEAP_YEAR(year))
+				return 29;
+			else
+				return 28;
+
+		default:
+			return 0;
 	}
-
-	return 0;
 }
 
 void rtca_set_time()

@@ -41,12 +41,48 @@ static uint8_t tmp_hh, tmp_mm;
 static note chime_notes[2] = {0x1901, 0x000F};
 static note alarm_notes[5] = {0x1901, 0x1904, 0x1901, 0x1904, 0x000F};
 
+static void print_mm (void)
+{
+    _printf(0, LCD_SEG_L1_1_0, "%02u", tmp_mm);
+}
+
+static void print_hh(void)
+{
+    if (display_am_pm)
+    {
+        uint8_t hh = tmp_hh;
+        if (hh > 12)
+        { //PM
+            hh -= 12;
+            display_symbol (0, LCD_SYMB_PM, SEG_SET);
+        }
+        else
+        {
+            if (hh == 12)
+            { // PM
+                display_symbol (0, LCD_SYMB_PM, SEG_SET);
+            }
+            else
+            { // AM
+                display_symbol (0, LCD_SYMB_PM, SEG_OFF);
+            }
+            if (hh == 0)
+                hh = 12;
+        }
+        _printf(0, LCD_SEG_L1_3_2, "%2u", hh);
+    }
+    else
+    {
+        _printf(0, LCD_SEG_L1_3_2, "%02u", tmp_hh);
+        display_symbol (0, LCD_SYMB_PM, SEG_OFF);
+    }
+}
+
 static void refresh_screen()
 {
 	rtca_get_alarm(&tmp_hh, &tmp_mm);
-
-	_printf(0, LCD_SEG_L1_1_0, "%02u", tmp_mm);
-	_printf(0, LCD_SEG_L1_3_2, "%02u", tmp_hh);
+    print_hh();
+    print_mm();
 }
 
 static void alarm_event(enum sys_message msg)
@@ -78,9 +114,8 @@ static void edit_hh_dsel(void)
 
 static void edit_hh_set(int8_t step)
 {
-	/* TODO: fix for 12/24 hr! */
 	helpers_loop(&tmp_hh, 0, 23, step);
-	_printf(0, LCD_SEG_L1_3_2, "%02u", tmp_hh);
+    print_hh();
 }
 
 /* Minute */
@@ -97,7 +132,7 @@ static void edit_mm_dsel(void)
 static void edit_mm_set(int8_t step)
 {
 	helpers_loop(&tmp_mm, 0, 59, step);
-	_printf(0, LCD_SEG_L1_1_0, "%02u", tmp_mm);
+    print_mm();
 }
 
 /* Save */

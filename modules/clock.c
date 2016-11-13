@@ -26,12 +26,6 @@
 #include "drivers/rtca.h"
 #include "drivers/display.h"
 
-#ifdef CONFIG_MOD_CLOCK_AMPM
-static uint8_t use_CLOCK_AMPM = 1;
-#else
-static uint8_t use_CLOCK_AMPM = 0;
-#endif
-
 static void clock_event(enum sys_message msg)
 {
 #ifdef CONFIG_MOD_CLOCK_BLINKCOL
@@ -54,11 +48,10 @@ static void clock_event(enum sys_message msg)
 		_printf(0, LCD_SEG_L2_4_3, "%02u", rtca_time.day);
 
 #endif
-		_printf(1, LCD_SEG_L2_2_0, rtca_dow_str[rtca_time.dow],
-								SEG_SET);
+		_printf(1, LCD_SEG_L2_2_0, rtca_dow_str[rtca_time.dow], SEG_SET);
 	}
 	if (msg & SYS_MSG_RTC_HOUR) {
-		if (use_CLOCK_AMPM) {
+		if (display_am_pm) {
 			uint8_t tmp_hh = rtca_time.hour;
 			if (tmp_hh > 12) { //PM
 				tmp_hh -= 12;
@@ -222,25 +215,24 @@ static void edit_mm_set(int8_t step)
 /* 12h/24h */
 static void edit_12_24_display(void)
 {
-	if (use_CLOCK_AMPM) {
-		display_chars(2, LCD_SEG_L1_3_0 , " 12H", SEG_SET);
-	} else {
-		display_chars(2, LCD_SEG_L1_3_0 , " 24H", SEG_SET);
-	}
+	display_chars(2, LCD_SEG_L1_3_0 , display_am_pm ? " 12H" : " 24H", SEG_SET);
 }
+
 static void edit_12_24_sel(void)
 {
 	lcd_screen_activate(2);
 	edit_12_24_display();
 	display_chars(2, LCD_SEG_L1_3_0, NULL, BLINK_ON);
 }
+
 static void edit_12_24_dsel(void)
 {
 	display_chars(2, LCD_SEG_L1_3_0, NULL, BLINK_OFF);
 }
+
 static void edit_12_24_set(int8_t step)
 {
-	use_CLOCK_AMPM = !use_CLOCK_AMPM;
+	display_am_pm = !display_am_pm;
 	edit_12_24_display();
 	update_screen();
 }
@@ -313,7 +305,7 @@ static void clock_deactivated()
 
 	/* clean up screen */
 	display_symbol(0, LCD_SEG_L1_COL, SEG_OFF);
-	if (use_CLOCK_AMPM) {
+	if (display_am_pm) {
 		display_symbol(0, LCD_SYMB_PM, SEG_OFF);
 	}
 	display_clear(0, 1);
