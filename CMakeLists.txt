@@ -27,7 +27,23 @@ set(SOURCE_FILES
         messagebus.c
         modinit.c
         drivers
+        drivers/adc12.c
+        drivers/battery.c
+        drivers/buzzer.c
+        drivers/display.c
+        drivers/dsp.c
+        drivers/infomem.c
+        drivers/pmm.c
+        drivers/ports.c
+        drivers/radio.c
+        drivers/rf1a.c
+        drivers/rtc_dst.c
+        drivers/rtca.c
+        drivers/temperature.c
+        drivers/timer.c
+        drivers/vti_as.c
         modules/alarm.c
+        modules/clock.c
         modules)
 
 add_msp430_executable(openchronos "" ${SOURCE_FILES})
