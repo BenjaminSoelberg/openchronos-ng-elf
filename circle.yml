@@ -29,7 +29,11 @@ dependencies:
     - echo Build a firmware pre-release package
     - tar -cvzf openchronos-ng-elf-latest-firmware.tgz openchronos.txt openchronos.elf README.md
 
-    - echo Delete LATEST pre-release if exists
+    - echo Removing LATEST tag from repo
+    - git tag -d LATEST
+    - git push origin :refs/tags/LATEST
+
+    - echo Delete LATEST pre-release, if exists (hence the 'OR true' in next line)
     - github-release delete -s $GITHUB_USER_TOKEN -u $CIRCLE_PROJECT_USERNAME -r $CIRCLE_PROJECT_REPONAME -t LATEST || true
     - echo Create LATEST pre-release
     - github-release release -s $GITHUB_USER_TOKEN -u $CIRCLE_PROJECT_USERNAME -r $CIRCLE_PROJECT_REPONAME -t LATEST -n "Latest snapshot" -d "This is the latest snapshot build by CircleCI." -c $CIRCLE_BRANCH -p
