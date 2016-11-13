@@ -348,11 +348,13 @@ static void star_long_pressed()
 
 void mod_clock_init()
 {
-	menu_add_entry("CLOCK", NULL, NULL,
-			&num_pressed,
-			&star_long_pressed,
-			NULL, NULL,
-			&clock_activated,
-			&clock_deactivated);
-
+	menu_add_entry ("CLOCK",
+					NULL,
+					NULL,
+					&num_pressed,
+					&star_long_pressed,
+					NULL,
+					NULL,
+					&clock_activated,
+					&clock_deactivated);
 }

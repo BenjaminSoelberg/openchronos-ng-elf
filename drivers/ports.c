@@ -54,11 +54,9 @@ static void callback_20Hz(enum sys_message msg)
 	static uint8_t last_state;
 	uint8_t buttons = P2IN & ALL_BUTTONS;
 
-	ports_down_btns |= ((last_state ^ buttons) & buttons)
-			& silent_until_release;
-	/*                  (buttons that changed) */
-	uint8_t released = ((last_state ^ buttons) & ~buttons)
-			& silent_until_release;
+	ports_down_btns |= ((last_state ^ buttons) & buttons) & silent_until_release;
+	/* (buttons that changed) */
+	uint8_t released = ((last_state ^ buttons) & ~buttons) & silent_until_release;
 	silent_until_release |= ~buttons;
 	last_state = buttons;
 

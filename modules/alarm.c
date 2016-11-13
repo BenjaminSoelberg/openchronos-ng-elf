@@ -53,7 +53,6 @@ static void alarm_event(enum sys_message msg)
 {
 	if (msg & SYS_MSG_RTC_ALARM) {
 		buzzer_play(alarm_notes);
-//		alarm_start();
 	}
 }
 
