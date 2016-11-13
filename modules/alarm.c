@@ -38,6 +38,8 @@ static union {
 } alarm_state;
 
 static uint8_t tmp_hh, tmp_mm;
+static note chime_notes[2] = {0x1901, 0x000F};
+static note alarm_notes[5] = {0x1901, 0x1904, 0x1901, 0x1904, 0x000F};
 
 static void refresh_screen()
 {
@@ -47,21 +49,10 @@ static void refresh_screen()
 	_printf(0, LCD_SEG_L1_3_2, "%02u", tmp_hh);
 }
 
-static void beep(void)
-{
-        note welcome[4] = {0x1901, 0x000F};
-        buzzer_play(welcome);
-}
-
 static void alarm_event(enum sys_message msg)
 {
-/*	if (msg & SYS_MSG_TIMER_20HZ) {
-		beep();
-	}
-*/
 	if (msg & SYS_MSG_RTC_ALARM) {
-		note welcome[5] = {0x1901, 0x1904, 0x1901, 0x1904, 0x000F};
-		buzzer_play(welcome);
+		buzzer_play(alarm_notes);
 //		alarm_start();
 	}
 }
@@ -69,9 +60,8 @@ static void alarm_event(enum sys_message msg)
 static void hour_event(enum sys_message msg)
 {
 	if (msg & SYS_MSG_RTC_HOUR) {
-		beep();
+		buzzer_play(chime_notes);
 	}
-
 }
 
 /*************************** edit mode callbacks **************************/
@@ -185,10 +175,13 @@ static void star_long_pressed()
 
 void mod_alarm_init()
 {
-	menu_add_entry("ALARM", NULL, NULL,
-			&num_pressed,
-			&star_long_pressed,
-			NULL, NULL,
-			&alarm_activated,
-			&alarm_deactivated);
+	menu_add_entry ("ALARM",
+					NULL,
+					NULL,
+					&num_pressed,
+					&star_long_pressed,
+					NULL,
+					NULL,
+					&alarm_activated,
+					&alarm_deactivated);
 }

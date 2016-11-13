@@ -26,8 +26,6 @@
 #include "rtc_dst.h"
 #endif
 
-#include <stdlib.h>
-
 /* 1. A year that is divisible by 4 is a leap year.
 	Exception 1: a year that is divisible by 100 is not a leap year.
 	Exception 2: a year that is divisible by 400 is a leap year. */
@@ -48,7 +46,7 @@ void rtca_init(void)
 	rtca_time.dow = COMPILE_DOW;
 	rtca_time.hour = COMPILE_HOUR;
 	rtca_time.min = COMPILE_MIN;
-	rtca_time.sec = 59;
+	rtca_time.sec = 59; // So we can see the watch is working after reset
 
 #ifdef CONFIG_RTC_IRQ
 	/* Enable calendar mode (date/time registers are automatically reset)
@@ -132,7 +130,7 @@ void rtca_get_alarm(uint8_t *hour, uint8_t *min)
 void rtca_set_alarm(uint8_t hour, uint8_t min)
 {
 	/* Disable alarm interrupt while setting alarm */
-	uint8_t original_state = RTCCTL01;
+    uint16_t original_state = RTCCTL01;
 	RTCCTL01 &= ~RTCAIE;
 	/* Set hour and min while keeping current Alarm Enable state */
 	RTCAHOUR = (RTCAHOUR & AE) | hour;
