@@ -85,15 +85,17 @@ struct swatch_time sSwatch_time[MAX_LAPS + 2];
 extern struct swatch_conf sSwatch_conf;
 struct swatch_conf sSwatch_conf;
 
+static struct menu *menu_entry;
 /*
  * Helper Functions
  */
-void clear_stopwatch(void);
-void increment_lap_stopwatch(void);
+static void clear_stopwatch(void);
+static void increment_lap_stopwatch(void);
+static void num_long_pressed(void);
 
 /* Function to write the screen */
 
-void drawStopWatchScreen(void) {
+static void drawStopWatchScreen(void) {
 
 	if (sSwatch_conf.state != SWATCH_MODE_BACKGROUND) {
 		sSwatch_time[SW_DISPLAYNG] = sSwatch_time[sSwatch_conf.lap_act];
@@ -202,6 +204,7 @@ static void down_press() {
 		drawStopWatchScreen();
 	}
 }
+
 static void up_press() {
 	if (sSwatch_conf.state == SWATCH_MODE_ON) {
 		increment_lap_stopwatch();
@@ -214,38 +217,45 @@ static void up_press() {
 		drawStopWatchScreen();
 	}
 }
+
 static void num_press() {
 	if (sSwatch_conf.state == SWATCH_MODE_OFF) {
 		sSwatch_conf.state = SWATCH_MODE_ON;
 		sSwatch_conf.lap_act = SW_COUNTING;
+        menu_entry->lnum_btn_fn = NULL;
 	} else {
 		sSwatch_conf.state = SWATCH_MODE_OFF;
+        menu_entry->lnum_btn_fn = &num_long_pressed;
 	}
 	drawStopWatchScreen();
 }
 
 static void num_long_pressed() {
-
-	if (sSwatch_conf.state == SWATCH_MODE_OFF) {
-		clear_stopwatch();
-		drawStopWatchScreen();
-	}
+    clear_stopwatch();
+    menu_entry->lnum_btn_fn = NULL;
+    drawStopWatchScreen();
 }
 
 void mod_stopwatch_init(void) {
 	sSwatch_conf.state = SWATCH_MODE_OFF;
 	clear_stopwatch();
 
-	menu_add_entry(" STOP", &up_press, &down_press, &num_press, NULL,
-			&num_long_pressed, NULL, &stopwatch_activated,
-			&stopwatch_deactivated);
+	menu_entry = menu_add_entry(" STOP",
+								&up_press,
+								&down_press,
+								&num_press,
+								NULL,
+								NULL,
+								NULL,
+								&stopwatch_activated,
+								&stopwatch_deactivated);
 }
 
 /*
  * Helper Functions
  */
 
-void clear_stopwatch(void) {
+static void clear_stopwatch(void) {
 	sSwatch_time[SW_COUNTING].cents = 0;
 	sSwatch_time[SW_COUNTING].hours = 0;
 	sSwatch_time[SW_COUNTING].minutes = 0;
@@ -254,7 +264,7 @@ void clear_stopwatch(void) {
 	sSwatch_conf.lap_act = SW_COUNTING;
 }
 
-void increment_lap_stopwatch(void) {
+static void increment_lap_stopwatch(void) {
 	sSwatch_time[sSwatch_conf.laps] = sSwatch_time[SW_COUNTING];
 	if (sSwatch_conf.laps < (MAX_LAPS - 1)) {
 		sSwatch_conf.laps++;

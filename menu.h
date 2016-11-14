@@ -39,7 +39,7 @@
 	\note This function is NULL safe. You can set all of its parameters to NULL (except name) if you don't need their functionality.
 	\note The <i>name</i> string cannot be longer than 5 characters due to the LCD screen size.
 */
-void menu_add_entry(
+struct menu * menu_add_entry(
 	char const * name,          /*!< item name to be displayed in the menu */
 	void (*up_btn_fn)(void),    /*!< callback for up button presses. */
 	void (*down_btn_fn)(void),  /*!< callback for down button presses. */
@@ -99,15 +99,15 @@ struct menu {
 
 void menu_check_buttons(void);
 
-void menu_add_entry(char const * name,
-          void (*up_btn_fn)(void),
-		    void (*down_btn_fn)(void),
-		    void (*num_btn_fn)(void),
-		    void (*lstar_btn_fn)(void),
-			 void (*lnum_btn_fn)(void),
-			 void (*updown_btn_fn)(void),
-		    void (*activate_fn)(void),
-		    void (*deactivate_fn)(void));
+struct menu * menu_add_entry(char const * name,
+							 void (*up_btn_fn)(void),
+							 void (*down_btn_fn)(void),
+							 void (*num_btn_fn)(void),
+							 void (*lstar_btn_fn)(void),
+							 void (*lnum_btn_fn)(void),
+							 void (*updown_btn_fn)(void),
+							 void (*activate_fn)(void),
+							 void (*deactivate_fn)(void));
 
 void menu_editmode_start(void (* complete_fn)(void),
                          struct menu_editmode_item *items);
