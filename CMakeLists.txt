@@ -42,8 +42,9 @@ set(SOURCE_FILES
         drivers/temperature.c
         drivers/timer.c
         drivers/vti_as.c
+        modules
         modules/alarm.c
         modules/clock.c
-        modules)
+        modules/stopwatch.c)
 
 add_msp430_executable(openchronos "" ${SOURCE_FILES})

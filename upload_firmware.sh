@@ -1,1 +1,1 @@
-sudo python contrib/ChronosTool.py rfbsl openchronos.txt
+sudo python contrib/ChronosTool.py -v rfbsl openchronos.txt
