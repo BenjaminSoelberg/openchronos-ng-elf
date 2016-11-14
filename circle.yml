@@ -33,7 +33,7 @@ dependencies:
     - git tag -d LATEST
     - git push origin :refs/tags/LATEST
 
-    - echo Delete LATEST pre-release, if exists (hence the 'OR true' in next line)
+    - echo Delete LATEST pre-release, if exists \(hence the \'\|\| true\' in next line\)
     - github-release delete -s $GITHUB_USER_TOKEN -u $CIRCLE_PROJECT_USERNAME -r $CIRCLE_PROJECT_REPONAME -t LATEST || true
     - echo Create LATEST pre-release
     - github-release release -s $GITHUB_USER_TOKEN -u $CIRCLE_PROJECT_USERNAME -r $CIRCLE_PROJECT_REPONAME -t LATEST -n "Latest snapshot" -d "This is the latest snapshot build by CircleCI." -c $CIRCLE_BRANCH -p
