@@ -258,18 +258,22 @@ static void edit_save()
     rtca_start();
 
     /* update screens with fake event */
-    clock_event(SYS_MSG_RTC_YEAR | SYS_MSG_RTC_MONTH | SYS_MSG_RTC_DAY
-                | SYS_MSG_RTC_HOUR  | SYS_MSG_RTC_MINUTE | SYS_MSG_RTC_SECOND);
+    clock_event(SYS_MSG_RTC_YEAR | SYS_MSG_RTC_MONTH | SYS_MSG_RTC_DAY |
+                SYS_MSG_RTC_HOUR | SYS_MSG_RTC_MINUTE
+#ifdef CONFIG_MOD_CLOCK_BLINKCOL
+                | SYS_MSG_RTC_SECOND
+#endif
+    );
 }
 
 /* edit mode item table */
 static struct menu_editmode_item edit_items[] = {
-    {&edit_12_24_sel, &edit_12_24_dsel, &edit_12_24_set},
     {&edit_hh_sel, &edit_hh_dsel, &edit_hh_set},
     {&edit_mm_sel, &edit_mm_dsel, &edit_mm_set},
     {&edit_yy_sel, &edit_yy_dsel, &edit_yy_set},
     {&edit_mo_sel, &edit_mo_dsel, &edit_mo_set},
     {&edit_dd_sel, &edit_dd_dsel, &edit_dd_set},
+    {&edit_12_24_sel, &edit_12_24_dsel, &edit_12_24_set},
     { NULL },
 };
 
@@ -277,7 +281,8 @@ static struct menu_editmode_item edit_items[] = {
 static void clock_activated()
 {
     sys_messagebus_register(&clock_event,
-                            SYS_MSG_RTC_HOUR | SYS_MSG_RTC_MINUTE | SYS_MSG_RTC_DAY | SYS_MSG_RTC_MONTH
+                            SYS_MSG_RTC_YEAR | SYS_MSG_RTC_MONTH | SYS_MSG_RTC_DAY |
+                            SYS_MSG_RTC_HOUR | SYS_MSG_RTC_MINUTE
 #ifdef CONFIG_MOD_CLOCK_BLINKCOL
                             | SYS_MSG_RTC_SECOND
 #endif
