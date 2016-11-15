@@ -6,7 +6,7 @@
 #define CONFIG_DEBUG
 #define USE_LCD_CHARGE_PUMP
 #define USE_WATCHDOG
-// CONFIG_DEBUG_EASY_RESET is not set
+#define CONFIG_DEBUG_EASY_RESET
 #define CONFIG_RTC_IRQ
 // CONFIG_RTC_DST is not set
 #define CONFIG_RTC_DST_ZONE 4
