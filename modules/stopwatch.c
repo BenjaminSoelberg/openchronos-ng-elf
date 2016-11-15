@@ -181,7 +181,6 @@ static void stopwatch_deactivated() {
 	if (sSwatch_conf.state == SWATCH_MODE_ON) {
 		sSwatch_conf.state = SWATCH_MODE_BACKGROUND;
 	} else {
-		sys_messagebus_unregister_all(&stopwatch_event);
 		display_symbol(0, LCD_ICON_STOPWATCH, SEG_OFF);
 		display_symbol(0, LCD_SEG_L2_COL0, SEG_OFF);
 		display_symbol(0, LCD_SEG_L2_COL1, SEG_OFF);
@@ -230,7 +229,8 @@ static void num_press() {
 	} else {
 		sSwatch_conf.state = SWATCH_MODE_OFF;
         menu_entry->lnum_btn_fn = &num_long_pressed;
-	}
+        sys_messagebus_unregister_all(&stopwatch_event);
+    }
 	drawStopWatchScreen();
 }
 
