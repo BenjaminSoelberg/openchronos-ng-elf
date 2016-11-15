@@ -86,6 +86,8 @@ extern struct swatch_conf sSwatch_conf;
 struct swatch_conf sSwatch_conf;
 
 static struct menu *menu_entry;
+static uint8_t icon_stopwatch_on_cents;
+static uint8_t icon_stopwatch_off_cents;
 /*
  * Helper Functions
  */
@@ -96,7 +98,6 @@ static void num_long_pressed(void);
 /* Function to write the screen */
 
 static void drawStopWatchScreen(void) {
-
 	if (sSwatch_conf.state != SWATCH_MODE_BACKGROUND) {
 		sSwatch_time[SW_DISPLAYNG] = sSwatch_time[sSwatch_conf.lap_act];
 		if (SW_COUNTING == sSwatch_conf.lap_act) {
@@ -129,17 +130,18 @@ static void drawStopWatchScreen(void) {
 		}
 	}
 	if (sSwatch_conf.state != SWATCH_MODE_OFF) {
-		if (sSwatch_time[SW_COUNTING].cents == 5) {
+		if (sSwatch_time[SW_COUNTING].cents == icon_stopwatch_on_cents) {
 			display_symbol(0, LCD_ICON_STOPWATCH, SEG_ON);
-		} else if (sSwatch_time[SW_COUNTING].cents == 55) {
+		} else if (sSwatch_time[SW_COUNTING].cents == icon_stopwatch_off_cents) {
 			display_symbol(0, LCD_ICON_STOPWATCH, SEG_OFF);
 		}
-	}
+	} else {
+        display_symbol(0, LCD_ICON_STOPWATCH, SEG_OFF);
+    }
 }
 
 /* Function called every 5ms to increment the counters */
 static void stopwatch_event() {
-
 	if (sSwatch_conf.state != SWATCH_MODE_OFF) {
 		sSwatch_time[SW_COUNTING].cents += 5;
 		if (sSwatch_time[SW_COUNTING].cents >= 100) {
@@ -167,10 +169,7 @@ static void stopwatch_activated() {
 	display_symbol(0, LCD_SEG_L2_COL1, SEG_ON);
 	if (sSwatch_conf.state == SWATCH_MODE_BACKGROUND) {
 		sSwatch_conf.state = SWATCH_MODE_ON;
-		return;
-	}
-
-	sys_messagebus_register(&stopwatch_event, SYS_MSG_TIMER_20HZ);
+    }
 	drawStopWatchScreen();
 }
 
@@ -181,9 +180,7 @@ static void stopwatch_deactivated() {
 	display_clear(0, 2);
 	if (sSwatch_conf.state == SWATCH_MODE_ON) {
 		sSwatch_conf.state = SWATCH_MODE_BACKGROUND;
-		return;
 	} else {
-
 		sys_messagebus_unregister_all(&stopwatch_event);
 		display_symbol(0, LCD_ICON_STOPWATCH, SEG_OFF);
 		display_symbol(0, LCD_SEG_L2_COL0, SEG_OFF);
@@ -227,6 +224,9 @@ static void num_press() {
 		sSwatch_conf.state = SWATCH_MODE_ON;
 		sSwatch_conf.lap_act = SW_COUNTING;
         menu_entry->lnum_btn_fn = NULL;
+        icon_stopwatch_on_cents = sSwatch_time[SW_COUNTING].cents;
+        icon_stopwatch_off_cents = (icon_stopwatch_on_cents + 50) % 100;
+        sys_messagebus_register(&stopwatch_event, SYS_MSG_TIMER_20HZ);
 	} else {
 		sSwatch_conf.state = SWATCH_MODE_OFF;
         menu_entry->lnum_btn_fn = &num_long_pressed;
