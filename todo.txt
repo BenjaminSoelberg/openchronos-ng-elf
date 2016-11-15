@@ -1,7 +1,5 @@
 It seems like the default value in .cfg files is not taken into account for atleast modules/acc*.cfg. Investigate!
 
-In stopwatch when having a few laps and switching between them, you are unable to go back and view end time.
-
 It would be nice if the menu system automatically changed to selected menu item if no button was pressed for x ms
 
 Alarm is currently NOT working.

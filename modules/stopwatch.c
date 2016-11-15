@@ -196,10 +196,12 @@ static void down_press() {
 		increment_lap_stopwatch();
 
 	} else if (sSwatch_conf.laps != 0) {
-		if (sSwatch_conf.lap_act > sSwatch_conf.laps - 1) {
-			sSwatch_conf.lap_act = 0;
-		} else if (sSwatch_conf.lap_act > 0) {
-			sSwatch_conf.lap_act--;
+        if (sSwatch_conf.lap_act == 0) {
+            sSwatch_conf.lap_act = SW_COUNTING;
+        } else if (sSwatch_conf.lap_act == SW_COUNTING) {
+            sSwatch_conf.lap_act = sSwatch_conf.laps - 1;
+		} else {
+            sSwatch_conf.lap_act--;
 		}
 		drawStopWatchScreen();
 	}
@@ -209,10 +211,12 @@ static void up_press() {
 	if (sSwatch_conf.state == SWATCH_MODE_ON) {
 		increment_lap_stopwatch();
 	} else if (sSwatch_conf.laps != 0) {
-		if (sSwatch_conf.lap_act < sSwatch_conf.laps - 1) {
+        if (sSwatch_conf.lap_act == sSwatch_conf.laps - 1) {
+            sSwatch_conf.lap_act = SW_COUNTING;
+        } else if (sSwatch_conf.lap_act == SW_COUNTING) {
+            sSwatch_conf.lap_act = 0;
+        } else {
 			sSwatch_conf.lap_act++;
-		} else if (sSwatch_conf.lap_act > sSwatch_conf.laps - 1) {
-			sSwatch_conf.lap_act = sSwatch_conf.laps - 1;
 		}
 		drawStopWatchScreen();
 	}
