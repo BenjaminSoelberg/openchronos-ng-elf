@@ -72,7 +72,7 @@ static void editmode_handler(void)
 		menu_editmode.pos++;
 		if (! menu_editmode.items[menu_editmode.pos].set)
 			menu_editmode.pos = 0;
-			menu_editmode.items[menu_editmode.pos].select();
+        menu_editmode.items[menu_editmode.pos].select();
 
 		} else if (ports_button_pressed(PORTS_BTN_UP, 0)) {
 			menu_editmode.items[menu_editmode.pos].set(1);
