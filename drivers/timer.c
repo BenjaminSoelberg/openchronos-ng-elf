@@ -84,7 +84,7 @@ void timer0_init(void)
 	TA0CTL |= TAIE;
 #endif
 
-	/* select external 32kHz source, /2 divider, continous mode */
+	/* select external 32kHz source, /2 divider, continuous mode */
 	TA0CTL |= TASSEL__ACLK | ID__2 | MC__CONTINOUS;
 
 	/* setup and enable 20Hz timer */
