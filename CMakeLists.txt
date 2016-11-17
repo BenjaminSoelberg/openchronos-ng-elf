@@ -44,6 +44,7 @@ set(SOURCE_FILES
         drivers/vti_as.c
         modules
         modules/alarm.c
+        modules/temperature.c
         modules/clock.c
         modules/stopwatch.c)
 
