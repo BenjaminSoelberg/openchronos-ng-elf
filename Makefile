@@ -58,7 +58,7 @@ $(OBJS): openchronos.cflags
 
 openchronos.elf: $(OBJS)
 	@echo "\n>> Building $@ as target $(TARGET)"
-	@$(CC) $(CFLAGS) $(LDFLAGS) $(INCLUDES) -o $@ $+	
+	@$(CC) $(CFLAGS) $(LDFLAGS) $(INCLUDES) -o $@ $+
 
 openchronos.txt: openchronos.elf
 	$(PYTHON) tools/memory.py -i $< -o $@
@@ -89,6 +89,9 @@ config:
 install: openchronos.txt
 	contrib/ChronosTool.py rfbsl $<
 
+usb-install: openchronos.elf
+	mspdebug rf2500 "prog openchronos.elf"
+
 clean: $(SUBDIRS)
 	@for subdir in $(SUBDIRS); do \
 		echo "Cleaning $$subdir .."; rm -f $$subdir/*.o; \
@@ -99,7 +102,7 @@ clean: $(SUBDIRS)
 doc:
 	rm -rf doc/*
 	doxygen Doxyfile
-	
+
 httpdoc: doc
 	rsync -vr doc/ $(USER)@web.sourceforge.net:/home/project-web/openchronos-ng/htdocs/api/
 
