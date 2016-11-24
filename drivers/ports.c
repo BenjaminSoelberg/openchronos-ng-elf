@@ -26,7 +26,7 @@
 #include "timer.h"
 #include "messagebus.h"
 
-#ifdef CONFIG_ACCELEROMETER
+#ifdef CONFIG_MOD_ACCELEROMETER
 #include "vti_as.h"
 #endif
 
@@ -156,7 +156,7 @@ void PORT2_ISR(void)
     }
 
     /* Handle accelerometer */
-    #ifdef CONFIG_ACCELEROMETER
+    #ifdef CONFIG_MOD_ACCELEROMETER
     /* Check if accelerometer interrupt flag */
     if ((P2IFG & AS_INT_PIN) == AS_INT_PIN)
         as_last_interrupt = 1;
