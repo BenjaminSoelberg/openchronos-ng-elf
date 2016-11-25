@@ -127,6 +127,7 @@ Flashing the firmware using wireless (RFBSL)
 
 3) Program it using ChronosTool.py (Note that sudo might be required. Also repeat this step if it fails)<br>
 ```sudo make install```
+
 4) Press Enter
 
 5) Enter RFBSL by pressing the backlight button on the watch
