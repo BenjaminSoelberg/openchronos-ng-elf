@@ -187,7 +187,7 @@ void init_application(void)
 	radio_reset();
 	radio_powerdown();
 
-#ifdef CONFIG_ACCELEROMETER
+#ifdef CONFIG_MOD_ACCELEROMETER
 	// ---------------------------------------------------------------------
 	// Init acceleration sensor
 	as_init();

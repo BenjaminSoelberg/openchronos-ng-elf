@@ -103,6 +103,9 @@ Connect the watch module to the USB FET.
 Program it using mspdebug:
 ```mspdebug rf2500 "prog openchronos.elf"```
 
+Or with makefile
+```make usb-install```
+
 Disconnect the watch module and the watch should display BOOT.
 Press any button except the backlight and you should be up and running the new firmware.
 

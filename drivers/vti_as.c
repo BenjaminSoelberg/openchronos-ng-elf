@@ -62,7 +62,7 @@
 #include "vti_as.h"
 #include "timer.h"
 
-#ifndef CONFIG_ACCELEROMETER
+#ifndef CONFIG_MOD_ACCELEROMETER
 void as_disconnect(void)
 {
 	AS_PWR_OUT &= ~AS_PWR_PIN; /* Power off */
@@ -74,7 +74,7 @@ void as_disconnect(void)
 	AS_CSN_DIR |= AS_CSN_PIN;/* Pin to output to avoid floating pins */
 	AS_PWR_DIR |= AS_PWR_PIN;/* Power pin to output direction */
 }
-#else /* ifndef CONFIG_ACCELEROMETER */
+#else
 
 
 /******************************************************************************/
