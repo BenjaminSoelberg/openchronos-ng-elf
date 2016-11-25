@@ -89,36 +89,46 @@ cd openchronos-ng-elf
 make config
 ```
 
-Deselect anything saying Experimental, **very important as they don't compile yet**
+Deselect anything saying *EXPERIMENTAL* as they are not fully functioning.
 
-Build with:
+Build with:<br>
 ```make clean && make```
 
-The newly build firmware is in the binary file *openchronos.elf*
+The newly build firmware is in the binary file *openchronos.elf* and intel format in *openchronos.txt*
+
+Boot Menu
+------------------------------------
+In openchronos-ng, the watch no longer boots directly into the clock firmware.
+
+To enter the BOOT menu you can either:
+* Use the Reset menu
+* Reinsert the battery
+
+If the display shows BOOT you have successfully reset the watch and are now in the boot menu.
+Press the backlight button to enter the wireless flash updater (RFBSL). Any other button will run the watch firmware.
 
 Flashing the firmware using mspdebug
 ---------------------------------------
-Connect the watch module to the USB FET.
+1) Connect the internal watch module to the USB FET module
 
-Program it using mspdebug:
-```mspdebug rf2500 "prog openchronos.elf"```
-
-Or with makefile
+2) Program it using mspdebug<br>
 ```make usb-install```
 
-Disconnect the watch module and the watch should display BOOT.
-Press any button except the backlight and you should be up and running the new firmware.
+3) Disconnect the watch module and the watch should display BOOT<br>
+Press any button except the backlight and you should be up and running the new firmware
 
+*Please note that this method is slow but very useful if flashing over wireless fails.*
 
-Boot Menu & RFBSL (flashing over RF)
+Flashing the firmware using wireless (RFBSL)
 ------------------------------------
+1) Connect the USB CC11x1 module
 
-In openchronos-ng, the watch no longer boots directly into the
-main menu anymore. When the watch is reset (or you put the battery
-for the first time), you have the choice to either enter flash mode
-(press # button) or continue into main menu (press any other button).
+1) Reset the watch
 
-Use the TI software to flash using RF (use *openchronos.txt*).
+3) Program it using ChronosTool.py<br>
+```make install```
+
+4) Press any button except the backlight and you should be up and running the new firmware.
 
 Usefull links
 -------------
