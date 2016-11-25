@@ -1,24 +1,27 @@
 /**
+    The SHA1 code is based on public domain code by Uwe Hollerbach <uh@alumni.caltech edu>
+    from Peter C. Gutmann's implementation as found in Applied Cryptography by Bruce Schneier
+
     Copyright (c) 2011 Yohanes Nugroho (yohanes@gmail.com)
 
-    This program is free software: you can redistribute it and/or modify
+    http://github.com/BenjaminSoelberg/openchronos-ng-elf
+
+	This file is part of openchronos-ng.
+
+    openchronos-ng is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
+    openchronos-ng is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+**/
 
-    The SHA1 code is based on public domain code  by
-    Uwe Hollerbach <uh@alumni.caltech edu>
-    from Peter C. Gutmann's implementation as found in
-    Applied Cryptography by Bruce Schneier
-*/
 #include <string.h>
 
 #include "messagebus.h"

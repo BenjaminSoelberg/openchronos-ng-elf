@@ -1,23 +1,28 @@
-/*
- modules/stopwatch.c
+/**
+    modules/stopwatch.c
 
- Copyright (C) 2012   Ricardo Martin Marcucci
- Copyright (C) 2012   Robert Hoeller <rhh.privat@googlemail.com>
- Copyright (C) 2016 Benjamin Sølberg <benjamin.soelberg@gmail.com>
+    Copyright (C) 2012 Ricardo Martin Marcucci
+    Copyright (C) 2012 Robert Hoeller <rhh.privat@googlemail.com>
+    Copyright (C) 2016 Benjamin Sølberg <benjamin.soelberg@gmail.com>
 
- This program is free software: you can redistribute it and/or modify
- it under the terms of the GNU General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
- (at your option) any later version.
+    http://github.com/BenjaminSoelberg/openchronos-ng-elf
 
- This program is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
+	This file is part of openchronos-ng.
 
- You should have received a copy of the GNU General Public License
- along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+    openchronos-ng is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    openchronos-ng is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+**/
+
 /*
  * cronometer.c
  *
