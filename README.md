@@ -132,7 +132,7 @@ Flashing the firmware using wireless (RFBSL)
 
 5) Enter RFBSL by pressing the backlight button on the watch
 
-5) Press any button except the backlight and you should be up and running the new firmware.
+6) Press any button except the backlight and you should be up and running the new firmware.
 
 Useful links
 -------------
