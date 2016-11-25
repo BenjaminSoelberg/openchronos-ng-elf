@@ -17,3 +17,4 @@ openchronos.elf
 openchronos.txt
 #build directory
 build
+cmake-build-debug

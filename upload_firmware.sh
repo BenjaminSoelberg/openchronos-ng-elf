@@ -1,1 +1,1 @@
-sudo python contrib/ChronosTool.py -v rfbsl openchronos.txt
+sudo make install

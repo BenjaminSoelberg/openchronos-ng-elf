@@ -43,6 +43,7 @@ set(SOURCE_FILES
         drivers/timer.c
         drivers/vti_as.c
         modules
+        modules/accelerometer.c
         modules/alarm.c
         modules/temperature.c
         modules/clock.c
