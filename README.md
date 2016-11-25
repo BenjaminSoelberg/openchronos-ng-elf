@@ -134,7 +134,7 @@ Flashing the firmware using wireless (RFBSL)
 
 5) Press any button except the backlight and you should be up and running the new firmware.
 
-Usefull links
+Useful links
 -------------
 
 If you need to reinstall the original firmware you can download a flash tool here (using windows XP):
