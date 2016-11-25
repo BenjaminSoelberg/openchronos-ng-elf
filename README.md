@@ -123,12 +123,15 @@ Flashing the firmware using wireless (RFBSL)
 ------------------------------------
 1) Connect the USB CC11x1 module
 
-1) Reset the watch
+2) Reset the watch
 
-3) Program it using ChronosTool.py<br>
-```make install```
+3) Program it using ChronosTool.py (Note that sudo might be required. Also repeat this step if it fails)<br>
+```sudo make install```
+4) Press Enter
 
-4) Press any button except the backlight and you should be up and running the new firmware.
+5) Enter RFBSL by pressing the backlight button on the watch
+
+5) Press any button except the backlight and you should be up and running the new firmware.
 
 Usefull links
 -------------
