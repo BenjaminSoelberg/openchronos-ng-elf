@@ -108,7 +108,7 @@ static void temperature_edit(void)
 
 void mod_temperature_init(void)
 {
-	menu_add_entry(" TEMP",
+	menu_add_entry("TEMP",
 				   NULL,
 				   NULL,
 				   NULL,

@@ -105,10 +105,12 @@ static void menumode_handler(void)
 
     } else if (ports_button_pressed(PORTS_BTN_UP, 0)) {
         menumode.item = menumode.item->next;
+        display_clear(0, 2);
         display_chars(0, LCD_SEG_L2_4_0, menumode.item->name, SEG_SET);
 
     } else if (ports_button_pressed(PORTS_BTN_DOWN, 0)) {
         menumode.item = menumode.item->prev;
+        display_clear(0, 2);
         display_chars(0, LCD_SEG_L2_4_0, menumode.item->name, SEG_SET);
     }
 }

@@ -310,7 +310,7 @@ static void otp_deactivated()
 
 void mod_otp_init()
 {
-    menu_add_entry("  OTP",
+    menu_add_entry("OTP",
         NULL,               /* up         */
         NULL,               /* down       */
         NULL,               /* num        */
