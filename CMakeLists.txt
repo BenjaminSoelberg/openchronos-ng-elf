@@ -47,6 +47,7 @@ set(SOURCE_FILES
         modules/alarm.c
         modules/battery.c
         modules/temperature.c
+        modules/tide.c
         modules/music.c
         modules/clock.c
         modules/stopwatch.c)
