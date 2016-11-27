@@ -436,7 +436,7 @@ uint8_t get_active_lcd_screen_nr(void)
 /*
 	lcd_screen_activate()
    - the memory pointed by display_screens is assumed to be on
-	contiguos memory
+	contiguous memory
 	if scr_nr == 0xff, then activate next screen.
 */
 void lcd_screen_activate(uint8_t scr_nr)
@@ -469,6 +469,15 @@ void lcd_screen_activate(uint8_t scr_nr)
 	display_screens[display_activescr].blkmem = LCD_BLK_MEM;
 }
 
+void fill_display(uint8_t scr_nr, uint8_t value)
+{
+	uint8_t *lcdptr = (display_screens ? display_screens[scr_nr].segmem : LCD_SEG_MEM);
+	uint8_t i = 1;
+
+	for (; i <= 12; i++) {
+			*(lcdptr++) = value;
+		}
+}
 void display_clear(uint8_t scr_nr, uint8_t line)
 {
 	if (line == 1) {
@@ -482,13 +491,7 @@ void display_clear(uint8_t scr_nr, uint8_t line)
 		display_symbol(scr_nr, LCD_SEG_L2_COL1, SEG_OFF);
 		display_symbol(scr_nr, LCD_SEG_L2_COL0, SEG_OFF);
 	} else {
-		uint8_t *lcdptr = (display_screens ?
-		            display_screens[scr_nr].segmem : (uint8_t *)LCD_SEG_MEM);
-		uint8_t i = 1;
-
-		for (; i <= 12; i++) {
-			*(lcdptr++) = 0x00;
-		}
+		fill_display(scr_nr, 0x00);
 	}
 }
 

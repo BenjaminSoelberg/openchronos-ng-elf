@@ -198,6 +198,8 @@ void start_blink(void);
 void stop_blink(void);
 void clear_blink_mem(void);
 
+void fill_display(uint8_t scr_nr, uint8_t value);
+
 /*!
 	\brief Clears the screen
 	\details Clears the screen as instructed by <i>line</i>. If no virtual screens are created, the argument <i>scr_nr</i> is ignored, otherwise it selects which screen the operation will affect.

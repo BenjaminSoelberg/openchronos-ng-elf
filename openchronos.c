@@ -121,7 +121,7 @@ static void check_buttons(void)
 	/* if up and down is pressed then resets the watch */
 	if (ports_button_pressed(PORTS_BTN_UP | PORTS_BTN_DOWN, 0))
 	{
-                /* Forces a reset since a write to WDTCTL isn't allowed without password. */
+		/* Forces a reset since a write to WDTCTL isn't allowed without password. */
 		WDTCTL = 0;
 	}
 #endif
@@ -226,22 +226,19 @@ void init_application(void)
 #endif
 }
 
-
 /***************************************************************************
  ************************ ENTRYPOINT AND MAIN LOOP *************************
  **************************************************************************/
 int main(void)
 {
-	// Init MCU
+    /* Show all segments on screen */
+    fill_display(0, 0xff);
+
+	/* Init MCU */
 	init_application();
 
-#ifdef CONFIG_TEST
-	// Branch to welcome screen
-	test_mode();
-#else
-	/* clear whole scren */
-	display_clear(0, 0);
-#endif
+    /* clear whole screen */
+    display_clear(0, 0);
 
 	/* Init modules */
 	mod_init();

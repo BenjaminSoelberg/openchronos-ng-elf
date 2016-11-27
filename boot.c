@@ -209,7 +209,6 @@ static void init8(void)
 
 	/* Disable them again, they will be re-enabled later on in main() */
 	__disable_interrupt();
-
 }
 
 __attribute__((interrupt(WDT_VECTOR)))
