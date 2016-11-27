@@ -30,15 +30,20 @@
 #include "drivers/display.h"
 #include "drivers/temperature.h"
 
+#ifdef CONFIG_TEMPERATURE_METRIC
+uint8_t use_temperature_metric = 1;
+#else
+uint8_t use_temperature_metric = 0;
+#endif
+
 static void display_temperature(void)
 {
 	int16_t temp;
-#ifdef CONFIG_TEMPERATURE_METRIC
-	temperature_get_C(&temp);
-#else
-	temperature_get_F(&temp);
-#endif
-	_printf(0, LCD_SEG_L2_3_0, "%03s", temperature.offset);
+	if (use_temperature_metric)
+		temperature_get_C(&temp);
+	else
+		temperature_get_F(&temp);
+
 	_printf(0, LCD_SEG_L1_3_1, "%2s", temp/10);
 	display_char(0, LCD_SEG_L1_0, (temp%10)+48, SEG_SET);
 }
@@ -51,48 +56,79 @@ static void measure_temp(enum sys_message msg)
 
 /********************* edit mode callbacks ********************************/
 
+static void display_temp_text_on_line_2 ()
+{
+	display_chars(0, LCD_SEG_L2_4_1, "TEMP", SEG_SET);
+}
+
+// Offset
+void update_offset_display ()
+{
+	_printf(0, LCD_SEG_L2_5_0, " C%03s", temperature.offset); // C for Calibration
+}
 static void edit_offset_sel(void)
 {
+	display_clear(0, 2);
 	display_chars(0, LCD_SEG_L2_3_0, NULL, BLINK_ON);
+	update_offset_display();
 }
 static void edit_offset_dsel(void)
 {
+	display_clear(0, 2);
 	display_chars(0, LCD_SEG_L2_3_0, NULL, BLINK_OFF);
 }
 static void edit_offset_set(int8_t step)
 {
 	temperature.offset += step;
+	update_offset_display();
 	display_temperature();
 }
 
-
-static void edit_save()
+// C or F
+static void update_c_or_f_display ()
 {
-	/* turn off blinking segments */
-	display_chars(0, LCD_SEG_L2_3_0, NULL, BLINK_OFF);
+	if (use_temperature_metric) {
+		display_chars(0, LCD_SEG_L2_5_0, " USE\\C", SEG_SET);
+	} else {
+		display_chars(0, LCD_SEG_L2_5_0, " USE\\F", SEG_SET);
+	}
 }
+static void edit_c_or_f_sel(void)
+{
+	display_clear(0, 2);
+	display_chars(0, LCD_SEG_L2_1_0, NULL, BLINK_ON);
+	update_c_or_f_display();
+}
+static void edit_c_or_f_dsel(void)
+{
+	display_clear(0, 2);
+	display_chars(0, LCD_SEG_L2_1_0, NULL, BLINK_OFF);
+}
+
+static void edit_c_or_f_set(int8_t step)
+{
+	use_temperature_metric = !use_temperature_metric;
+	update_c_or_f_display();
+	display_temperature();
+}
+
+/************************** menu callbacks ********************************/
 
 static struct menu_editmode_item edit_items[] = {
 	{&edit_offset_sel, &edit_offset_dsel, &edit_offset_set},
+	{&edit_c_or_f_sel, &edit_c_or_f_dsel, &edit_c_or_f_set},
 	{ NULL },
 };
-
-/************************** menu callbacks ********************************/
 
 static void temperature_activate(void)
 {
 	/* display static elements */
 	display_symbol(0, LCD_UNIT_L1_DEGREE, SEG_ON);
 	display_symbol(0, LCD_SEG_L1_DP0, SEG_ON);
-#ifdef CONFIG_TEMPERATURE_METRIC
-	display_char(0, LCD_SEG_L2_4, 'C', SEG_SET);
-#else
-	display_char(0, LCD_SEG_L2_4, 'F', SEG_SET);
-#endif
 
 	/* display -- symbol while a measure is not performed */
 	display_chars(0, LCD_SEG_L1_2_0, "---", SEG_ON);
-
+    display_temp_text_on_line_2();
 	sys_messagebus_register(&measure_temp, SYS_MSG_TIMER_4S);
 }
 
@@ -108,7 +144,7 @@ static void temperature_deactivate(void)
 static void temperature_edit(void)
 {
 	/* We go into edit mode  */
-	menu_editmode_start(&edit_save, edit_items);
+	menu_editmode_start(&display_temp_text_on_line_2, edit_items);
 }
 
 void mod_temperature_init(void)
