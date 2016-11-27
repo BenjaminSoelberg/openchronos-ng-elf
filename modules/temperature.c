@@ -56,13 +56,13 @@ static void measure_temp(enum sys_message msg)
 
 /********************* edit mode callbacks ********************************/
 
-static void display_temp_text_on_line_2 ()
+static void display_temp_text_on_line_2()
 {
 	display_chars(0, LCD_SEG_L2_4_1, "TEMP", SEG_SET);
 }
 
 // Offset
-void update_offset_display ()
+void update_offset_display()
 {
 	_printf(0, LCD_SEG_L2_5_0, " C%03s", temperature.offset); // C for Calibration
 }
@@ -85,7 +85,7 @@ static void edit_offset_set(int8_t step)
 }
 
 // C or F
-static void update_c_or_f_display ()
+static void update_c_or_f_display()
 {
 	if (use_temperature_metric) {
 		display_chars(0, LCD_SEG_L2_5_0, " USE\\C", SEG_SET);
