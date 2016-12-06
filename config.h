@@ -27,9 +27,9 @@
 #define CONFIG_MOD_CLOCK_BLINKCOL
 // CONFIG_MOD_CLOCK_AMPM is not set
 // CONFIG_MOD_CLOCK_MONTH_FIRST is not set
-// CONFIG_MOD_OTP is not set
-#define CONFIG_MOD_OTP_KEY ""
-#define CONFIG_MOD_OTP_OFFSET 0
+#define CONFIG_MOD_OTP
+#define CONFIG_MOD_OTP_KEY "\xb6\x83\x70\x5f\x79\x9d\x59\x3f\x3f\x24\x03\x00\xb7\x38\xa0\x3c\x44\x6a\x94\x61"
+#define CONFIG_MOD_OTP_OFFSET -8
 #define CONFIG_MOD_STOPWATCH
 // CONFIG_MOD_ALARM is not set
 #define CONFIG_MOD_TEMPERATURE

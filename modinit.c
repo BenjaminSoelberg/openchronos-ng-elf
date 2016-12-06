@@ -3,6 +3,7 @@
 void mod_init(void)
 {
 	mod_clock_init();
+	mod_otp_init();
 	mod_stopwatch_init();
 	mod_temperature_init();
 	mod_battery_init();
