@@ -421,6 +421,10 @@ void hmac_sha1(const uint8_t *key, int keyLength,
 #include "drivers/rtca.h"
 #include "drivers/display.h"
 
+#if defined(CONFIG_RTC_DST)
+#include "drivers/rtc_dst.h"
+#endif
+
 /* 7-segment character bit assignments */
 /* Replicated from drivers/display.c (shouldn't this be in display.h ?) */
 #define SEG_A     (BIT4)
@@ -446,6 +450,12 @@ uint32_t simple_mktime(int year, int month, int day, int hour, int minute, int s
 	result += (year - 1968) / 4;
 	result += day - 1;
 	result  = ((result * 24 + hour) * 60 + minute) * 60 + second;
+
+#if defined(CONFIG_RTC_DST)
+        if (rtc_dst_state == RTC_DST_STATE_DST) {
+            result = result - 3600;
+        }    
+#endif
 
 	return result;
 }
