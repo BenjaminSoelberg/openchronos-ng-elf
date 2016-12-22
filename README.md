@@ -32,6 +32,14 @@ If you are running on a 64 bit Ubuntu system you need to install some packages f
 
 ```sudo apt-get install lib32z1 lib32ncurses5 lib32stdc++6 python-urwid```
 
+
+Linux/Fedora 64 bit installation preparation
+---------------------------------------------
+If you are running on a 64 bit Fedora system you need to install some packages first:
+
+```sudo dnf install ncurses-libs.i686 zlib.i686 libstdc++.i686 python-urwid```
+
+
 Compiler and debugger installation
 ----------------------------------
 
