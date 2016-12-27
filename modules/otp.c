@@ -69,16 +69,6 @@
 
 #include "otp.h"
 
-#if !defined(BYTE_ORDER)
-#if defined(_BIG_ENDIAN)
-#define BYTE_ORDER 4321
-#elif defined(_LITTLE_ENDIAN)
-#define BYTE_ORDER 1234
-#else
-#error Need to define BYTE_ORDER
-#endif
-#endif
-
 #ifndef TRUNC32
   #define TRUNC32(x)  ((x) & 0xffffffffL)
 #endif
@@ -106,26 +96,6 @@
     T = T32(R32(A,5) + f##n(B,C,D) + E + *WP++ + CONST##n);    \
     E = D; D = C; C = R32(B,30); B = A; A = T
 
-/* specific cases, for when the overall rotation is unraveled */
-#define FA(n)    \
-    T = T32(R32(A,5) + f##n(B,C,D) + E + *WP++ + CONST##n); B = R32(B,30)
-
-#define FB(n)    \
-    E = T32(R32(T,5) + f##n(A,B,C) + D + *WP++ + CONST##n); A = R32(A,30)
-
-#define FC(n)    \
-    D = T32(R32(E,5) + f##n(T,A,B) + C + *WP++ + CONST##n); T = R32(T,30)
-
-#define FD(n)    \
-    C = T32(R32(D,5) + f##n(E,T,A) + B + *WP++ + CONST##n); E = R32(E,30)
-
-#define FE(n)    \
-    B = T32(R32(C,5) + f##n(D,E,T) + A + *WP++ + CONST##n); D = R32(D,30)
-
-#define FT(n)    \
-    A = T32(R32(B,5) + f##n(C,D,E) + T + *WP++ + CONST##n); C = R32(C,30)
-
-
 static void
 sha1_transform(SHA1_INFO *sha1_info)
 {
@@ -135,10 +105,6 @@ sha1_transform(SHA1_INFO *sha1_info)
 
     dp = sha1_info->data;
 
-#undef SWAP_DONE
-
-#if BYTE_ORDER == 1234
-#define SWAP_DONE
     for (i = 0; i < 16; ++i) {
         T = *((uint32_t *) dp);
         dp += 4;
@@ -147,48 +113,6 @@ sha1_transform(SHA1_INFO *sha1_info)
             ((T <<  8) & 0x00ff0000) |
             ((T >>  8) & 0x0000ff00) | ((T >> 24) & 0x000000ff);
     }
-#endif
-
-#if BYTE_ORDER == 4321
-#define SWAP_DONE
-    for (i = 0; i < 16; ++i) {
-        T = *((uint32_t *) dp);
-        dp += 4;
-        W[i] = TRUNC32(T);
-    }
-#endif
-
-#if BYTE_ORDER == 12345678
-#define SWAP_DONE
-    for (i = 0; i < 16; i += 2) {
-        T = *((uint32_t *) dp);
-        dp += 8;
-        W[i] =  ((T << 24) & 0xff000000) | ((T <<  8) & 0x00ff0000) |
-            ((T >>  8) & 0x0000ff00) | ((T >> 24) & 0x000000ff);
-        T >>= 32;
-        W[i+1] = ((T << 24) & 0xff000000) | ((T <<  8) & 0x00ff0000) |
-            ((T >>  8) & 0x0000ff00) | ((T >> 24) & 0x000000ff);
-    }
-#endif
-
-#if BYTE_ORDER == 87654321
-#define SWAP_DONE
-    for (i = 0; i < 16; i += 2) {
-        T = *((uint32_t *) dp);
-        dp += 8;
-        W[i] = TRUNC32(T >> 32);
-        W[i+1] = TRUNC32(T);
-    }
-#endif
-
-#ifndef SWAP_DONE
-#define SWAP_DONE
-    for (i = 0; i < 16; ++i) {
-        T = *((uint32_t *) dp);
-        dp += 4;
-        W[i] = TRUNC32(T);
-    }
-#endif /* SWAP_DONE */
 
     for (i = 16; i < 80; ++i) {
     W[i] = W[i-3] ^ W[i-8] ^ W[i-14] ^ W[i-16];
@@ -200,42 +124,16 @@ sha1_transform(SHA1_INFO *sha1_info)
     D = sha1_info->digest[3];
     E = sha1_info->digest[4];
     WP = W;
-#ifdef UNRAVEL
-    FA(1); FB(1); FC(1); FD(1); FE(1); FT(1); FA(1); FB(1); FC(1); FD(1);
-    FE(1); FT(1); FA(1); FB(1); FC(1); FD(1); FE(1); FT(1); FA(1); FB(1);
-    FC(2); FD(2); FE(2); FT(2); FA(2); FB(2); FC(2); FD(2); FE(2); FT(2);
-    FA(2); FB(2); FC(2); FD(2); FE(2); FT(2); FA(2); FB(2); FC(2); FD(2);
-    FE(3); FT(3); FA(3); FB(3); FC(3); FD(3); FE(3); FT(3); FA(3); FB(3);
-    FC(3); FD(3); FE(3); FT(3); FA(3); FB(3); FC(3); FD(3); FE(3); FT(3);
-    FA(4); FB(4); FC(4); FD(4); FE(4); FT(4); FA(4); FB(4); FC(4); FD(4);
-    FE(4); FT(4); FA(4); FB(4); FC(4); FD(4); FE(4); FT(4); FA(4); FB(4);
-    sha1_info->digest[0] = T32(sha1_info->digest[0] + E);
-    sha1_info->digest[1] = T32(sha1_info->digest[1] + T);
-    sha1_info->digest[2] = T32(sha1_info->digest[2] + A);
-    sha1_info->digest[3] = T32(sha1_info->digest[3] + B);
-    sha1_info->digest[4] = T32(sha1_info->digest[4] + C);
-#else /* !UNRAVEL */
-#ifdef UNROLL_LOOPS
-    FG(1); FG(1); FG(1); FG(1); FG(1); FG(1); FG(1); FG(1); FG(1); FG(1);
-    FG(1); FG(1); FG(1); FG(1); FG(1); FG(1); FG(1); FG(1); FG(1); FG(1);
-    FG(2); FG(2); FG(2); FG(2); FG(2); FG(2); FG(2); FG(2); FG(2); FG(2);
-    FG(2); FG(2); FG(2); FG(2); FG(2); FG(2); FG(2); FG(2); FG(2); FG(2);
-    FG(3); FG(3); FG(3); FG(3); FG(3); FG(3); FG(3); FG(3); FG(3); FG(3);
-    FG(3); FG(3); FG(3); FG(3); FG(3); FG(3); FG(3); FG(3); FG(3); FG(3);
-    FG(4); FG(4); FG(4); FG(4); FG(4); FG(4); FG(4); FG(4); FG(4); FG(4);
-    FG(4); FG(4); FG(4); FG(4); FG(4); FG(4); FG(4); FG(4); FG(4); FG(4);
-#else /* !UNROLL_LOOPS */
+
     for (i =  0; i < 20; ++i) { FG(1); }
     for (i = 20; i < 40; ++i) { FG(2); }
     for (i = 40; i < 60; ++i) { FG(3); }
     for (i = 60; i < 80; ++i) { FG(4); }
-#endif /* !UNROLL_LOOPS */
     sha1_info->digest[0] = T32(sha1_info->digest[0] + A);
     sha1_info->digest[1] = T32(sha1_info->digest[1] + B);
     sha1_info->digest[2] = T32(sha1_info->digest[2] + C);
     sha1_info->digest[3] = T32(sha1_info->digest[3] + D);
     sha1_info->digest[4] = T32(sha1_info->digest[4] + E);
-#endif /* !UNRAVEL */
 }
 
 /* initialize the SHA digest */
@@ -561,4 +459,3 @@ void mod_otp_init()
         &otp_deactivated    /* deactivate */
     );
 }
-

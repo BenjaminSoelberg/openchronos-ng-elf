@@ -20,7 +20,6 @@
 #define  __OTP_H__
 #include <stdint.h>
 
-#define _LITTLE_ENDIAN
 #define SHA1_BLOCKSIZE     64
 #define SHA1_DIGEST_LENGTH 20
 
