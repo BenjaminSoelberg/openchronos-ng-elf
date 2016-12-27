@@ -3,6 +3,7 @@
 # vim: ts=4 noexpandtab
 
 import base64
+import time
 
 def b32encode(string, encode):
 	if encode:
@@ -12,4 +13,10 @@ def b32encode(string, encode):
 		s =  "".join(map (lambda x: chr(int("0x" + x, 16)), string.replace('"', '').split("\\x")[1:]))
 		return  base64.b32encode(s)
 
-
+def tzget (cfg_offset, tz_set):
+        offset = 0
+        if cfg_offset == '': 
+            offset = -time.timezone/3600
+        else: 
+            offset = cfg_offset
+        return offset   

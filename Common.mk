@@ -20,7 +20,7 @@ CFLAGS_DBG	+= -O1 -g3 -gdwarf-2 -ggdb
 LDFLAGS_DBG	+= -Wl,--gc-sections
 
 # linker flags and include directories
-INCLUDES	+= -I./ -I$(MSP430_TI)/include
+INCLUDES	+= -I./ -I$(MSP430_TI)/include -I$(MSP430_TI)/msp430-elf/include -I$(MSP430_TI)/lib/gcc/msp430-elf/4.9.1/include
 ### Build tools
 # 
 CC		= msp430-elf-gcc
