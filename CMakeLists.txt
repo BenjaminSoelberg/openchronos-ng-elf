@@ -1,55 +1,65 @@
+# openchronos-ng-elf project
+# Copyright (C) 2017 Alexandre Pretyman
+
 cmake_minimum_required(VERSION 3.2)
 
-project(openchronos_ng_elf)
+project(openchronos-ng-elf C)
 
-set(SUPPORTED_DEVICES cc430f6137)
-set(EXECUTABLE_NAME openchronos)
+set(openchronos_binary_filename "openchronos.elf")
 
-include(toolchains/Platform/msp430-gcc.cmake)
-include(toolchains/toolchain-msp430-gcc-ti.cmake)
+set(source_files
+    config.h
+    messagebus.c
+    openchronos.c
+    boot.c
+    modinit.c
+    menu.c
 
-# where is the target environment
-set(CMAKE_FIND_ROOT_PATH $ENV{MSP430_TI})
+    drivers/battery.c
+    drivers/vti_as.c
+    drivers/infomem.c
+    drivers/buzzer.c
+    drivers/display.c
+    drivers/temperature.c
+    drivers/rtca.c
+    drivers/rtc_dst.c
+    drivers/ports.c
+    drivers/dsp.c
+    drivers/radio.c
+    drivers/vti_ps.c
+    drivers/adc12.c
+    drivers/timer.c
+    drivers/pmm.c
+    drivers/rf1a.c
 
-# search for programs in the build host directories
-set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
-# for libraries and headers in the target directories
-set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
-set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
+    modules/battery.c
+    modules/alarm.c
+    modules/music.c
+    modules/reset.c
+    modules/tide.c
+    modules/temperature.c
+    modules/clock.c
+    modules/otp.c
+    modules/stopwatch.c
+    modules/accelerometer.c
+)
+add_executable(${openchronos_binary_filename} ${source_files})
+target_include_directories(${openchronos_binary_filename} PRIVATE .)
 
-include_directories(. drivers modules)
 
-set(SOURCE_FILES
-        openchronos.c
-        config.h
-        boot.c
-        menu.c
-        messagebus.c
-        modinit.c
-        drivers
-        drivers/adc12.c
-        drivers/battery.c
-        drivers/buzzer.c
-        drivers/display.c
-        drivers/dsp.c
-        drivers/infomem.c
-        drivers/pmm.c
-        drivers/ports.c
-        drivers/radio.c
-        drivers/rf1a.c
-        drivers/rtc_dst.c
-        drivers/rtca.c
-        drivers/temperature.c
-        drivers/timer.c
-        drivers/vti_as.c
-        modules
-        modules/accelerometer.c
-        modules/alarm.c
-        modules/battery.c
-        modules/temperature.c
-        modules/tide.c
-        modules/music.c
-        modules/clock.c
-        modules/stopwatch.c)
+# Only needed for wireless update?
+#set(openchronos_hex_filename "openchronos.txt")
+#find_package(PythonInterp)
+#add_custom_command(
+#    TARGET
+#      ${openchronos_binary_filename}
+#    POST_BUILD
+#    COMMAND
+#      ${PYTHON_EXECUTABLE}
+#      ${CMAKE_CURRENT_LIST_DIR}/tools/memory.py
+#      -i ${openchronos_binary_filename}
+#      -o ${openchronos_hex_filename}
+#    BYPRODUCTS
+#      ${openchronos_hex_filename}
+#)
 
-add_msp430_executable(openchronos "" ${SOURCE_FILES})
