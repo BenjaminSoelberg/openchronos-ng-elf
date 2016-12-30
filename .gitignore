@@ -1,23 +1,29 @@
+### Temp files ###
 nohup.out
-doc
-openchronos.dep
-openchronos.cflags
 *.[oa]
 *.pyc
 *.*~
 *.s
 *.swp
-TAGS
-output.map
-# clion project files
-.idea/
+
+### CLion project files ###
 *.tgz
-#Firmware files
+.idea/
+
+### Firmware files ###
 openchronos.elf
 openchronos.txt
-#build directory
+
+### Build directories ###
+doc
 build
+_build
 cmake-build-debug
+
+### make artifacts ###
 config.h
 modinit.c
 drivers/rtca_now.h
+output.map
+openchronos.dep
+openchronos.cflags
