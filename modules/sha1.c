@@ -75,8 +75,7 @@
     T = T32(R32(A,5) + f##n(B,C,D) + E + *WP++ + CONST##n);    \
     E = D; D = C; C = R32(B,30); B = A; A = T
 
-static void
-sha1_transform(SHA1_INFO *sha1_info)
+static void sha1_transform(SHA1_INFO *sha1_info)
 {
     int i;
     uint8_t *dp;
