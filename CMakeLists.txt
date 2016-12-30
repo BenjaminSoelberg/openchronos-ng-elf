@@ -58,6 +58,7 @@ set(source_files
     modules/tide.c
     modules/temperature.c
     modules/clock.c
+    modules/sha1.c
     modules/otp.c
     modules/stopwatch.c
     modules/accelerometer.c
