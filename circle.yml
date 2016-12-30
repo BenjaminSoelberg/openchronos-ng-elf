@@ -24,7 +24,7 @@ dependencies:
 
     - echo copying build configuration files...
     - cp circle-modinit.c modinit.c
-    - cp circle-config.ch config.h
+    - cp circle-config.c config.h
 
     - echo Building openchronos-ng-elf...
     - make
