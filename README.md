@@ -131,7 +131,7 @@ Flashing the firmware using wireless (RFBSL)
 ------------------------------------
 1) Connect the USB CC11x1 module
 
-2) Reset the watch
+2) Reset the watch using the menu or reinserting the battery
 
 3) Program it using ChronosTool.py (Note that sudo might be required. Also repeat this step if it fails)<br>
 ```sudo make install```
@@ -141,6 +141,10 @@ Flashing the firmware using wireless (RFBSL)
 5) Enter RFBSL by pressing the backlight button on the watch
 
 6) Press any button except the backlight and you should be up and running the new firmware.
+
+Please note:<br>
+* RFBSL seems to fail a lot on some MacBooks (mine is a MacBook Pro Retina 2016)
+* RFBSL seems to fail a lot for some if the watch battery is below 93%
 
 Useful links
 -------------
