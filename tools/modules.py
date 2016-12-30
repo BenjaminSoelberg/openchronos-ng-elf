@@ -34,8 +34,8 @@ def get_menu_order(mod):
 
 def get_modules():
 	mods = os.listdir('modules/')
-	mods = filter( (lambda x: x[-2:] == '.c'), mods)
-	mods = map( (lambda x: x[:-2]), mods)
+	mods = filter( (lambda x: x[-4:] == '.cfg'), mods)
+	mods = map( (lambda x: x[:-4]), mods)
 	mods = sorted(mods, key=get_menu_order)
 	return mods
 
