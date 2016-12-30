@@ -18,3 +18,5 @@ openchronos.txt
 #build directory
 build
 cmake-build-debug
+config.h
+modinit.c
