@@ -20,3 +20,4 @@ build
 cmake-build-debug
 config.h
 modinit.c
+drivers/rtca_now.h
