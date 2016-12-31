@@ -191,10 +191,9 @@ static void stopwatch_deactivated() {
     }
 }
 
-static void down_press() {
+static void up_press() {
     if (sSwatch_conf.state == SWATCH_MODE_ON) {
         increment_lap_stopwatch();
-
     } else if (sSwatch_conf.laps != 0) {
         if (sSwatch_conf.lap_act == 0) {
             sSwatch_conf.lap_act = SW_COUNTING;
@@ -207,7 +206,7 @@ static void down_press() {
     }
 }
 
-static void up_press() {
+static void down_press() {
     if (sSwatch_conf.state == SWATCH_MODE_ON) {
         increment_lap_stopwatch();
     } else if (sSwatch_conf.laps != 0) {

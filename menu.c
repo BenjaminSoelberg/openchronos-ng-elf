@@ -77,11 +77,11 @@ static void editmode_handler(void)
             menu_editmode.pos = 0;
         menu_editmode.items[menu_editmode.pos].select();
 
-        } else if (ports_button_pressed(PORTS_BTN_UP, 0)) {
-            menu_editmode.items[menu_editmode.pos].set(1);
+    } else if (ports_button_pressed(PORTS_BTN_DOWN, 0)) {
+        menu_editmode.items[menu_editmode.pos].set(1);
 
-        } else if (ports_button_pressed(PORTS_BTN_DOWN, 0)) {
-            menu_editmode.items[menu_editmode.pos].set(-1);
+    } else if (ports_button_pressed(PORTS_BTN_UP, 0)) {
+        menu_editmode.items[menu_editmode.pos].set(-1);
     }
 }
 
@@ -106,12 +106,12 @@ static void menumode_handler(void)
         if (menumode.item->activate_fn)
             menumode.item->activate_fn();
 
-    } else if (ports_button_pressed(PORTS_BTN_UP, 0)) {
+    } else if (ports_button_pressed(PORTS_BTN_DOWN, 0)) {
         menumode.item = menumode.item->next;
         display_clear(0, 2);
         display_chars(0, LCD_SEG_L2_4_0, menumode.item->name, SEG_SET);
 
-    } else if (ports_button_pressed(PORTS_BTN_DOWN, 0)) {
+    } else if (ports_button_pressed(PORTS_BTN_UP, 0)) {
         menumode.item = menumode.item->prev;
         display_clear(0, 2);
         display_chars(0, LCD_SEG_L2_4_0, menumode.item->name, SEG_SET);
