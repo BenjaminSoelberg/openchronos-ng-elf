@@ -27,7 +27,7 @@ def get_menu_order(mod):
 	cfg = ConfigParser.RawConfigParser()
 	cfg.read(cfgname)
 	try:
-		return cfg.get(cfg.sections()[0], 'menu_order')
+		return int(cfg.get(cfg.sections()[0], 'menu_order'))
 	except ConfigParser.NoOptionError:
 		return 999
 
