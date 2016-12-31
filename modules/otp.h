@@ -17,10 +17,10 @@
 
 #ifndef  __OTP_H__
 #define  __OTP_H__
-
 #include <stdint.h>
-
-void hmac_sha1(const uint8_t *key, int keyLength,
-               const uint8_t *data, int dataLength,
-               uint8_t *result, int resultLength);
+typedef struct keystore
+{
+    const  char *otp_identifier;
+    const  char *otp_key;
+}keystore_t;
 #endif

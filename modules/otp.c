@@ -23,75 +23,7 @@
 
 
 #include <string.h>
-
-#include "sha1.h"
 #include "otp.h"
-
-uint8_t tmp_key[64];
-uint8_t sha[SHA1_DIGEST_LENGTH];
-uint8_t hashed_key[SHA1_DIGEST_LENGTH];
-
-void hmac_sha1(const uint8_t *key, int keyLength,
-               const uint8_t *data, int dataLength,
-               uint8_t *result, int resultLength) {
-  SHA1_INFO ctx;
-  int i;
-  // Zero out all internal data structures
-  memset(hashed_key, 0, sizeof(hashed_key));
-  memset(sha, 0, sizeof(sha));
-  memset(tmp_key, 0, sizeof(tmp_key));
-  memset(&ctx, 0, sizeof(ctx));
-
-#if defined(__COMPILED_OUT__)
-  if (keyLength > 64) {
-    // The key can be no bigger than 64 bytes. If it is, we'll hash it down to
-    // 20 bytes.
-    sha1_init(&ctx);
-    sha1_update(&ctx, key, keyLength);
-    sha1_final(&ctx, hashed_key);
-    key = hashed_key;
-    keyLength = SHA1_DIGEST_LENGTH;
-  }
-#endif
-
-  // The key for the inner digest is derived from our key, by padding the key
-  // the full length of 64 bytes, and then XOR'ing each byte with 0x36.
-  for (i = 0; i < keyLength; ++i) {
-    tmp_key[i] = key[i] ^ 0x36;
-  }
-  if (keyLength < 64) {
-    memset(tmp_key + keyLength, 0x36, 64 - keyLength);
-  }
-
-  // Compute inner digest
-  sha1_init(&ctx);
-  sha1_update(&ctx, tmp_key, 64);
-  sha1_update(&ctx, data, dataLength);
-  sha1_final(&ctx, sha);
-
-  // The key for the outer digest is derived from our key, by padding the key
-  // the full length of 64 bytes, and then XOR'ing each byte with 0x5C.
-  for (i = 0; i < keyLength; ++i) {
-    tmp_key[i] = key[i] ^ 0x5C;
-  }
-  memset(tmp_key + keyLength, 0x5C, 64 - keyLength);
-
-  // Compute outer digest
-  sha1_init(&ctx);
-  sha1_update(&ctx, tmp_key, 64);
-  sha1_update(&ctx, sha, SHA1_DIGEST_LENGTH);
-  sha1_final(&ctx, sha);
-
-  // Copy result to output buffer and truncate or pad as necessary
-  memset(result, 0, resultLength);
-  if (resultLength > SHA1_DIGEST_LENGTH) {
-    resultLength = SHA1_DIGEST_LENGTH;
-  }
-  memcpy(result, sha, resultLength);
-
-}
-/*------------------------Chronos specific stuff-------------------------*/
-
 #include "messagebus.h"
 #include "menu.h"
 
@@ -102,6 +34,9 @@ void hmac_sha1(const uint8_t *key, int keyLength,
 #if defined(CONFIG_RTC_DST)
 #include "drivers/rtc_dst.h"
 #endif
+
+/* hmac routines*/
+#include "hashutils.h"
 
 /* 7-segment character bit assignments */
 /* Replicated from drivers/display.c (shouldn't this be in display.h ?) */
@@ -138,8 +73,15 @@ uint32_t simple_mktime(int year, int month, int day, int hour, int minute, int s
 	return result;
 }
 
-const  uint8_t *otp_key          = (uint8_t *)CONFIG_MOD_OTP_KEY;
 #define CONFIG_MOD_OTP_KEYLEN	(20)
+const  keystore_t otp_keys[]          = CONFIG_MOD_OTP_KEYS;
+#define NUM_ELEMS(x) (sizeof(x)/sizeof(x[0]))
+#define NUM_KEYS NUM_ELEMS(otp_keys)
+
+
+static uint8_t current_key_index = 0;
+static uint8_t max_key_index = NUM_KEYS;
+
 static uint32_t  last_time    = 0;
 static uint8_t   otp_data[]   = {0,0,0,0,0,0,0,0};
 static uint8_t   otp_result[SHA1_DIGEST_LENGTH];
@@ -152,17 +94,29 @@ static uint8_t   indicator[]  = {
     SEG_A,                               SEG_A
 };
 
-static uint32_t calculate_otp(uint32_t time)
+static void otp_get_current_params(char *potp_identifier, 
+        const uint8_t **potp_key)
+{
+    const keystore_t *current_key = &otp_keys[current_key_index];
+    /*only a single char is supported right now*/
+    *potp_identifier = current_key->otp_identifier[0];
+    *potp_key = (const uint8_t *)current_key->otp_key;
+}
+
+
+static uint32_t calculate_otp(uint32_t time, const uint8_t *otp_key)
 {
 	uint32_t val = 0;
-        int i;
-        memset(otp_data, 0, sizeof(otp_data));
-        memset(otp_result, 0, sizeof(otp_result));
+    int i;
+
+    memset(otp_data, 0, sizeof(otp_data));
+    memset(otp_result, 0, sizeof(otp_result));
 
 	otp_data[4] = (time >> 24) & 0xff;
 	otp_data[5] = (time >> 16) & 0xff;
 	otp_data[6] = (time >> 8 ) & 0xff;
 	otp_data[7] = (time      ) & 0xff;
+    
 
 	hmac_sha1(otp_key, CONFIG_MOD_OTP_KEYLEN, otp_data, sizeof(otp_data),
         otp_result, sizeof(otp_result));
@@ -183,10 +137,15 @@ static void clock_event(enum sys_message msg)
 {
     // Check how long the current code is valid
     uint8_t segment = (rtca_time.sec / 5) % 6;
+    const uint8_t *otp_key;
+    char otp_identifier;
 
+    otp_get_current_params(&otp_identifier, &otp_key);
     // Draw indicator in lower-left corner
     display_bits(0, LCD_SEG_L2_4, indicator[2*segment  ], SEG_SET);
     display_bits(0, LCD_SEG_L2_4, indicator[2*segment+1], BLINK_SET);
+    display_char(0 ,LCD_SEG_L1_3, otp_identifier, SEG_SET); 
+    display_char(0 ,LCD_SEG_L1_3, otp_identifier, BLINK_SET); 
 
     // Calculate timestamp
 	uint32_t time = simple_mktime(rtca_time.year, rtca_time.mon - 1, rtca_time.day,
@@ -195,8 +154,9 @@ static void clock_event(enum sys_message msg)
 
     // Check if new code must be calculated
     if(time != last_time) {
+
         last_time = time;
-        uint32_t otp_value = calculate_otp(time);
+        uint32_t otp_value = calculate_otp(time,otp_key);
 
         // Draw first half on the top line
         uint16_t v = (otp_value / 1000) % 1000;
@@ -226,11 +186,29 @@ static void otp_deactivated()
     display_clear(0, 2);
 }
 
+static void otp_gen_next()
+{
+    if (current_key_index == max_key_index - 1)
+        current_key_index = 0;
+    else
+        current_key_index++;
+    last_time = 0;
+}
+
+static void otp_gen_prev()
+{
+    if (current_key_index == 0)
+        current_key_index = max_key_index - 1;
+    else
+        current_key_index--;
+    last_time = 0;
+}
+
 void mod_otp_init()
 {
     menu_add_entry("OTP",
-        NULL,               /* up         */
-        NULL,               /* down       */
+        otp_gen_prev,       /* up         */
+        otp_gen_next,       /* down       */
         NULL,               /* num        */
         NULL,               /* long star  */
         NULL,               /* long num   */
