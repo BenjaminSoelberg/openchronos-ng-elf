@@ -145,7 +145,7 @@ static void clock_event(enum sys_message msg)
     display_bits(0, LCD_SEG_L2_4, indicator[2*segment  ], SEG_SET);
     display_bits(0, LCD_SEG_L2_4, indicator[2*segment+1], BLINK_SET);
     display_char(0 ,LCD_SEG_L1_3, otp_identifier, SEG_SET); 
-    display_char(0 ,LCD_SEG_L1_3, otp_identifier, BLINK_SET); 
+    display_char(0 ,LCD_SEG_L1_3, otp_identifier, BLINK_ON); 
 
     // Calculate timestamp
 	uint32_t time = simple_mktime(rtca_time.year, rtca_time.mon - 1, rtca_time.day,
@@ -180,7 +180,7 @@ static void otp_activated()
 static void otp_deactivated()
 {
     sys_messagebus_unregister_all(&clock_event);
-
+    display_char(0 ,LCD_SEG_L1_3, '8', BLINK_OFF); 
     /* clean up screen */
     display_clear(0, 1);
     display_clear(0, 2);
