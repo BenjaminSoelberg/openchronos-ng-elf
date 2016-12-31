@@ -143,7 +143,7 @@ Flashing the firmware using wireless (RFBSL)
 6) Press any button except the backlight and you should be up and running the new firmware.
 
 Please note:<br>
-* RFBSL seems to fail a lot on some MacBooks (mine is a MacBook Pro Retina 2016)
+* RFBSL seems to fail a lot on some MacBooks (mine is a MacBook Pro Retina 2012)
 * RFBSL seems to fail a lot for some if the watch battery is below 93%
 
 Useful links
