@@ -110,6 +110,14 @@ DATA["CONFIG_BUTTONS_SHORT_PRESS_TIME"] = {
 	"help": "Short button press time (in multiples of 1/20 second)",
 }
 
+DATA["CONFIG_BUTTONS_SWAP_UP_AND_DOWN"] = {
+	"name": "Swap the up and down buttons",
+	"type": "bool",
+	"default": False,
+	"ifndef": False,
+	"help": "When set up means previous/-1 and down means next/+1",
+}
+
 # BATTERY DRIVER #############################################################
 
 DATA["TEXT_BATTERY"] = {
