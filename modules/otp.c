@@ -1,6 +1,6 @@
 /**
     Copyright (c) 2011 Yohanes Nugroho (yohanes@gmail.com)
-    Copyright (c) 2016 Benjamin Sølberg (benjamin.soelberg@gmail.com)
+    Copyright (c) 2016-17 Benjamin Sølberg (benjamin.soelberg@gmail.com)
     Copyright (c) 2016 menehune
 
     http://github.com/BenjaminSoelberg/openchronos-ng-elf
