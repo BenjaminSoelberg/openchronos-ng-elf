@@ -26,7 +26,7 @@
 
 /*****************************************************************************
  *
- * File:    sha1.c
+ * File:    hashutils.c
  *
  * Purpose: Implementation of the SHA1 message-digest algorithm.
  *
@@ -46,7 +46,7 @@
 #include <sys/types.h> // Defines BYTE_ORDER, iff _BSD_SOURCE is defined
 #include <string.h>
 
-#include "sha1.h"
+#include "hashutils.h"
 
 #ifndef TRUNC32
 #define TRUNC32(x)  ((x) & 0xffffffffL)
@@ -219,4 +219,71 @@ void sha1_final(SHA1_INFO *sha1_info, uint8_t digest[20])
     sha1_info->data[62] = (uint8_t)((lo_bit_count >>  8) & 0xff);
     sha1_info->data[63] = (uint8_t)((lo_bit_count >>  0) & 0xff);
     sha1_transform_and_copy(digest, sha1_info);
+}
+
+/*---------------------HMAC_SHA1-------------------------*/ 
+
+uint8_t tmp_key[64];
+uint8_t sha[SHA1_DIGEST_LENGTH];
+uint8_t hashed_key[SHA1_DIGEST_LENGTH];
+
+void hmac_sha1(const uint8_t *key, int keyLength,
+               const uint8_t *data, int dataLength,
+               uint8_t *result, int resultLength) {
+  SHA1_INFO ctx;
+  int i;
+  // Zero out all internal data structures
+  memset(hashed_key, 0, sizeof(hashed_key));
+  memset(sha, 0, sizeof(sha));
+  memset(tmp_key, 0, sizeof(tmp_key));
+
+  memset(&ctx, 0, sizeof(ctx));
+
+#if defined(__COMPILED_OUT__)
+  if (keyLength > 64) {
+    // The key can be no bigger than 64 bytes. If it is, we'll hash it down to
+    // 20 bytes.
+    sha1_init(&ctx);
+    sha1_update(&ctx, key, keyLength);
+    sha1_final(&ctx, hashed_key);
+    key = hashed_key;
+    keyLength = SHA1_DIGEST_LENGTH;
+  }
+#endif
+
+  // The key for the inner digest is derived from our key, by padding the key
+  // the full length of 64 bytes, and then XOR'ing each byte with 0x36.
+  for (i = 0; i < keyLength; ++i) {
+    tmp_key[i] = key[i] ^ 0x36;
+  }
+  if (keyLength < 64) {
+    memset(tmp_key + keyLength, 0x36, 64 - keyLength);
+  }
+
+  // Compute inner digest
+  sha1_init(&ctx);
+  sha1_update(&ctx, tmp_key, 64);
+  sha1_update(&ctx, data, dataLength);
+  sha1_final(&ctx, sha);
+
+  // The key for the outer digest is derived from our key, by padding the key
+  // the full length of 64 bytes, and then XOR'ing each byte with 0x5C.
+  for (i = 0; i < keyLength; ++i) {
+    tmp_key[i] = key[i] ^ 0x5C;
+  }
+  memset(tmp_key + keyLength, 0x5C, 64 - keyLength);
+
+  // Compute outer digest
+  sha1_init(&ctx);
+  sha1_update(&ctx, tmp_key, 64);
+  sha1_update(&ctx, sha, SHA1_DIGEST_LENGTH);
+  sha1_final(&ctx, sha);
+
+  // Copy result to output buffer and truncate or pad as necessary
+  memset(result, 0, resultLength);
+  if (resultLength > SHA1_DIGEST_LENGTH) {
+    resultLength = SHA1_DIGEST_LENGTH;
+  }
+  memcpy(result, sha, resultLength);
+
 }
