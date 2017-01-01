@@ -192,6 +192,7 @@ static void otp_gen_next()
     else
         current_key_index++;
     last_time = 0;
+    clock_event(SYS_MSG_NONE);
 }
 
 static void otp_gen_prev()
@@ -201,6 +202,7 @@ static void otp_gen_prev()
     else
         current_key_index--;
     last_time = 0;
+    clock_event(SYS_MSG_NONE);
 }
 
 void mod_otp_init()

@@ -6,12 +6,12 @@ import base64
 import time
 
 def b32encode_each(string, decode):
-	if decode:
-		key = base64.b32decode(string.upper().replace(" ",""))
-		return  '"' + "".join(map(lambda x:"\\x%02x" % ord(x), list(key))) + '"'
-	else:
-		s =  "".join(map (lambda x: chr(int("0x" + x, 16)), string.replace('"', '').split("\\x")[1:]))
-		return  base64.b32encode(s)
+    if decode:
+        key = base64.b32decode(string.upper().replace(" ",""))
+        return  '"' + "".join(map(lambda x:"\\x%02x" % ord(x), list(key))) + '"'
+    else:
+        s =  "".join(map (lambda x: chr(int("0x" + x, 16)), string.replace('"', '').split("\\x")[1:]))
+        return  base64.b32encode(s)
 
 def b32encode(strings, decode):
         strings.strip()
@@ -25,8 +25,8 @@ def b32encode(strings, decode):
                 colon_split_secret = secret.split(':')
 
                 if len(colon_split_secret) == 1:
-                #user did not provide an identifier, use index as an identifier
-                    identifier = str(encoded_auth_count) 
+                    #user did not provide an identifier, use index as an identifier
+                    identifier = chr(encoded_auth_count + ord('A'))
                     secret = colon_split_secret[0]
                 else:
                     identifier = colon_split_secret[0].upper()
