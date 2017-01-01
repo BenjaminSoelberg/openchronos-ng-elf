@@ -206,8 +206,8 @@ static void otp_gen_prev()
 void mod_otp_init()
 {
     menu_add_entry("OTP",
-        otp_gen_prev,       /* up         */
-        otp_gen_next,       /* down       */
+        otp_gen_next,       /* up         */
+        otp_gen_prev,       /* down       */
         NULL,               /* num        */
         NULL,               /* long star  */
         NULL,               /* long num   */
