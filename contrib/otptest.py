@@ -12,12 +12,14 @@ import time
 import base64
 import sys
 import struct
+import binascii
 
 class totp:
     
     def __init__(self,base32secret):
         self.base32secret = base32secret
         self.decodedsecret = base64.b32decode(self.base32secret,True)
+        self.decodedsecretlen = len(self.decodedsecret)
         self.hash_object = hmac.new(self.decodedsecret, None, hashlib.sha1)
         return None
         
@@ -25,8 +27,9 @@ class totp:
         return 'totp({})'.format(self.base32secret)
 
     def __str__(self):
-        return 'totp Secret: {} hash: {}'.format(self.base32secret, self.decodedsecret)
-        
+        return 'totp Secret: {} hash: {} len: {}'.format(self.base32secret, 
+                binascii.hexlify(self.decodedsecret), self.decodedsecretlen)
+
     @staticmethod
     def makebytearray(argint, length, total_len):
         bytelist = []
@@ -59,10 +62,11 @@ class totp:
         return otp, remaintime
 
 if __name__ == '__main__':
-    if len(sys.argv) == '2':
-        base32secret = argv[1]
+    if len(sys.argv) == 2:
+        base32secret = sys.argv[1]
     else:
         base32secret = 'ATNIUMOTRUMZPTUZTNZN3O4U7MH67IB7'
         print('provide base32 secret as argv[1], using {}'.format(base32secret))
     totpinst = totp(base32secret)
     print('{:06d} Remaining {} seconds'.format(*totpinst.genotp()))
+    print(totpinst)
