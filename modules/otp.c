@@ -73,7 +73,6 @@ uint32_t simple_mktime(int year, int month, int day, int hour, int minute, int s
 	return result;
 }
 
-#define CONFIG_MOD_OTP_KEYLEN	(20)
 const  keystore_t otp_keys[]          = CONFIG_MOD_OTP_KEYS;
 #define NUM_ELEMS(x) (sizeof(x)/sizeof(x[0]))
 #define NUM_KEYS NUM_ELEMS(otp_keys)
