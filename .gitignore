@@ -5,6 +5,8 @@ nohup.out
 *.*~
 *.s
 *.swp
+cscope.out
+
 
 ### CLion project files ###
 *.tgz
@@ -26,4 +28,5 @@ modinit.c
 drivers/rtca_now.h
 output.map
 openchronos.dep
+openchronos.dep.bak
 openchronos.cflags
