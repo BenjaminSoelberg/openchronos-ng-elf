@@ -97,6 +97,7 @@ clean: $(SUBDIRS)
 		echo "Cleaning $$subdir .."; rm -f $$subdir/*.o; \
 	done
 	@rm -f *.o openchronos.elf openchronos.txt openchronos.cflags openchronos.dep output.map
+	@rm -f openchronos.dep.bak
 	@rm -f drivers/rtca_now.h
 
 doc:

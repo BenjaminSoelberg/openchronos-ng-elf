@@ -40,7 +40,7 @@ DATA["USE_WATCHDOG"] = {
 	"help": "Protects the clock against deadlocks by rebooting it.",
 }
 
-DATA["CONFIG_DEBUG_EASY_RESET"] = {
+DATA["CONFIG_EASY_DEBUG_RESET"] = {
 	"name": "Use Easy Reset by pressing the up and down buttons at the same time",
 	"default": False,
 	"help": "Makes it fast to reboot the watch to update firmware.",

@@ -117,7 +117,7 @@ void check_events(void)
 
 static void check_buttons(void)
 {
-#ifdef CONFIG_DEBUG_EASY_RESET
+#ifdef CONFIG_EASY_DEBUG_RESET
 	/* if up and down is pressed then resets the watch */
 	if (ports_button_pressed(PORTS_BTN_UP | PORTS_BTN_DOWN, 0))
 	{

@@ -6,7 +6,7 @@
 // CONFIG_DEBUG is not set
 #define USE_LCD_CHARGE_PUMP
 #define USE_WATCHDOG
-// CONFIG_DEBUG_EASY_RESET is not set
+#define CONFIG_EASY_DEBUG_RESET
 #define CONFIG_RTC_IRQ
 // CONFIG_RTC_DST is not set
 #define CONFIG_RTC_DST_ZONE 4
@@ -17,6 +17,7 @@
 #ifndef CONFIG_BUTTONS_SHORT_PRESS_TIME
 #define CONFIG_BUTTONS_SHORT_PRESS_TIME 1
 #endif // CONFIG_BUTTONS_SHORT_PRESS_TIME
+// CONFIG_BUTTONS_SWAP_UP_AND_DOWN is not set
 #define CONFIG_BATTERY_MONITOR
 // CONFIG_BATTERY_DISABLE_FILTER is not set
 #ifndef CONFIG_TEMPERATURE_OFFSET
@@ -27,9 +28,6 @@
 #define CONFIG_MOD_CLOCK_BLINKCOL
 // CONFIG_MOD_CLOCK_AMPM is not set
 // CONFIG_MOD_CLOCK_MONTH_FIRST is not set
-#define CONFIG_MOD_OTP
-#define CONFIG_MOD_OTP_KEYS { { "A","\x04\xda\x8a\x31\xd3\x8d\x19\x97\xce\x99\x9b\x72\xdd\xbb\x94\xfb\x0f\xef\xa0\x3f" },{ "B","\x04\xda\x8a\x31\xd3\x8d\x19\x97\xce\x99\x9b\x72\xdd\xbb\x94\xfb\x0f\xef\xa0\x3e" } }
-#define CONFIG_MOD_OTP_OFFSET 1
 #define CONFIG_MOD_STOPWATCH
 // CONFIG_MOD_ALARM is not set
 #define CONFIG_MOD_TEMPERATURE
@@ -39,5 +37,8 @@
 // CONFIG_MOD_ACCELEROMETER is not set
 // CONFIG_MOD_MUSIC is not set
 // CONFIG_MOD_TIDE is not set
+#define CONFIG_MOD_OTP
+#define CONFIG_MOD_OTP_KEYS { { "G","\x04\xda\x8a\x31\xd3\x8d\x19\x97\xce\x99\x9b\x72\xdd\xbb\x94\xfb\x0f\xef\xa0\x3f",20 },{ "H","\xdc\x7b\x81\x26\x75\x4c\xed\x88\x77\xff",10 } }
+#define CONFIG_MOD_OTP_OFFSET 1
 
 #endif // _CONFIG_H_

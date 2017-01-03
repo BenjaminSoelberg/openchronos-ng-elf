@@ -8,10 +8,10 @@ import time
 def b32encode_each(string, decode):
     if decode:
         key = base64.b32decode(string.upper().replace(" ",""))
-        return  '"' + "".join(map(lambda x:"\\x%02x" % ord(x), list(key))) + '"'
+        return  '"' + "".join(map(lambda x:"\\x%02x" % ord(x), list(key))) + '"', len(key)
     else:
         s =  "".join(map (lambda x: chr(int("0x" + x, 16)), string.replace('"', '').split("\\x")[1:]))
-        return  base64.b32encode(s)
+        return  base64.b32encode(s), None
 
 def b32encode(strings, decode):
         strings.strip()
@@ -20,7 +20,7 @@ def b32encode(strings, decode):
         removechars = start_block + end_block + ' '
         if decode:
             encoded_auth_secrets = strings.split(',')
-            encoded_auth_list = []
+            decoded_auth_list = []
             for encoded_auth_count, secret in enumerate(encoded_auth_secrets):
                 colon_split_secret = secret.split(':')
 
@@ -32,9 +32,12 @@ def b32encode(strings, decode):
                     identifier = colon_split_secret[0].upper()
                     identifier.strip()
                     secret = colon_split_secret[1]
-                encoded_auth_list.append( start_block + '"' + identifier + '"')
-                encoded_auth_list.append(b32encode_each(secret, True)+ end_block) 
-            return start_block + ",".join(encoded_auth_list) + end_block
+                decoded_secret, decoded_secret_len = b32encode_each(secret, True)
+                decoded_auth_list.append( start_block + '"' + identifier + '"')
+                decoded_auth_list.append(decoded_secret) 
+                decoded_auth_list.append( str(decoded_secret_len) + end_block) 
+
+            return start_block + ",".join(decoded_auth_list) + end_block
 
         else:
             for c in removechars:
@@ -42,9 +45,9 @@ def b32encode(strings, decode):
             strings.strip()
             encoded_auth_list = []
             decoded_auth_secrets = strings.split(',')
-            for  identifier, decoded_secret in zip(*[iter(decoded_auth_secrets)]*2):
+            for  identifier, decoded_secret, secret_len in zip(*[iter(decoded_auth_secrets)]*3):
                 identifier = identifier.replace('"', '')
-                encoded_secret = b32encode_each(decoded_secret, False)
+                encoded_secret, _ = b32encode_each(decoded_secret, False)
                 if not identifier[0].isdigit():
                     encoded_secret = identifier + ':' + encoded_secret
                 encoded_auth_list.append(encoded_secret)
