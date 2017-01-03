@@ -1,0 +1,529 @@
+# DO NOT DELETE
+
+boot.o: openchronos.h /home/dev/ti/gcc/include/msp430.h
+boot.o: /home/dev/ti/gcc/msp430-elf/include/stdlib.h
+boot.o: /home/dev/ti/gcc/msp430-elf/include/machine/ieeefp.h
+boot.o: /home/dev/ti/gcc/msp430-elf/include/_ansi.h
+boot.o: /home/dev/ti/gcc/msp430-elf/include/newlib.h
+boot.o: /home/dev/ti/gcc/msp430-elf/include/sys/config.h
+boot.o: /home/dev/ti/gcc/msp430-elf/include/sys/features.h
+boot.o: /home/dev/ti/gcc/lib/gcc/msp430-elf/4.9.1/include/stddef.h
+boot.o: /home/dev/ti/gcc/msp430-elf/include/sys/reent.h
+boot.o: /home/dev/ti/gcc/msp430-elf/include/sys/_types.h
+boot.o: /home/dev/ti/gcc/msp430-elf/include/machine/_types.h
+boot.o: /home/dev/ti/gcc/msp430-elf/include/machine/_default_types.h
+boot.o: /home/dev/ti/gcc/msp430-elf/include/sys/lock.h
+boot.o: /home/dev/ti/gcc/msp430-elf/include/machine/stdlib.h
+boot.o: /home/dev/ti/gcc/msp430-elf/include/alloca.h
+boot.o: /home/dev/ti/gcc/msp430-elf/include/stdint.h config.h drivers/pmm.h
+menu.o: menu.h /home/dev/ti/gcc/include/msp430.h
+menu.o: /home/dev/ti/gcc/msp430-elf/include/stdlib.h
+menu.o: /home/dev/ti/gcc/msp430-elf/include/machine/ieeefp.h
+menu.o: /home/dev/ti/gcc/msp430-elf/include/_ansi.h
+menu.o: /home/dev/ti/gcc/msp430-elf/include/newlib.h
+menu.o: /home/dev/ti/gcc/msp430-elf/include/sys/config.h
+menu.o: /home/dev/ti/gcc/msp430-elf/include/sys/features.h
+menu.o: /home/dev/ti/gcc/lib/gcc/msp430-elf/4.9.1/include/stddef.h
+menu.o: /home/dev/ti/gcc/msp430-elf/include/sys/reent.h
+menu.o: /home/dev/ti/gcc/msp430-elf/include/sys/_types.h
+menu.o: /home/dev/ti/gcc/msp430-elf/include/machine/_types.h
+menu.o: /home/dev/ti/gcc/msp430-elf/include/machine/_default_types.h
+menu.o: /home/dev/ti/gcc/msp430-elf/include/sys/lock.h
+menu.o: /home/dev/ti/gcc/msp430-elf/include/machine/stdlib.h
+menu.o: /home/dev/ti/gcc/msp430-elf/include/alloca.h
+menu.o: /home/dev/ti/gcc/msp430-elf/include/stdint.h drivers/ports.h config.h
+menu.o: drivers/display.h openchronos.h
+messagebus.o: messagebus.h /home/dev/ti/gcc/include/msp430.h
+messagebus.o: /home/dev/ti/gcc/msp430-elf/include/stdlib.h
+messagebus.o: /home/dev/ti/gcc/msp430-elf/include/machine/ieeefp.h
+messagebus.o: /home/dev/ti/gcc/msp430-elf/include/_ansi.h
+messagebus.o: /home/dev/ti/gcc/msp430-elf/include/newlib.h
+messagebus.o: /home/dev/ti/gcc/msp430-elf/include/sys/config.h
+messagebus.o: /home/dev/ti/gcc/msp430-elf/include/sys/features.h
+messagebus.o: /home/dev/ti/gcc/lib/gcc/msp430-elf/4.9.1/include/stddef.h
+messagebus.o: /home/dev/ti/gcc/msp430-elf/include/sys/reent.h
+messagebus.o: /home/dev/ti/gcc/msp430-elf/include/sys/_types.h
+messagebus.o: /home/dev/ti/gcc/msp430-elf/include/machine/_types.h
+messagebus.o: /home/dev/ti/gcc/msp430-elf/include/machine/_default_types.h
+messagebus.o: /home/dev/ti/gcc/msp430-elf/include/sys/lock.h
+messagebus.o: /home/dev/ti/gcc/msp430-elf/include/machine/stdlib.h
+messagebus.o: /home/dev/ti/gcc/msp430-elf/include/alloca.h
+messagebus.o: /home/dev/ti/gcc/msp430-elf/include/stdint.h
+openchronos.o: openchronos.h /home/dev/ti/gcc/include/msp430.h
+openchronos.o: /home/dev/ti/gcc/msp430-elf/include/stdlib.h
+openchronos.o: /home/dev/ti/gcc/msp430-elf/include/machine/ieeefp.h
+openchronos.o: /home/dev/ti/gcc/msp430-elf/include/_ansi.h
+openchronos.o: /home/dev/ti/gcc/msp430-elf/include/newlib.h
+openchronos.o: /home/dev/ti/gcc/msp430-elf/include/sys/config.h
+openchronos.o: /home/dev/ti/gcc/msp430-elf/include/sys/features.h
+openchronos.o: /home/dev/ti/gcc/lib/gcc/msp430-elf/4.9.1/include/stddef.h
+openchronos.o: /home/dev/ti/gcc/msp430-elf/include/sys/reent.h
+openchronos.o: /home/dev/ti/gcc/msp430-elf/include/sys/_types.h
+openchronos.o: /home/dev/ti/gcc/msp430-elf/include/machine/_types.h
+openchronos.o: /home/dev/ti/gcc/msp430-elf/include/machine/_default_types.h
+openchronos.o: /home/dev/ti/gcc/msp430-elf/include/sys/lock.h
+openchronos.o: /home/dev/ti/gcc/msp430-elf/include/machine/stdlib.h
+openchronos.o: /home/dev/ti/gcc/msp430-elf/include/alloca.h
+openchronos.o: /home/dev/ti/gcc/msp430-elf/include/stdint.h config.h
+openchronos.o: modinit.h messagebus.h menu.h drivers/display.h
+openchronos.o: drivers/vti_as.h drivers/vti_ps.h drivers/radio.h
+openchronos.o: drivers/buzzer.h drivers/ports.h drivers/timer.h drivers/pmm.h
+openchronos.o: drivers/rf1a.h drivers/rtca.h drivers/temperature.h
+openchronos.o: drivers/battery.h
+drivers/adc12.o: openchronos.h /home/dev/ti/gcc/include/msp430.h
+drivers/adc12.o: /home/dev/ti/gcc/msp430-elf/include/stdlib.h
+drivers/adc12.o: /home/dev/ti/gcc/msp430-elf/include/machine/ieeefp.h
+drivers/adc12.o: /home/dev/ti/gcc/msp430-elf/include/_ansi.h
+drivers/adc12.o: /home/dev/ti/gcc/msp430-elf/include/newlib.h
+drivers/adc12.o: /home/dev/ti/gcc/msp430-elf/include/sys/config.h
+drivers/adc12.o: /home/dev/ti/gcc/msp430-elf/include/sys/features.h
+drivers/adc12.o: /home/dev/ti/gcc/lib/gcc/msp430-elf/4.9.1/include/stddef.h
+drivers/adc12.o: /home/dev/ti/gcc/msp430-elf/include/sys/reent.h
+drivers/adc12.o: /home/dev/ti/gcc/msp430-elf/include/sys/_types.h
+drivers/adc12.o: /home/dev/ti/gcc/msp430-elf/include/machine/_types.h
+drivers/adc12.o: /home/dev/ti/gcc/msp430-elf/include/machine/_default_types.h
+drivers/adc12.o: /home/dev/ti/gcc/msp430-elf/include/sys/lock.h
+drivers/adc12.o: /home/dev/ti/gcc/msp430-elf/include/machine/stdlib.h
+drivers/adc12.o: /home/dev/ti/gcc/msp430-elf/include/alloca.h
+drivers/adc12.o: /home/dev/ti/gcc/msp430-elf/include/stdint.h config.h
+drivers/adc12.o: drivers/adc12.h drivers/timer.h
+drivers/battery.o: openchronos.h /home/dev/ti/gcc/include/msp430.h
+drivers/battery.o: /home/dev/ti/gcc/msp430-elf/include/stdlib.h
+drivers/battery.o: /home/dev/ti/gcc/msp430-elf/include/machine/ieeefp.h
+drivers/battery.o: /home/dev/ti/gcc/msp430-elf/include/_ansi.h
+drivers/battery.o: /home/dev/ti/gcc/msp430-elf/include/newlib.h
+drivers/battery.o: /home/dev/ti/gcc/msp430-elf/include/sys/config.h
+drivers/battery.o: /home/dev/ti/gcc/msp430-elf/include/sys/features.h
+drivers/battery.o: /home/dev/ti/gcc/lib/gcc/msp430-elf/4.9.1/include/stddef.h
+drivers/battery.o: /home/dev/ti/gcc/msp430-elf/include/sys/reent.h
+drivers/battery.o: /home/dev/ti/gcc/msp430-elf/include/sys/_types.h
+drivers/battery.o: /home/dev/ti/gcc/msp430-elf/include/machine/_types.h
+drivers/battery.o: /home/dev/ti/gcc/msp430-elf/include/machine/_default_types.h
+drivers/battery.o: /home/dev/ti/gcc/msp430-elf/include/sys/lock.h
+drivers/battery.o: /home/dev/ti/gcc/msp430-elf/include/machine/stdlib.h
+drivers/battery.o: /home/dev/ti/gcc/msp430-elf/include/alloca.h
+drivers/battery.o: /home/dev/ti/gcc/msp430-elf/include/stdint.h config.h
+drivers/battery.o: drivers/display.h drivers/battery.h drivers/ports.h
+drivers/battery.o: drivers/adc12.h
+drivers/buzzer.o: openchronos.h /home/dev/ti/gcc/include/msp430.h
+drivers/buzzer.o: /home/dev/ti/gcc/msp430-elf/include/stdlib.h
+drivers/buzzer.o: /home/dev/ti/gcc/msp430-elf/include/machine/ieeefp.h
+drivers/buzzer.o: /home/dev/ti/gcc/msp430-elf/include/_ansi.h
+drivers/buzzer.o: /home/dev/ti/gcc/msp430-elf/include/newlib.h
+drivers/buzzer.o: /home/dev/ti/gcc/msp430-elf/include/sys/config.h
+drivers/buzzer.o: /home/dev/ti/gcc/msp430-elf/include/sys/features.h
+drivers/buzzer.o: /home/dev/ti/gcc/lib/gcc/msp430-elf/4.9.1/include/stddef.h
+drivers/buzzer.o: /home/dev/ti/gcc/msp430-elf/include/sys/reent.h
+drivers/buzzer.o: /home/dev/ti/gcc/msp430-elf/include/sys/_types.h
+drivers/buzzer.o: /home/dev/ti/gcc/msp430-elf/include/machine/_types.h
+drivers/buzzer.o: /home/dev/ti/gcc/msp430-elf/include/machine/_default_types.h
+drivers/buzzer.o: /home/dev/ti/gcc/msp430-elf/include/sys/lock.h
+drivers/buzzer.o: /home/dev/ti/gcc/msp430-elf/include/machine/stdlib.h
+drivers/buzzer.o: /home/dev/ti/gcc/msp430-elf/include/alloca.h
+drivers/buzzer.o: /home/dev/ti/gcc/msp430-elf/include/stdint.h config.h
+drivers/buzzer.o: drivers/buzzer.h drivers/timer.h
+drivers/display.o: openchronos.h /home/dev/ti/gcc/include/msp430.h
+drivers/display.o: /home/dev/ti/gcc/msp430-elf/include/stdlib.h
+drivers/display.o: /home/dev/ti/gcc/msp430-elf/include/machine/ieeefp.h
+drivers/display.o: /home/dev/ti/gcc/msp430-elf/include/_ansi.h
+drivers/display.o: /home/dev/ti/gcc/msp430-elf/include/newlib.h
+drivers/display.o: /home/dev/ti/gcc/msp430-elf/include/sys/config.h
+drivers/display.o: /home/dev/ti/gcc/msp430-elf/include/sys/features.h
+drivers/display.o: /home/dev/ti/gcc/lib/gcc/msp430-elf/4.9.1/include/stddef.h
+drivers/display.o: /home/dev/ti/gcc/msp430-elf/include/sys/reent.h
+drivers/display.o: /home/dev/ti/gcc/msp430-elf/include/sys/_types.h
+drivers/display.o: /home/dev/ti/gcc/msp430-elf/include/machine/_types.h
+drivers/display.o: /home/dev/ti/gcc/msp430-elf/include/machine/_default_types.h
+drivers/display.o: /home/dev/ti/gcc/msp430-elf/include/sys/lock.h
+drivers/display.o: /home/dev/ti/gcc/msp430-elf/include/machine/stdlib.h
+drivers/display.o: /home/dev/ti/gcc/msp430-elf/include/alloca.h
+drivers/display.o: /home/dev/ti/gcc/msp430-elf/include/stdint.h config.h
+drivers/display.o: /home/dev/ti/gcc/msp430-elf/include/string.h
+drivers/display.o: /home/dev/ti/gcc/msp430-elf/include/sys/cdefs.h
+drivers/display.o: /home/dev/ti/gcc/msp430-elf/include/sys/string.h
+drivers/display.o: drivers/display.h
+drivers/dsp.o: drivers/dsp.h openchronos.h /home/dev/ti/gcc/include/msp430.h
+drivers/dsp.o: /home/dev/ti/gcc/msp430-elf/include/stdlib.h
+drivers/dsp.o: /home/dev/ti/gcc/msp430-elf/include/machine/ieeefp.h
+drivers/dsp.o: /home/dev/ti/gcc/msp430-elf/include/_ansi.h
+drivers/dsp.o: /home/dev/ti/gcc/msp430-elf/include/newlib.h
+drivers/dsp.o: /home/dev/ti/gcc/msp430-elf/include/sys/config.h
+drivers/dsp.o: /home/dev/ti/gcc/msp430-elf/include/sys/features.h
+drivers/dsp.o: /home/dev/ti/gcc/lib/gcc/msp430-elf/4.9.1/include/stddef.h
+drivers/dsp.o: /home/dev/ti/gcc/msp430-elf/include/sys/reent.h
+drivers/dsp.o: /home/dev/ti/gcc/msp430-elf/include/sys/_types.h
+drivers/dsp.o: /home/dev/ti/gcc/msp430-elf/include/machine/_types.h
+drivers/dsp.o: /home/dev/ti/gcc/msp430-elf/include/machine/_default_types.h
+drivers/dsp.o: /home/dev/ti/gcc/msp430-elf/include/sys/lock.h
+drivers/dsp.o: /home/dev/ti/gcc/msp430-elf/include/machine/stdlib.h
+drivers/dsp.o: /home/dev/ti/gcc/msp430-elf/include/alloca.h
+drivers/dsp.o: /home/dev/ti/gcc/msp430-elf/include/stdint.h config.h
+drivers/infomem.o: openchronos.h /home/dev/ti/gcc/include/msp430.h
+drivers/infomem.o: /home/dev/ti/gcc/msp430-elf/include/stdlib.h
+drivers/infomem.o: /home/dev/ti/gcc/msp430-elf/include/machine/ieeefp.h
+drivers/infomem.o: /home/dev/ti/gcc/msp430-elf/include/_ansi.h
+drivers/infomem.o: /home/dev/ti/gcc/msp430-elf/include/newlib.h
+drivers/infomem.o: /home/dev/ti/gcc/msp430-elf/include/sys/config.h
+drivers/infomem.o: /home/dev/ti/gcc/msp430-elf/include/sys/features.h
+drivers/infomem.o: /home/dev/ti/gcc/lib/gcc/msp430-elf/4.9.1/include/stddef.h
+drivers/infomem.o: /home/dev/ti/gcc/msp430-elf/include/sys/reent.h
+drivers/infomem.o: /home/dev/ti/gcc/msp430-elf/include/sys/_types.h
+drivers/infomem.o: /home/dev/ti/gcc/msp430-elf/include/machine/_types.h
+drivers/infomem.o: /home/dev/ti/gcc/msp430-elf/include/machine/_default_types.h
+drivers/infomem.o: /home/dev/ti/gcc/msp430-elf/include/sys/lock.h
+drivers/infomem.o: /home/dev/ti/gcc/msp430-elf/include/machine/stdlib.h
+drivers/infomem.o: /home/dev/ti/gcc/msp430-elf/include/alloca.h
+drivers/infomem.o: /home/dev/ti/gcc/msp430-elf/include/stdint.h config.h
+drivers/pmm.o: /home/dev/ti/gcc/include/cc430x613x.h
+drivers/pmm.o: /home/dev/ti/gcc/include/iomacros.h
+drivers/pmm.o: /home/dev/ti/gcc/include/in430.h drivers/pmm.h
+drivers/ports.o: openchronos.h /home/dev/ti/gcc/include/msp430.h
+drivers/ports.o: /home/dev/ti/gcc/msp430-elf/include/stdlib.h
+drivers/ports.o: /home/dev/ti/gcc/msp430-elf/include/machine/ieeefp.h
+drivers/ports.o: /home/dev/ti/gcc/msp430-elf/include/_ansi.h
+drivers/ports.o: /home/dev/ti/gcc/msp430-elf/include/newlib.h
+drivers/ports.o: /home/dev/ti/gcc/msp430-elf/include/sys/config.h
+drivers/ports.o: /home/dev/ti/gcc/msp430-elf/include/sys/features.h
+drivers/ports.o: /home/dev/ti/gcc/lib/gcc/msp430-elf/4.9.1/include/stddef.h
+drivers/ports.o: /home/dev/ti/gcc/msp430-elf/include/sys/reent.h
+drivers/ports.o: /home/dev/ti/gcc/msp430-elf/include/sys/_types.h
+drivers/ports.o: /home/dev/ti/gcc/msp430-elf/include/machine/_types.h
+drivers/ports.o: /home/dev/ti/gcc/msp430-elf/include/machine/_default_types.h
+drivers/ports.o: /home/dev/ti/gcc/msp430-elf/include/sys/lock.h
+drivers/ports.o: /home/dev/ti/gcc/msp430-elf/include/machine/stdlib.h
+drivers/ports.o: /home/dev/ti/gcc/msp430-elf/include/alloca.h
+drivers/ports.o: /home/dev/ti/gcc/msp430-elf/include/stdint.h config.h
+drivers/ports.o: drivers/ports.h drivers/timer.h messagebus.h
+drivers/radio.o: openchronos.h /home/dev/ti/gcc/include/msp430.h
+drivers/radio.o: /home/dev/ti/gcc/msp430-elf/include/stdlib.h
+drivers/radio.o: /home/dev/ti/gcc/msp430-elf/include/machine/ieeefp.h
+drivers/radio.o: /home/dev/ti/gcc/msp430-elf/include/_ansi.h
+drivers/radio.o: /home/dev/ti/gcc/msp430-elf/include/newlib.h
+drivers/radio.o: /home/dev/ti/gcc/msp430-elf/include/sys/config.h
+drivers/radio.o: /home/dev/ti/gcc/msp430-elf/include/sys/features.h
+drivers/radio.o: /home/dev/ti/gcc/lib/gcc/msp430-elf/4.9.1/include/stddef.h
+drivers/radio.o: /home/dev/ti/gcc/msp430-elf/include/sys/reent.h
+drivers/radio.o: /home/dev/ti/gcc/msp430-elf/include/sys/_types.h
+drivers/radio.o: /home/dev/ti/gcc/msp430-elf/include/machine/_types.h
+drivers/radio.o: /home/dev/ti/gcc/msp430-elf/include/machine/_default_types.h
+drivers/radio.o: /home/dev/ti/gcc/msp430-elf/include/sys/lock.h
+drivers/radio.o: /home/dev/ti/gcc/msp430-elf/include/machine/stdlib.h
+drivers/radio.o: /home/dev/ti/gcc/msp430-elf/include/alloca.h
+drivers/radio.o: /home/dev/ti/gcc/msp430-elf/include/stdint.h config.h
+drivers/radio.o: drivers/rf1a.h
+drivers/rf1a.o: openchronos.h /home/dev/ti/gcc/include/msp430.h
+drivers/rf1a.o: /home/dev/ti/gcc/msp430-elf/include/stdlib.h
+drivers/rf1a.o: /home/dev/ti/gcc/msp430-elf/include/machine/ieeefp.h
+drivers/rf1a.o: /home/dev/ti/gcc/msp430-elf/include/_ansi.h
+drivers/rf1a.o: /home/dev/ti/gcc/msp430-elf/include/newlib.h
+drivers/rf1a.o: /home/dev/ti/gcc/msp430-elf/include/sys/config.h
+drivers/rf1a.o: /home/dev/ti/gcc/msp430-elf/include/sys/features.h
+drivers/rf1a.o: /home/dev/ti/gcc/lib/gcc/msp430-elf/4.9.1/include/stddef.h
+drivers/rf1a.o: /home/dev/ti/gcc/msp430-elf/include/sys/reent.h
+drivers/rf1a.o: /home/dev/ti/gcc/msp430-elf/include/sys/_types.h
+drivers/rf1a.o: /home/dev/ti/gcc/msp430-elf/include/machine/_types.h
+drivers/rf1a.o: /home/dev/ti/gcc/msp430-elf/include/machine/_default_types.h
+drivers/rf1a.o: /home/dev/ti/gcc/msp430-elf/include/sys/lock.h
+drivers/rf1a.o: /home/dev/ti/gcc/msp430-elf/include/machine/stdlib.h
+drivers/rf1a.o: /home/dev/ti/gcc/msp430-elf/include/alloca.h
+drivers/rf1a.o: /home/dev/ti/gcc/msp430-elf/include/stdint.h config.h
+drivers/rf1a.o: drivers/rf1a.h drivers/utils.h
+drivers/rtca.o: drivers/rtca.h openchronos.h
+drivers/rtca.o: /home/dev/ti/gcc/include/msp430.h
+drivers/rtca.o: /home/dev/ti/gcc/msp430-elf/include/stdlib.h
+drivers/rtca.o: /home/dev/ti/gcc/msp430-elf/include/machine/ieeefp.h
+drivers/rtca.o: /home/dev/ti/gcc/msp430-elf/include/_ansi.h
+drivers/rtca.o: /home/dev/ti/gcc/msp430-elf/include/newlib.h
+drivers/rtca.o: /home/dev/ti/gcc/msp430-elf/include/sys/config.h
+drivers/rtca.o: /home/dev/ti/gcc/msp430-elf/include/sys/features.h
+drivers/rtca.o: /home/dev/ti/gcc/lib/gcc/msp430-elf/4.9.1/include/stddef.h
+drivers/rtca.o: /home/dev/ti/gcc/msp430-elf/include/sys/reent.h
+drivers/rtca.o: /home/dev/ti/gcc/msp430-elf/include/sys/_types.h
+drivers/rtca.o: /home/dev/ti/gcc/msp430-elf/include/machine/_types.h
+drivers/rtca.o: /home/dev/ti/gcc/msp430-elf/include/machine/_default_types.h
+drivers/rtca.o: /home/dev/ti/gcc/msp430-elf/include/sys/lock.h
+drivers/rtca.o: /home/dev/ti/gcc/msp430-elf/include/machine/stdlib.h
+drivers/rtca.o: /home/dev/ti/gcc/msp430-elf/include/alloca.h
+drivers/rtca.o: /home/dev/ti/gcc/msp430-elf/include/stdint.h config.h
+drivers/rtca.o: drivers/rtca_now.h
+drivers/rtc_dst.o: openchronos.h /home/dev/ti/gcc/include/msp430.h
+drivers/rtc_dst.o: /home/dev/ti/gcc/msp430-elf/include/stdlib.h
+drivers/rtc_dst.o: /home/dev/ti/gcc/msp430-elf/include/machine/ieeefp.h
+drivers/rtc_dst.o: /home/dev/ti/gcc/msp430-elf/include/_ansi.h
+drivers/rtc_dst.o: /home/dev/ti/gcc/msp430-elf/include/newlib.h
+drivers/rtc_dst.o: /home/dev/ti/gcc/msp430-elf/include/sys/config.h
+drivers/rtc_dst.o: /home/dev/ti/gcc/msp430-elf/include/sys/features.h
+drivers/rtc_dst.o: /home/dev/ti/gcc/lib/gcc/msp430-elf/4.9.1/include/stddef.h
+drivers/rtc_dst.o: /home/dev/ti/gcc/msp430-elf/include/sys/reent.h
+drivers/rtc_dst.o: /home/dev/ti/gcc/msp430-elf/include/sys/_types.h
+drivers/rtc_dst.o: /home/dev/ti/gcc/msp430-elf/include/machine/_types.h
+drivers/rtc_dst.o: /home/dev/ti/gcc/msp430-elf/include/machine/_default_types.h
+drivers/rtc_dst.o: /home/dev/ti/gcc/msp430-elf/include/sys/lock.h
+drivers/rtc_dst.o: /home/dev/ti/gcc/msp430-elf/include/machine/stdlib.h
+drivers/rtc_dst.o: /home/dev/ti/gcc/msp430-elf/include/alloca.h
+drivers/rtc_dst.o: /home/dev/ti/gcc/msp430-elf/include/stdint.h config.h
+drivers/temperature.o: drivers/temperature.h openchronos.h
+drivers/temperature.o: /home/dev/ti/gcc/include/msp430.h
+drivers/temperature.o: /home/dev/ti/gcc/msp430-elf/include/stdlib.h
+drivers/temperature.o: /home/dev/ti/gcc/msp430-elf/include/machine/ieeefp.h
+drivers/temperature.o: /home/dev/ti/gcc/msp430-elf/include/_ansi.h
+drivers/temperature.o: /home/dev/ti/gcc/msp430-elf/include/newlib.h
+drivers/temperature.o: /home/dev/ti/gcc/msp430-elf/include/sys/config.h
+drivers/temperature.o: /home/dev/ti/gcc/msp430-elf/include/sys/features.h
+drivers/temperature.o: /home/dev/ti/gcc/lib/gcc/msp430-elf/4.9.1/include/stddef.h
+drivers/temperature.o: /home/dev/ti/gcc/msp430-elf/include/sys/reent.h
+drivers/temperature.o: /home/dev/ti/gcc/msp430-elf/include/sys/_types.h
+drivers/temperature.o: /home/dev/ti/gcc/msp430-elf/include/machine/_types.h
+drivers/temperature.o: /home/dev/ti/gcc/msp430-elf/include/machine/_default_types.h
+drivers/temperature.o: /home/dev/ti/gcc/msp430-elf/include/sys/lock.h
+drivers/temperature.o: /home/dev/ti/gcc/msp430-elf/include/machine/stdlib.h
+drivers/temperature.o: /home/dev/ti/gcc/msp430-elf/include/alloca.h
+drivers/temperature.o: /home/dev/ti/gcc/msp430-elf/include/stdint.h config.h
+drivers/temperature.o: drivers/ports.h drivers/display.h drivers/adc12.h
+drivers/temperature.o: drivers/timer.h
+drivers/timer.o: drivers/timer.h openchronos.h
+drivers/timer.o: /home/dev/ti/gcc/include/msp430.h
+drivers/timer.o: /home/dev/ti/gcc/msp430-elf/include/stdlib.h
+drivers/timer.o: /home/dev/ti/gcc/msp430-elf/include/machine/ieeefp.h
+drivers/timer.o: /home/dev/ti/gcc/msp430-elf/include/_ansi.h
+drivers/timer.o: /home/dev/ti/gcc/msp430-elf/include/newlib.h
+drivers/timer.o: /home/dev/ti/gcc/msp430-elf/include/sys/config.h
+drivers/timer.o: /home/dev/ti/gcc/msp430-elf/include/sys/features.h
+drivers/timer.o: /home/dev/ti/gcc/lib/gcc/msp430-elf/4.9.1/include/stddef.h
+drivers/timer.o: /home/dev/ti/gcc/msp430-elf/include/sys/reent.h
+drivers/timer.o: /home/dev/ti/gcc/msp430-elf/include/sys/_types.h
+drivers/timer.o: /home/dev/ti/gcc/msp430-elf/include/machine/_types.h
+drivers/timer.o: /home/dev/ti/gcc/msp430-elf/include/machine/_default_types.h
+drivers/timer.o: /home/dev/ti/gcc/msp430-elf/include/sys/lock.h
+drivers/timer.o: /home/dev/ti/gcc/msp430-elf/include/machine/stdlib.h
+drivers/timer.o: /home/dev/ti/gcc/msp430-elf/include/alloca.h
+drivers/timer.o: /home/dev/ti/gcc/msp430-elf/include/stdint.h config.h
+drivers/vti_as.o: openchronos.h /home/dev/ti/gcc/include/msp430.h
+drivers/vti_as.o: /home/dev/ti/gcc/msp430-elf/include/stdlib.h
+drivers/vti_as.o: /home/dev/ti/gcc/msp430-elf/include/machine/ieeefp.h
+drivers/vti_as.o: /home/dev/ti/gcc/msp430-elf/include/_ansi.h
+drivers/vti_as.o: /home/dev/ti/gcc/msp430-elf/include/newlib.h
+drivers/vti_as.o: /home/dev/ti/gcc/msp430-elf/include/sys/config.h
+drivers/vti_as.o: /home/dev/ti/gcc/msp430-elf/include/sys/features.h
+drivers/vti_as.o: /home/dev/ti/gcc/lib/gcc/msp430-elf/4.9.1/include/stddef.h
+drivers/vti_as.o: /home/dev/ti/gcc/msp430-elf/include/sys/reent.h
+drivers/vti_as.o: /home/dev/ti/gcc/msp430-elf/include/sys/_types.h
+drivers/vti_as.o: /home/dev/ti/gcc/msp430-elf/include/machine/_types.h
+drivers/vti_as.o: /home/dev/ti/gcc/msp430-elf/include/machine/_default_types.h
+drivers/vti_as.o: /home/dev/ti/gcc/msp430-elf/include/sys/lock.h
+drivers/vti_as.o: /home/dev/ti/gcc/msp430-elf/include/machine/stdlib.h
+drivers/vti_as.o: /home/dev/ti/gcc/msp430-elf/include/alloca.h
+drivers/vti_as.o: /home/dev/ti/gcc/msp430-elf/include/stdint.h config.h
+drivers/vti_as.o: drivers/vti_as.h drivers/timer.h
+drivers/vti_ps.o: openchronos.h /home/dev/ti/gcc/include/msp430.h
+drivers/vti_ps.o: /home/dev/ti/gcc/msp430-elf/include/stdlib.h
+drivers/vti_ps.o: /home/dev/ti/gcc/msp430-elf/include/machine/ieeefp.h
+drivers/vti_ps.o: /home/dev/ti/gcc/msp430-elf/include/_ansi.h
+drivers/vti_ps.o: /home/dev/ti/gcc/msp430-elf/include/newlib.h
+drivers/vti_ps.o: /home/dev/ti/gcc/msp430-elf/include/sys/config.h
+drivers/vti_ps.o: /home/dev/ti/gcc/msp430-elf/include/sys/features.h
+drivers/vti_ps.o: /home/dev/ti/gcc/lib/gcc/msp430-elf/4.9.1/include/stddef.h
+drivers/vti_ps.o: /home/dev/ti/gcc/msp430-elf/include/sys/reent.h
+drivers/vti_ps.o: /home/dev/ti/gcc/msp430-elf/include/sys/_types.h
+drivers/vti_ps.o: /home/dev/ti/gcc/msp430-elf/include/machine/_types.h
+drivers/vti_ps.o: /home/dev/ti/gcc/msp430-elf/include/machine/_default_types.h
+drivers/vti_ps.o: /home/dev/ti/gcc/msp430-elf/include/sys/lock.h
+drivers/vti_ps.o: /home/dev/ti/gcc/msp430-elf/include/machine/stdlib.h
+drivers/vti_ps.o: /home/dev/ti/gcc/msp430-elf/include/alloca.h
+drivers/vti_ps.o: /home/dev/ti/gcc/msp430-elf/include/stdint.h config.h
+drivers/vti_ps.o: drivers/vti_ps.h drivers/dsp.h
+modules/accelerometer.o: messagebus.h /home/dev/ti/gcc/include/msp430.h
+modules/accelerometer.o: /home/dev/ti/gcc/msp430-elf/include/stdlib.h
+modules/accelerometer.o: /home/dev/ti/gcc/msp430-elf/include/machine/ieeefp.h
+modules/accelerometer.o: /home/dev/ti/gcc/msp430-elf/include/_ansi.h
+modules/accelerometer.o: /home/dev/ti/gcc/msp430-elf/include/newlib.h
+modules/accelerometer.o: /home/dev/ti/gcc/msp430-elf/include/sys/config.h
+modules/accelerometer.o: /home/dev/ti/gcc/msp430-elf/include/sys/features.h
+modules/accelerometer.o: /home/dev/ti/gcc/lib/gcc/msp430-elf/4.9.1/include/stddef.h
+modules/accelerometer.o: /home/dev/ti/gcc/msp430-elf/include/sys/reent.h
+modules/accelerometer.o: /home/dev/ti/gcc/msp430-elf/include/sys/_types.h
+modules/accelerometer.o: /home/dev/ti/gcc/msp430-elf/include/machine/_types.h
+modules/accelerometer.o: /home/dev/ti/gcc/msp430-elf/include/machine/_default_types.h
+modules/accelerometer.o: /home/dev/ti/gcc/msp430-elf/include/sys/lock.h
+modules/accelerometer.o: /home/dev/ti/gcc/msp430-elf/include/machine/stdlib.h
+modules/accelerometer.o: /home/dev/ti/gcc/msp430-elf/include/alloca.h
+modules/accelerometer.o: /home/dev/ti/gcc/msp430-elf/include/stdint.h menu.h
+modules/accelerometer.o: drivers/rtca.h openchronos.h config.h
+modules/accelerometer.o: drivers/display.h drivers/vti_as.h drivers/buzzer.h
+modules/alarm.o: messagebus.h /home/dev/ti/gcc/include/msp430.h
+modules/alarm.o: /home/dev/ti/gcc/msp430-elf/include/stdlib.h
+modules/alarm.o: /home/dev/ti/gcc/msp430-elf/include/machine/ieeefp.h
+modules/alarm.o: /home/dev/ti/gcc/msp430-elf/include/_ansi.h
+modules/alarm.o: /home/dev/ti/gcc/msp430-elf/include/newlib.h
+modules/alarm.o: /home/dev/ti/gcc/msp430-elf/include/sys/config.h
+modules/alarm.o: /home/dev/ti/gcc/msp430-elf/include/sys/features.h
+modules/alarm.o: /home/dev/ti/gcc/lib/gcc/msp430-elf/4.9.1/include/stddef.h
+modules/alarm.o: /home/dev/ti/gcc/msp430-elf/include/sys/reent.h
+modules/alarm.o: /home/dev/ti/gcc/msp430-elf/include/sys/_types.h
+modules/alarm.o: /home/dev/ti/gcc/msp430-elf/include/machine/_types.h
+modules/alarm.o: /home/dev/ti/gcc/msp430-elf/include/machine/_default_types.h
+modules/alarm.o: /home/dev/ti/gcc/msp430-elf/include/sys/lock.h
+modules/alarm.o: /home/dev/ti/gcc/msp430-elf/include/machine/stdlib.h
+modules/alarm.o: /home/dev/ti/gcc/msp430-elf/include/alloca.h
+modules/alarm.o: /home/dev/ti/gcc/msp430-elf/include/stdint.h menu.h
+modules/alarm.o: drivers/display.h openchronos.h config.h drivers/rtca.h
+modules/alarm.o: drivers/buzzer.h
+modules/battery.o: messagebus.h /home/dev/ti/gcc/include/msp430.h
+modules/battery.o: /home/dev/ti/gcc/msp430-elf/include/stdlib.h
+modules/battery.o: /home/dev/ti/gcc/msp430-elf/include/machine/ieeefp.h
+modules/battery.o: /home/dev/ti/gcc/msp430-elf/include/_ansi.h
+modules/battery.o: /home/dev/ti/gcc/msp430-elf/include/newlib.h
+modules/battery.o: /home/dev/ti/gcc/msp430-elf/include/sys/config.h
+modules/battery.o: /home/dev/ti/gcc/msp430-elf/include/sys/features.h
+modules/battery.o: /home/dev/ti/gcc/lib/gcc/msp430-elf/4.9.1/include/stddef.h
+modules/battery.o: /home/dev/ti/gcc/msp430-elf/include/sys/reent.h
+modules/battery.o: /home/dev/ti/gcc/msp430-elf/include/sys/_types.h
+modules/battery.o: /home/dev/ti/gcc/msp430-elf/include/machine/_types.h
+modules/battery.o: /home/dev/ti/gcc/msp430-elf/include/machine/_default_types.h
+modules/battery.o: /home/dev/ti/gcc/msp430-elf/include/sys/lock.h
+modules/battery.o: /home/dev/ti/gcc/msp430-elf/include/machine/stdlib.h
+modules/battery.o: /home/dev/ti/gcc/msp430-elf/include/alloca.h
+modules/battery.o: /home/dev/ti/gcc/msp430-elf/include/stdint.h menu.h
+modules/battery.o: drivers/display.h openchronos.h config.h drivers/battery.h
+modules/clock.o: messagebus.h /home/dev/ti/gcc/include/msp430.h
+modules/clock.o: /home/dev/ti/gcc/msp430-elf/include/stdlib.h
+modules/clock.o: /home/dev/ti/gcc/msp430-elf/include/machine/ieeefp.h
+modules/clock.o: /home/dev/ti/gcc/msp430-elf/include/_ansi.h
+modules/clock.o: /home/dev/ti/gcc/msp430-elf/include/newlib.h
+modules/clock.o: /home/dev/ti/gcc/msp430-elf/include/sys/config.h
+modules/clock.o: /home/dev/ti/gcc/msp430-elf/include/sys/features.h
+modules/clock.o: /home/dev/ti/gcc/lib/gcc/msp430-elf/4.9.1/include/stddef.h
+modules/clock.o: /home/dev/ti/gcc/msp430-elf/include/sys/reent.h
+modules/clock.o: /home/dev/ti/gcc/msp430-elf/include/sys/_types.h
+modules/clock.o: /home/dev/ti/gcc/msp430-elf/include/machine/_types.h
+modules/clock.o: /home/dev/ti/gcc/msp430-elf/include/machine/_default_types.h
+modules/clock.o: /home/dev/ti/gcc/msp430-elf/include/sys/lock.h
+modules/clock.o: /home/dev/ti/gcc/msp430-elf/include/machine/stdlib.h
+modules/clock.o: /home/dev/ti/gcc/msp430-elf/include/alloca.h
+modules/clock.o: /home/dev/ti/gcc/msp430-elf/include/stdint.h menu.h
+modules/clock.o: drivers/rtca.h openchronos.h config.h drivers/display.h
+modules/hashutils.o: /home/dev/ti/gcc/msp430-elf/include/sys/types.h
+modules/hashutils.o: /home/dev/ti/gcc/msp430-elf/include/_ansi.h
+modules/hashutils.o: /home/dev/ti/gcc/msp430-elf/include/newlib.h
+modules/hashutils.o: /home/dev/ti/gcc/msp430-elf/include/sys/config.h
+modules/hashutils.o: /home/dev/ti/gcc/msp430-elf/include/machine/ieeefp.h
+modules/hashutils.o: /home/dev/ti/gcc/msp430-elf/include/sys/features.h
+modules/hashutils.o: /home/dev/ti/gcc/msp430-elf/include/machine/_types.h
+modules/hashutils.o: /home/dev/ti/gcc/msp430-elf/include/machine/_default_types.h
+modules/hashutils.o: /home/dev/ti/gcc/msp430-elf/include/sys/_types.h
+modules/hashutils.o: /home/dev/ti/gcc/msp430-elf/include/sys/lock.h
+modules/hashutils.o: /home/dev/ti/gcc/lib/gcc/msp430-elf/4.9.1/include/stddef.h
+modules/hashutils.o: /home/dev/ti/gcc/msp430-elf/include/machine/types.h
+modules/hashutils.o: /home/dev/ti/gcc/msp430-elf/include/string.h
+modules/hashutils.o: /home/dev/ti/gcc/msp430-elf/include/sys/reent.h
+modules/hashutils.o: /home/dev/ti/gcc/msp430-elf/include/sys/cdefs.h
+modules/hashutils.o: /home/dev/ti/gcc/msp430-elf/include/sys/string.h
+modules/hashutils.o: modules/hashutils.h
+modules/hashutils.o: /home/dev/ti/gcc/msp430-elf/include/stdint.h
+modules/music.o: messagebus.h /home/dev/ti/gcc/include/msp430.h
+modules/music.o: /home/dev/ti/gcc/msp430-elf/include/stdlib.h
+modules/music.o: /home/dev/ti/gcc/msp430-elf/include/machine/ieeefp.h
+modules/music.o: /home/dev/ti/gcc/msp430-elf/include/_ansi.h
+modules/music.o: /home/dev/ti/gcc/msp430-elf/include/newlib.h
+modules/music.o: /home/dev/ti/gcc/msp430-elf/include/sys/config.h
+modules/music.o: /home/dev/ti/gcc/msp430-elf/include/sys/features.h
+modules/music.o: /home/dev/ti/gcc/lib/gcc/msp430-elf/4.9.1/include/stddef.h
+modules/music.o: /home/dev/ti/gcc/msp430-elf/include/sys/reent.h
+modules/music.o: /home/dev/ti/gcc/msp430-elf/include/sys/_types.h
+modules/music.o: /home/dev/ti/gcc/msp430-elf/include/machine/_types.h
+modules/music.o: /home/dev/ti/gcc/msp430-elf/include/machine/_default_types.h
+modules/music.o: /home/dev/ti/gcc/msp430-elf/include/sys/lock.h
+modules/music.o: /home/dev/ti/gcc/msp430-elf/include/machine/stdlib.h
+modules/music.o: /home/dev/ti/gcc/msp430-elf/include/alloca.h
+modules/music.o: /home/dev/ti/gcc/msp430-elf/include/stdint.h menu.h
+modules/music.o: drivers/display.h openchronos.h config.h drivers/buzzer.h
+modules/otp.o: /home/dev/ti/gcc/msp430-elf/include/string.h
+modules/otp.o: /home/dev/ti/gcc/msp430-elf/include/_ansi.h
+modules/otp.o: /home/dev/ti/gcc/msp430-elf/include/newlib.h
+modules/otp.o: /home/dev/ti/gcc/msp430-elf/include/sys/config.h
+modules/otp.o: /home/dev/ti/gcc/msp430-elf/include/machine/ieeefp.h
+modules/otp.o: /home/dev/ti/gcc/msp430-elf/include/sys/features.h
+modules/otp.o: /home/dev/ti/gcc/msp430-elf/include/sys/reent.h
+modules/otp.o: /home/dev/ti/gcc/lib/gcc/msp430-elf/4.9.1/include/stddef.h
+modules/otp.o: /home/dev/ti/gcc/msp430-elf/include/sys/_types.h
+modules/otp.o: /home/dev/ti/gcc/msp430-elf/include/machine/_types.h
+modules/otp.o: /home/dev/ti/gcc/msp430-elf/include/machine/_default_types.h
+modules/otp.o: /home/dev/ti/gcc/msp430-elf/include/sys/lock.h
+modules/otp.o: /home/dev/ti/gcc/msp430-elf/include/sys/cdefs.h
+modules/otp.o: /home/dev/ti/gcc/msp430-elf/include/sys/string.h modules/otp.h
+modules/otp.o: /home/dev/ti/gcc/msp430-elf/include/stdint.h messagebus.h
+modules/otp.o: /home/dev/ti/gcc/include/msp430.h
+modules/otp.o: /home/dev/ti/gcc/msp430-elf/include/stdlib.h
+modules/otp.o: /home/dev/ti/gcc/msp430-elf/include/machine/stdlib.h
+modules/otp.o: /home/dev/ti/gcc/msp430-elf/include/alloca.h menu.h
+modules/otp.o: drivers/rtca.h openchronos.h config.h drivers/display.h
+modules/otp.o: modules/hashutils.h
+modules/reset.o: messagebus.h /home/dev/ti/gcc/include/msp430.h
+modules/reset.o: /home/dev/ti/gcc/msp430-elf/include/stdlib.h
+modules/reset.o: /home/dev/ti/gcc/msp430-elf/include/machine/ieeefp.h
+modules/reset.o: /home/dev/ti/gcc/msp430-elf/include/_ansi.h
+modules/reset.o: /home/dev/ti/gcc/msp430-elf/include/newlib.h
+modules/reset.o: /home/dev/ti/gcc/msp430-elf/include/sys/config.h
+modules/reset.o: /home/dev/ti/gcc/msp430-elf/include/sys/features.h
+modules/reset.o: /home/dev/ti/gcc/lib/gcc/msp430-elf/4.9.1/include/stddef.h
+modules/reset.o: /home/dev/ti/gcc/msp430-elf/include/sys/reent.h
+modules/reset.o: /home/dev/ti/gcc/msp430-elf/include/sys/_types.h
+modules/reset.o: /home/dev/ti/gcc/msp430-elf/include/machine/_types.h
+modules/reset.o: /home/dev/ti/gcc/msp430-elf/include/machine/_default_types.h
+modules/reset.o: /home/dev/ti/gcc/msp430-elf/include/sys/lock.h
+modules/reset.o: /home/dev/ti/gcc/msp430-elf/include/machine/stdlib.h
+modules/reset.o: /home/dev/ti/gcc/msp430-elf/include/alloca.h
+modules/reset.o: /home/dev/ti/gcc/msp430-elf/include/stdint.h menu.h
+modules/reset.o: drivers/display.h openchronos.h config.h
+modules/stopwatch.o: messagebus.h /home/dev/ti/gcc/include/msp430.h
+modules/stopwatch.o: /home/dev/ti/gcc/msp430-elf/include/stdlib.h
+modules/stopwatch.o: /home/dev/ti/gcc/msp430-elf/include/machine/ieeefp.h
+modules/stopwatch.o: /home/dev/ti/gcc/msp430-elf/include/_ansi.h
+modules/stopwatch.o: /home/dev/ti/gcc/msp430-elf/include/newlib.h
+modules/stopwatch.o: /home/dev/ti/gcc/msp430-elf/include/sys/config.h
+modules/stopwatch.o: /home/dev/ti/gcc/msp430-elf/include/sys/features.h
+modules/stopwatch.o: /home/dev/ti/gcc/lib/gcc/msp430-elf/4.9.1/include/stddef.h
+modules/stopwatch.o: /home/dev/ti/gcc/msp430-elf/include/sys/reent.h
+modules/stopwatch.o: /home/dev/ti/gcc/msp430-elf/include/sys/_types.h
+modules/stopwatch.o: /home/dev/ti/gcc/msp430-elf/include/machine/_types.h
+modules/stopwatch.o: /home/dev/ti/gcc/msp430-elf/include/machine/_default_types.h
+modules/stopwatch.o: /home/dev/ti/gcc/msp430-elf/include/sys/lock.h
+modules/stopwatch.o: /home/dev/ti/gcc/msp430-elf/include/machine/stdlib.h
+modules/stopwatch.o: /home/dev/ti/gcc/msp430-elf/include/alloca.h
+modules/stopwatch.o: /home/dev/ti/gcc/msp430-elf/include/stdint.h menu.h
+modules/stopwatch.o: drivers/display.h openchronos.h config.h
+modules/temperature.o: messagebus.h /home/dev/ti/gcc/include/msp430.h
+modules/temperature.o: /home/dev/ti/gcc/msp430-elf/include/stdlib.h
+modules/temperature.o: /home/dev/ti/gcc/msp430-elf/include/machine/ieeefp.h
+modules/temperature.o: /home/dev/ti/gcc/msp430-elf/include/_ansi.h
+modules/temperature.o: /home/dev/ti/gcc/msp430-elf/include/newlib.h
+modules/temperature.o: /home/dev/ti/gcc/msp430-elf/include/sys/config.h
+modules/temperature.o: /home/dev/ti/gcc/msp430-elf/include/sys/features.h
+modules/temperature.o: /home/dev/ti/gcc/lib/gcc/msp430-elf/4.9.1/include/stddef.h
+modules/temperature.o: /home/dev/ti/gcc/msp430-elf/include/sys/reent.h
+modules/temperature.o: /home/dev/ti/gcc/msp430-elf/include/sys/_types.h
+modules/temperature.o: /home/dev/ti/gcc/msp430-elf/include/machine/_types.h
+modules/temperature.o: /home/dev/ti/gcc/msp430-elf/include/machine/_default_types.h
+modules/temperature.o: /home/dev/ti/gcc/msp430-elf/include/sys/lock.h
+modules/temperature.o: /home/dev/ti/gcc/msp430-elf/include/machine/stdlib.h
+modules/temperature.o: /home/dev/ti/gcc/msp430-elf/include/alloca.h
+modules/temperature.o: /home/dev/ti/gcc/msp430-elf/include/stdint.h menu.h
+modules/temperature.o: drivers/display.h openchronos.h config.h
+modules/temperature.o: drivers/temperature.h
+modules/tide.o: messagebus.h /home/dev/ti/gcc/include/msp430.h
+modules/tide.o: /home/dev/ti/gcc/msp430-elf/include/stdlib.h
+modules/tide.o: /home/dev/ti/gcc/msp430-elf/include/machine/ieeefp.h
+modules/tide.o: /home/dev/ti/gcc/msp430-elf/include/_ansi.h
+modules/tide.o: /home/dev/ti/gcc/msp430-elf/include/newlib.h
+modules/tide.o: /home/dev/ti/gcc/msp430-elf/include/sys/config.h
+modules/tide.o: /home/dev/ti/gcc/msp430-elf/include/sys/features.h
+modules/tide.o: /home/dev/ti/gcc/lib/gcc/msp430-elf/4.9.1/include/stddef.h
+modules/tide.o: /home/dev/ti/gcc/msp430-elf/include/sys/reent.h
+modules/tide.o: /home/dev/ti/gcc/msp430-elf/include/sys/_types.h
+modules/tide.o: /home/dev/ti/gcc/msp430-elf/include/machine/_types.h
+modules/tide.o: /home/dev/ti/gcc/msp430-elf/include/machine/_default_types.h
+modules/tide.o: /home/dev/ti/gcc/msp430-elf/include/sys/lock.h
+modules/tide.o: /home/dev/ti/gcc/msp430-elf/include/machine/stdlib.h
+modules/tide.o: /home/dev/ti/gcc/msp430-elf/include/alloca.h
+modules/tide.o: /home/dev/ti/gcc/msp430-elf/include/stdint.h menu.h
+modules/tide.o: drivers/rtca.h openchronos.h config.h drivers/display.h

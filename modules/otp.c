@@ -95,16 +95,18 @@ static uint8_t   indicator[]  = {
 };
 
 static void otp_get_current_params(char *potp_identifier, 
-        const uint8_t **potp_key)
+        const uint8_t **potp_key, uint8_t *potp_key_len)
 {
     const keystore_t *current_key = &otp_keys[current_key_index];
     /*only a single char is supported right now*/
     *potp_identifier = current_key->otp_identifier[0];
     *potp_key = (const uint8_t *)current_key->otp_key;
+    *potp_key_len = current_key->otp_key_len;
 }
 
 
-static uint32_t calculate_otp(uint32_t time, const uint8_t *otp_key)
+static uint32_t calculate_otp(uint32_t time, const uint8_t *otp_key, 
+        uint8_t otp_key_len)
 {
 	uint32_t val = 0;
     int i;
@@ -118,7 +120,7 @@ static uint32_t calculate_otp(uint32_t time, const uint8_t *otp_key)
 	otp_data[7] = (time      ) & 0xff;
     
 
-	hmac_sha1(otp_key, CONFIG_MOD_OTP_KEYLEN, otp_data, sizeof(otp_data),
+	hmac_sha1(otp_key, otp_key_len, otp_data, sizeof(otp_data),
         otp_result, sizeof(otp_result));
 
 	int off = otp_result[SHA1_DIGEST_LENGTH - 1] & 0x0f;
@@ -137,10 +139,12 @@ static void clock_event(enum sys_message msg)
 {
     // Check how long the current code is valid
     uint8_t segment = (rtca_time.sec / 5) % 6;
-    const uint8_t *otp_key;
-    char otp_identifier;
 
-    otp_get_current_params(&otp_identifier, &otp_key);
+    char otp_identifier;
+    const uint8_t *otp_key;
+    uint8_t otp_key_len;
+
+    otp_get_current_params(&otp_identifier, &otp_key, &otp_key_len);
     // Draw indicator in lower-left corner
     display_bits(0, LCD_SEG_L2_4, indicator[2*segment  ], SEG_SET);
     display_bits(0, LCD_SEG_L2_4, indicator[2*segment+1], BLINK_SET);
@@ -155,7 +159,7 @@ static void clock_event(enum sys_message msg)
     if(time != last_time) {
 
         last_time = time;
-        uint32_t otp_value = calculate_otp(time,otp_key);
+        uint32_t otp_value = calculate_otp(time,otp_key, otp_key_len);
 
         // Draw first half on the top line
         uint16_t v = (otp_value / 1000) % 1000;
