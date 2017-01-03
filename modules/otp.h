@@ -22,6 +22,6 @@ typedef struct keystore
 {
     const  char *otp_identifier;
     const  char *otp_key;
-    uint8_t otp_key_len;
+    const uint8_t otp_key_len;
 }keystore_t;
 #endif
