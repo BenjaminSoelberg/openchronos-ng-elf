@@ -38,8 +38,6 @@
 #define BASE_YEAR 1984 /* not a leap year, so no need to add 1 */
 #define LEAPS_SINCE_YEAR(Y) (((Y) - BASE_YEAR) + ((Y) - BASE_YEAR) / 4);
 
-#define AE 0x80 /* Alarm Enable bit, seems to be missing from msp430xxxxxx.h file */
-
 #ifdef CONFIG_MOD_CLOCK_AMPM
 uint8_t display_am_pm = 1;
 #else
@@ -141,8 +139,8 @@ void rtca_set_alarm(uint8_t hour, uint8_t min)
     uint16_t original_state = RTCCTL01;
 	RTCCTL01 &= ~RTCAIE;
 	/* Set hour and min while keeping current Alarm Enable state */
-	RTCAHOUR = (RTCAHOUR & AE) | hour;
-	RTCAMIN  = (RTCAMIN  & AE) | min;
+	RTCAHOUR = (RTCAHOUR & RTCAE) | hour;
+	RTCAMIN  = (RTCAMIN  & RTCAE) | min;
 	/* Restore alarm interrupt state*/
 	RTCCTL01 = original_state;
 }
@@ -152,8 +150,8 @@ void rtca_enable_alarm()
 	/* Disable alarm interrupt while setting alarm */
 	RTCCTL01 &= ~RTCAIE;
 	/* Set Alarm Enable for both hour and min */
-	RTCAHOUR |= AE;
-	RTCAMIN  |= AE;
+	RTCAHOUR |= RTCAE;
+	RTCAMIN  |= RTCAE;
 	/* Enable alarm interrupt */
 	RTCCTL01 |= RTCAIE;
 }
@@ -163,8 +161,8 @@ void rtca_disable_alarm()
 	/* Disable alarm interrupt */
 	RTCCTL01 &= ~RTCAIE;
 	/* Clear Alarm Enable for both hour and min */
-	RTCAHOUR &= ~AE;
-	RTCAMIN  &= ~AE;
+	RTCAHOUR &= ~RTCAE;
+	RTCAMIN  &= ~RTCAE;
 }
 
 void rtca_update_dow()
