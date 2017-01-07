@@ -138,8 +138,6 @@ static void check_buttons(void)
 
 void init_application(void)
 {
-	volatile unsigned char *ptr;
-
 	// ---------------------------------------------------------------------
 	// Enable watchdog
 
@@ -156,23 +154,21 @@ void init_application(void)
 	// Disable all interrupts
 	__disable_interrupt();
 	// Get write-access to port mapping registers:
-	PMAPPWD = 0x02D52;
+	PMAPPWD = PMAPKEY;
 	// Allow reconfiguration during runtime:
 	PMAPCTL = PMAPRECFG;
 
-	// P2.7 = TA0CCR1A or TA1CCR0A output (buzzer output)
-	ptr  = &P2MAP0;
-	*(ptr + 7) = PM_TA1CCR0A;
+	// P2.7 = TA1CCR0A output (buzzer output)
+	P2MAP7 = PM_TA1CCR0A;
 	P2OUT &= ~BIT7;
 	P2DIR |= BIT7;
 
 	// P1.5 = SPI MISO input
-	ptr  = &P1MAP0;
-	*(ptr + 5) = PM_UCA0SOMI;
+	P1MAP5 = PM_UCA0SOMI;
 	// P1.6 = SPI MOSI output
-	*(ptr + 6) = PM_UCA0SIMO;
+	P1MAP6 = PM_UCA0SIMO;
 	// P1.7 = SPI CLK output
-	*(ptr + 7) = PM_UCA0CLK;
+	P1MAP7 = PM_UCA0CLK;
 
 	// Disable write-access to port mapping registers:
 	PMAPPWD = 0;

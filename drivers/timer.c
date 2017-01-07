@@ -88,7 +88,7 @@ void timer0_init(void)
 #endif
 
 	/* select external 32kHz source, /2 divider, continuous mode */
-	TA0CTL |= TASSEL__ACLK | ID__2 | MC__CONTINOUS;
+	TA0CTL |= TASSEL__ACLK | ID__2 | MC__CONTINUOUS;
 
 	/* setup and enable 20Hz timer */
 	timer0_20hz_ticks = TIMER0_TICKS_FROM_MS(50);

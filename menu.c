@@ -34,7 +34,7 @@
 #include "drivers/ports.h"
 #include "drivers/display.h"
 
-#define BIT_IS_SET(F, B)  ((F) | (B)) == (F)
+#define BIT_IS_SET(F, B) ((F) | (B)) == (F)
 
 /* The head of the linked list holding menu items */
 static struct menu *menu_head;
