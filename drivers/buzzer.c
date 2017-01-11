@@ -63,7 +63,7 @@ inline void buzzer_init(void)
 inline void buzzer_stop(void)
 {
 	/* Stop PWM timer */
-	TA1CTL &= ~MC_3;
+	TA1CTL &= ~MC_3; // Clear any MC bits, effectively a MC_STOP
 
 	/* Disable buzzer PWM output */
 	P2OUT &= ~BIT7;
@@ -75,7 +75,6 @@ inline void buzzer_stop(void)
 
 void buzzer_play(note *notes)
 {
-
 	/* Allow buzzer PWM output on P2.7 */
 	P2SEL |= BIT7;
 
@@ -91,10 +90,8 @@ void buzzer_play(note *notes)
 			/* Start the timer */
 			TA1CTL |= MC__UP;
 		}
-
-		/* Delay for DURATION(*notes) milliseconds,
-		   use LPM1 because we need SMCLK for tone generation */
-		timer0_delay(DURATION(*notes), LPM1_bits);
+		/* Delay for DURATION(*notes) milliseconds, use LPM0 because we need SMCLK for tone generation as well as FLL for stability */
+		timer0_delay(DURATION(*notes), LPM0_bits);
 
 		/* Advance to the next note */
 		notes++;
