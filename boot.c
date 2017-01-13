@@ -58,7 +58,7 @@ inline void initialize_aclk()
 	/* Select XT1 as FLL reference */
 	UCSCTL3 = SELA__XT1CLK;
 
-	/* Enable the FLL control loop */
+	/* Set ACLK source to XT1CLK, set SMCLK to DCOCLKDIV, set MCLK to DCOCLKDIV, Enable the FLL control loop */
 	UCSCTL4 = SELA__XT1CLK | SELS__DCOCLKDIV | SELM__DCOCLKDIV;
 }
 
@@ -74,14 +74,14 @@ inline void initialize_cpu_12mhz()
 	UCSCTL1 = DCORSEL_5;
 
 	/* Set DCO Multiplier */
-	UCSCTL2 = FLLD_1 + 0x16E;
+	UCSCTL2 = FLLD_1 + 0x16E; // (32768 * 0x16e) almost 12 mhz
 	_BIC_SR(SCG0);
 
 	/* Worst-case settling time for the DCO when the DCO range bits have been
 	changed is n x 32 x 32 x f_MCLK / f_FLL_reference. See UCS chapter in 5xx
 	UG for optimization.
-	32 x 32 x 8 MHz / 32,768 Hz = 250000 = MCLK cycles for DCO to settle */
-	__delay_cycles(250000);
+	32 x 32 x 12 MHz / 32,768 Hz = 250000 = MCLK cycles for DCO to settle */
+	__delay_cycles(375000);
 
 	/* Loop until XT1 & DCO stabilizes, use do-while to insure that
 	body is executed at least once */
@@ -151,9 +151,9 @@ inline void jump_to_rfbsl()
 }
 
 
-/* put bootmenu in the init8 section which is executed before main */
+/* put bootmenu in the crt_0042 section which is executed before main */
 __attribute__((naked, section(".crt_0042"), used))
-static void init8(void)
+static void crt_0042(void)
 {
 	/* Stop watchdog timer */
 	WDTCTL = WDTPW + WDTHOLD;
