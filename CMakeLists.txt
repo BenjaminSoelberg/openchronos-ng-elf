@@ -1,7 +1,7 @@
 # openchronos-ng-elf project
 #
 # Copyright (C) 2016 Benjamin Sølberg <benjamin.soelberg@gmail.com>
-# Copyright (C) 2017 Alexandre Pretyman
+# Copyright (C) 2017 Alexandre Pretyman <alexandre.pretyman@gmail.com>
 #
 # http://github.com/BenjaminSoelberg/openchronos-ng-elf
 #
@@ -25,13 +25,18 @@ cmake_minimum_required(VERSION 3.2)
 project(openchronos-ng-elf C)
 
 set(openchronos_binary_filename "openchronos.elf")
+set(module_config_files
+    ${CMAKE_CURRENT_SOURCE_DIR}/config.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/modinit.c
+)
 
+set(rtca_header ${CMAKE_CURRENT_SOURCE_DIR}/drivers/rtca_now.h)
 set(source_files
-    config.h
+    ${rtca_header}
+    ${module_config_files}
     messagebus.c
     openchronos.c
     boot.c
-    modinit.c
     menu.c
 
     drivers/battery.c
@@ -67,19 +72,100 @@ add_executable(${openchronos_binary_filename} ${source_files})
 target_include_directories(${openchronos_binary_filename} PRIVATE .)
 
 
-# Only needed for wireless update?
-#set(openchronos_hex_filename "openchronos.txt")
-#find_package(PythonInterp)
-#add_custom_command(
-#    TARGET
-#      ${openchronos_binary_filename}
-#    POST_BUILD
-#    COMMAND
-#      ${PYTHON_EXECUTABLE}
-#      ${CMAKE_CURRENT_LIST_DIR}/tools/memory.py
-#      -i ${openchronos_binary_filename}
-#      -o ${openchronos_hex_filename}
-#    BYPRODUCTS
-#      ${openchronos_hex_filename}
-#)
+find_package(PythonInterp)
+if(NOT PYTHONINTERP_FOUND)
+  message(WARNING "Python interpreter not found - Python tools disabled")
+else()
+  # explicit config target
+  add_custom_target(config
+      COMMAND
+        ${PYTHON_EXECUTABLE}
+        ${CMAKE_CURRENT_LIST_DIR}/tools/config.py
+      COMMAND
+        ${PYTHON_EXECUTABLE}
+        ${CMAKE_CURRENT_LIST_DIR}/tools/make_modinit.py
+       WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+  )
 
+
+  # this will make config.py and make_modinit.py run when trying to compile
+  # and there is no config.h and modinit.c
+  add_custom_command(
+      OUTPUT ${module_config_files}
+      COMMAND
+        ${PYTHON_EXECUTABLE}
+        ${CMAKE_CURRENT_LIST_DIR}/tools/config.py
+      COMMAND
+        ${PYTHON_EXECUTABLE}
+        ${CMAKE_CURRENT_LIST_DIR}/tools/make_modinit.py
+       WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+  )
+  add_custom_target(
+      radio-install
+      COMMAND
+        ${PYTHON_EXECUTABLE}
+        ${CMAKE_CURRENT_SOURCE_DIR}/contrib/ChronosTool.py
+        rfbsl ${openchronos_hex_filename}
+      WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
+      DEPENDS
+        ${openchronos_hex_filename}
+  )
+  set(openchronos_hex_filename "openchronos.txt")
+  add_custom_command(
+      OUTPUT
+        ${openchronos_hex_filename}
+      COMMAND
+        ${PYTHON_EXECUTABLE}
+        ${CMAKE_CURRENT_LIST_DIR}/tools/memory.py
+        -i ${openchronos_binary_filename}
+        -o ${openchronos_hex_filename}
+      WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
+      DEPENDS
+        ${openchronos_binary_filename}
+  )
+endif()
+
+add_custom_command(
+    OUTPUT "${rtca_header}"
+    COMMAND
+      bash tools/update_rtca_now.sh
+    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+)
+
+find_program(mspdebug_executable "mspdebug")
+if(NOT mspdebug_executable)
+  message(WARNING
+      "mspdebug not found: targets usb-install and usb-debug disabled"
+  )
+else()
+  add_custom_target(usb-install
+      COMMAND
+        ${mspdebug_executable} rf2500 "prog ${openchronos_binary_filename}"
+      WORKING_DIRECTORY
+        ${CMAKE_CURRENT_BINARY_DIR}
+      DEPENDS
+        ${openchronos_binary_filename}
+  )
+
+  add_custom_target(usb-debug
+      COMMAND
+        ${mspdebug_executable} rf2500 "gdb"
+      WORKING_DIRECTORY
+        ${CMAKE_CURRENT_BINARY_DIR}
+      DEPENDS
+        ${openchronos_binary_filename}
+  )
+endif()
+
+find_package(Doxygen)
+if(NOT DOXYGEN_FOUND)
+  message(WARNING "Doxygen not found: target doc disabled")
+else()
+  add_custom_target(
+      doc
+      COMMAND
+        ${DOXYGEN_EXECUTABLE} Doxyfile
+      WORKING_DIRECTORY
+        ${CMAKE_CURRENT_SOURCE_DIR}
+  )
+endif()
