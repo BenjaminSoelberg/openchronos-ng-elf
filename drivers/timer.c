@@ -56,12 +56,13 @@
 #include "timer.h"
 
 /* HARDWARE TIMER ASSIGNMENT:
-	 TA0CCR0: 20Hz timer
+	 TA0CCR0: 20Hz timer used by the button driver
 	 TA0CCR1: Unused
-	 TA0CCR2: callback timer (for buzzer)
-	 TA0CCR3: programable timer
-	 TA0CCR4: delay timer
-	OVERFLOW: 0.244Hz timer ~ 4.1S */
+	 TA0CCR2: delay timer with callback
+	 TA0CCR3: programmable timer via messagebus
+	 TA0CCR4: timer0_delay, will enter LPMx to save power
+	OVERFLOW: 0.244Hz timer ~ 4.1S via messagebus
+ */
 
 /* source is ACLK=32768Hz (nominal) with /2 divider */
 #define TIMER0_FREQ 16384
@@ -117,6 +118,7 @@ void timer0_delay(uint16_t duration, uint16_t LPM_bits)
 #ifdef USE_WATCHDOG
 		/* Service watchdog */
 		WDTCTL = WDTPW + WDTIS__512K + WDTSSEL__ACLK + WDTCNTCL;
+		//TODO bør det ikke være : WDTCTL &= WDTCNTCL;
 #endif
 
 		/* The interrupt routine sets delay_finished to signal us
@@ -185,7 +187,6 @@ void timer0_destroy_prog_timer()
 __attribute__((interrupt(TIMER0_A0_VECTOR)))
 void timer0_A0_ISR(void)
 {
-	/* TODO: Do we need to reset the interrupt flag ? */
 	/* setup timer for next time */
 	TA0CCR0 = TA0R + timer0_20hz_ticks;
 
@@ -204,7 +205,7 @@ __attribute__((interrupt(TIMER0_A1_VECTOR)))
 void timer0_A1_ISR(void)
 {
 	/* reading TA0IV automatically resets the interrupt flag */
-	uint8_t flag = TA0IV;
+	uint8_t flag = (uint8_t)TA0IV; // ISR reason. Only look at the lower 8 bits
 
 	/* programable timer */
 	if (flag == TA0IV_TA0CCR3) {
@@ -241,7 +242,7 @@ void timer0_A1_ISR(void)
 		return;
 	}
 
-
+#ifdef CONFIG_TIMER_4S_IRQ
 	/* 0.24Hz timer, ticked by overflow interrupts */
 	if (flag == TA0IV_TA0IFG) {
 		/* store event */
@@ -249,6 +250,7 @@ void timer0_A1_ISR(void)
 
 		goto exit_lpm3;
 	}
+#endif
 
 	return;
 

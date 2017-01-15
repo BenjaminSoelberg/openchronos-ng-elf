@@ -31,20 +31,21 @@
 #define OCTAVE(note) ((note >> 4) & 0x0003)
 #define PITCH(note) (note & 0x000F)
 
+// The following note table is calculated using "clock frequency in hz / sound frequency in hz"
 uint16_t base_notes[13] = {
-	0,    /* 0: P  */
-	2383, /* 1: A  */
-	2249, /* 2: A# */
-	2123, /* 3: B  */
-	2003, /* 4: C  */
-	1891, /* 5: C# */
-	1785, /* 6: D  */
-	1685, /* 7: D# */
-	1590, /* 8: E  */
-	1501, /* 9: F  */
-	1417, /* A: F# */
-	1337, /* B: G  */
-	1262  /* C: G# */
+	0,     /* 0: P  */
+	27273, /* 1: A  */
+	25742, /* 2: A# */
+	24397, /* 3: B  */
+	22934, /* 4: C  */
+	21646, /* 5: C# */
+	20431, /* 6: D  */
+	19285, /* 7: D# */
+	18202, /* 8: E  */
+	17181, /* 9: F  */
+	16216, /* A: F# */
+	15306, /* B: G  */
+	14447  /* C: G# */
 };
 
 inline void buzzer_init(void)
@@ -56,7 +57,7 @@ inline void buzzer_init(void)
 	TA1CCTL0 = OUTMOD_4;
 
 	/* Play "welcome" chord: A major */
-	note welcome[4] = {0x1901, 0x1904, 0x1908, 0x000F};
+	note welcome[4] = {0x1931, 0x1934, 0x1938, 0x000F};
 	buzzer_play(welcome);
 }
 
