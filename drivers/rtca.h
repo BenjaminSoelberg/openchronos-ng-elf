@@ -6,7 +6,7 @@
 
     http://github.com/BenjaminSoelberg/openchronos-ng-elf
 
-	This file is part of openchronos-ng.
+    This file is part of openchronos-ng.
 
     openchronos-ng is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -28,30 +28,30 @@
 #include "openchronos.h"
 
 enum rtca_tevent {
-	RTCA_EV_NONE    = 0,
-	RTCA_EV_ALARM	= BIT0,
-	RTCA_EV_SECOND  = BIT1,
-	RTCA_EV_MINUTE	= BIT2,
-	RTCA_EV_HOUR	= BIT3,
-	RTCA_EV_DAY		= BIT4,
-	RTCA_EV_MONTH	= BIT5,
-	RTCA_EV_YEAR	= BIT6
+    RTCA_EV_NONE    = 0,
+    RTCA_EV_ALARM	= BIT0,
+    RTCA_EV_SECOND  = BIT1,
+    RTCA_EV_MINUTE	= BIT2,
+    RTCA_EV_HOUR	= BIT3,
+    RTCA_EV_DAY		= BIT4,
+    RTCA_EV_MONTH	= BIT5,
+    RTCA_EV_YEAR	= BIT6
 };
 
 /* Day of week strings */
 static char const * const rtca_dow_str[] = {
-	"SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"
+    "SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"
 };
 
 struct {
-	uint32_t sys;   /* system time: number of seconds since power on */
-	uint16_t year;  /* cache of RTC year register */
-	uint8_t mon;    /* cache of RTC month register */
-	uint8_t day;    /* cache of RTC day register */
-	uint8_t dow;    /* cache of RTC day of week register */
-	uint8_t hour;   /* cache of RTC hour register */
-	uint8_t min;    /* cache of RTC minutes register */
-	uint8_t sec;    /* cache of RTC seconds register */
+    uint32_t sys;   /* system time: number of seconds since power on */
+    uint16_t year;  /* cache of RTC year register */
+    uint8_t mon;    /* cache of RTC month register */
+    uint8_t day;    /* cache of RTC day register */
+    uint8_t dow;    /* cache of RTC day of week register */
+    uint8_t hour;   /* cache of RTC hour register */
+    uint8_t min;    /* cache of RTC minutes register */
+    uint8_t sec;    /* cache of RTC seconds register */
 } rtca_time;
 
 // Holds 12h/24h choice

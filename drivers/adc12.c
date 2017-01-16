@@ -73,48 +73,48 @@ uint8_t  adc12_data_ready;
 // *************************************************************************************************
 uint16_t adc12_single_conversion(uint16_t ref, uint16_t sht, uint16_t channel)
 {
-	// Initialize the shared reference module
-	REFCTL0 |= REFMSTR + ref + REFON;    		// Enable internal reference (1.5V or 2.5V)
+    // Initialize the shared reference module
+    REFCTL0 |= REFMSTR + ref + REFON;    		// Enable internal reference (1.5V or 2.5V)
 
-	// Initialize ADC12_A
-	ADC12CTL0 = sht + ADC12ON;					// Set sample time
-	ADC12CTL1 = ADC12SHP;                     	// Enable sample timer
-	ADC12MCTL0 = ADC12SREF_1 + channel;  		// ADC input channel
-	ADC12IE = 0x001;                          	// ADC_IFG upon conv result-ADCMEMO
+    // Initialize ADC12_A
+    ADC12CTL0 = sht + ADC12ON;					// Set sample time
+    ADC12CTL1 = ADC12SHP;                     	// Enable sample timer
+    ADC12MCTL0 = ADC12SREF_1 + channel;  		// ADC input channel
+    ADC12IE = 0x001;                          	// ADC_IFG upon conv result-ADCMEMO
 
-	// Wait 2 ticks (66us) to allow internal reference to settle
-	timer0_delay(66,LPM3_bits);
+    // Wait 2 ticks (66us) to allow internal reference to settle
+    timer0_delay(66,LPM3_bits);
 
-	// Start ADC12
-	ADC12CTL0 |= ADC12ENC;
+    // Start ADC12
+    ADC12CTL0 |= ADC12ENC;
 
-	// Clear data ready flag
-	adc12_data_ready = 0;
+    // Clear data ready flag
+    adc12_data_ready = 0;
 
-	// Sampling and conversion start
-	ADC12CTL0 |= ADC12SC;
+    // Sampling and conversion start
+    ADC12CTL0 |= ADC12SC;
 
-	// Wait until ADC12 has finished
-	timer0_delay(170, LPM3_bits);
+    // Wait until ADC12 has finished
+    timer0_delay(170, LPM3_bits);
 
-	uint8_t loops = 0;
+    uint8_t loops = 0;
 
-	//We were going away and the watchdog was tripping - this should reduce the instances of that.
-	while (!adc12_data_ready && loops++ < 30) {
-		timer0_delay(66, LPM3_bits);
-	}
+    //We were going away and the watchdog was tripping - this should reduce the instances of that.
+    while (!adc12_data_ready && loops++ < 30) {
+        timer0_delay(66, LPM3_bits);
+    }
 
-	// Shut down ADC12
-	ADC12CTL0 &= ~(ADC12ENC | ADC12SC | sht);
-	ADC12CTL0 &= ~ADC12ON;
+    // Shut down ADC12
+    ADC12CTL0 &= ~(ADC12ENC | ADC12SC | sht);
+    ADC12CTL0 &= ~ADC12ON;
 
-	// Shut down reference voltage
-	REFCTL0 &= ~(REFMSTR + ref + REFON);
+    // Shut down reference voltage
+    REFCTL0 &= ~(REFMSTR + ref + REFON);
 
-	ADC12IE = 0;
+    ADC12IE = 0;
 
-	// Return ADC result
-	return (adc12_result);
+    // Return ADC result
+    return (adc12_result);
 }
 
 
@@ -130,67 +130,67 @@ uint16_t adc12_single_conversion(uint16_t ref, uint16_t sht, uint16_t channel)
 __attribute__((interrupt(ADC12_VECTOR)))
 void ADC12ISR(void)
 {
-	switch (__even_in_range(ADC12IV, 34)) {
-	case  0:
-		break;                           // Vector  0:  No interrupt
+    switch (__even_in_range(ADC12IV, 34)) {
+    case  0:
+        break;                           // Vector  0:  No interrupt
 
-	case  2:
-		break;                           // Vector  2:  ADC overflow
+    case  2:
+        break;                           // Vector  2:  ADC overflow
 
-	case  4:
-		break;                           // Vector  4:  ADC timing overflow
+    case  4:
+        break;                           // Vector  4:  ADC timing overflow
 
-	case  6:                                  // Vector  6:  ADC12IFG0
-		adc12_result = ADC12MEM0;                       // Move results, IFG is cleared
-		adc12_data_ready = 1;
-		_BIC_SR_IRQ(LPM3_bits);   						// Exit active CPU
-		break;
+    case  6:                            // Vector  6:  ADC12IFG0
+        adc12_result = ADC12MEM0;       // Move results, IFG is cleared
+        adc12_data_ready = 1;
+        _BIC_SR_IRQ(LPM3_bits);   		// Exit active CPU
+        break;
 
-	case  8:
-		break;                           // Vector  8:  ADC12IFG1
+    case  8:
+        break;                           // Vector  8:  ADC12IFG1
 
-	case 10:
-		break;                           // Vector 10:  ADC12IFG2
+    case 10:
+        break;                           // Vector 10:  ADC12IFG2
 
-	case 12:
-		break;                           // Vector 12:  ADC12IFG3
+    case 12:
+        break;                           // Vector 12:  ADC12IFG3
 
-	case 14:
-		break;                           // Vector 14:  ADC12IFG4
+    case 14:
+        break;                           // Vector 14:  ADC12IFG4
 
-	case 16:
-		break;                           // Vector 16:  ADC12IFG5
+    case 16:
+        break;                           // Vector 16:  ADC12IFG5
 
-	case 18:
-		break;                           // Vector 18:  ADC12IFG6
+    case 18:
+        break;                           // Vector 18:  ADC12IFG6
 
-	case 20:
-		break;                           // Vector 20:  ADC12IFG7
+    case 20:
+        break;                           // Vector 20:  ADC12IFG7
 
-	case 22:
-		break;                           // Vector 22:  ADC12IFG8
+    case 22:
+        break;                           // Vector 22:  ADC12IFG8
 
-	case 24:
-		break;                           // Vector 24:  ADC12IFG9
+    case 24:
+        break;                           // Vector 24:  ADC12IFG9
 
-	case 26:
-		break;                           // Vector 26:  ADC12IFG10
+    case 26:
+        break;                           // Vector 26:  ADC12IFG10
 
-	case 28:
-		break;                           // Vector 28:  ADC12IFG11
+    case 28:
+        break;                           // Vector 28:  ADC12IFG11
 
-	case 30:
-		break;                           // Vector 30:  ADC12IFG12
+    case 30:
+        break;                           // Vector 30:  ADC12IFG12
 
-	case 32:
-		break;                           // Vector 32:  ADC12IFG13
+    case 32:
+        break;                           // Vector 32:  ADC12IFG13
 
-	case 34:
-		break;                           // Vector 34:  ADC12IFG14
+    case 34:
+        break;                           // Vector 34:  ADC12IFG14
 
-	default:
-		break;
-	}
+    default:
+        break;
+    }
 }
 
 

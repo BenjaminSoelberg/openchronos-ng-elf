@@ -6,7 +6,7 @@
 
     http://github.com/BenjaminSoelberg/openchronos-ng-elf
 
-	This file is part of openchronos-ng.
+    This file is part of openchronos-ng.
 
     openchronos-ng is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -70,55 +70,55 @@ static uint8_t adcresult_idx = 0;
 
 void temperature_init(void)
 {
-	temperature.value = adc12_single_conversion(REFVSEL_0,
-						ADC12SHT0_8, ADC12INCH_10);
-	temperature.offset = CONFIG_TEMPERATURE_OFFSET;
+    temperature.value = adc12_single_conversion(REFVSEL_0,
+                        ADC12SHT0_8, ADC12INCH_10);
+    temperature.offset = CONFIG_TEMPERATURE_OFFSET;
 
-	adcresult[0] = temperature.value;
-	adcresult[1] = temperature.value;
-	adcresult[2] = temperature.value;
-	adcresult[3] = temperature.value;
+    adcresult[0] = temperature.value;
+    adcresult[1] = temperature.value;
+    adcresult[2] = temperature.value;
+    adcresult[3] = temperature.value;
 }
 
 
 void temperature_measurement(void)
 {
-	/* Convert internal temperature diode voltage */
-	adcresult[adcresult_idx++] = adc12_single_conversion(REFVSEL_0,
-						ADC12SHT0_8, ADC12INCH_10);
-	if (adcresult_idx == TEMPORAL_FILTER_WINDOW)
-		adcresult_idx = 0;
+    /* Convert internal temperature diode voltage */
+    adcresult[adcresult_idx++] = adc12_single_conversion(REFVSEL_0,
+                        ADC12SHT0_8, ADC12INCH_10);
+    if (adcresult_idx == TEMPORAL_FILTER_WINDOW)
+        adcresult_idx = 0;
 
-	/* Calculate temporal mean value */
-	temperature.value = (temperature.value & 0xff00)
-		| (((uint16_t)adcresult[0] + (uint16_t)adcresult[1]
-		+ (uint16_t)adcresult[2] + (uint16_t)adcresult[3]) >> 2);
+    /* Calculate temporal mean value */
+    temperature.value = (temperature.value & 0xff00)
+        | (((uint16_t)adcresult[0] + (uint16_t)adcresult[1]
+        + (uint16_t)adcresult[2] + (uint16_t)adcresult[3]) >> 2);
 }
 
 
 void temperature_get_C(int16_t *temp)
 {
-	/* from page 67, slas554f.pdf:
-	((A10/4096*1500mV) - 680mV)*(1/2.25mV)
-	   = (A10/4096*667) - 302
-	   = (A10 - 1855) * (667 / 4096) */
-	*temp = (((int32_t)temperature.value + temperature.offset - 1855)
-		* 667 * 10) / 4096;
+    /* from page 67, slas554f.pdf:
+    ((A10/4096*1500mV) - 680mV)*(1/2.25mV)
+       = (A10/4096*667) - 302
+       = (A10 - 1855) * (667 / 4096) */
+    *temp = (((int32_t)temperature.value + temperature.offset - 1855)
+        * 667 * 10) / 4096;
 }
 
 void temperature_get_F(int16_t *temp)
 {
-	/* from page 67 (slas554f.pdf):
-	offset:
-	  680mV is 0C with 2.25mV/C
-	  if 0F is -17.78C then 0F = (680-17.78*2.25) = 640mV
-	scale:
-	  if 2.25mV/C then 2.25*(5/9)=1.25mV/F
+    /* from page 67 (slas554f.pdf):
+    offset:
+      680mV is 0C with 2.25mV/C
+      if 0F is -17.78C then 0F = (680-17.78*2.25) = 640mV
+    scale:
+      if 2.25mV/C then 2.25*(5/9)=1.25mV/F
 
-	((A10/4096*1500mV) - 640mV)*(1/1.25mV) =
-	  = (A10/4096*1200) - 512
-	  = (A10 - 1748) * (1200 / 4096) */
-	*temp = (((int32_t)temperature.value + temperature.offset - 1748)
-		* 1200 * 10) / 4096;
+    ((A10/4096*1500mV) - 640mV)*(1/1.25mV) =
+      = (A10/4096*1200) - 512
+      = (A10 - 1748) * (1200 / 4096) */
+    *temp = (((int32_t)temperature.value + temperature.offset - 1748)
+        * 1200 * 10) / 4096;
 }
 

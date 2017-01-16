@@ -1,7 +1,7 @@
 /**
     util.h: openchronos-ng messaging system
 
-	Copyright (C) 2012 Angelo Arrifano <miknix@gmail.com>
+    Copyright (C) 2012 Angelo Arrifano <miknix@gmail.com>
 
     http://github.com/BenjaminSoelberg/openchronos-ng-elf
 
@@ -22,9 +22,9 @@
 **/
 
 /*!
-	\file utils.h
-	\brief openchronos-ng misc utilities
-	\details Misc utilities
+    \file utils.h
+    \brief openchronos-ng misc utilities
+    \details Misc utilities
 */
 
 #include "openchronos.h"

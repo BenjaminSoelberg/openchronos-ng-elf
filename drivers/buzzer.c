@@ -5,7 +5,7 @@
 
     http://github.com/BenjaminSoelberg/openchronos-ng-elf
 
-	This file is part of openchronos-ng.
+    This file is part of openchronos-ng.
 
     openchronos-ng is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -33,71 +33,71 @@
 
 // The following note table is calculated using "clock frequency in hz / sound frequency in hz"
 uint16_t base_notes[13] = {
-	0,     /* 0: P  */
-	27273, /* 1: A  */
-	25742, /* 2: A# */
-	24397, /* 3: B  */
-	22934, /* 4: C  */
-	21646, /* 5: C# */
-	20431, /* 6: D  */
-	19285, /* 7: D# */
-	18202, /* 8: E  */
-	17181, /* 9: F  */
-	16216, /* A: F# */
-	15306, /* B: G  */
-	14447  /* C: G# */
+    0,     /* 0: P  */
+    27273, /* 1: A  */
+    25742, /* 2: A# */
+    24397, /* 3: B  */
+    22934, /* 4: C  */
+    21646, /* 5: C# */
+    20431, /* 6: D  */
+    19285, /* 7: D# */
+    18202, /* 8: E  */
+    17181, /* 9: F  */
+    16216, /* A: F# */
+    15306, /* B: G  */
+    14447  /* C: G# */
 };
 
 inline void buzzer_init(void)
 {
-	/* Reset TA1R, TA1 runs from 32768Hz ACLK */
-	TA1CTL = TACLR | TASSEL__SMCLK | MC__STOP;
+    /* Reset TA1R, TA1 runs from 32768Hz ACLK */
+    TA1CTL = TACLR | TASSEL__SMCLK | MC__STOP;
 
-	/* Enable IRQ, set output mode "toggle" */
-	TA1CCTL0 = OUTMOD_4;
+    /* Enable IRQ, set output mode "toggle" */
+    TA1CCTL0 = OUTMOD_4;
 
-	/* Play "welcome" chord: A major */
-	note welcome[4] = {0x1931, 0x1934, 0x1938, 0x000F};
-	buzzer_play(welcome);
+    /* Play "welcome" chord: A major */
+    note welcome[4] = {0x1931, 0x1934, 0x1938, 0x000F};
+    buzzer_play(welcome);
 }
 
 inline void buzzer_stop(void)
 {
-	/* Stop PWM timer */
-	TA1CTL &= ~MC_3; // Clear any MC bits, effectively a MC_STOP
+    /* Stop PWM timer */
+    TA1CTL &= ~MC_3; // Clear any MC bits, effectively a MC_STOP
 
-	/* Disable buzzer PWM output */
-	P2OUT &= ~BIT7;
-	P2SEL &= ~BIT7;
+    /* Disable buzzer PWM output */
+    P2OUT &= ~BIT7;
+    P2SEL &= ~BIT7;
 
-	/* Clear PWM timer interrupt */
-	TA1CCTL0 &= ~CCIE;
+    /* Clear PWM timer interrupt */
+    TA1CCTL0 &= ~CCIE;
 }
 
 void buzzer_play(note *notes)
 {
-	/* Allow buzzer PWM output on P2.7 */
-	P2SEL |= BIT7;
+    /* Allow buzzer PWM output on P2.7 */
+    P2SEL |= BIT7;
 
-	/* 0x000F is the "stop bit" */
-	while (PITCH(*notes) != 0x000F) {
-		if (PITCH(*notes) == 0) {
-			/* Stop the timer! We are playing a rest */
-			TA1CTL &= ~MC_3;
-		} else {
-			/* Set PWM frequency */
-			TA1CCR0 = base_notes[PITCH(*notes)] >> OCTAVE(*notes);
+    /* 0x000F is the "stop bit" */
+    while (PITCH(*notes) != 0x000F) {
+        if (PITCH(*notes) == 0) {
+            /* Stop the timer! We are playing a rest */
+            TA1CTL &= ~MC_3;
+        } else {
+            /* Set PWM frequency */
+            TA1CCR0 = base_notes[PITCH(*notes)] >> OCTAVE(*notes);
 
-			/* Start the timer */
-			TA1CTL |= MC__UP;
-		}
-		/* Delay for DURATION(*notes) milliseconds, use LPM0 because we need SMCLK for tone generation as well as FLL for stability */
-		timer0_delay(DURATION(*notes), LPM0_bits);
+            /* Start the timer */
+            TA1CTL |= MC__UP;
+        }
+        /* Delay for DURATION(*notes) milliseconds, use LPM0 because we need SMCLK for tone generation as well as FLL for stability */
+        timer0_delay(DURATION(*notes), LPM0_bits);
 
-		/* Advance to the next note */
-		notes++;
-	}
+        /* Advance to the next note */
+        notes++;
+    }
 
-	/* Stop buzzer */
-	buzzer_stop();
+    /* Stop buzzer */
+    buzzer_stop();
 }

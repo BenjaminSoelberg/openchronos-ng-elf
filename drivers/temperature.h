@@ -6,7 +6,7 @@
 
     http://github.com/BenjaminSoelberg/openchronos-ng-elf
 
-	This file is part of openchronos-ng.
+    This file is part of openchronos-ng.
 
     openchronos-ng is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -33,8 +33,8 @@ void temperature_get_C(int16_t *temp);
 void temperature_get_F(int16_t *temp);
 
 struct {
-	uint16_t value;
-	int16_t offset;
+    uint16_t value;
+    int16_t offset;
 } temperature;
 
 #endif /* __TEMPERATURE_H__ */

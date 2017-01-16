@@ -55,21 +55,21 @@ extern void MRFI_RadioIsr(void);
 // *************************************************************************************************
 void radio_reset(void)
 {
-	volatile uint16_t i;
-	uint8_t x;
+    volatile uint16_t i;
+    uint8_t x;
 
-	// Reset radio core
-	Strobe(RF_SRES);
+    // Reset radio core
+    Strobe(RF_SRES);
 
-	// Wait before checking IDLE
-	for (i = 0; i < 100; i++);
+    // Wait before checking IDLE
+    for (i = 0; i < 100; i++);
 
-	do {
-		x = Strobe(RF_SIDLE);
-	} while ((x & 0x70) != 0x00);
+    do {
+        x = Strobe(RF_SIDLE);
+    } while ((x & 0x70) != 0x00);
 
-	// Clear radio error register
-	RF1AIFERR = 0;
+    // Clear radio error register
+    RF1AIFERR = 0;
 }
 
 
@@ -81,13 +81,13 @@ void radio_reset(void)
 // *************************************************************************************************
 void radio_powerdown(void)
 {
-	/* Chip bug: Radio does not come out of this SLEEP when put to sleep
-	 * using the SPWD cmd. However, it does wakes up if SXOFF was used to
-	 * put it to sleep.
-	 */
-	// Powerdown radio
-	Strobe(RF_SIDLE);
-	Strobe(RF_SPWD);
+    /* Chip bug: Radio does not come out of this SLEEP when put to sleep
+     * using the SPWD cmd. However, it does wakes up if SXOFF was used to
+     * put it to sleep.
+     */
+    // Powerdown radio
+    Strobe(RF_SIDLE);
+    Strobe(RF_SPWD);
 }
 
 
@@ -100,13 +100,13 @@ void radio_powerdown(void)
 // *************************************************************************************************
 void radio_sxoff(void)
 {
-	/* Chip bug: Radio does not come out of this SLEEP when put to sleep
-	 * using the SPWD cmd. However, it does wakes up if SXOFF was used to
-	 * put it to sleep.
-	 */
-	// Powerdown radio
-	Strobe(RF_SIDLE);
-	Strobe(RF_SXOFF);
+    /* Chip bug: Radio does not come out of this SLEEP when put to sleep
+     * using the SPWD cmd. However, it does wakes up if SXOFF was used to
+     * put it to sleep.
+     */
+    // Powerdown radio
+    Strobe(RF_SIDLE);
+    Strobe(RF_SXOFF);
 }
 
 
@@ -118,12 +118,12 @@ void radio_sxoff(void)
 // *************************************************************************************************
 void open_radio(void)
 {
-	// Reset radio core
-	radio_reset();
+    // Reset radio core
+    radio_reset();
 
-	// Enable radio IRQ
-	RF1AIFG &= ~BIT4;                         // Clear a pending interrupt
-	RF1AIE  |= BIT4;                          // Enable the interrupt
+    // Enable radio IRQ
+    RF1AIFG &= ~BIT4;                         // Clear a pending interrupt
+    RF1AIE  |= BIT4;                          // Enable the interrupt
 }
 
 
@@ -137,15 +137,15 @@ void open_radio(void)
 // *************************************************************************************************
 void close_radio(void)
 {
-	// Disable radio IRQ
-	RF1AIFG = 0;
-	RF1AIE  = 0;
+    // Disable radio IRQ
+    RF1AIFG = 0;
+    RF1AIE  = 0;
 
-	// Reset radio core
-	radio_reset();
+    // Reset radio core
+    radio_reset();
 
-	// Put radio to sleep
-	radio_powerdown();
+    // Put radio to sleep
+    radio_powerdown();
 }
 
 
@@ -160,14 +160,14 @@ void close_radio(void)
 __attribute__((interrupt(CC1101_VECTOR)))
 void radio_ISR(void)
 {
-	uint8_t rf1aivec = RF1AIV;
+    uint8_t rf1aivec = RF1AIV;
 
-	// Forward to SimpliciTI interrupt service routine
-	/*if (is_rf()) {
-		MRFI_RadioIsr();
-	} else {*/
-		if (rf1aivec == RF1AIV_NONE) { // RF1A interface interrupt (error etc.)
-			asm("	nop"); // break here
-		}
-	/*}*/
+    // Forward to SimpliciTI interrupt service routine
+    /*if (is_rf()) {
+        MRFI_RadioIsr();
+    } else {*/
+        if (rf1aivec == RF1AIV_NONE) { // RF1A interface interrupt (error etc.)
+            asm("	nop"); // break here
+        }
+    /*}*/
 }

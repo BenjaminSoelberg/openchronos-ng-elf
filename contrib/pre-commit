@@ -12,6 +12,6 @@ status=0
 for file in $(git diff --cached --name-only $against | grep "\.[ch]$"); do
     ./contrib/checkpatch.pl --no-tree -f $file
     if [[ ! $? = 0 ]]; then
-	exit 1
+        exit 1
     fi
 done

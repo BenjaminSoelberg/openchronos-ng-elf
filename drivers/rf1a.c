@@ -33,49 +33,49 @@
 // *************************************************************************************************
 unsigned char Strobe(unsigned char strobe)
 {
-	uint8_t statusByte = 0;
-	uint16_t int_state, gdo_state;
+    uint8_t statusByte = 0;
+    uint16_t int_state, gdo_state;
 
-	// Check for valid strobe command
-	if ((strobe == 0xBD) || ((strobe > RF_SRES) && (strobe < RF_SNOP))) {
-		ENTER_CRITICAL_SECTION(int_state);
+    // Check for valid strobe command
+    if ((strobe == 0xBD) || ((strobe > RF_SRES) && (strobe < RF_SNOP))) {
+        ENTER_CRITICAL_SECTION(int_state);
 
-		// Clear the Status read flag
-		RF1AIFCTL1 &= ~(RFSTATIFG);
+        // Clear the Status read flag
+        RF1AIFCTL1 &= ~(RFSTATIFG);
 
-		// Wait for radio to be ready for next instruction
-		while (!(RF1AIFCTL1 & RFINSTRIFG));
+        // Wait for radio to be ready for next instruction
+        while (!(RF1AIFCTL1 & RFINSTRIFG));
 
-		// Write the strobe instruction
-		if ((strobe > RF_SRES) && (strobe < RF_SNOP)) {
+        // Write the strobe instruction
+        if ((strobe > RF_SRES) && (strobe < RF_SNOP)) {
 
-			gdo_state = ReadSingleReg(IOCFG2); // buffer IOCFG2 state
-			WriteSingleReg(IOCFG2, 0x29); // c-ready to GDO2
+            gdo_state = ReadSingleReg(IOCFG2); // buffer IOCFG2 state
+            WriteSingleReg(IOCFG2, 0x29); // c-ready to GDO2
 
-			RF1AINSTRB = strobe;
+            RF1AINSTRB = strobe;
 
-			if ((RF1AIN & 0x04) == 0x04) {		// chip at sleep mode
-				if ((strobe == RF_SXOFF) || (strobe == RF_SPWD) || (strobe == RF_SWOR)) { }
-				else {
-					while ((RF1AIN & 0x04) == 0x04);       			// c-ready ?
+            if ((RF1AIN & 0x04) == 0x04) {		// chip at sleep mode
+                if ((strobe == RF_SXOFF) || (strobe == RF_SPWD) || (strobe == RF_SWOR)) { }
+                else {
+                    while ((RF1AIN & 0x04) == 0x04);       			// c-ready ?
 
-					__delay_cycles(9800);	// Delay for ~810usec at 12MHz CPU clock
-				}
-			}
+                    __delay_cycles(9800);	// Delay for ~810usec at 12MHz CPU clock
+                }
+            }
 
-			WriteSingleReg(IOCFG2, gdo_state); // restore IOCFG2 setting
-		} else {	// chip active mode
-			RF1AINSTRB = strobe;
-		}
+            WriteSingleReg(IOCFG2, gdo_state); // restore IOCFG2 setting
+        } else {	// chip active mode
+            RF1AINSTRB = strobe;
+        }
 
-		statusByte = RF1ASTATB;
+        statusByte = RF1ASTATB;
 
-		while (!(RF1AIFCTL1 & RFSTATIFG));
+        while (!(RF1AIFCTL1 & RFSTATIFG));
 
-		EXIT_CRITICAL_SECTION(int_state);
-	}
+        EXIT_CRITICAL_SECTION(int_state);
+    }
 
-	return statusByte;
+    return statusByte;
 }
 
 
@@ -87,8 +87,8 @@ unsigned char Strobe(unsigned char strobe)
 // *************************************************************************************************
 void ResetRadioCore(void)
 {
-	Strobe(RF_SRES);                             // Reset the Radio Core
-	Strobe(RF_SNOP);                             // Reset Radio Pointer
+    Strobe(RF_SRES);                             // Reset the Radio Core
+    Strobe(RF_SNOP);                             // Reset Radio Pointer
 }
 
 
@@ -100,17 +100,17 @@ void ResetRadioCore(void)
 // *************************************************************************************************
 unsigned char ReadSingleReg(unsigned char addr)
 {
-	unsigned char x;
-	uint16_t int_state;
+    unsigned char x;
+    uint16_t int_state;
 
-	ENTER_CRITICAL_SECTION(int_state);
+    ENTER_CRITICAL_SECTION(int_state);
 
-	RF1AINSTR1B = (addr | RF_REGRD);
-	x = RF1ADOUT1B;
+    RF1AINSTR1B = (addr | RF_REGRD);
+    x = RF1ADOUT1B;
 
-	EXIT_CRITICAL_SECTION(int_state);
+    EXIT_CRITICAL_SECTION(int_state);
 
-	return x;
+    return x;
 }
 
 
@@ -122,20 +122,20 @@ unsigned char ReadSingleReg(unsigned char addr)
 // *************************************************************************************************
 void WriteSingleReg(unsigned char addr, unsigned char value)
 {
-	__attribute__((unused)) volatile unsigned int i;
-	uint16_t int_state;
+    __attribute__((unused)) volatile unsigned int i;
+    uint16_t int_state;
 
-	ENTER_CRITICAL_SECTION(int_state);
+    ENTER_CRITICAL_SECTION(int_state);
 
-	while (!(RF1AIFCTL1 & RFINSTRIFG));     // Wait for the Radio to be ready for the next instruction
+    while (!(RF1AIFCTL1 & RFINSTRIFG));     // Wait for the Radio to be ready for the next instruction
 
-	RF1AINSTRW = ((addr | RF_REGWR) << 8) + value; // Send address + Instruction
+    RF1AINSTRW = ((addr | RF_REGWR) << 8) + value; // Send address + Instruction
 
-	while (!(RFDINIFG & RF1AIFCTL1));
+    while (!(RFDINIFG & RF1AIFCTL1));
 
-	i = RF1ADOUTB;                            // Reset RFDOUTIFG flag which contains status byte
+    i = RF1ADOUTB;                            // Reset RFDOUTIFG flag which contains status byte
 
-	EXIT_CRITICAL_SECTION(int_state);
+    EXIT_CRITICAL_SECTION(int_state);
 }
 
 
@@ -147,25 +147,25 @@ void WriteSingleReg(unsigned char addr, unsigned char value)
 // *************************************************************************************************
 void ReadBurstReg(unsigned char addr, unsigned char *buffer, unsigned char count)
 {
-	unsigned int i;
-	uint16_t int_state;
+    unsigned int i;
+    uint16_t int_state;
 
-	ENTER_CRITICAL_SECTION(int_state);
+    ENTER_CRITICAL_SECTION(int_state);
 
-	while (!(RF1AIFCTL1 & RFINSTRIFG));       // Wait for the Radio to be ready for next instruction
+    while (!(RF1AIFCTL1 & RFINSTRIFG));       // Wait for the Radio to be ready for next instruction
 
-	RF1AINSTR1B = (addr | RF_REGRD);          // Send address + Instruction
+    RF1AINSTR1B = (addr | RF_REGRD);          // Send address + Instruction
 
-	for (i = 0; i < (count - 1); i++) {
-		while (!(RFDOUTIFG & RF1AIFCTL1));      // Wait for the Radio Core to update the RF1ADOUTB reg
+    for (i = 0; i < (count - 1); i++) {
+        while (!(RFDOUTIFG & RF1AIFCTL1));      // Wait for the Radio Core to update the RF1ADOUTB reg
 
-		buffer[i] = RF1ADOUT1B;                 // Read DOUT from Radio Core + clears RFDOUTIFG
-		// Also initiates auo-read for next DOUT byte
-	}
+        buffer[i] = RF1ADOUT1B;                 // Read DOUT from Radio Core + clears RFDOUTIFG
+        // Also initiates auo-read for next DOUT byte
+    }
 
-	buffer[count - 1] = RF1ADOUT0B;           // Store the last DOUT from Radio Core
+    buffer[count - 1] = RF1ADOUT0B;           // Store the last DOUT from Radio Core
 
-	EXIT_CRITICAL_SECTION(int_state);
+    EXIT_CRITICAL_SECTION(int_state);
 }
 
 
@@ -177,25 +177,25 @@ void ReadBurstReg(unsigned char addr, unsigned char *buffer, unsigned char count
 // *************************************************************************************************
 void WriteBurstReg(unsigned char addr, unsigned char *buffer, unsigned char count)
 {
-	// Write Burst works wordwise not bytewise - bug known already
-	unsigned char i;
-	uint16_t int_state;
+    // Write Burst works wordwise not bytewise - bug known already
+    unsigned char i;
+    uint16_t int_state;
 
-	ENTER_CRITICAL_SECTION(int_state);
+    ENTER_CRITICAL_SECTION(int_state);
 
-	while (!(RF1AIFCTL1 & RFINSTRIFG));       // Wait for the Radio to be ready for next instruction
+    while (!(RF1AIFCTL1 & RFINSTRIFG));       // Wait for the Radio to be ready for next instruction
 
-	RF1AINSTRW = ((addr | RF_REGWR) << 8) + buffer[0]; // Send address + Instruction
+    RF1AINSTRW = ((addr | RF_REGWR) << 8) + buffer[0]; // Send address + Instruction
 
-	for (i = 1; i < count; i++) {
-		RF1ADINB = buffer[i];                   // Send data
+    for (i = 1; i < count; i++) {
+        RF1ADINB = buffer[i];                   // Send data
 
-		while (!(RFDINIFG & RF1AIFCTL1));       // Wait for TX to finish
-	}
+        while (!(RFDINIFG & RF1AIFCTL1));       // Wait for TX to finish
+    }
 
-	i = RF1ADOUTB;                            // Reset RFDOUTIFG flag which contains status byte
+    i = RF1ADOUTB;                            // Reset RFDOUTIFG flag which contains status byte
 
-	EXIT_CRITICAL_SECTION(int_state);
+    EXIT_CRITICAL_SECTION(int_state);
 }
 
 
@@ -207,39 +207,39 @@ void WriteBurstReg(unsigned char addr, unsigned char *buffer, unsigned char coun
 // *************************************************************************************************
 void WritePATable(unsigned char value)
 {
-	unsigned char readbackPATableValue = 0;
-	uint16_t int_state;
+    unsigned char readbackPATableValue = 0;
+    uint16_t int_state;
 
-	ENTER_CRITICAL_SECTION(int_state);
+    ENTER_CRITICAL_SECTION(int_state);
 
-	while (readbackPATableValue != value) {
-		while (!(RF1AIFCTL1 & RFINSTRIFG));
+    while (readbackPATableValue != value) {
+        while (!(RF1AIFCTL1 & RFINSTRIFG));
 
-		RF1AINSTRW = 0x7E00 + value;               // PA Table write (burst)
+        RF1AINSTRW = 0x7E00 + value;               // PA Table write (burst)
 
-		while (!(RF1AIFCTL1 & RFINSTRIFG));
+        while (!(RF1AIFCTL1 & RFINSTRIFG));
 
-		RF1AINSTRB = RF_SNOP;                      // reset pointer
+        RF1AINSTRB = RF_SNOP;                      // reset pointer
 
 
-		while (!(RF1AIFCTL1 & RFINSTRIFG));
+        while (!(RF1AIFCTL1 & RFINSTRIFG));
 
-		RF1AINSTRB = 0xFE;                      // PA Table read (burst)
+        RF1AINSTRB = 0xFE;                      // PA Table read (burst)
 
-		while (!(RF1AIFCTL1 & RFDINIFG));
+        while (!(RF1AIFCTL1 & RFDINIFG));
 
-		RF1ADINB    = 0x00;                     //dummy write
+        RF1ADINB    = 0x00;                     //dummy write
 
-		while (!(RF1AIFCTL1 & RFDOUTIFG));
+        while (!(RF1AIFCTL1 & RFDOUTIFG));
 
-		readbackPATableValue = RF1ADOUT0B;
+        readbackPATableValue = RF1ADOUT0B;
 
-		while (!(RF1AIFCTL1 & RFINSTRIFG));
+        while (!(RF1AIFCTL1 & RFINSTRIFG));
 
-		RF1AINSTRB = RF_SNOP;
-	}
+        RF1AINSTRB = RF_SNOP;
+    }
 
-	EXIT_CRITICAL_SECTION(int_state);
+    EXIT_CRITICAL_SECTION(int_state);
 }
 
 

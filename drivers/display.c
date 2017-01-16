@@ -5,7 +5,7 @@
 
     http://github.com/BenjaminSoelberg/openchronos-ng-elf
 
-	This file is part of openchronos-ng.
+    This file is part of openchronos-ng.
 
     openchronos-ng is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -205,148 +205,148 @@ static uint8_t display_activescr;
      D
 */
 static const uint8_t lcd_font[] = {
-	SEG_A + SEG_B + SEG_C + SEG_D + SEG_E + SEG_F        , // Displays "0"
-	        SEG_B + SEG_C                                , // Displays "1"
-	SEG_A + SEG_B +         SEG_D + SEG_E +         SEG_G, // Displays "2"
-	SEG_A + SEG_B + SEG_C + SEG_D +                 SEG_G, // Displays "3"
-	        SEG_B + SEG_C +                 SEG_F + SEG_G, // Displays "4"
-	SEG_A +         SEG_C + SEG_D +         SEG_F + SEG_G, // Displays "5"
-	SEG_A +         SEG_C + SEG_D + SEG_E + SEG_F + SEG_G, // Displays "6"
-	SEG_A + SEG_B + SEG_C                                , // Displays "7"
-	SEG_A + SEG_B + SEG_C + SEG_D + SEG_E + SEG_F + SEG_G, // Displays "8"
-	SEG_A + SEG_B + SEG_C + SEG_D +         SEG_F + SEG_G, // Displays "9"
-	0                                                    , // Displays " " (:)
-	0                                                    , // Displays " " (;)
-	SEG_A +                                 SEG_F + SEG_G, // Displays "<" as high c
-	                        SEG_D +                 SEG_G, // Displays "="
-	0                                                    , // Displays " " (>)
-	SEG_A + SEG_B +                 SEG_E +         SEG_G, // Displays "?"
-	0                                                    , // Displays " " (@)
-	SEG_A + SEG_B + SEG_C +         SEG_E + SEG_F + SEG_G, // Displays "A"
-	                SEG_C + SEG_D + SEG_E + SEG_F + SEG_G, // Displays "b"
-	                        SEG_D + SEG_E +         SEG_G, // Displays "c"
-	        SEG_B + SEG_C + SEG_D + SEG_E +         SEG_G, // Displays "d"
-	SEG_A +               + SEG_D + SEG_E + SEG_F + SEG_G, // Displays "E"
-	SEG_A +                         SEG_E + SEG_F + SEG_G, // Displays "f"
-	SEG_A + SEG_B + SEG_C + SEG_D +         SEG_F + SEG_G, // Displays "g" same as 9
-	                SEG_C +         SEG_E + SEG_F + SEG_G, // Displays "h"
-	                                SEG_E                , // Displays "i"
-	SEG_A + SEG_B + SEG_C + SEG_D                        , // Displays "J"
-	                        SEG_D +         SEG_F + SEG_G, // Displays "k"
-	                        SEG_D + SEG_E + SEG_F        , // Displays "L"
-	SEG_A + SEG_B + SEG_C +         SEG_E + SEG_F        , // Displays "M"
-	                SEG_C +         SEG_E +         SEG_G, // Displays "n"
-	                SEG_C + SEG_D + SEG_E +         SEG_G, // Displays "o"
-	SEG_A + SEG_B +                 SEG_E + SEG_F + SEG_G, // Displays "P"
-	SEG_A + SEG_B + SEG_C +                 SEG_F + SEG_G, // Displays "q"
-	                                SEG_E +         SEG_G, // Displays "r"
-	SEG_A +         SEG_C + SEG_D +         SEG_F + SEG_G, // Displays "S" same as 5
-	                        SEG_D + SEG_E + SEG_F + SEG_G, // Displays "t"
-	                SEG_C + SEG_D + SEG_E                , // Displays "u"
-	                SEG_C + SEG_D + SEG_E                , // Displays "v" same as u
-	        SEG_B + SEG_C + SEG_D + SEG_E + SEG_F + SEG_G, // Displays "W"
-	        SEG_B + SEG_C +       + SEG_E + SEG_F + SEG_G, // Displays "X" as H
-	        SEG_B + SEG_C + SEG_D +         SEG_F + SEG_G, // Displays "Y"
-	SEG_A + SEG_B +         SEG_D + SEG_E +         SEG_G, // Displays "Z" same as 2
-	        SEG_B +                 SEG_E +         SEG_G, // Displays "[" as _|`
-	SEG_A + SEG_B +                         SEG_F + SEG_G, // Displays "\" (#)
-	                SEG_C +                 SEG_F + SEG_G, // Displays "]" as `|_
-	SEG_A                                                , // Displays "^"
-	                        SEG_D                          // Displays "_"
+    SEG_A + SEG_B + SEG_C + SEG_D + SEG_E + SEG_F        , // Displays "0"
+            SEG_B + SEG_C                                , // Displays "1"
+    SEG_A + SEG_B +         SEG_D + SEG_E +         SEG_G, // Displays "2"
+    SEG_A + SEG_B + SEG_C + SEG_D +                 SEG_G, // Displays "3"
+            SEG_B + SEG_C +                 SEG_F + SEG_G, // Displays "4"
+    SEG_A +         SEG_C + SEG_D +         SEG_F + SEG_G, // Displays "5"
+    SEG_A +         SEG_C + SEG_D + SEG_E + SEG_F + SEG_G, // Displays "6"
+    SEG_A + SEG_B + SEG_C                                , // Displays "7"
+    SEG_A + SEG_B + SEG_C + SEG_D + SEG_E + SEG_F + SEG_G, // Displays "8"
+    SEG_A + SEG_B + SEG_C + SEG_D +         SEG_F + SEG_G, // Displays "9"
+    0                                                    , // Displays " " (:)
+    0                                                    , // Displays " " (;)
+    SEG_A +                                 SEG_F + SEG_G, // Displays "<" as high c
+                            SEG_D +                 SEG_G, // Displays "="
+    0                                                    , // Displays " " (>)
+    SEG_A + SEG_B +                 SEG_E +         SEG_G, // Displays "?"
+    0                                                    , // Displays " " (@)
+    SEG_A + SEG_B + SEG_C +         SEG_E + SEG_F + SEG_G, // Displays "A"
+                    SEG_C + SEG_D + SEG_E + SEG_F + SEG_G, // Displays "b"
+                            SEG_D + SEG_E +         SEG_G, // Displays "c"
+            SEG_B + SEG_C + SEG_D + SEG_E +         SEG_G, // Displays "d"
+    SEG_A +               + SEG_D + SEG_E + SEG_F + SEG_G, // Displays "E"
+    SEG_A +                         SEG_E + SEG_F + SEG_G, // Displays "f"
+    SEG_A + SEG_B + SEG_C + SEG_D +         SEG_F + SEG_G, // Displays "g" same as 9
+                    SEG_C +         SEG_E + SEG_F + SEG_G, // Displays "h"
+                                    SEG_E                , // Displays "i"
+    SEG_A + SEG_B + SEG_C + SEG_D                        , // Displays "J"
+                            SEG_D +         SEG_F + SEG_G, // Displays "k"
+                            SEG_D + SEG_E + SEG_F        , // Displays "L"
+    SEG_A + SEG_B + SEG_C +         SEG_E + SEG_F        , // Displays "M"
+                    SEG_C +         SEG_E +         SEG_G, // Displays "n"
+                    SEG_C + SEG_D + SEG_E +         SEG_G, // Displays "o"
+    SEG_A + SEG_B +                 SEG_E + SEG_F + SEG_G, // Displays "P"
+    SEG_A + SEG_B + SEG_C +                 SEG_F + SEG_G, // Displays "q"
+                                    SEG_E +         SEG_G, // Displays "r"
+    SEG_A +         SEG_C + SEG_D +         SEG_F + SEG_G, // Displays "S" same as 5
+                            SEG_D + SEG_E + SEG_F + SEG_G, // Displays "t"
+                    SEG_C + SEG_D + SEG_E                , // Displays "u"
+                    SEG_C + SEG_D + SEG_E                , // Displays "v" same as u
+            SEG_B + SEG_C + SEG_D + SEG_E + SEG_F + SEG_G, // Displays "W"
+            SEG_B + SEG_C +       + SEG_E + SEG_F + SEG_G, // Displays "X" as H
+            SEG_B + SEG_C + SEG_D +         SEG_F + SEG_G, // Displays "Y"
+    SEG_A + SEG_B +         SEG_D + SEG_E +         SEG_G, // Displays "Z" same as 2
+            SEG_B +                 SEG_E +         SEG_G, // Displays "[" as _|`
+    SEG_A + SEG_B +                         SEG_F + SEG_G, // Displays "\" (#)
+                    SEG_C +                 SEG_F + SEG_G, // Displays "]" as `|_
+    SEG_A                                                , // Displays "^"
+                            SEG_D                          // Displays "_"
 };
 
 
 /* Table with memory address for each display element */
 static const uint8_t *segments_lcdmem[] = {
-	LCD_SYMB_AM_MEM,
-	LCD_SYMB_PM_MEM,
-	LCD_SYMB_ARROW_UP_MEM,
-	LCD_SYMB_ARROW_DOWN_MEM,
-	LCD_SYMB_PERCENT_MEM,
-	LCD_SYMB_TOTAL_MEM,
-	LCD_SYMB_AVERAGE_MEM,
-	LCD_SYMB_MAX_MEM,
-	LCD_SYMB_BATTERY_MEM,
-	LCD_UNIT_L1_FT_MEM,
-	LCD_UNIT_L1_K_MEM,
-	LCD_UNIT_L1_M_MEM,
-	LCD_UNIT_L1_I_MEM,
-	LCD_UNIT_L1_PER_S_MEM,
-	LCD_UNIT_L1_PER_H_MEM,
-	LCD_UNIT_L1_DEGREE_MEM,
-	LCD_UNIT_L2_KCAL_MEM,
-	LCD_UNIT_L2_KM_MEM,
-	LCD_UNIT_L2_MI_MEM,
-	LCD_ICON_HEART_MEM,
-	LCD_ICON_STOPWATCH_MEM,
-	LCD_ICON_RECORD_MEM,
-	LCD_ICON_ALARM_MEM,
-	LCD_ICON_BEEPER1_MEM,
-	LCD_ICON_BEEPER2_MEM,
-	LCD_ICON_BEEPER3_MEM,
-	LCD_SEG_L1_3_MEM,
-	LCD_SEG_L1_2_MEM,
-	LCD_SEG_L1_1_MEM,
-	LCD_SEG_L1_0_MEM,
-	LCD_SEG_L1_COL_MEM,
-	LCD_SEG_L1_DP1_MEM,
-	LCD_SEG_L1_DP0_MEM,
-	LCD_SEG_L2_5_MEM,
-	LCD_SEG_L2_4_MEM,
-	LCD_SEG_L2_3_MEM,
-	LCD_SEG_L2_2_MEM,
-	LCD_SEG_L2_1_MEM,
-	LCD_SEG_L2_0_MEM,
-	LCD_SEG_L2_COL1_MEM,
-	LCD_SEG_L2_COL0_MEM,
-	LCD_SEG_L2_DP_MEM,
+    LCD_SYMB_AM_MEM,
+    LCD_SYMB_PM_MEM,
+    LCD_SYMB_ARROW_UP_MEM,
+    LCD_SYMB_ARROW_DOWN_MEM,
+    LCD_SYMB_PERCENT_MEM,
+    LCD_SYMB_TOTAL_MEM,
+    LCD_SYMB_AVERAGE_MEM,
+    LCD_SYMB_MAX_MEM,
+    LCD_SYMB_BATTERY_MEM,
+    LCD_UNIT_L1_FT_MEM,
+    LCD_UNIT_L1_K_MEM,
+    LCD_UNIT_L1_M_MEM,
+    LCD_UNIT_L1_I_MEM,
+    LCD_UNIT_L1_PER_S_MEM,
+    LCD_UNIT_L1_PER_H_MEM,
+    LCD_UNIT_L1_DEGREE_MEM,
+    LCD_UNIT_L2_KCAL_MEM,
+    LCD_UNIT_L2_KM_MEM,
+    LCD_UNIT_L2_MI_MEM,
+    LCD_ICON_HEART_MEM,
+    LCD_ICON_STOPWATCH_MEM,
+    LCD_ICON_RECORD_MEM,
+    LCD_ICON_ALARM_MEM,
+    LCD_ICON_BEEPER1_MEM,
+    LCD_ICON_BEEPER2_MEM,
+    LCD_ICON_BEEPER3_MEM,
+    LCD_SEG_L1_3_MEM,
+    LCD_SEG_L1_2_MEM,
+    LCD_SEG_L1_1_MEM,
+    LCD_SEG_L1_0_MEM,
+    LCD_SEG_L1_COL_MEM,
+    LCD_SEG_L1_DP1_MEM,
+    LCD_SEG_L1_DP0_MEM,
+    LCD_SEG_L2_5_MEM,
+    LCD_SEG_L2_4_MEM,
+    LCD_SEG_L2_3_MEM,
+    LCD_SEG_L2_2_MEM,
+    LCD_SEG_L2_1_MEM,
+    LCD_SEG_L2_0_MEM,
+    LCD_SEG_L2_COL1_MEM,
+    LCD_SEG_L2_COL0_MEM,
+    LCD_SEG_L2_DP_MEM,
 };
 
 
 /* Table with bit mask for each display element */
 static const uint8_t segments_bitmask[] = {
-	LCD_SYMB_AM_MASK,
-	LCD_SYMB_PM_MASK,
-	LCD_SYMB_ARROW_UP_MASK,
-	LCD_SYMB_ARROW_DOWN_MASK,
-	LCD_SYMB_PERCENT_MASK,
-	LCD_SYMB_TOTAL_MASK,
-	LCD_SYMB_AVERAGE_MASK,
-	LCD_SYMB_MAX_MASK,
-	LCD_SYMB_BATTERY_MASK,
-	LCD_UNIT_L1_FT_MASK,
-	LCD_UNIT_L1_K_MASK,
-	LCD_UNIT_L1_M_MASK,
-	LCD_UNIT_L1_I_MASK,
-	LCD_UNIT_L1_PER_S_MASK,
-	LCD_UNIT_L1_PER_H_MASK,
-	LCD_UNIT_L1_DEGREE_MASK,
-	LCD_UNIT_L2_KCAL_MASK,
-	LCD_UNIT_L2_KM_MASK,
-	LCD_UNIT_L2_MI_MASK,
-	LCD_ICON_HEART_MASK,
-	LCD_ICON_STOPWATCH_MASK,
-	LCD_ICON_RECORD_MASK,
-	LCD_ICON_ALARM_MASK,
-	LCD_ICON_BEEPER1_MASK,
-	LCD_ICON_BEEPER2_MASK,
-	LCD_ICON_BEEPER3_MASK,
-	LCD_SEG_L1_3_MASK,
-	LCD_SEG_L1_2_MASK,
-	LCD_SEG_L1_1_MASK,
-	LCD_SEG_L1_0_MASK,
-	LCD_SEG_L1_COL_MASK,
-	LCD_SEG_L1_DP1_MASK,
-	LCD_SEG_L1_DP0_MASK,
-	LCD_SEG_L2_5_MASK,
-	LCD_SEG_L2_4_MASK,
-	LCD_SEG_L2_3_MASK,
-	LCD_SEG_L2_2_MASK,
-	LCD_SEG_L2_1_MASK,
-	LCD_SEG_L2_0_MASK,
-	LCD_SEG_L2_COL1_MASK,
-	LCD_SEG_L2_COL0_MASK,
-	LCD_SEG_L2_DP_MASK,
+    LCD_SYMB_AM_MASK,
+    LCD_SYMB_PM_MASK,
+    LCD_SYMB_ARROW_UP_MASK,
+    LCD_SYMB_ARROW_DOWN_MASK,
+    LCD_SYMB_PERCENT_MASK,
+    LCD_SYMB_TOTAL_MASK,
+    LCD_SYMB_AVERAGE_MASK,
+    LCD_SYMB_MAX_MASK,
+    LCD_SYMB_BATTERY_MASK,
+    LCD_UNIT_L1_FT_MASK,
+    LCD_UNIT_L1_K_MASK,
+    LCD_UNIT_L1_M_MASK,
+    LCD_UNIT_L1_I_MASK,
+    LCD_UNIT_L1_PER_S_MASK,
+    LCD_UNIT_L1_PER_H_MASK,
+    LCD_UNIT_L1_DEGREE_MASK,
+    LCD_UNIT_L2_KCAL_MASK,
+    LCD_UNIT_L2_KM_MASK,
+    LCD_UNIT_L2_MI_MASK,
+    LCD_ICON_HEART_MASK,
+    LCD_ICON_STOPWATCH_MASK,
+    LCD_ICON_RECORD_MASK,
+    LCD_ICON_ALARM_MASK,
+    LCD_ICON_BEEPER1_MASK,
+    LCD_ICON_BEEPER2_MASK,
+    LCD_ICON_BEEPER3_MASK,
+    LCD_SEG_L1_3_MASK,
+    LCD_SEG_L1_2_MASK,
+    LCD_SEG_L1_1_MASK,
+    LCD_SEG_L1_0_MASK,
+    LCD_SEG_L1_COL_MASK,
+    LCD_SEG_L1_DP1_MASK,
+    LCD_SEG_L1_DP0_MASK,
+    LCD_SEG_L2_5_MASK,
+    LCD_SEG_L2_4_MASK,
+    LCD_SEG_L2_3_MASK,
+    LCD_SEG_L2_2_MASK,
+    LCD_SEG_L2_1_MASK,
+    LCD_SEG_L2_0_MASK,
+    LCD_SEG_L2_COL1_MASK,
+    LCD_SEG_L2_COL0_MASK,
+    LCD_SEG_L2_DP_MASK,
 };
 
 /***************************************************************************
@@ -356,25 +356,25 @@ static const uint8_t segments_bitmask[] = {
 static void write_lcd_mem(uint8_t *segmem, uint8_t *blkmem,
                   uint8_t bits, uint8_t bitmask, uint8_t state)
 {
-	if ( (state | SEG_OFF) == state) {
-		// Clear all segments
-		*segmem = (uint8_t)(*segmem & ~bitmask);
-	}
+    if ( (state | SEG_OFF) == state) {
+        // Clear all segments
+        *segmem = (uint8_t)(*segmem & ~bitmask);
+    }
 
-	if ( (state | SEG_ON) == state) {
-		// Set visible segments
-		*segmem = (uint8_t)(*segmem | bits);
-	}
+    if ( (state | SEG_ON) == state) {
+        // Set visible segments
+        *segmem = (uint8_t)(*segmem | bits);
+    }
 
-	if ( (state | BLINK_OFF) == state) {
-		// Clear blink segments
-		*blkmem = (uint8_t)(*blkmem & ~bitmask);
-	}
+    if ( (state | BLINK_OFF) == state) {
+        // Clear blink segments
+        *blkmem = (uint8_t)(*blkmem & ~bitmask);
+    }
 
-	if ( (state | BLINK_ON) == state) {
-		// Set blink segments
-		*blkmem = (uint8_t)(*blkmem | bits);
-	}
+    if ( (state | BLINK_ON) == state) {
+        // Set blink segments
+        *blkmem = (uint8_t)(*blkmem | bits);
+    }
 }
 
 /***************************************************************************
@@ -382,182 +382,182 @@ static void write_lcd_mem(uint8_t *segmem, uint8_t *blkmem,
  **************************************************************************/
 
 /*
-	lcd_screens_create()
+    lcd_screens_create()
 */
 void lcd_screens_create(uint8_t nr)
 {
-	/* allocate memory */
-	display_nrscreens = nr;
-	display_screens = malloc(sizeof(struct lcd_screen) * nr);
+    /* allocate memory */
+    display_nrscreens = nr;
+    display_screens = malloc(sizeof(struct lcd_screen) * nr);
 
-	/* the first screen is the active one */
-	display_activescr = 0;
-	display_screens[0].segmem = LCD_SEG_MEM;
-	display_screens[0].blkmem = LCD_BLK_MEM;
+    /* the first screen is the active one */
+    display_activescr = 0;
+    display_screens[0].segmem = LCD_SEG_MEM;
+    display_screens[0].blkmem = LCD_BLK_MEM;
 
-	/* allocate mem for the remaining and copy real screen over */
-	uint8_t i = 1;
-	for (; i<nr; i++) {
-		display_screens[i].segmem = malloc(LCD_MEM_LEN);
-		display_screens[i].blkmem = malloc(LCD_MEM_LEN);
-		memcpy(display_screens[i].segmem, LCD_SEG_MEM, LCD_MEM_LEN);
-		memcpy(display_screens[i].blkmem, LCD_BLK_MEM, LCD_MEM_LEN);
-	}
+    /* allocate mem for the remaining and copy real screen over */
+    uint8_t i = 1;
+    for (; i<nr; i++) {
+        display_screens[i].segmem = malloc(LCD_MEM_LEN);
+        display_screens[i].blkmem = malloc(LCD_MEM_LEN);
+        memcpy(display_screens[i].segmem, LCD_SEG_MEM, LCD_MEM_LEN);
+        memcpy(display_screens[i].blkmem, LCD_BLK_MEM, LCD_MEM_LEN);
+    }
 }
 
 /*
-	lcd_screens_destroy()
+    lcd_screens_destroy()
 */
 void lcd_screens_destroy(void)
 {
-	uint8_t i = 0;
+    uint8_t i = 0;
 
-	/* switch to screen 0 and display any pending data */
-	lcd_screen_activate(0);
+    /* switch to screen 0 and display any pending data */
+    lcd_screen_activate(0);
 
-	/* now we can delete all the screens */
-	for (; i<display_nrscreens; i++) {
-		if (i != display_activescr) {
-			free(display_screens[i].segmem);
-			free(display_screens[i].blkmem);
-		}
-		display_screens[i].segmem = NULL;
-		display_screens[i].segmem = NULL;
-	}
+    /* now we can delete all the screens */
+    for (; i<display_nrscreens; i++) {
+        if (i != display_activescr) {
+            free(display_screens[i].segmem);
+            free(display_screens[i].blkmem);
+        }
+        display_screens[i].segmem = NULL;
+        display_screens[i].segmem = NULL;
+    }
 
-	free(display_screens);
-	display_screens = NULL;
+    free(display_screens);
+    display_screens = NULL;
 }
 
 uint8_t get_active_lcd_screen_nr(void)
 {
-	return display_activescr;
+    return display_activescr;
 }
 /*
-	lcd_screen_activate()
+    lcd_screen_activate()
    - the memory pointed by display_screens is assumed to be on
-	contiguous memory
-	if scr_nr == 0xff, then activate next screen.
+    contiguous memory
+    if scr_nr == 0xff, then activate next screen.
 */
 void lcd_screen_activate(uint8_t scr_nr)
 {
-	uint8_t prevscr = display_activescr;
+    uint8_t prevscr = display_activescr;
 
-	if (scr_nr == 0xff)
-		helpers_loop(&display_activescr, 0, display_nrscreens - 1, 1);
-	else
-		display_activescr = scr_nr;
+    if (scr_nr == 0xff)
+        helpers_loop(&display_activescr, 0, display_nrscreens - 1, 1);
+    else
+        display_activescr = scr_nr;
 
-	/* allocate memory for previous screen */
-	display_screens[prevscr].segmem = malloc(LCD_MEM_LEN);
-	display_screens[prevscr].blkmem = malloc(LCD_MEM_LEN);
+    /* allocate memory for previous screen */
+    display_screens[prevscr].segmem = malloc(LCD_MEM_LEN);
+    display_screens[prevscr].blkmem = malloc(LCD_MEM_LEN);
 
-	/* copy real screen contents to previous screen */
-	memcpy(display_screens[prevscr].segmem, LCD_SEG_MEM, LCD_MEM_LEN);
-	memcpy(display_screens[prevscr].blkmem, LCD_BLK_MEM, LCD_MEM_LEN);
+    /* copy real screen contents to previous screen */
+    memcpy(display_screens[prevscr].segmem, LCD_SEG_MEM, LCD_MEM_LEN);
+    memcpy(display_screens[prevscr].blkmem, LCD_BLK_MEM, LCD_MEM_LEN);
 
-	/* update real screen with contents from activated screen */
-	memcpy(LCD_SEG_MEM, display_screens[display_activescr].segmem, LCD_MEM_LEN);
-	memcpy(LCD_BLK_MEM, display_screens[display_activescr].blkmem, LCD_MEM_LEN);
-	
-	/* free memory from the activated screen */
-	free(display_screens[display_activescr].segmem);
-	free(display_screens[display_activescr].blkmem);
+    /* update real screen with contents from activated screen */
+    memcpy(LCD_SEG_MEM, display_screens[display_activescr].segmem, LCD_MEM_LEN);
+    memcpy(LCD_BLK_MEM, display_screens[display_activescr].blkmem, LCD_MEM_LEN);
 
-	/* set activated screen as real screen output */
-	display_screens[display_activescr].segmem = LCD_SEG_MEM;
-	display_screens[display_activescr].blkmem = LCD_BLK_MEM;
+    /* free memory from the activated screen */
+    free(display_screens[display_activescr].segmem);
+    free(display_screens[display_activescr].blkmem);
+
+    /* set activated screen as real screen output */
+    display_screens[display_activescr].segmem = LCD_SEG_MEM;
+    display_screens[display_activescr].blkmem = LCD_BLK_MEM;
 }
 
 void fill_display(uint8_t scr_nr, uint8_t value)
 {
-	uint8_t *lcdptr = (display_screens ? display_screens[scr_nr].segmem : LCD_SEG_MEM);
-	uint8_t i = 1;
+    uint8_t *lcdptr = (display_screens ? display_screens[scr_nr].segmem : LCD_SEG_MEM);
+    uint8_t i = 1;
 
-	for (; i <= 12; i++) {
-			*(lcdptr++) = value;
-		}
+    for (; i <= 12; i++) {
+            *(lcdptr++) = value;
+        }
 }
 void display_clear(uint8_t scr_nr, uint8_t line)
 {
-	if (line == 1) {
-		display_chars(scr_nr, LCD_SEG_L1_3_0, NULL, SEG_OFF);
-		display_symbol(scr_nr, LCD_SEG_L1_DP1, SEG_OFF);
-		display_symbol(scr_nr, LCD_SEG_L1_DP0, SEG_OFF);
-		display_symbol(scr_nr, LCD_SEG_L1_COL, SEG_OFF);
-	} else if (line == 2) {
-		display_chars(scr_nr, LCD_SEG_L2_5_0, NULL, SEG_OFF);
-		display_symbol(scr_nr, LCD_SEG_L2_DP, SEG_OFF);
-		display_symbol(scr_nr, LCD_SEG_L2_COL1, SEG_OFF);
-		display_symbol(scr_nr, LCD_SEG_L2_COL0, SEG_OFF);
-	} else {
-		fill_display(scr_nr, 0x00);
-	}
+    if (line == 1) {
+        display_chars(scr_nr, LCD_SEG_L1_3_0, NULL, SEG_OFF);
+        display_symbol(scr_nr, LCD_SEG_L1_DP1, SEG_OFF);
+        display_symbol(scr_nr, LCD_SEG_L1_DP0, SEG_OFF);
+        display_symbol(scr_nr, LCD_SEG_L1_COL, SEG_OFF);
+    } else if (line == 2) {
+        display_chars(scr_nr, LCD_SEG_L2_5_0, NULL, SEG_OFF);
+        display_symbol(scr_nr, LCD_SEG_L2_DP, SEG_OFF);
+        display_symbol(scr_nr, LCD_SEG_L2_COL1, SEG_OFF);
+        display_symbol(scr_nr, LCD_SEG_L2_COL0, SEG_OFF);
+    } else {
+        fill_display(scr_nr, 0x00);
+    }
 }
 
 char *_sprintf(const char *fmt, int16_t n) {
-	int8_t i = 0;
-	int8_t j = 0;
-		
-	while (1) {
-		/* copy chars until end of string or a int substitution is found */ 
-		while (fmt[i] != '%') {
-			if (fmt[i] == '\0' || j == SPRINTF_STR_LEN - 2) {
-				sprintf_str[j] = '\0';
-				return sprintf_str;
-			}
-			sprintf_str[j++] = fmt[i++];
-		}
-		i++;
+    int8_t i = 0;
+    int8_t j = 0;
 
-		int8_t digits = 0;
-		int8_t zpad = ' ';
-		/* parse int substitution */
-		while (fmt[i] != 's' && fmt[i] != 'u' && fmt[i] != 'x') {
-			if (fmt[i] == '0')
-				zpad = '0';
-			else
-				digits = fmt[i] - '0';
-			i++;
-		}
+    while (1) {
+        /* copy chars until end of string or a int substitution is found */
+        while (fmt[i] != '%') {
+            if (fmt[i] == '\0' || j == SPRINTF_STR_LEN - 2) {
+                sprintf_str[j] = '\0';
+                return sprintf_str;
+            }
+            sprintf_str[j++] = fmt[i++];
+        }
+        i++;
 
-		/* show sign */
-		if (fmt[i] == 's') {
-			if (n < 0) {
-				sprintf_str[j++] = '-';
-				n = (~n) + 1;
-			} else
-				sprintf_str[j++] = ' ';
-		}
+        int8_t digits = 0;
+        int8_t zpad = ' ';
+        /* parse int substitution */
+        while (fmt[i] != 's' && fmt[i] != 'u' && fmt[i] != 'x') {
+            if (fmt[i] == '0')
+                zpad = '0';
+            else
+                digits = fmt[i] - '0';
+            i++;
+        }
 
-		j += digits - 1;
-		int8_t j1 = j + 1;
+        /* show sign */
+        if (fmt[i] == 's') {
+            if (n < 0) {
+                sprintf_str[j++] = '-';
+                n = (~n) + 1;
+            } else
+                sprintf_str[j++] = ' ';
+        }
 
-		/* convert int to string */
-		if (fmt[i] == 'x') {
-			do {
-				sprintf_str[j--] = "0123456789ABCDEF"[n & 0x0F];
-				n >>= 4;
-				digits--;
-			} while (n > 0);
-		} else {
-			do {
-				sprintf_str[j--] = n % 10 + '0';
-				n /= 10;
-				digits--;
-			} while (n > 0);
-		}
+        j += digits - 1;
+        int8_t j1 = j + 1;
 
-		/* pad the remaining */
-		while (digits > 0) {
-			sprintf_str[j--] = zpad;
-			digits--;
-		}
+        /* convert int to string */
+        if (fmt[i] == 'x') {
+            do {
+                sprintf_str[j--] = "0123456789ABCDEF"[n & 0x0F];
+                n >>= 4;
+                digits--;
+            } while (n > 0);
+        } else {
+            do {
+                sprintf_str[j--] = n % 10 + '0';
+                n /= 10;
+                digits--;
+            } while (n > 0);
+        }
 
-		j = j1;
-	}
+        /* pad the remaining */
+        while (digits > 0) {
+            sprintf_str[j--] = zpad;
+            digits--;
+        }
 
-	return sprintf_str;
+        j = j1;
+    }
+
+    return sprintf_str;
 }
 
 // *************************************************************************************************
@@ -572,69 +572,69 @@ char *_sprintf(const char *fmt, int16_t n) {
 char *_itopct(uint32_t low,uint32_t high,uint32_t n)
 {
 
-	// Return "0" if the value is under the low
-	if (n < low) return (char *) "  0";
+    // Return "0" if the value is under the low
+    if (n < low) return (char *) "  0";
 
-	// Return "100" if the value is over the high
-	if (n > high) return (char *) "100";
+    // Return "100" if the value is over the high
+    if (n > high) return (char *) "100";
 
-	return _sprintf("%3u", (((n*100)-(low*100))/(high-low)));
+    return _sprintf("%3u", (((n*100)-(low*100))/(high-low)));
 }
 
 void display_symbol(uint8_t scr_nr, enum display_segment symbol,
                                                enum display_segstate state)
 {
-	if (symbol <= LCD_SEG_L2_DP) {
-		// Get LCD memory address for symbol from table
-		uint8_t *segmem = (uint8_t *)segments_lcdmem[symbol];
-		uint8_t *blkmem = segmem + 0x20;
+    if (symbol <= LCD_SEG_L2_DP) {
+        // Get LCD memory address for symbol from table
+        uint8_t *segmem = (uint8_t *)segments_lcdmem[symbol];
+        uint8_t *blkmem = segmem + 0x20;
 
-		if (display_screens) {
-			/* get offset */
-			uint8_t offset = segmem - LCD_MEM_1;
-			
-			segmem = display_screens[scr_nr].segmem + offset;
-			blkmem = display_screens[scr_nr].blkmem + offset;
-		}
+        if (display_screens) {
+            /* get offset */
+            uint8_t offset = segmem - LCD_MEM_1;
 
-		// Get bits for symbol from table
-		uint8_t bits 	= segments_bitmask[symbol];
+            segmem = display_screens[scr_nr].segmem + offset;
+            blkmem = display_screens[scr_nr].blkmem + offset;
+        }
 
-		// Write LCD memory
-		// (bitmask for symbols equals bits)
-		write_lcd_mem(segmem, blkmem, bits, bits, state);
-	}
+        // Get bits for symbol from table
+        uint8_t bits 	= segments_bitmask[symbol];
+
+        // Write LCD memory
+        // (bitmask for symbols equals bits)
+        write_lcd_mem(segmem, blkmem, bits, bits, state);
+    }
 }
 
 void display_bits(uint8_t scr_nr, enum display_segment segment,
                   uint8_t bits  , enum display_segstate state)
 {
-	// Write to single 7-segment character
-	if ((segment >= LCD_SEG_L1_3) && (segment <= LCD_SEG_L2_DP)) {
-		// Get LCD memory address for segment from table
-		uint8_t *segmem = (uint8_t *)segments_lcdmem[segment];
-		uint8_t *blkmem = segmem + 0x20;
+    // Write to single 7-segment character
+    if ((segment >= LCD_SEG_L1_3) && (segment <= LCD_SEG_L2_DP)) {
+        // Get LCD memory address for segment from table
+        uint8_t *segmem = (uint8_t *)segments_lcdmem[segment];
+        uint8_t *blkmem = segmem + 0x20;
 
-		if (display_screens) {
-			/* get offset */
-			uint8_t offset = segmem - LCD_MEM_1;
+        if (display_screens) {
+            /* get offset */
+            uint8_t offset = segmem - LCD_MEM_1;
 
-			segmem = display_screens[scr_nr].segmem + offset;
-			blkmem = display_screens[scr_nr].blkmem + offset;
-		}
+            segmem = display_screens[scr_nr].segmem + offset;
+            blkmem = display_screens[scr_nr].blkmem + offset;
+        }
 
         // Get bitmask for character from table
         uint8_t bitmask = segments_bitmask[segment];
 
-		// When addressing LINE2 7-segment characters need to swap high- and low-nibble,
-		// because LCD COM/SEG assignment is mirrored against LINE1
-		if (segment >= LCD_SEG_L2_5) {
-			bits = SWAP_NIBBLE(bits);
-		}
+        // When addressing LINE2 7-segment characters need to swap high- and low-nibble,
+        // because LCD COM/SEG assignment is mirrored against LINE1
+        if (segment >= LCD_SEG_L2_5) {
+            bits = SWAP_NIBBLE(bits);
+        }
 
-		// Physically write to LCD memory
-		write_lcd_mem(segmem, blkmem, bits, bitmask, state);
-	}
+        // Physically write to LCD memory
+        write_lcd_mem(segmem, blkmem, bits, bitmask, state);
+    }
 }
 
 void display_char(uint8_t scr_nr, enum display_segment segment,
@@ -664,19 +664,19 @@ void display_chars(uint8_t scr_nr,
                    char const * str,
                    enum display_segstate state)
 {
-	uint8_t i = 0;
-	uint8_t len = (segments & 0x0f);
-	segments = 38 - (segments >> 4);
+    uint8_t i = 0;
+    uint8_t len = (segments & 0x0f);
+    segments = 38 - (segments >> 4);
 
-	for (; i < len; i++) {
-		/* stop if we find a null termination */
-		if (str) {
-			if (str[i] == '\0')
-				return;
-			display_char(scr_nr, segments + i, str[i], state);
-		 } else
-			display_char(scr_nr, segments + i, '8', state);
-	}
+    for (; i < len; i++) {
+        /* stop if we find a null termination */
+        if (str) {
+            if (str[i] == '\0')
+                return;
+            display_char(scr_nr, segments + i, str[i], state);
+         } else
+            display_char(scr_nr, segments + i, '8', state);
+    }
 }
 
 // *************************************************************************************************
@@ -687,7 +687,7 @@ void display_chars(uint8_t scr_nr,
 // *************************************************************************************************
 void start_blink(void)
 {
-	LCDBBLKCTL |= LCDBLKMOD0;
+    LCDBBLKCTL |= LCDBLKMOD0;
 }
 
 
@@ -699,7 +699,7 @@ void start_blink(void)
 // *************************************************************************************************
 void stop_blink(void)
 {
-	LCDBBLKCTL &= ~LCDBLKMOD0;
+    LCDBBLKCTL &= ~LCDBLKMOD0;
 }
 
 
@@ -711,7 +711,7 @@ void stop_blink(void)
 // *************************************************************************************************
 void clear_blink_mem(void)
 {
-	LCDBMEMCTL |= LCDCLRBM;
+    LCDBMEMCTL |= LCDCLRBM;
 }
 
 

@@ -6,7 +6,7 @@
 
     http://github.com/BenjaminSoelberg/openchronos-ng-elf
 
-	This file is part of openchronos-ng.
+    This file is part of openchronos-ng.
 
     openchronos-ng is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -36,8 +36,8 @@
 #define DST_NZ 6
 
 struct rtc_dst_date_struct {
-	uint8_t month;
-	uint8_t day;
+    uint8_t month;
+    uint8_t day;
 };
 
 extern struct rtc_dst_date_struct dst_dates[];
