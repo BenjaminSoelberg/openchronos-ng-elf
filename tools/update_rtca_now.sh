@@ -2,7 +2,7 @@
 
 strip_zero()
 {
-	cat | sed 's|^0||'
+    cat | sed 's|^0||'
 }
 
 

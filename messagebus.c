@@ -6,7 +6,7 @@
 
     http://github.com/BenjaminSoelberg/openchronos-ng-elf
 
-	This file is part of openchronos-ng.
+    This file is part of openchronos-ng.
 
     openchronos-ng is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -33,17 +33,17 @@ static struct sys_messagebus *messagebus;
 void sys_messagebus_register(void (*callback)(enum sys_message),
                              enum sys_message listens)
 {
-	struct sys_messagebus **p = &messagebus;
+    struct sys_messagebus **p = &messagebus;
 
-	while (*p) {
-		/* Set p to address of next pointer */
-		p = &(*p)->next;
-	}
+    while (*p) {
+        /* Set p to address of next pointer */
+        p = &(*p)->next;
+    }
 
-	*p = malloc(sizeof(struct sys_messagebus));
-	(*p)->next = NULL;
-	(*p)->fn = callback;
-	(*p)->listens = listens;
+    *p = malloc(sizeof(struct sys_messagebus));
+    (*p)->next = NULL;
+    (*p)->fn = callback;
+    (*p)->listens = listens;
 }
 
 void sys_messagebus_unregister_all(void (*callback)(enum sys_message))
@@ -54,47 +54,47 @@ void sys_messagebus_unregister_all(void (*callback)(enum sys_message))
 void sys_messagebus_unregister(void (*callback)(enum sys_message),
                                enum sys_message listens)
 {
-	struct sys_messagebus *p = messagebus, *pp = NULL;
+    struct sys_messagebus *p = messagebus, *pp = NULL;
 
-	while (p) {
-		if (p->fn == callback && (listens == 0 || p->listens == listens)) {
-			if (!pp) { // If 1. element
-				// Remove first element by pointing to the next
-				messagebus = p->next;
-				// Free element
-				free(p);
-				// Set current pointer to point to new first element
-				p = messagebus;
-				// Keep pp the same (NULL)
-			} else { // If 2. or later element
-				// Remove element by pointing previous to the next
-				pp->next = p->next;
-				// Free element
-				free(p);
-				// Set current pointer to point to next element
-				p = pp->next;
-				// Keep pp the same
-			}
-		} else {
-			// Set pp (previous pointer) to current element
-			pp = p;
-			// Set p (current pointer) to next element
-			p = p->next;
-		}
-	}
+    while (p) {
+        if (p->fn == callback && (listens == 0 || p->listens == listens)) {
+            if (!pp) { // If 1. element
+                // Remove first element by pointing to the next
+                messagebus = p->next;
+                // Free element
+                free(p);
+                // Set current pointer to point to new first element
+                p = messagebus;
+                // Keep pp the same (NULL)
+            } else { // If 2. or later element
+                // Remove element by pointing previous to the next
+                pp->next = p->next;
+                // Free element
+                free(p);
+                // Set current pointer to point to next element
+                p = pp->next;
+                // Keep pp the same
+            }
+        } else {
+            // Set pp (previous pointer) to current element
+            pp = p;
+            // Set p (current pointer) to next element
+            p = p->next;
+        }
+    }
 }
 void send_events(enum sys_message msg)
 {
-	struct sys_messagebus *p = messagebus;
+    struct sys_messagebus *p = messagebus;
 
-	while (p) {
-		/* notify listener if he registered for any of these messages */
-		if (msg & p->listens) {
-			p->fn(msg);
-		}
+    while (p) {
+        /* notify listener if he registered for any of these messages */
+        if (msg & p->listens) {
+            p->fn(msg);
+        }
 
-		/* move to next */
-		p = p->next;
-	}
+        /* move to next */
+        p = p->next;
+    }
 }
 

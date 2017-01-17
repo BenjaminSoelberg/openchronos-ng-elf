@@ -6,7 +6,7 @@
 
     http://github.com/BenjaminSoelberg/openchronos-ng-elf
 
-	This file is part of openchronos-ng.
+    This file is part of openchronos-ng.
 
     openchronos-ng is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -24,14 +24,14 @@
 
 /*
    Developer note: I thought about using SYSRIVECT, to override the
-	interrupt handler of PORT2 (buttons). This would allow temporarily
-	replacing the interrupt vector in RAM at boot, providing button
-	interrupts needed to wake up the system from low power.
-	Unfortunately this would require to modify the linker script to
-	reserve 128 bytes at the TOP of the RAM for the new interrupt vector.
-	Since we are not handling watchdog timer interrupts in the main program,
-	I thought we could use it as a source of external events to wakeup the
-	CPU from low power mode and check buttons state.
+    interrupt handler of PORT2 (buttons). This would allow temporarily
+    replacing the interrupt vector in RAM at boot, providing button
+    interrupts needed to wake up the system from low power.
+    Unfortunately this would require to modify the linker script to
+    reserve 128 bytes at the TOP of the RAM for the new interrupt vector.
+    Since we are not handling watchdog timer interrupts in the main program,
+    I thought we could use it as a source of external events to wakeup the
+    CPU from low power mode and check buttons state.
 */
 
 
@@ -46,108 +46,108 @@
 
 inline void initialize_aclk()
 {
-	/* Select XIN, XOUT on P5.0 and P5.1 */
-	P5SEL |= 0x03;
+    /* Select XIN, XOUT on P5.0 and P5.1 */
+    P5SEL |= 0x03;
 
-	/* XT1 On, Highest drive strength */
-	UCSCTL6 &= ~XT1OFF;
+    /* XT1 On, Highest drive strength */
+    UCSCTL6 &= ~XT1OFF;
 
-	/* Internal load cap */
-	UCSCTL6 |= XCAP_3;
+    /* Internal load cap */
+    UCSCTL6 |= XCAP_3;
 
-	/* Select XT1 as FLL reference */
-	UCSCTL3 = SELA__XT1CLK;
+    /* Select XT1 as FLL reference */
+    UCSCTL3 = SELA__XT1CLK;
 
-	/* Set ACLK source to XT1CLK, set SMCLK to DCOCLKDIV, set MCLK to DCOCLKDIV, Enable the FLL control loop */
-	UCSCTL4 = SELA__XT1CLK | SELS__DCOCLKDIV | SELM__DCOCLKDIV;
+    /* Set ACLK source to XT1CLK, set SMCLK to DCOCLKDIV, set MCLK to DCOCLKDIV, Enable the FLL control loop */
+    UCSCTL4 = SELA__XT1CLK | SELS__DCOCLKDIV | SELM__DCOCLKDIV;
 }
 
 inline void initialize_cpu_12mhz()
 {
-	/* Disable the FLL control loop */
-	_BIS_SR(SCG0);
+    /* Disable the FLL control loop */
+    _BIS_SR(SCG0);
 
-	/* Set lowest possible DCOx, MODx */
-	UCSCTL0 = 0x0000;
+    /* Set lowest possible DCOx, MODx */
+    UCSCTL0 = 0x0000;
 
-	/* Select suitable range */
-	UCSCTL1 = DCORSEL_5;
+    /* Select suitable range */
+    UCSCTL1 = DCORSEL_5;
 
-	/* Set DCO Multiplier */
-	UCSCTL2 = FLLD_1 + 0x16E; // (32768 * 0x16e) almost 12 mhz
-	_BIC_SR(SCG0);
+    /* Set DCO Multiplier */
+    UCSCTL2 = FLLD_1 + 0x16E; // (32768 * 0x16e) almost 12 mhz
+    _BIC_SR(SCG0);
 
-	/* Worst-case settling time for the DCO when the DCO range bits have been
-	changed is n x 32 x 32 x f_MCLK / f_FLL_reference. See UCS chapter in 5xx
-	UG for optimization.
-	32 x 32 x 12 MHz / 32,768 Hz = 250000 = MCLK cycles for DCO to settle */
-	__delay_cycles(375000);
+    /* Worst-case settling time for the DCO when the DCO range bits have been
+    changed is n x 32 x 32 x f_MCLK / f_FLL_reference. See UCS chapter in 5xx
+    UG for optimization.
+    32 x 32 x 12 MHz / 32,768 Hz = 250000 = MCLK cycles for DCO to settle */
+    __delay_cycles(375000);
 
-	/* Loop until XT1 & DCO stabilizes, use do-while to insure that
-	body is executed at least once */
-	do {
-		UCSCTL7 &= ~(XT2OFFG + XT1LFOFFG + XT1HFOFFG + DCOFFG);
+    /* Loop until XT1 & DCO stabilizes, use do-while to insure that
+    body is executed at least once */
+    do {
+        UCSCTL7 &= ~(XT2OFFG + XT1LFOFFG + XT1HFOFFG + DCOFFG);
 
-		/* Clear fault flags */
-		SFRIFG1 &= ~OFIFG;
-	} while ((SFRIFG1 & OFIFG));
+        /* Clear fault flags */
+        SFRIFG1 &= ~OFIFG;
+    } while ((SFRIFG1 & OFIFG));
 }
 
 inline void initialize_buttons()
 {
-	/* Set button ports to input */
-	P2DIR &= ~ALL_BUTTONS;
+    /* Set button ports to input */
+    P2DIR &= ~ALL_BUTTONS;
 
-	/* Enable internal pull-downs */
-	P2OUT &= ~ALL_BUTTONS;
-	P2REN |= ALL_BUTTONS;
+    /* Enable internal pull-downs */
+    P2OUT &= ~ALL_BUTTONS;
+    P2REN |= ALL_BUTTONS;
 }
 
 inline void initialize_lcd()
 {
-	/* clear entire display memory */
-	LCDBMEMCTL |= LCDCLRBM + LCDCLRM;
+    /* clear entire display memory */
+    LCDBMEMCTL |= LCDCLRBM + LCDCLRM;
 
-	/* flickers in the sun */
-	/* LCD_FREQ = ACLK/12/8 = 341.3Hz */
+    /* flickers in the sun */
+    /* LCD_FREQ = ACLK/12/8 = 341.3Hz */
 
-	/* still flickers in the sun, when watch is moving */
-	/* LCD_FREQ = ACLK/10/8 = 409.6Hz */
+    /* still flickers in the sun, when watch is moving */
+    /* LCD_FREQ = ACLK/10/8 = 409.6Hz */
 
-	/* no flickering */
-	/* LCD_FREQ = ACLK/8/8 = 512Hz */
-	/* Frame frequency = 512Hz/2/4 = 64Hz, LCD mux 4, LCD on */
-	LCDBCTL0 = (LCDDIV0 + LCDDIV1 + LCDDIV2)
-	         | (LCDPRE0 + LCDPRE1) | LCD4MUX | LCDON;
+    /* no flickering */
+    /* LCD_FREQ = ACLK/8/8 = 512Hz */
+    /* Frame frequency = 512Hz/2/4 = 64Hz, LCD mux 4, LCD on */
+    LCDBCTL0 = (LCDDIV0 + LCDDIV1 + LCDDIV2)
+             | (LCDPRE0 + LCDPRE1) | LCD4MUX | LCDON;
 
-	/* LCB_BLK_FREQ = ACLK/8/2048 = 2Hz */
-	LCDBBLKCTL = LCDBLKPRE1 | LCDBLKDIV0 | LCDBLKDIV1
-	           | LCDBLKDIV2 | LCDBLKMOD0;
+    /* LCB_BLK_FREQ = ACLK/8/2048 = 2Hz */
+    LCDBBLKCTL = LCDBLKPRE1 | LCDBLKDIV0 | LCDBLKDIV1
+               | LCDBLKDIV2 | LCDBLKMOD0;
 
-	/* I/O to COM outputs */
-	P5SEL |= (BIT5 | BIT6 | BIT7);
-	P5DIR |= (BIT5 | BIT6 | BIT7);
+    /* I/O to COM outputs */
+    P5SEL |= (BIT5 | BIT6 | BIT7);
+    P5DIR |= (BIT5 | BIT6 | BIT7);
 
-	/* Activate LCD output */
-	/* Select LCD segments S0-S15 */
-	LCDBPCTL0 = 0xFFFF;
-	/* Select LCD segments int16_t-S22 */
-	LCDBPCTL1 = 0x00FF;
+    /* Activate LCD output */
+    /* Select LCD segments S0-S15 */
+    LCDBPCTL0 = 0xFFFF;
+    /* Select LCD segments int16_t-S22 */
+    LCDBPCTL1 = 0x00FF;
 
 #ifdef USE_LCD_CHARGE_PUMP
-	/* Charge pump voltage generated internally,
-	   internal bias (V2-V4) generation */
-	LCDBVCTL = LCDCPEN | VLCD_2_72;
+    /* Charge pump voltage generated internally,
+       internal bias (V2-V4) generation */
+    LCDBVCTL = LCDCPEN | VLCD_2_72;
 #endif
 }
 
 inline void jump_to_rfbsl()
 {
-	/* clear display memory (useful to know if rfbsl failed) */
-	LCDBMEMCTL |= LCDCLRBM + LCDCLRM;
+    /* clear display memory (useful to know if rfbsl failed) */
+    LCDBMEMCTL |= LCDCLRBM + LCDCLRM;
 
-	/* finally jump to the BSL memory address */
-	CALL_RFSBL();
+    /* finally jump to the BSL memory address */
+    CALL_RFSBL();
 }
 
 
@@ -155,66 +155,66 @@ inline void jump_to_rfbsl()
 __attribute__((naked, section(".crt_0042"), used))
 static void crt_0042(void)
 {
-	/* Stop watchdog timer */
-	WDTCTL = WDTPW + WDTHOLD;
+    /* Stop watchdog timer */
+    WDTCTL = WDTPW + WDTHOLD;
 
-	/* Configure PMM */
-	SetVCore(3);
+    /* Configure PMM */
+    SetVCore(3);
 
-	/* Set global high power request enable */
-	{
-		PMMCTL0_H  = 0xA5;
-		PMMCTL0_L |= PMMHPMRE;
-		PMMCTL0_H  = 0x00;
-	}
+    /* Set global high power request enable */
+    {
+        PMMCTL0_H  = 0xA5;
+        PMMCTL0_L |= PMMHPMRE;
+        PMMCTL0_H  = 0x00;
+    }
 
-	/* Enable 32kHz ACLK */
-	initialize_aclk();
+    /* Enable 32kHz ACLK */
+    initialize_aclk();
 
-	/* Configure CPU clock for 12MHz */
-	initialize_cpu_12mhz();	
+    /* Configure CPU clock for 12MHz */
+    initialize_cpu_12mhz();
 
-	/* Configure buttons for input */
-	initialize_buttons();
+    /* Configure buttons for input */
+    initialize_buttons();
 
-	/* Initialize LCD */
-	initialize_lcd();
+    /* Initialize LCD */
+    initialize_lcd();
 
-	/* Write 'boot' to the screen without using display functions */
-	LCDM2 = 199; /* 'b' */
-	LCDM3 = 198; /* 'o' */
-	LCDM4 = 198; /* 'o' */
-	LCDM6 = 135; /* 't' */
+    /* Write 'boot' to the screen without using display functions */
+    LCDM2 = 199; /* 'b' */
+    LCDM3 = 198; /* 'o' */
+    LCDM4 = 198; /* 'o' */
+    LCDM6 = 135; /* 't' */
 
-	/* configure watchdog interrupt timer, used for polling buttons */
-	{
-		/* ACLK timer source, 250ms timer mode, resume watchdog */
-		WDTCTL = WDT_ADLY_250;
+    /* configure watchdog interrupt timer, used for polling buttons */
+    {
+        /* ACLK timer source, 250ms timer mode, resume watchdog */
+        WDTCTL = WDT_ADLY_250;
 
-		/* Enable watchdog timer interrupts */
-		SFRIE1 |= WDTIE;
-	}
+        /* Enable watchdog timer interrupts */
+        SFRIE1 |= WDTIE;
+    }
 
-	/* Enable global interrupts */
-	__enable_interrupt();
+    /* Enable global interrupts */
+    __enable_interrupt();
 
-	/* loop if no button is pressed, enter RFBSL if backlight is pressed */
-	do {
-		_BIS_SR(LPM3_bits | GIE);
+    /* loop if no button is pressed, enter RFBSL if backlight is pressed */
+    do {
+        _BIS_SR(LPM3_bits | GIE);
 
-		if ((P2IN & ALL_BUTTONS) == BTN_BL_PIN)
-			jump_to_rfbsl();
+        if ((P2IN & ALL_BUTTONS) == BTN_BL_PIN)
+            jump_to_rfbsl();
 
-	} while ((P2IN & ALL_BUTTONS) == 0);
+    } while ((P2IN & ALL_BUTTONS) == 0);
 
-	/* Disable them again, they will be re-enabled later on in main() */
-	__disable_interrupt();
+    /* Disable them again, they will be re-enabled later on in main() */
+    __disable_interrupt();
 }
 
 __attribute__((interrupt(WDT_VECTOR)))
 void WDT_ISR(void)
 {
-	/* exit from LPM3 after interrupt */
-	_BIC_SR_IRQ(LPM3_bits);
+    /* exit from LPM3 after interrupt */
+    _BIC_SR_IRQ(LPM3_bits);
 }
 
