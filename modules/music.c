@@ -5,7 +5,7 @@
 
     http://github.com/BenjaminSoelberg/openchronos-ng-elf
 
-	This file is part of openchronos-ng.
+    This file is part of openchronos-ng.
 
     openchronos-ng is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -34,23 +34,23 @@ static note smb[] = {0x25a8, 0x25a8, 0x12d0, 0x4b28, 0x25a4, 0x4b28, 0x4b2b, 0x4
 
 static void num_press()
 {
-	buzzer_play(smb);
+    buzzer_play(smb);
 }
 
 
 static void music_activate()
 {
-	display_chars(0, LCD_SEG_L2_4_0, "MUSIC", SEG_ON);
+    display_chars(0, LCD_SEG_L2_4_0, "MUSIC", SEG_ON);
 }
 
 static void music_deactivate()
 {
-	display_clear(0, 2);
+    display_clear(0, 2);
 }
 
 void mod_music_init(void)
 {
-	menu_add_entry("MUSIC", NULL, NULL, &num_press, NULL, NULL, NULL,
-						&music_activate,
-						&music_deactivate);
+    menu_add_entry("MUSIC", NULL, NULL, &num_press, NULL, NULL, NULL,
+                        &music_activate,
+                        &music_deactivate);
 }

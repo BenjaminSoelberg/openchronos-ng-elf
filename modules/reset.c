@@ -5,7 +5,7 @@
 
     http://github.com/BenjaminSoelberg/openchronos-ng-elf
 
-	This file is part of openchronos-ng.
+    This file is part of openchronos-ng.
 
     openchronos-ng is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -29,25 +29,25 @@
 
 static void num_press()
 {
-	/* reset microcontroller */
-	WDTCTL = 0;
+    /* reset microcontroller */
+    WDTCTL = 0;
 }
 
 static void reset_activate()
 {
-	/* update screen */
-	display_chars(0, LCD_SEG_L2_5_0, " RESET", SEG_ON);
+    /* update screen */
+    display_chars(0, LCD_SEG_L2_5_0, " RESET", SEG_ON);
 }
 
 static void reset_deactivate()
 {
-	/* cleanup screen */
-	display_clear(0, 2);
+    /* cleanup screen */
+    display_clear(0, 2);
 }
 
 void mod_reset_init(void)
 {
-	menu_add_entry("RESET", NULL, NULL, &num_press, NULL, NULL, NULL,
-						&reset_activate,
-						&reset_deactivate);
+    menu_add_entry("RESET", NULL, NULL, &num_press, NULL, NULL, NULL,
+                        &reset_activate,
+                        &reset_deactivate);
 }

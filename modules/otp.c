@@ -5,7 +5,7 @@
 
     http://github.com/BenjaminSoelberg/openchronos-ng-elf
 
-	This file is part of openchronos-ng.
+    This file is part of openchronos-ng.
 
     openchronos-ng is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -52,17 +52,17 @@ static int days[12] ={0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334};
 
 uint32_t simple_mktime(int year, int month, int day, int hour, int minute, int second)
 {
-	//only works for year 2000 - 2032
-	uint32_t	result;
+    //only works for year 2000 - 2032
+    uint32_t	result;
 
-	year += month / 12;
-	month %= 12;
-	result = (year - 1970) * 365 + days[month];
-	if (month <= 1) year--;
+    year += month / 12;
+    month %= 12;
+    result = (year - 1970) * 365 + days[month];
+    if (month <= 1) year--;
 
-	result += (year - 1968) / 4;
-	result += day - 1;
-	result  = ((result * 24 + hour) * 60 + minute) * 60 + second;
+    result += (year - 1968) / 4;
+    result += day - 1;
+    result  = ((result * 24 + hour) * 60 + minute) * 60 + second;
 
 #if defined(CONFIG_RTC_DST)
         if (rtc_dst_state == RTC_DST_STATE_DST) {
@@ -70,7 +70,7 @@ uint32_t simple_mktime(int year, int month, int day, int hour, int minute, int s
         }    
 #endif
 
-	return result;
+    return result;
 }
 
 const  keystore_t otp_keys[]          = CONFIG_MOD_OTP_KEYS;
@@ -107,31 +107,31 @@ static void otp_get_current_params(char *potp_identifier,
 static uint32_t calculate_otp(uint32_t time, const uint8_t *otp_key, 
         uint8_t otp_key_len)
 {
-	uint32_t val = 0;
+    uint32_t val = 0;
     int i;
 
     memset(otp_data, 0, sizeof(otp_data));
     memset(otp_result, 0, sizeof(otp_result));
 
-	otp_data[4] = (time >> 24) & 0xff;
-	otp_data[5] = (time >> 16) & 0xff;
-	otp_data[6] = (time >> 8 ) & 0xff;
-	otp_data[7] = (time      ) & 0xff;
+    otp_data[4] = (time >> 24) & 0xff;
+    otp_data[5] = (time >> 16) & 0xff;
+    otp_data[6] = (time >> 8 ) & 0xff;
+    otp_data[7] = (time      ) & 0xff;
     
 
-	hmac_sha1(otp_key, otp_key_len, otp_data, sizeof(otp_data),
+    hmac_sha1(otp_key, otp_key_len, otp_data, sizeof(otp_data),
         otp_result, sizeof(otp_result));
 
-	int off = otp_result[SHA1_DIGEST_LENGTH - 1] & 0x0f;
+    int off = otp_result[SHA1_DIGEST_LENGTH - 1] & 0x0f;
 
-	char *cc = (char *)&val;
-	for (i =0; i < 4; i++) {
-		cc[3-i] = otp_result[off+i];
-	}
-	val &= 0x7fffffff;
-	val %= 1000000;
+    char *cc = (char *)&val;
+    for (i =0; i < 4; i++) {
+        cc[3-i] = otp_result[off+i];
+    }
+    val &= 0x7fffffff;
+    val %= 1000000;
 
-	return val;
+    return val;
 }
 
 static void clock_event(enum sys_message msg)
@@ -150,9 +150,9 @@ static void clock_event(enum sys_message msg)
     display_char(0 ,LCD_SEG_L1_3, otp_identifier, SEG_SET); 
 
     // Calculate timestamp
-	uint32_t time = simple_mktime(rtca_time.year, rtca_time.mon - 1, rtca_time.day,
+    uint32_t time = simple_mktime(rtca_time.year, rtca_time.mon - 1, rtca_time.day,
                                   rtca_time.hour, rtca_time.min    , rtca_time.sec);
-	time = (time - CONFIG_MOD_OTP_OFFSET * 3600) / 30;
+    time = (time - CONFIG_MOD_OTP_OFFSET * 3600) / 30;
 
     // Check if new code must be calculated
     if(time != last_time) {
