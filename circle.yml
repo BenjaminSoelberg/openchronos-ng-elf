@@ -55,8 +55,8 @@ dependencies:
     - tar -cvzf openchronos-ng-elf-latest-firmware.tgz openchronos.txt openchronos.elf README.md
 
     - echo Removing LATEST tag from repo
-    - git tag -d LATEST
-    - git push origin :refs/tags/LATEST
+    - git tag -d LATEST || true
+    - git push origin :refs/tags/LATEST || true
 
     - echo Delete LATEST pre-release, if exists \(hence the \'\|\| true\' in next line\)
     - github-release delete -s $GITHUB_USER_TOKEN -u $CIRCLE_PROJECT_USERNAME -r $CIRCLE_PROJECT_REPONAME -t LATEST || true
