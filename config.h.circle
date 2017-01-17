@@ -35,7 +35,7 @@
 #define CONFIG_MOD_BATTERY_SHOW_VOLTAGE
 #define CONFIG_MOD_RESET
 // CONFIG_MOD_ACCELEROMETER is not set
-// CONFIG_MOD_MUSIC is not set
+#define CONFIG_MOD_MUSIC
 // CONFIG_MOD_TIDE is not set
 #define CONFIG_MOD_OTP
 #define CONFIG_MOD_OTP_KEYS { { "G","\x04\xda\x8a\x31\xd3\x8d\x19\x97\xce\x99\x9b\x72\xdd\xbb\x94\xfb\x0f\xef\xa0\x3f",20 },{ "H","\xdc\x7b\x81\x26\x75\x4c\xed\x88\x77\xff",10 } }
