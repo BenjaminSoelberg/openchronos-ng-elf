@@ -69,7 +69,7 @@ def generate_binary_note(note, whole_note):
         raise Exception("note duration too long")
     tone = notes_translate.index(note[1])
     octave = note[2] - 4
-    return (duration << 6) | (octave << 2) | tone
+    return (duration << 6) | (octave << 4) | tone
 
 
 if __name__ == '__main__':
