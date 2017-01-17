@@ -85,6 +85,7 @@ else()
         ${PYTHON_EXECUTABLE}
         ${CMAKE_CURRENT_LIST_DIR}/tools/make_modinit.py
        WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+       USES_TERMINAL
   )
 
 
@@ -100,16 +101,6 @@ else()
         ${CMAKE_CURRENT_LIST_DIR}/tools/make_modinit.py
        WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
   )
-  add_custom_target(
-      radio-install
-      COMMAND
-        ${PYTHON_EXECUTABLE}
-        ${CMAKE_CURRENT_SOURCE_DIR}/contrib/ChronosTool.py
-        rfbsl ${openchronos_hex_filename}
-      WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
-      DEPENDS
-        ${openchronos_hex_filename}
-  )
   set(openchronos_hex_filename "openchronos.txt")
   add_custom_command(
       OUTPUT
@@ -122,6 +113,16 @@ else()
       WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
       DEPENDS
         ${openchronos_binary_filename}
+  )
+  add_custom_target(
+      radio-install
+      COMMAND
+        ${PYTHON_EXECUTABLE}
+        ${CMAKE_CURRENT_SOURCE_DIR}/contrib/ChronosTool.py
+        rfbsl ${openchronos_hex_filename}
+      WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
+      DEPENDS
+        ${openchronos_hex_filename}
   )
 endif()
 
