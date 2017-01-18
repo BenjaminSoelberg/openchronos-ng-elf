@@ -21,36 +21,36 @@
 
 /*******************************************************************************
 //
-//	Copyright (C) 2009 Texas Instruments Incorporated - http://www.ti.com/
+//  Copyright (C) 2009 Texas Instruments Incorporated - http://www.ti.com/
 //
 //
-//	  Redistribution and use in source and binary forms, with or without
-//	  modification, are permitted provided that the following conditions
-//	  are met:
+//    Redistribution and use in source and binary forms, with or without
+//    modification, are permitted provided that the following conditions
+//    are met:
 //
-//	    Redistributions of source code must retain the above copyright
-//	    notice, this list of conditions and the following disclaimer.
+//      Redistributions of source code must retain the above copyright
+//      notice, this list of conditions and the following disclaimer.
 //
-//	    Redistributions in binary form must reproduce the above copyright
-//	    notice, this list of conditions and the following disclaimer in the
-//	    documentation and/or other materials provided with the
-//	    distribution.
+//      Redistributions in binary form must reproduce the above copyright
+//      notice, this list of conditions and the following disclaimer in the
+//      documentation and/or other materials provided with the
+//      distribution.
 //
-//	    Neither the name of Texas Instruments Incorporated nor the names of
-//	    its contributors may be used to endorse or promote products derived
-//	    from this software without specific prior written permission.
+//      Neither the name of Texas Instruments Incorporated nor the names of
+//      its contributors may be used to endorse or promote products derived
+//      from this software without specific prior written permission.
 //
-//	  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-//	  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-//	  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-//	  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-//	  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-//	  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-//	  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-//	  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-//	  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-//	  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-//	  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+//    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+//    "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+//    LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+//    A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+//    OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+//    SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+//    LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+//    DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+//    THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+//    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+//    OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 *******************************************************************************/
 
@@ -99,8 +99,8 @@ extern void write_FFTHR(uint8_t mgrav);
 #define AS_SCK_PIN          (BIT7)
 
 /* CSN=PJ.1 */
-#define AS_CSN_OUT	    (PJOUT)
-#define AS_CSN_DIR	    (PJDIR)
+#define AS_CSN_OUT      (PJOUT)
+#define AS_CSN_DIR      (PJDIR)
 #define AS_CSN_PIN          (BIT1)
 
 #define AS_TX_BUFFER        (UCA0TXBUF)
@@ -128,22 +128,22 @@ extern void write_FFTHR(uint8_t mgrav);
 #define AS_INT_PIN          (BIT5)
 
 /* SPI timeout to detect sensor failure */
-#define SPI_TIMEOUT	    (1000u)
+#define SPI_TIMEOUT     (1000u)
 
 
 /* register address: */
-#define ADDR_CTRL	    (0x02)
+#define ADDR_CTRL       (0x02)
 #define ADDR_INT_STATUS     (0x05)
 #define ADDR_MDTHR          (0x09)
 #define ADDR_MDFFTMR        (0x0A)
-#define ADDR_FFTHR	    (0x0B)
+#define ADDR_FFTHR      (0x0B)
 
 /* defines for sampling rate */
 /* The first one should be 400 but must fit u8 so divide by 10 */
-#define SAMPLING_400_HZ	    (40)
-#define SAMPLING_40_HZ	    (4)
-#define SAMPLING_100_HZ	    (10)
-#define SAMPLING_10_HZ	    (1)
+#define SAMPLING_400_HZ     (40)
+#define SAMPLING_40_HZ      (4)
+#define SAMPLING_100_HZ     (10)
+#define SAMPLING_10_HZ      (1)
 
 /******************************************************************************/
 /* Global Variable section */
@@ -151,8 +151,8 @@ extern void write_FFTHR(uint8_t mgrav);
 /* Set system flags */
 typedef union {
     struct {
-        uint8_t motiondet	: 2;    /* MDET see AS_MOTION_STATUS */
-        uint8_t falldet    	: 1;    /* FFDET see AS_FALL_STATUS */
+        uint8_t motiondet   : 2;    /* MDET see AS_MOTION_STATUS */
+        uint8_t falldet     : 1;    /* FFDET see AS_FALL_STATUS */
         uint8_t reserved        : 5;    /* reserved, initial value = 0h */
     } int_status;
     /* Shortcut to all display flags (for reset) */
@@ -166,21 +166,21 @@ volatile uint8_t as_last_interrupt;
 /* Global Variable section */
 struct As_Param {
     /* configuration bits for motion and free fall */
-    uint8_t	MDTHR;
-    uint8_t	MDFFTMR;
-    uint8_t	FFTHR;
-    uint8_t	sampling;
-    uint8_t	range;
-    uint8_t	mode;
+    uint8_t MDTHR;
+    uint8_t MDFFTMR;
+    uint8_t FFTHR;
+    uint8_t sampling;
+    uint8_t range;
+    uint8_t mode;
 };
 extern struct As_Param as_config;
 
 
 enum AS_MOTION_STATUS {
-    AS_NO_MOTION = 00,	/* motion not detected */
-    AS_TRIGGER_X = 01,	/* motion trigger on x */
-    AS_TRIGGER_Y = 10,	/* motion trigger on y */
-    AS_TRIGGER_Z = 11	/* motion trigger on z */
+    AS_NO_MOTION = 00,  /* motion not detected */
+    AS_TRIGGER_X = 01,  /* motion trigger on x */
+    AS_TRIGGER_Y = 10,  /* motion trigger on y */
+    AS_TRIGGER_Z = 11   /* motion trigger on z */
 };
 extern enum AS_MOTION_STATUS as_motion_bits;
 

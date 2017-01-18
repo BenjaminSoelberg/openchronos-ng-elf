@@ -246,10 +246,10 @@ void infomem_insert_delete_modify(uint16_t *start, uint16_t *data, uint8_t del_c
 // *************************************************************************************************
 // @fn          infomem_get_app_addr
 // @brief       return the address of the header for an address
-//				FOR INTERNAL USE ONLY
-// @param       uint8_t identifier	Identifier byte for application
-// @return		NULL not present
-//				n address of identifier byte
+//              FOR INTERNAL USE ONLY
+// @param       uint8_t identifier  Identifier byte for application
+// @return      NULL not present
+//              n address of identifier byte
 // *************************************************************************************************
 uint16_t *infomem_get_app_addr(uint8_t identifier)
 {
@@ -275,10 +275,10 @@ uint16_t *infomem_get_app_addr(uint8_t identifier)
 // *************************************************************************************************
 // @fn          infomem_ready
 // @brief       check if infomem is initialized and in sane state, return amount of data present
-// @param		none
-// @return		-2 no memory structure present
-//				-3,-4,-5 data structure error
-//				>=0 size of data present
+// @param       none
+// @return      -2 no memory structure present
+//              -3,-4,-5 data structure error
+//              >=0 size of data present
 // *************************************************************************************************
 int16_t infomem_ready()
 {
@@ -353,12 +353,12 @@ int16_t infomem_ready()
 // *************************************************************************************************
 // @fn          infomem_init
 // @brief       write infomem data structure
-// @param		uint16_t	start		(word) address of first word of used memory
-//				uint16_t	end			(word) address of first word of NOT used memory
-// @return		-1 infomem already present
-//				-2 addresses not word addresses or out of range
-//				-3 memory not empty
-//				>0 new maximum size
+// @param       uint16_t    start       (word) address of first word of used memory
+//              uint16_t    end         (word) address of first word of NOT used memory
+// @return      -1 infomem already present
+//              -2 addresses not word addresses or out of range
+//              -3 memory not empty
+//              >0 new maximum size
 // *************************************************************************************************
 int16_t infomem_init(uint16_t start, uint16_t end)
 {
@@ -406,9 +406,9 @@ int16_t infomem_init(uint16_t start, uint16_t end)
 // *************************************************************************************************
 // @fn          infomem_space
 // @brief       return amount of free space
-// @param		none
-// @return		<0 see infomem_ready
-//				>=0 available free space (in words)
+// @param       none
+// @return      <0 see infomem_ready
+//              >=0 available free space (in words)
 // *************************************************************************************************
 int16_t infomem_space()
 {
@@ -426,14 +426,14 @@ int16_t infomem_space()
 // *************************************************************************************************
 // @fn          infomem_relocate
 // @brief       change start and end address of data storage (can change size)
-// @param		uint16_t	start		(word) address of first word of used memory
-//				uint16_t	end			(word) address of first word of NOT used memory
-// @return		-1 data structure error or memory not initialized
-//				-2 temporary error (try again later)
-//				-3 address not word addresses
-//				-4 addresses out of range
-//				-5 new space too small
-//				>0 new maximum size
+// @param       uint16_t    start       (word) address of first word of used memory
+//              uint16_t    end         (word) address of first word of NOT used memory
+// @return      -1 data structure error or memory not initialized
+//              -2 temporary error (try again later)
+//              -3 address not word addresses
+//              -4 addresses out of range
+//              -5 new space too small
+//              >0 new maximum size
 // *************************************************************************************************
 int16_t infomem_relocate(uint16_t start, uint16_t end)
 {
@@ -501,8 +501,8 @@ int16_t infomem_relocate(uint16_t start, uint16_t end)
 // @fn          infomem_delete_all
 // @brief       delete complete (managed) information memory
 // @param       none
-// @return		-1 data structure error or memory not initialized
-//				0 deleted
+// @return      -1 data structure error or memory not initialized
+//              0 deleted
 // *************************************************************************************************
 int16_t infomem_delete_all(void)
 {
@@ -523,10 +523,10 @@ int16_t infomem_delete_all(void)
 // *************************************************************************************************
 // @fn          infomem_app_amount
 // @brief       return how much data for the application is available
-// @param       uint8_t identifier	Identifier byte for application
-// @return		-1 data structure error or memory not initialized
-//				0 application not present
-//				n number of words read
+// @param       uint8_t identifier  Identifier byte for application
+// @return      -1 data structure error or memory not initialized
+//              0 application not present
+//              n number of words read
 // *************************************************************************************************
 int16_t infomem_app_amount(uint8_t identifier)
 {
@@ -547,14 +547,14 @@ int16_t infomem_app_amount(uint8_t identifier)
 // *************************************************************************************************
 // @fn          infomem_app_read
 // @brief       read count bytes of data with offset for given application into prepared memory
-// @param       uint8_t identifier	Identifier byte for application
-//				uint16_t* data		Data array of size>=count words
-//				uint8_t count		number of words to read
-//				uint8_t offset		word offset of data to read
-// @return		-1 data structure error or memory not initialized
-//				-2 temporary error (try again later)
-//				0 offset to big or app not present
-//				n number of words read
+// @param       uint8_t identifier  Identifier byte for application
+//              uint16_t* data      Data array of size>=count words
+//              uint8_t count       number of words to read
+//              uint8_t offset      word offset of data to read
+// @return      -1 data structure error or memory not initialized
+//              -2 temporary error (try again later)
+//              0 offset to big or app not present
+//              n number of words read
 // *************************************************************************************************
 int16_t infomem_app_read(uint8_t identifier, uint16_t *data, uint8_t count, uint8_t offset)
 {
@@ -598,13 +598,13 @@ int16_t infomem_app_read(uint8_t identifier, uint16_t *data, uint8_t count, uint
 // *************************************************************************************************
 // @fn          infomem_app_replace
 // @brief       replace all memory content for application by new data
-// @param       uint8_t identifier	Identifier byte for application
-//				uint16_t* data		Data array
-//				uint8_t count		number of words
-// @return		-1 data structure error or memory not initialized
-//				-2 temporary error (try again later)
-//				-4 not enough memory
-//				n new total size of data in information memory
+// @param       uint8_t identifier  Identifier byte for application
+//              uint16_t* data      Data array
+//              uint8_t count       number of words
+// @return      -1 data structure error or memory not initialized
+//              -2 temporary error (try again later)
+//              -4 not enough memory
+//              n new total size of data in information memory
 // *************************************************************************************************
 int16_t infomem_app_replace(uint8_t identifier, uint16_t *data, uint8_t count)
 {
@@ -680,11 +680,11 @@ int16_t infomem_app_replace(uint8_t identifier, uint16_t *data, uint8_t count)
 // *************************************************************************************************
 // @fn          infomem_app_clear
 // @brief       delete all memory content for application
-// @param       uint8_t identifier	Identifier byte for application
-// @return		-1 data structure error or memory not initialized
-//				-2 temporary error (try again later)
-//				0 application not present
-//				n new total size of data in information memory
+// @param       uint8_t identifier  Identifier byte for application
+// @return      -1 data structure error or memory not initialized
+//              -2 temporary error (try again later)
+//              0 application not present
+//              n new total size of data in information memory
 // *************************************************************************************************
 int16_t infomem_app_clear(uint8_t identifier)
 {
@@ -694,14 +694,14 @@ int16_t infomem_app_clear(uint8_t identifier)
 // *************************************************************************************************
 // @fn          infomem_app_delete
 // @brief       delete all memory content beginning with offset
-//				delete complete application memory if offset==0
-// @param       uint8_t identifier	Identifier byte for application
-//				uint8_t offset		Word offset of data to delete
-// @return		-1 data structure error or memory not initialized
-//				-2 temporary error (try again later)
-//				-3 offset out of range
-//				0 application not present
-//				n new total size of data in information memory
+//              delete complete application memory if offset==0
+// @param       uint8_t identifier  Identifier byte for application
+//              uint8_t offset      Word offset of data to delete
+// @return      -1 data structure error or memory not initialized
+//              -2 temporary error (try again later)
+//              -3 offset out of range
+//              0 application not present
+//              n new total size of data in information memory
 // *************************************************************************************************
 int16_t infomem_app_delete(uint8_t identifier, uint8_t offset)
 {
@@ -769,17 +769,17 @@ int16_t infomem_app_delete(uint8_t identifier, uint8_t offset)
 // *************************************************************************************************
 // @fn          infomem_app_modify
 // @brief       modify given bytes of data
-//				overwrite count words of data for application beginning from offset
-// @param       uint8_t identifier	Identifier byte for application
-//				uint16_t* data		Data array
-//				uint8_t count		Number of words to modyfy
-//				uint8_t offset		Word offset of data to modify
-// @return		-1 data structure error or memory not initialized
-//				-2 temporary error (try again later)
-//				-3 offset too big
-//				-4 not enough memory
-//				0 application not present (use infomem_app_replace to add new application data)
-//				>0 new data syize for application
+//              overwrite count words of data for application beginning from offset
+// @param       uint8_t identifier  Identifier byte for application
+//              uint16_t* data      Data array
+//              uint8_t count       Number of words to modyfy
+//              uint8_t offset      Word offset of data to modify
+// @return      -1 data structure error or memory not initialized
+//              -2 temporary error (try again later)
+//              -3 offset too big
+//              -4 not enough memory
+//              0 application not present (use infomem_app_replace to add new application data)
+//              >0 new data syize for application
 // *************************************************************************************************
 int16_t infomem_app_modify(uint8_t identifier, uint16_t *data, uint8_t count, uint8_t offset)
 {

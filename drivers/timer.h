@@ -98,12 +98,12 @@ void timer0_delay_callback_destroy(void);
     \brief Bitfield of events produced by this driver
 */
 enum timer0_event {
-    TIMER0_EVENT_NONE	= 0,	/*!< EMPTY EVENT */
+    TIMER0_EVENT_NONE   = 0,    /*!< EMPTY EVENT */
 #ifdef CONFIG_TIMER_4S_IRQ
-    TIMER0_EVENT_4S		= BIT0,	/*!< 0.24Hz ~ 4.1s period event */
+    TIMER0_EVENT_4S     = BIT0, /*!< 0.24Hz ~ 4.1s period event */
 #endif
-    TIMER0_EVENT_20HZ	= BIT1,	/*!< 20Hz event */
-    TIMER0_EVENT_PROG	= BIT2	/*!< programmable timer event */
+    TIMER0_EVENT_20HZ   = BIT1, /*!< 20Hz event */
+    TIMER0_EVENT_PROG   = BIT2  /*!< programmable timer event */
 };
 
 /*!

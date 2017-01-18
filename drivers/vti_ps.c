@@ -1,35 +1,35 @@
 // *************************************************************************************************
 //
-//	Copyright (C) 2009 Texas Instruments Incorporated - http://www.ti.com/
+//  Copyright (C) 2009 Texas Instruments Incorporated - http://www.ti.com/
 //
 //
-//	  Redistribution and use in source and binary forms, with or without
-//	  modification, are permitted provided that the following conditions
-//	  are met:
+//    Redistribution and use in source and binary forms, with or without
+//    modification, are permitted provided that the following conditions
+//    are met:
 //
-//	    Redistributions of source code must retain the above copyright
-//	    notice, this list of conditions and the following disclaimer.
+//      Redistributions of source code must retain the above copyright
+//      notice, this list of conditions and the following disclaimer.
 //
-//	    Redistributions in binary form must reproduce the above copyright
-//	    notice, this list of conditions and the following disclaimer in the
-//	    documentation and/or other materials provided with the
-//	    distribution.
+//      Redistributions in binary form must reproduce the above copyright
+//      notice, this list of conditions and the following disclaimer in the
+//      documentation and/or other materials provided with the
+//      distribution.
 //
-//	    Neither the name of Texas Instruments Incorporated nor the names of
-//	    its contributors may be used to endorse or promote products derived
-//	    from this software without specific prior written permission.
+//      Neither the name of Texas Instruments Incorporated nor the names of
+//      its contributors may be used to endorse or promote products derived
+//      from this software without specific prior written permission.
 //
-//	  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-//	  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-//	  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-//	  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-//	  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-//	  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-//	  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-//	  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-//	  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-//	  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-//	  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+//    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+//    "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+//    LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+//    A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+//    OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+//    SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+//    LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+//    DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+//    THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+//    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+//    OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 // *************************************************************************************************
 // VTI SCP1000-D0x pressure sensor driver functions
@@ -102,10 +102,10 @@ void ps_init(void)
     volatile uint8_t status, eeprom;
     __attribute__((unused)) volatile uint8_t success;
 
-    PS_INT_DIR &= ~PS_INT_PIN;            	// DRDY is input
-    PS_INT_IES &= ~PS_INT_PIN;				// Interrupt on DRDY rising edge
-    PS_TWI_OUT |= PS_SCL_PIN + PS_SDA_PIN; 	// SCL and SDA are outputs by default
-    PS_TWI_DIR |= PS_SCL_PIN + PS_SDA_PIN; 	// SCL and SDA are outputs by default
+    PS_INT_DIR &= ~PS_INT_PIN;              // DRDY is input
+    PS_INT_IES &= ~PS_INT_PIN;              // Interrupt on DRDY rising edge
+    PS_TWI_OUT |= PS_SCL_PIN + PS_SDA_PIN;  // SCL and SDA are outputs by default
+    PS_TWI_DIR |= PS_SCL_PIN + PS_SDA_PIN;  // SCL and SDA are outputs by default
 
     // Reset global ps_ok flag
     ps_ok = 0;
@@ -127,7 +127,7 @@ void ps_init(void)
         eeprom = ps_read_register(0x7F, PS_TWI_8BIT_ACCESS);
 
         if (eeprom == 0x01) ps_ok = 1;
-        else 				ps_ok = 0;
+        else                ps_ok = 0;
     }
 }
 
@@ -136,7 +136,7 @@ void ps_init(void)
 // @fn          ps_start
 // @brief       Init pressure sensor registers and start sampling
 // @param       none
-// @return      uint8_t		1=Sensor started, 0=Sensor did not start
+// @return      uint8_t     1=Sensor started, 0=Sensor did not start
 // *************************************************************************************************
 void ps_start(void)
 {
@@ -163,24 +163,24 @@ void ps_stop(void)
 // *************************************************************************************************
 // @fn          ps_twi_sda
 // @brief       Control SDA line
-// @param       uint8_t condition		PS_TWI_SEND_START, PS_TWI_SEND_RESTART, PS_TWI_SEND_STOP
-//										PS_TWI_CHECK_ACK
-// @return      uint8_t					1=ACK, 0=NACK
+// @param       uint8_t condition       PS_TWI_SEND_START, PS_TWI_SEND_RESTART, PS_TWI_SEND_STOP
+//                                      PS_TWI_CHECK_ACK
+// @return      uint8_t                 1=ACK, 0=NACK
 // *************************************************************************************************
 uint8_t ps_twi_sda(uint8_t condition)
 {
     uint8_t sda = 0;
 
     if (condition == PS_TWI_SEND_START) {
-        PS_TWI_SDA_OUT;			// SDA is output
+        PS_TWI_SDA_OUT;         // SDA is output
         PS_TWI_SCL_HI;
         twi_delay();
         PS_TWI_SDA_LO;
         twi_delay();
-        PS_TWI_SCL_LO;			// SCL 1-0 transition while SDA=0
+        PS_TWI_SCL_LO;          // SCL 1-0 transition while SDA=0
         twi_delay();
     } else if (condition == PS_TWI_SEND_RESTART) {
-        PS_TWI_SDA_OUT;			// SDA is output
+        PS_TWI_SDA_OUT;         // SDA is output
         PS_TWI_SCL_LO;
         PS_TWI_SDA_HI;
         twi_delay();
@@ -191,17 +191,17 @@ uint8_t ps_twi_sda(uint8_t condition)
         PS_TWI_SCL_LO;
         twi_delay();
     } else if (condition == PS_TWI_SEND_STOP) {
-        PS_TWI_SDA_OUT;			// SDA is output
+        PS_TWI_SDA_OUT;         // SDA is output
         PS_TWI_SDA_LO;
         twi_delay();
         PS_TWI_SCL_LO;
         twi_delay();
         PS_TWI_SCL_HI;
         twi_delay();
-        PS_TWI_SDA_HI;			// SDA 0-1 transition while SCL=1
+        PS_TWI_SDA_HI;          // SDA 0-1 transition while SCL=1
         twi_delay();
     } else if (condition == PS_TWI_CHECK_ACK) {
-        PS_TWI_SDA_IN;			// SDA is input
+        PS_TWI_SDA_IN;          // SDA is input
         PS_TWI_SCL_LO;
         twi_delay();
         PS_TWI_SCL_HI;
@@ -224,14 +224,14 @@ uint8_t ps_twi_sda(uint8_t condition)
 // *************************************************************************************************
 void twi_delay(void)
 {
-    asm("	nop");
+    asm("   nop");
 }
 
 
 // *************************************************************************************************
 // @fn          ps_twi_write
 // @brief       Clock out bits through SDA.
-// @param       uint8_t data		Byte to send
+// @param       uint8_t data        Byte to send
 // @return      none
 // *************************************************************************************************
 void ps_twi_write(uint8_t data)
@@ -241,10 +241,10 @@ void ps_twi_write(uint8_t data)
     // Set mask byte to 10000000b
     mask = BIT0 << 7;
 
-    PS_TWI_SDA_OUT;		// SDA is output
+    PS_TWI_SDA_OUT;     // SDA is output
 
     for (i = 8; i > 0; i--) {
-        PS_TWI_SCL_LO;	// SCL=0
+        PS_TWI_SCL_LO;  // SCL=0
 
         if ((data & mask) == mask) {
             PS_TWI_SDA_HI; // SDA=1
@@ -254,32 +254,32 @@ void ps_twi_write(uint8_t data)
 
         mask = mask >> 1;
         twi_delay();
-        PS_TWI_SCL_HI;	// SCL=1
+        PS_TWI_SCL_HI;  // SCL=1
         twi_delay();
     }
 
-    PS_TWI_SCL_LO;		// SCL=0
-    PS_TWI_SDA_IN;		// SDA is input
+    PS_TWI_SCL_LO;      // SCL=0
+    PS_TWI_SDA_IN;      // SDA is input
 }
 
 
 // *************************************************************************************************
 // @fn          ps_twi_read
 // @brief       Read bits from SDA
-// @param       uint8_t ack		1=Send ACK after read, 0=Send NACK after read
-// @return      uint8_t			Bits read
+// @param       uint8_t ack     1=Send ACK after read, 0=Send NACK after read
+// @return      uint8_t         Bits read
 // *************************************************************************************************
 uint8_t ps_twi_read(uint8_t ack)
 {
     uint8_t i;
     uint8_t data = 0;
 
-    PS_TWI_SDA_IN;		// SDA is input
+    PS_TWI_SDA_IN;      // SDA is input
 
     for (i = 0; i < 8; i++) {
-        PS_TWI_SCL_LO;			// SCL=0
+        PS_TWI_SCL_LO;          // SCL=0
         twi_delay();
-        PS_TWI_SCL_HI;			// SCL=0
+        PS_TWI_SCL_HI;          // SCL=0
         twi_delay();
 
         // Shift captured bits to left
@@ -289,16 +289,16 @@ uint8_t ps_twi_read(uint8_t ack)
         if ((PS_TWI_IN & PS_SDA_PIN) == PS_SDA_PIN) data |= BIT0;
     }
 
-    PS_TWI_SDA_OUT;			// SDA is output
+    PS_TWI_SDA_OUT;         // SDA is output
 
     // 1 aditional clock phase to generate master ACK
-    PS_TWI_SCL_LO;			// SCL=0
+    PS_TWI_SCL_LO;          // SCL=0
 
-    if (ack == 1)	PS_TWI_SDA_LO		// Send ack -> continue read
-        else			PS_TWI_SDA_HI		// Send nack -> stop read
+    if (ack == 1)   PS_TWI_SDA_LO       // Send ack -> continue read
+        else            PS_TWI_SDA_HI       // Send nack -> stop read
             twi_delay();
 
-    PS_TWI_SCL_HI;			// SCL=0
+    PS_TWI_SCL_HI;          // SCL=0
     twi_delay();
     PS_TWI_SCL_LO;
 
@@ -309,33 +309,33 @@ uint8_t ps_twi_read(uint8_t ack)
 
 // *************************************************************************************************
 // @fn          as_write_register
-// @brief  		Write a byte to the pressure sensor
-// @param       uint8_t address			Register address
-//				uint8_t data			Data to write
+// @brief       Write a byte to the pressure sensor
+// @param       uint8_t address         Register address
+//              uint8_t data            Data to write
 // @return      uint8_t
 // *************************************************************************************************
 uint8_t ps_write_register(uint8_t address, uint8_t data)
 {
     volatile uint8_t success;
 
-    ps_twi_sda(PS_TWI_SEND_START);			// Generate start condition
+    ps_twi_sda(PS_TWI_SEND_START);          // Generate start condition
 
-    ps_twi_write((0x11 << 1) | PS_TWI_WRITE); 	// Send 7bit device address 0x11 + write bit '0'
-    success = ps_twi_sda(PS_TWI_CHECK_ACK);	// Check ACK from device
-
-    if (!success) return (0);
-
-    ps_twi_write(address);					// Send 8bit register address
-    success = ps_twi_sda(PS_TWI_CHECK_ACK);	// Check ACK from device
+    ps_twi_write((0x11 << 1) | PS_TWI_WRITE);   // Send 7bit device address 0x11 + write bit '0'
+    success = ps_twi_sda(PS_TWI_CHECK_ACK); // Check ACK from device
 
     if (!success) return (0);
 
-    ps_twi_write(data);						// Send 8bit data to register
-    success = ps_twi_sda(PS_TWI_CHECK_ACK);	// Check ACK from device
+    ps_twi_write(address);                  // Send 8bit register address
+    success = ps_twi_sda(PS_TWI_CHECK_ACK); // Check ACK from device
+
+    if (!success) return (0);
+
+    ps_twi_write(data);                     // Send 8bit data to register
+    success = ps_twi_sda(PS_TWI_CHECK_ACK); // Check ACK from device
 // Slave does not send this ACK
 // if (!success) return (0);
 
-    ps_twi_sda(PS_TWI_SEND_STOP);				// Generate stop condition
+    ps_twi_sda(PS_TWI_SEND_STOP);               // Generate stop condition
 
     return (1);
 }
@@ -344,42 +344,42 @@ uint8_t ps_write_register(uint8_t address, uint8_t data)
 // *************************************************************************************************
 // @fn          ps_read_register
 // @brief       Read a byte from the pressure sensor
-// @param       uint8_t address		Register address
-//				uint8_t	mode		PS_TWI_8BIT_ACCESS, PS_TWI_16BIT_ACCESS
-// @return      uint16_t			Register content
+// @param       uint8_t address     Register address
+//              uint8_t mode        PS_TWI_8BIT_ACCESS, PS_TWI_16BIT_ACCESS
+// @return      uint16_t            Register content
 // *************************************************************************************************
 uint16_t ps_read_register(uint8_t address, uint8_t mode)
 {
     uint8_t success;
     uint16_t data = 0;
 
-    ps_twi_sda(PS_TWI_SEND_START);			// Generate start condition
+    ps_twi_sda(PS_TWI_SEND_START);          // Generate start condition
 
-    ps_twi_write((0x11 << 1) | PS_TWI_WRITE); 	// Send 7bit device address 0x11 + write bit '0'
-    success = ps_twi_sda(PS_TWI_CHECK_ACK);	// Check ACK from device
-
-    if (!success) return (0);
-
-    ps_twi_write(address);					// Send 8bit register address
-    success = ps_twi_sda(PS_TWI_CHECK_ACK);	// Check ACK from device
+    ps_twi_write((0x11 << 1) | PS_TWI_WRITE);   // Send 7bit device address 0x11 + write bit '0'
+    success = ps_twi_sda(PS_TWI_CHECK_ACK); // Check ACK from device
 
     if (!success) return (0);
 
-    ps_twi_sda(PS_TWI_SEND_RESTART);			// Generate restart condition
+    ps_twi_write(address);                  // Send 8bit register address
+    success = ps_twi_sda(PS_TWI_CHECK_ACK); // Check ACK from device
 
-    ps_twi_write((0x11 << 1) | PS_TWI_READ); 	// Send 7bit device address 0x11 + read bit '1'
-    success = ps_twi_sda(PS_TWI_CHECK_ACK);	// Check ACK from device
+    if (!success) return (0);
+
+    ps_twi_sda(PS_TWI_SEND_RESTART);            // Generate restart condition
+
+    ps_twi_write((0x11 << 1) | PS_TWI_READ);    // Send 7bit device address 0x11 + read bit '1'
+    success = ps_twi_sda(PS_TWI_CHECK_ACK); // Check ACK from device
 
     if (!success) return (0);
 
     if (mode == PS_TWI_16BIT_ACCESS) {
-        data =  ps_twi_read(1) << 8;			// Read MSB 8bit data from register
-        data |= ps_twi_read(0);				// Read LSB 8bit data from register
+        data =  ps_twi_read(1) << 8;            // Read MSB 8bit data from register
+        data |= ps_twi_read(0);             // Read LSB 8bit data from register
     } else {
-        data = ps_twi_read(0);				// Read 8bit data from register
+        data = ps_twi_read(0);              // Read 8bit data from register
     }
 
-    ps_twi_sda(PS_TWI_SEND_STOP);				// Generate stop condition
+    ps_twi_sda(PS_TWI_SEND_STOP);               // Generate stop condition
 
     return (data);
 }
@@ -390,7 +390,7 @@ uint16_t ps_read_register(uint8_t address, uint8_t mode)
 // @fn          ps_get_pa
 // @brief       Read out pressure. Format is Pa. Range is 30000 .. 120000 Pa.
 // @param       none
-// @return      uint32_t		15-bit pressure sensor value (Pa)
+// @return      uint32_t        15-bit pressure sensor value (Pa)
 // *************************************************************************************************
 uint32_t ps_get_pa(void)
 {
@@ -414,7 +414,7 @@ uint32_t ps_get_pa(void)
 // @fn          ps_get_temp
 // @brief       Read out temperature.
 // @param       none
-// @return      uint16_t		13-bit temperature value in xx.x�K format
+// @return      uint16_t        13-bit temperature value in xx.x�K format
 // *************************************************************************************************
 uint16_t ps_get_temp(void)
 {
@@ -439,8 +439,8 @@ uint16_t ps_get_temp(void)
     temp = data / 2;
 
     // Convert from �C to �K
-    if (is_negative)	kelvin = 2732 - temp;
-    else				kelvin = temp + 2732;
+    if (is_negative)    kelvin = 2732 - temp;
+    else                kelvin = temp + 2732;
 
     return (kelvin);
 }
@@ -448,8 +448,8 @@ uint16_t ps_get_temp(void)
 // *************************************************************************************************
 // @fn          init_pressure_table
 // @brief       Init pressure table with constants
-// @param       uint32_t		p 		Pressure (Pa)
-// @return      uint16_t				Altitude (m)
+// @param       uint32_t        p       Pressure (Pa)
+// @return      uint16_t                Altitude (m)
 // *************************************************************************************************
 void init_pressure_table(void)
 {
@@ -519,11 +519,11 @@ int16_t conv_altitude_to_fraction(int16_t hh)
 // *************************************************************************************************
 // @fn          update_pressure_table
 // @brief       Calculate pressure table for reference altitude.
-//				Implemented straight from VTI reference code.
-// @param       int16_t		href	Reference height
-//				uint32_t		p_meas	Pressure (Pa)
-//				uint16_t		t_meas	Temperature (10*�K)
-// @return     	none
+//              Implemented straight from VTI reference code.
+// @param       int16_t     href    Reference height
+//              uint32_t        p_meas  Pressure (Pa)
+//              uint16_t        t_meas  Temperature (10*�K)
+// @return      none
 // *************************************************************************************************
 void update_pressure_table(int16_t href, uint32_t p_meas, uint16_t t_meas)
 {
@@ -538,9 +538,9 @@ void update_pressure_table(int16_t href, uint32_t p_meas, uint16_t t_meas)
     uint8_t i;
 
     // Typecast arguments
-    volatile float fl_href 		= href;
-    volatile float fl_p_meas 	= (float)p_meas / 100;	// Convert from Pa to hPa
-    volatile float fl_t_meas	= (float)t_meas / 10;		// Convert from 10�K to 1�K
+    volatile float fl_href      = href;
+    volatile float fl_p_meas    = (float)p_meas / 100;  // Convert from Pa to hPa
+    volatile float fl_t_meas    = (float)t_meas / 10;       // Convert from 10�K to 1�K
 
     t0 = fl_t_meas + (0.0065 * fl_href);
 
@@ -590,10 +590,10 @@ void update_pressure_table(int16_t href, uint32_t p_meas, uint16_t t_meas)
 // *************************************************************************************************
 // @fn          conv_pa_to_meter
 // @brief       Convert pressure (Pa) to altitude (m) using a conversion table
-//				Implemented straight from VTI reference code.
-// @param       uint32_t		p_meas	Pressure (Pa)
-//				uint16_t		t_meas	Temperature (10*�K)
-// @return      int16_t				Altitude (m)
+//              Implemented straight from VTI reference code.
+// @param       uint32_t        p_meas  Pressure (Pa)
+//              uint16_t        t_meas  Temperature (10*�K)
+// @return      int16_t             Altitude (m)
 // *************************************************************************************************
 int16_t conv_pa_to_meter(uint32_t p_meas, uint16_t t_meas)
 {
@@ -607,8 +607,8 @@ int16_t conv_pa_to_meter(uint32_t p_meas, uint16_t t_meas)
     uint8_t i;
 
     // Typecast arguments
-    volatile float fl_p_meas = (float)p_meas / 100;	// Convert from Pa to hPa
-    volatile float fl_t_meas = (float)t_meas / 10;		// Convert from 10�K to 1�K
+    volatile float fl_p_meas = (float)p_meas / 100; // Convert from Pa to hPa
+    volatile float fl_t_meas = (float)t_meas / 10;      // Convert from 10�K to 1�K
 
     for (i = 0; i <= 16; i++) {
         if (p[i] < fl_p_meas) break;
@@ -637,10 +637,10 @@ int16_t conv_pa_to_meter(uint32_t p_meas, uint16_t t_meas)
 // *************************************************************************************************
 // @fn          conv_pressure_to_altitude
 // @brief       Calculates altitude from current pressure, and
-//				stored reference pressure at sea level and previous altitude estimate.
-//				Temperature info is ignored.
-// @param       uint32_t		p_meas	Pressure (Pa)
-// @param		uint16_t		t_meas	Temperature (10*�K) Ignored !!!
+//              stored reference pressure at sea level and previous altitude estimate.
+//              Temperature info is ignored.
+// @param       uint32_t        p_meas  Pressure (Pa)
+// @param       uint16_t        t_meas  Temperature (10*�K) Ignored !!!
 // @return      Estimated altitude in user-selected unit (m or ft)
 //              (internally filtered, slightly sluggish).
 // *************************************************************************************************
@@ -696,7 +696,7 @@ int16_t conv_pa_to_altitude(uint32_t p_meas, uint16_t t_meas)
     // Scale to 4Pa units:
     int16_t p = (int16_t)((p_meas + 2) >> 2);
     // Predictor to speed up response to pressure changes:
-//	hLast -= p - pLast; // Factor of about 1/0.75 would be better.
+//  hLast -= p - pLast; // Factor of about 1/0.75 would be better.
     // Store current pressure for next predictor:
     pLast = p;
     // Calculate pressure ratio based on guessed altitude (serious DSP work):
@@ -713,7 +713,7 @@ int16_t conv_pa_to_altitude(uint32_t p_meas, uint16_t t_meas)
     /*if (sys.flag.use_metric_units) {*/
         // Altitude in meters (correct within about 0.7m):
         return mult_scale16(hLast, 16869);
-/*	} else {
+/*  } else {
         // Altitude in feet (correct within 1.5ft):
         return mult_scale15(hLast, 27672);
     }*/

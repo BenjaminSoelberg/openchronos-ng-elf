@@ -2,7 +2,7 @@
 # vim: ft=sh
 # LOOK AT ME!! HERE!!
 #   to use this as a [re-commit hook, add the following line in .git/hooks/pre-commit:
-#	./contrib/pre-commit || exit 1
+#   ./contrib/pre-commit || exit 1
 #   or, alternatively, execute the following command FROM THE TOP LEVEL of the repository:
 #   echo "./contrib/pre-commit || exit 1" >> .git/hooks/pre-commit
 #

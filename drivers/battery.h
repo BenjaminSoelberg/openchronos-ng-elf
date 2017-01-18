@@ -66,17 +66,17 @@ void battery_init(void);
 void battery_measurement(void);
 
 /* Battery high voltage threshold */
-#define BATTERY_HIGH_THRESHOLD			(360u)
+#define BATTERY_HIGH_THRESHOLD          (360u)
 
 /* Battery end of life voltage threshold -> disable radio,
    show "lobatt" message */
-#define BATTERY_LOW_THRESHOLD			(240u)
+#define BATTERY_LOW_THRESHOLD           (240u)
 
 /* Where we consider the battery full - A guess, but a pretty safe one at this point*/
-#define BATTERY_FULL_THRESHOLD			(310u)
+#define BATTERY_FULL_THRESHOLD          (310u)
 
 /* Where we consider the battery empty */
-#define BATTERY_EMPTY_THRESHOLD			(220u)
+#define BATTERY_EMPTY_THRESHOLD         (220u)
 
 struct {
     /* Battery voltage */

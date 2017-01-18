@@ -29,7 +29,7 @@
 #include "drivers/display.h"
 
 struct Tide {
-    uint8_t hoursLeft;	/* hours left to next low tide */
+    uint8_t hoursLeft;  /* hours left to next low tide */
     uint8_t minutesLeft; /* minutes left to next low tide */
 };
 

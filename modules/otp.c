@@ -53,7 +53,7 @@ static int days[12] ={0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334};
 uint32_t simple_mktime(int year, int month, int day, int hour, int minute, int second)
 {
     //only works for year 2000 - 2032
-    uint32_t	result;
+    uint32_t    result;
 
     year += month / 12;
     month %= 12;

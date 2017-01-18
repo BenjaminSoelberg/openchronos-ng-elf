@@ -39,7 +39,7 @@ for mod in modules.get_modules():
     MOD = mod.upper()
     try:
         if cfg["CONFIG_MOD_%s" % MOD]["value"]:
-            f.write("\tmod_%s_init();\n" % (mod) )
+            f.write("    mod_%s_init();\n" % (mod) )
     except KeyError:
         pass
 f.write("}\n")

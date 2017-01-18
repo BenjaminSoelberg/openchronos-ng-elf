@@ -54,17 +54,17 @@ unsigned char Strobe(unsigned char strobe)
 
             RF1AINSTRB = strobe;
 
-            if ((RF1AIN & 0x04) == 0x04) {		// chip at sleep mode
+            if ((RF1AIN & 0x04) == 0x04) {      // chip at sleep mode
                 if ((strobe == RF_SXOFF) || (strobe == RF_SPWD) || (strobe == RF_SWOR)) { }
                 else {
-                    while ((RF1AIN & 0x04) == 0x04);       			// c-ready ?
+                    while ((RF1AIN & 0x04) == 0x04);                // c-ready ?
 
-                    __delay_cycles(9800);	// Delay for ~810usec at 12MHz CPU clock
+                    __delay_cycles(9800);   // Delay for ~810usec at 12MHz CPU clock
                 }
             }
 
             WriteSingleReg(IOCFG2, gdo_state); // restore IOCFG2 setting
-        } else {	// chip active mode
+        } else {    // chip active mode
             RF1AINSTRB = strobe;
         }
 
@@ -202,7 +202,7 @@ void WriteBurstReg(unsigned char addr, unsigned char *buffer, unsigned char coun
 // *************************************************************************************************
 // @fn          WritePATable
 // @brief       Write data to power table
-// @param       unsigned char value		Value to write
+// @param       unsigned char value     Value to write
 // @return      none
 // *************************************************************************************************
 void WritePATable(unsigned char value)

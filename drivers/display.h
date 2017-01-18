@@ -47,12 +47,12 @@
     \brief Enumeration of segment states
 */
 enum display_segstate {
-    SEG_OFF		= 1u, /*!< turn selected segment bits to OFF */
-    SEG_ON		= 2u, /*!< turn selected segment bits to ON */
-    SEG_SET		= 3u, /*!< turn OFF all bits of segment, then turn ON only selected bits */
-    BLINK_OFF	= 4u, /*!< turn blinking OFF on selected segment bits */
-    BLINK_ON	= 8u, /*!< turn blinking ON on selected segment bits */
-    BLINK_SET	= 12u /*!< turn blinking OFF on all bits of segment, then turn blinking ON on only selected bits */
+    SEG_OFF     = 1u, /*!< turn selected segment bits to OFF */
+    SEG_ON      = 2u, /*!< turn selected segment bits to ON */
+    SEG_SET     = 3u, /*!< turn OFF all bits of segment, then turn ON only selected bits */
+    BLINK_OFF   = 4u, /*!< turn blinking OFF on selected segment bits */
+    BLINK_ON    = 8u, /*!< turn blinking ON on selected segment bits */
+    BLINK_SET   = 12u /*!< turn blinking OFF on all bits of segment, then turn blinking ON on only selected bits */
 };
 
 /*!
@@ -60,60 +60,60 @@ enum display_segstate {
 */
 enum display_segment {
     /* Symbols for Line1 */
-    LCD_SYMB_AM				=	0, /*!< AM symbol segment */ /* You must also set LCD_SYMB_PM to get full LCD_SYMB_AM */
-    LCD_SYMB_PM				=	1, /*!< PM symbol segment */
-    LCD_SYMB_ARROW_UP		=	2, /*!< little up arrow symbol segment */
-    LCD_SYMB_ARROW_DOWN		=	3, /*!< little down arrow symbol segment */
-    LCD_SYMB_PERCENT		=	4, /*!< percent symbol segment */
+    LCD_SYMB_AM             =   0, /*!< AM symbol segment */ /* You must also set LCD_SYMB_PM to get full LCD_SYMB_AM */
+    LCD_SYMB_PM             =   1, /*!< PM symbol segment */
+    LCD_SYMB_ARROW_UP       =   2, /*!< little up arrow symbol segment */
+    LCD_SYMB_ARROW_DOWN     =   3, /*!< little down arrow symbol segment */
+    LCD_SYMB_PERCENT        =   4, /*!< percent symbol segment */
 
     /* Symbols for Line2 */
-    LCD_SYMB_TOTAL			=	5, /*!< TOTAL symbol segment */
-    LCD_SYMB_AVERAGE		=	6, /*!< AVG symbol segment */
-    LCD_SYMB_MAX			=	7, /*!< MAX symbol segment */
-    LCD_SYMB_BATTERY		=	8, /*!< BATT symbol segment */
+    LCD_SYMB_TOTAL          =   5, /*!< TOTAL symbol segment */
+    LCD_SYMB_AVERAGE        =   6, /*!< AVG symbol segment */
+    LCD_SYMB_MAX            =   7, /*!< MAX symbol segment */
+    LCD_SYMB_BATTERY        =   8, /*!< BATT symbol segment */
 
     /* Units for Line1 */
-    LCD_UNIT_L1_FT			=	9,  /*!< FT symbol segment */
-    LCD_UNIT_L1_K			=	10, /*!< K symbol segment */
-    LCD_UNIT_L1_M			=	11, /*!< M symbol segment */
-    LCD_UNIT_L1_I			=	12, /*!< I symbol segment */
-    LCD_UNIT_L1_PER_S		=	13, /*!< /s symbol segment */
-    LCD_UNIT_L1_PER_H		=	14, /*!< /h symbol segment */
-    LCD_UNIT_L1_DEGREE		=	15, /*!< º symbol segment */
+    LCD_UNIT_L1_FT          =   9,  /*!< FT symbol segment */
+    LCD_UNIT_L1_K           =   10, /*!< K symbol segment */
+    LCD_UNIT_L1_M           =   11, /*!< M symbol segment */
+    LCD_UNIT_L1_I           =   12, /*!< I symbol segment */
+    LCD_UNIT_L1_PER_S       =   13, /*!< /s symbol segment */
+    LCD_UNIT_L1_PER_H       =   14, /*!< /h symbol segment */
+    LCD_UNIT_L1_DEGREE      =   15, /*!< º symbol segment */
 
     /* Units for Line2 */
-    LCD_UNIT_L2_KCAL		=	16, /*!< kcal symbol segment */
-    LCD_UNIT_L2_KM			=	17, /*!< Km symbol segment */
-    LCD_UNIT_L2_MI			=	18, /*!< MI symbol segment */
+    LCD_UNIT_L2_KCAL        =   16, /*!< kcal symbol segment */
+    LCD_UNIT_L2_KM          =   17, /*!< Km symbol segment */
+    LCD_UNIT_L2_MI          =   18, /*!< MI symbol segment */
 
     /* Icons */
-    LCD_ICON_HEART			=	19, /*!< HEART symbol segment */
-    LCD_ICON_STOPWATCH		=	20, /*!< STOPWATCH symbol segment */
-    LCD_ICON_RECORD			=	21, /*!< RECORD symbol segment */
-    LCD_ICON_ALARM			=	22, /*!< ALARM symbol segment */
-    LCD_ICON_BEEPER1		=	23, /*!< segment 1 of ((( symbol */
-    LCD_ICON_BEEPER2		=	24, /*!< segment 2 of ((( symbol */
-    LCD_ICON_BEEPER3		=	25, /*!< segment 3 of ((( symbol */
+    LCD_ICON_HEART          =   19, /*!< HEART symbol segment */
+    LCD_ICON_STOPWATCH      =   20, /*!< STOPWATCH symbol segment */
+    LCD_ICON_RECORD         =   21, /*!< RECORD symbol segment */
+    LCD_ICON_ALARM          =   22, /*!< ALARM symbol segment */
+    LCD_ICON_BEEPER1        =   23, /*!< segment 1 of ((( symbol */
+    LCD_ICON_BEEPER2        =   24, /*!< segment 2 of ((( symbol */
+    LCD_ICON_BEEPER3        =   25, /*!< segment 3 of ((( symbol */
 
     /* Line1 7-segments */
-    LCD_SEG_L1_3			=	26, /*!< line1, 4th segment */
-    LCD_SEG_L1_2			=	27, /*!< line1, 3rd segment */
-    LCD_SEG_L1_1			=	28, /*!< line1, 2nd segment */
-    LCD_SEG_L1_0			=	29, /*!< line1, 1st segment */
-    LCD_SEG_L1_COL			=	30, /*!< line1, : segment */
-    LCD_SEG_L1_DP1			=	31, /*!< line1, comma between segment 2 and 3 */
-    LCD_SEG_L1_DP0			=	32, /*!< line1, comma between segment 1 and 2 */
+    LCD_SEG_L1_3            =   26, /*!< line1, 4th segment */
+    LCD_SEG_L1_2            =   27, /*!< line1, 3rd segment */
+    LCD_SEG_L1_1            =   28, /*!< line1, 2nd segment */
+    LCD_SEG_L1_0            =   29, /*!< line1, 1st segment */
+    LCD_SEG_L1_COL          =   30, /*!< line1, : segment */
+    LCD_SEG_L1_DP1          =   31, /*!< line1, comma between segment 2 and 3 */
+    LCD_SEG_L1_DP0          =   32, /*!< line1, comma between segment 1 and 2 */
 
     /* Line2 7-segments */
-    LCD_SEG_L2_5			=	33, /*!< line2, 6th segment */ /* Only half a segment */
-    LCD_SEG_L2_4			=	34, /*!< line2, 5th segment */
-    LCD_SEG_L2_3			=	35, /*!< line2, 4th segment */
-    LCD_SEG_L2_2			=	36, /*!< line2, 3rd segment */
-    LCD_SEG_L2_1			=	37, /*!< line2, 2nd segment */
-    LCD_SEG_L2_0			=	38, /*!< line2, 1st segment */
-    LCD_SEG_L2_COL1			=	39, /*!< line2, 2nd : segment */
-    LCD_SEG_L2_COL0			=	40, /*!< line2, 1st : segment */
-    LCD_SEG_L2_DP			=	41, /*!< line2, comma between segment 2 and 3 */
+    LCD_SEG_L2_5            =   33, /*!< line2, 6th segment */ /* Only half a segment */
+    LCD_SEG_L2_4            =   34, /*!< line2, 5th segment */
+    LCD_SEG_L2_3            =   35, /*!< line2, 4th segment */
+    LCD_SEG_L2_2            =   36, /*!< line2, 3rd segment */
+    LCD_SEG_L2_1            =   37, /*!< line2, 2nd segment */
+    LCD_SEG_L2_0            =   38, /*!< line2, 1st segment */
+    LCD_SEG_L2_COL1         =   39, /*!< line2, 2nd : segment */
+    LCD_SEG_L2_COL0         =   40, /*!< line2, 1st : segment */
+    LCD_SEG_L2_DP           =   41, /*!< line2, comma between segment 2 and 3 */
 };
 
 /*!
@@ -123,29 +123,29 @@ enum display_segment {
 */
 enum display_segment_array {
     /* Line1 7-segment arrays */
-    LCD_SEG_L1_3_2			=	0xc2, /*!< line1, segments 3-2 */
-    LCD_SEG_L1_3_1			=	0xc3, /*!< line1, segments 3-1 */
-    LCD_SEG_L1_3_0			=	0xc4, /*!< line1, segments 3-0 */
-    LCD_SEG_L1_2_1			=	0xb2, /*!< line1, segments 2-1 */
-    LCD_SEG_L1_2_0			=	0xb3, /*!< line1, segments 2-0 */
-    LCD_SEG_L1_1_0			=	0xa2, /*!< line1, segments 1-0 */
+    LCD_SEG_L1_3_2          =   0xc2, /*!< line1, segments 3-2 */
+    LCD_SEG_L1_3_1          =   0xc3, /*!< line1, segments 3-1 */
+    LCD_SEG_L1_3_0          =   0xc4, /*!< line1, segments 3-0 */
+    LCD_SEG_L1_2_1          =   0xb2, /*!< line1, segments 2-1 */
+    LCD_SEG_L1_2_0          =   0xb3, /*!< line1, segments 2-0 */
+    LCD_SEG_L1_1_0          =   0xa2, /*!< line1, segments 1-0 */
 
     /* Line2 7-segment arrays */
-    LCD_SEG_L2_5_4			=	0x52, /*!< line2, segments 5-4 */
-    LCD_SEG_L2_5_3			=	0x53, /*!< line2, segments 5-3 */
-    LCD_SEG_L2_5_2			=	0x54, /*!< line2, segments 3-2 */
-    LCD_SEG_L2_5_1			=	0x55, /*!< line2, segments 3-1 */
-    LCD_SEG_L2_5_0			=	0x56, /*!< line2, segments 1-0 */
-    LCD_SEG_L2_4_3			=	0x42, /*!< line2, segments 4-3 */
-    LCD_SEG_L2_4_2			=	0x43, /*!< line2, segments 4-2 */
-    LCD_SEG_L2_4_1			=	0x44, /*!< line2, segments 4-1 */
-    LCD_SEG_L2_4_0			=	0x45, /*!< line2, segments 4-0 */
-    LCD_SEG_L2_3_2			=	0x32, /*!< line2, segments 3-2 */
-    LCD_SEG_L2_3_1			=	0x33, /*!< line2, segments 3-1 */
-    LCD_SEG_L2_3_0			=	0x34, /*!< line2, segments 3-0 */
-    LCD_SEG_L2_2_1			=	0x22, /*!< line2, segments 2-1 */
-    LCD_SEG_L2_2_0			=	0x23, /*!< line2, segments 2-0 */
-    LCD_SEG_L2_1_0			=	0x12, /*!< line2, segments 1-0 */
+    LCD_SEG_L2_5_4          =   0x52, /*!< line2, segments 5-4 */
+    LCD_SEG_L2_5_3          =   0x53, /*!< line2, segments 5-3 */
+    LCD_SEG_L2_5_2          =   0x54, /*!< line2, segments 3-2 */
+    LCD_SEG_L2_5_1          =   0x55, /*!< line2, segments 3-1 */
+    LCD_SEG_L2_5_0          =   0x56, /*!< line2, segments 1-0 */
+    LCD_SEG_L2_4_3          =   0x42, /*!< line2, segments 4-3 */
+    LCD_SEG_L2_4_2          =   0x43, /*!< line2, segments 4-2 */
+    LCD_SEG_L2_4_1          =   0x44, /*!< line2, segments 4-1 */
+    LCD_SEG_L2_4_0          =   0x45, /*!< line2, segments 4-0 */
+    LCD_SEG_L2_3_2          =   0x32, /*!< line2, segments 3-2 */
+    LCD_SEG_L2_3_1          =   0x33, /*!< line2, segments 3-1 */
+    LCD_SEG_L2_3_0          =   0x34, /*!< line2, segments 3-0 */
+    LCD_SEG_L2_2_1          =   0x22, /*!< line2, segments 2-1 */
+    LCD_SEG_L2_2_0          =   0x23, /*!< line2, segments 2-0 */
+    LCD_SEG_L2_1_0          =   0x12, /*!< line2, segments 1-0 */
 };
 
 /*!

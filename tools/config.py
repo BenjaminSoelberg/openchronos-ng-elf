@@ -300,12 +300,12 @@ class OpenChronosApp(object):
 
         screen = urwid.raw_display.Screen()
         palette = [
-            ('header',	'white',	'dark red', 	'bold'),
-            ('info',	'black',	'dark cyan'),
-            ('body',	'black',	'dark gray'),
-            ('optsel',	'white',	'dark blue'),
-            ('opt',		'black',	'light gray'),
-            ('optd',	'black',	'dark gray'),
+            ('header',  'white',    'dark red',     'bold'),
+            ('info',    'black',    'dark cyan'),
+            ('body',    'black',    'dark gray'),
+            ('optsel',  'white',    'dark blue'),
+            ('opt',     'black',    'light gray'),
+            ('optd',    'black',    'dark gray'),
             ]
 
 

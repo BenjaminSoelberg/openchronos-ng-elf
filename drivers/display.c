@@ -23,36 +23,36 @@
 
 // *************************************************************************************************
 //
-//	Copyright (C) 2009 Texas Instruments Incorporated - http://www.ti.com/
+//  Copyright (C) 2009 Texas Instruments Incorporated - http://www.ti.com/
 //
 //
-//	  Redistribution and use in source and binary forms, with or without
-//	  modification, are permitted provided that the following conditions
-//	  are met:
+//    Redistribution and use in source and binary forms, with or without
+//    modification, are permitted provided that the following conditions
+//    are met:
 //
-//	    Redistributions of source code must retain the above copyright
-//	    notice, this list of conditions and the following disclaimer.
+//      Redistributions of source code must retain the above copyright
+//      notice, this list of conditions and the following disclaimer.
 //
-//	    Redistributions in binary form must reproduce the above copyright
-//	    notice, this list of conditions and the following disclaimer in the
-//	    documentation and/or other materials provided with the
-//	    distribution.
+//      Redistributions in binary form must reproduce the above copyright
+//      notice, this list of conditions and the following disclaimer in the
+//      documentation and/or other materials provided with the
+//      distribution.
 //
-//	    Neither the name of Texas Instruments Incorporated nor the names of
-//	    its contributors may be used to endorse or promote products derived
-//	    from this software without specific prior written permission.
+//      Neither the name of Texas Instruments Incorporated nor the names of
+//      its contributors may be used to endorse or promote products derived
+//      from this software without specific prior written permission.
 //
-//	  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-//	  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-//	  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-//	  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-//	  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-//	  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-//	  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-//	  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-//	  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-//	  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-//	  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+//    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+//    "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+//    LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+//    A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+//    OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+//    SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+//    LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+//    DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+//    THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+//    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+//    OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 // *************************************************************************************************
 
@@ -65,107 +65,107 @@
 #define SWAP_NIBBLE(x)              ((((x) << 4) & 0xF0) | (((x) >> 4) & 0x0F))
 
 /* LCD controller memory map */
-#define LCD_MEM_1          			((uint8_t*)0x0A20)
-#define LCD_MEM_2          			((uint8_t*)0x0A21)
-#define LCD_MEM_3          			((uint8_t*)0x0A22)
-#define LCD_MEM_4          			((uint8_t*)0x0A23)
-#define LCD_MEM_5          			((uint8_t*)0x0A24)
-#define LCD_MEM_6          			((uint8_t*)0x0A25)
-#define LCD_MEM_7          			((uint8_t*)0x0A26)
-#define LCD_MEM_8          	 		((uint8_t*)0x0A27)
-#define LCD_MEM_9          			((uint8_t*)0x0A28)
-#define LCD_MEM_10         			((uint8_t*)0x0A29)
-#define LCD_MEM_11         			((uint8_t*)0x0A2A)
-#define LCD_MEM_12         			((uint8_t*)0x0A2B)
+#define LCD_MEM_1                   ((uint8_t*)0x0A20)
+#define LCD_MEM_2                   ((uint8_t*)0x0A21)
+#define LCD_MEM_3                   ((uint8_t*)0x0A22)
+#define LCD_MEM_4                   ((uint8_t*)0x0A23)
+#define LCD_MEM_5                   ((uint8_t*)0x0A24)
+#define LCD_MEM_6                   ((uint8_t*)0x0A25)
+#define LCD_MEM_7                   ((uint8_t*)0x0A26)
+#define LCD_MEM_8                   ((uint8_t*)0x0A27)
+#define LCD_MEM_9                   ((uint8_t*)0x0A28)
+#define LCD_MEM_10                  ((uint8_t*)0x0A29)
+#define LCD_MEM_11                  ((uint8_t*)0x0A2A)
+#define LCD_MEM_12                  ((uint8_t*)0x0A2B)
 
 
 /* Memory assignment */
-#define LCD_SEG_L1_0_MEM			(LCD_MEM_6)
-#define LCD_SEG_L1_1_MEM			(LCD_MEM_4)
-#define LCD_SEG_L1_2_MEM			(LCD_MEM_3)
-#define LCD_SEG_L1_3_MEM			(LCD_MEM_2)
-#define LCD_SEG_L1_COL_MEM			(LCD_MEM_1)
-#define LCD_SEG_L1_DP1_MEM			(LCD_MEM_1)
-#define LCD_SEG_L1_DP0_MEM			(LCD_MEM_5)
-#define LCD_SEG_L2_0_MEM			(LCD_MEM_8)
-#define LCD_SEG_L2_1_MEM			(LCD_MEM_9)
-#define LCD_SEG_L2_2_MEM			(LCD_MEM_10)
-#define LCD_SEG_L2_3_MEM			(LCD_MEM_11)
-#define LCD_SEG_L2_4_MEM			(LCD_MEM_12)
-#define LCD_SEG_L2_5_MEM			(LCD_MEM_12)
-#define LCD_SEG_L2_COL1_MEM			(LCD_MEM_1)
-#define LCD_SEG_L2_COL0_MEM			(LCD_MEM_5)
-#define LCD_SEG_L2_DP_MEM			(LCD_MEM_9)
-#define LCD_SYMB_AM_MEM				(LCD_MEM_1)
-#define LCD_SYMB_PM_MEM				(LCD_MEM_1)
-#define LCD_SYMB_ARROW_UP_MEM		(LCD_MEM_1)
-#define LCD_SYMB_ARROW_DOWN_MEM		(LCD_MEM_1)
-#define LCD_SYMB_PERCENT_MEM		(LCD_MEM_5)
-#define LCD_SYMB_TOTAL_MEM			(LCD_MEM_11)
-#define LCD_SYMB_AVERAGE_MEM		(LCD_MEM_10)
-#define LCD_SYMB_MAX_MEM			(LCD_MEM_8)
-#define LCD_SYMB_BATTERY_MEM		(LCD_MEM_7)
-#define LCD_UNIT_L1_FT_MEM			(LCD_MEM_5)
-#define LCD_UNIT_L1_K_MEM			(LCD_MEM_5)
-#define LCD_UNIT_L1_M_MEM			(LCD_MEM_7)
-#define LCD_UNIT_L1_I_MEM			(LCD_MEM_7)
-#define LCD_UNIT_L1_PER_S_MEM		(LCD_MEM_5)
-#define LCD_UNIT_L1_PER_H_MEM		(LCD_MEM_7)
-#define LCD_UNIT_L1_DEGREE_MEM		(LCD_MEM_5)
-#define LCD_UNIT_L2_KCAL_MEM		(LCD_MEM_7)
-#define LCD_UNIT_L2_KM_MEM			(LCD_MEM_7)
-#define LCD_UNIT_L2_MI_MEM			(LCD_MEM_7)
-#define LCD_ICON_HEART_MEM			(LCD_MEM_2)
-#define LCD_ICON_STOPWATCH_MEM		(LCD_MEM_3)
-#define LCD_ICON_RECORD_MEM			(LCD_MEM_1)
-#define LCD_ICON_ALARM_MEM			(LCD_MEM_4)
-#define LCD_ICON_BEEPER1_MEM		(LCD_MEM_5)
-#define LCD_ICON_BEEPER2_MEM		(LCD_MEM_6)
-#define LCD_ICON_BEEPER3_MEM		(LCD_MEM_7)
+#define LCD_SEG_L1_0_MEM            (LCD_MEM_6)
+#define LCD_SEG_L1_1_MEM            (LCD_MEM_4)
+#define LCD_SEG_L1_2_MEM            (LCD_MEM_3)
+#define LCD_SEG_L1_3_MEM            (LCD_MEM_2)
+#define LCD_SEG_L1_COL_MEM          (LCD_MEM_1)
+#define LCD_SEG_L1_DP1_MEM          (LCD_MEM_1)
+#define LCD_SEG_L1_DP0_MEM          (LCD_MEM_5)
+#define LCD_SEG_L2_0_MEM            (LCD_MEM_8)
+#define LCD_SEG_L2_1_MEM            (LCD_MEM_9)
+#define LCD_SEG_L2_2_MEM            (LCD_MEM_10)
+#define LCD_SEG_L2_3_MEM            (LCD_MEM_11)
+#define LCD_SEG_L2_4_MEM            (LCD_MEM_12)
+#define LCD_SEG_L2_5_MEM            (LCD_MEM_12)
+#define LCD_SEG_L2_COL1_MEM         (LCD_MEM_1)
+#define LCD_SEG_L2_COL0_MEM         (LCD_MEM_5)
+#define LCD_SEG_L2_DP_MEM           (LCD_MEM_9)
+#define LCD_SYMB_AM_MEM             (LCD_MEM_1)
+#define LCD_SYMB_PM_MEM             (LCD_MEM_1)
+#define LCD_SYMB_ARROW_UP_MEM       (LCD_MEM_1)
+#define LCD_SYMB_ARROW_DOWN_MEM     (LCD_MEM_1)
+#define LCD_SYMB_PERCENT_MEM        (LCD_MEM_5)
+#define LCD_SYMB_TOTAL_MEM          (LCD_MEM_11)
+#define LCD_SYMB_AVERAGE_MEM        (LCD_MEM_10)
+#define LCD_SYMB_MAX_MEM            (LCD_MEM_8)
+#define LCD_SYMB_BATTERY_MEM        (LCD_MEM_7)
+#define LCD_UNIT_L1_FT_MEM          (LCD_MEM_5)
+#define LCD_UNIT_L1_K_MEM           (LCD_MEM_5)
+#define LCD_UNIT_L1_M_MEM           (LCD_MEM_7)
+#define LCD_UNIT_L1_I_MEM           (LCD_MEM_7)
+#define LCD_UNIT_L1_PER_S_MEM       (LCD_MEM_5)
+#define LCD_UNIT_L1_PER_H_MEM       (LCD_MEM_7)
+#define LCD_UNIT_L1_DEGREE_MEM      (LCD_MEM_5)
+#define LCD_UNIT_L2_KCAL_MEM        (LCD_MEM_7)
+#define LCD_UNIT_L2_KM_MEM          (LCD_MEM_7)
+#define LCD_UNIT_L2_MI_MEM          (LCD_MEM_7)
+#define LCD_ICON_HEART_MEM          (LCD_MEM_2)
+#define LCD_ICON_STOPWATCH_MEM      (LCD_MEM_3)
+#define LCD_ICON_RECORD_MEM         (LCD_MEM_1)
+#define LCD_ICON_ALARM_MEM          (LCD_MEM_4)
+#define LCD_ICON_BEEPER1_MEM        (LCD_MEM_5)
+#define LCD_ICON_BEEPER2_MEM        (LCD_MEM_6)
+#define LCD_ICON_BEEPER3_MEM        (LCD_MEM_7)
 
 /* Bit masks for write access */
-#define LCD_SEG_L1_0_MASK			(BIT2+BIT1+BIT0+BIT7+BIT6+BIT5+BIT4)
-#define LCD_SEG_L1_1_MASK			(BIT2+BIT1+BIT0+BIT7+BIT6+BIT5+BIT4)
-#define LCD_SEG_L1_2_MASK			(BIT2+BIT1+BIT0+BIT7+BIT6+BIT5+BIT4)
-#define LCD_SEG_L1_3_MASK			(BIT2+BIT1+BIT0+BIT7+BIT6+BIT5+BIT4)
-#define LCD_SEG_L1_COL_MASK			(BIT5)
-#define LCD_SEG_L1_DP1_MASK			(BIT6)
-#define LCD_SEG_L1_DP0_MASK			(BIT2)
-#define LCD_SEG_L2_0_MASK			(BIT3+BIT2+BIT1+BIT0+BIT6+BIT5+BIT4)
-#define LCD_SEG_L2_1_MASK			(BIT3+BIT2+BIT1+BIT0+BIT6+BIT5+BIT4)
-#define LCD_SEG_L2_2_MASK			(BIT3+BIT2+BIT1+BIT0+BIT6+BIT5+BIT4)
-#define LCD_SEG_L2_3_MASK			(BIT3+BIT2+BIT1+BIT0+BIT6+BIT5+BIT4)
-#define LCD_SEG_L2_4_MASK			(BIT3+BIT2+BIT1+BIT0+BIT6+BIT5+BIT4)
-#define LCD_SEG_L2_5_MASK			(BIT7)
-#define LCD_SEG_L2_COL1_MASK		(BIT4)
-#define LCD_SEG_L2_COL0_MASK		(BIT0)
-#define LCD_SEG_L2_DP_MASK			(BIT7)
-#define LCD_SYMB_AM_MASK			(BIT1+BIT0)
-#define LCD_SYMB_PM_MASK			(BIT0)
-#define LCD_SYMB_ARROW_UP_MASK		(BIT2)
-#define LCD_SYMB_ARROW_DOWN_MASK	(BIT3)
-#define LCD_SYMB_PERCENT_MASK		(BIT4)
-#define LCD_SYMB_TOTAL_MASK			(BIT7)
-#define LCD_SYMB_AVERAGE_MASK		(BIT7)
-#define LCD_SYMB_MAX_MASK			(BIT7)
-#define LCD_SYMB_BATTERY_MASK		(BIT7)
-#define LCD_UNIT_L1_FT_MASK			(BIT5)
-#define LCD_UNIT_L1_K_MASK			(BIT6)
-#define LCD_UNIT_L1_M_MASK			(BIT1)
-#define LCD_UNIT_L1_I_MASK			(BIT0)
-#define LCD_UNIT_L1_PER_S_MASK		(BIT7)
-#define LCD_UNIT_L1_PER_H_MASK		(BIT2)
-#define LCD_UNIT_L1_DEGREE_MASK		(BIT1)
-#define LCD_UNIT_L2_KCAL_MASK		(BIT4)
-#define LCD_UNIT_L2_KM_MASK			(BIT5)
-#define LCD_UNIT_L2_MI_MASK			(BIT6)
-#define LCD_ICON_HEART_MASK			(BIT3)
-#define LCD_ICON_STOPWATCH_MASK		(BIT3)
-#define LCD_ICON_RECORD_MASK		(BIT7)
-#define LCD_ICON_ALARM_MASK			(BIT3)
-#define LCD_ICON_BEEPER1_MASK		(BIT3)
-#define LCD_ICON_BEEPER2_MASK		(BIT3)
-#define LCD_ICON_BEEPER3_MASK		(BIT3)
+#define LCD_SEG_L1_0_MASK           (BIT2+BIT1+BIT0+BIT7+BIT6+BIT5+BIT4)
+#define LCD_SEG_L1_1_MASK           (BIT2+BIT1+BIT0+BIT7+BIT6+BIT5+BIT4)
+#define LCD_SEG_L1_2_MASK           (BIT2+BIT1+BIT0+BIT7+BIT6+BIT5+BIT4)
+#define LCD_SEG_L1_3_MASK           (BIT2+BIT1+BIT0+BIT7+BIT6+BIT5+BIT4)
+#define LCD_SEG_L1_COL_MASK         (BIT5)
+#define LCD_SEG_L1_DP1_MASK         (BIT6)
+#define LCD_SEG_L1_DP0_MASK         (BIT2)
+#define LCD_SEG_L2_0_MASK           (BIT3+BIT2+BIT1+BIT0+BIT6+BIT5+BIT4)
+#define LCD_SEG_L2_1_MASK           (BIT3+BIT2+BIT1+BIT0+BIT6+BIT5+BIT4)
+#define LCD_SEG_L2_2_MASK           (BIT3+BIT2+BIT1+BIT0+BIT6+BIT5+BIT4)
+#define LCD_SEG_L2_3_MASK           (BIT3+BIT2+BIT1+BIT0+BIT6+BIT5+BIT4)
+#define LCD_SEG_L2_4_MASK           (BIT3+BIT2+BIT1+BIT0+BIT6+BIT5+BIT4)
+#define LCD_SEG_L2_5_MASK           (BIT7)
+#define LCD_SEG_L2_COL1_MASK        (BIT4)
+#define LCD_SEG_L2_COL0_MASK        (BIT0)
+#define LCD_SEG_L2_DP_MASK          (BIT7)
+#define LCD_SYMB_AM_MASK            (BIT1+BIT0)
+#define LCD_SYMB_PM_MASK            (BIT0)
+#define LCD_SYMB_ARROW_UP_MASK      (BIT2)
+#define LCD_SYMB_ARROW_DOWN_MASK    (BIT3)
+#define LCD_SYMB_PERCENT_MASK       (BIT4)
+#define LCD_SYMB_TOTAL_MASK         (BIT7)
+#define LCD_SYMB_AVERAGE_MASK       (BIT7)
+#define LCD_SYMB_MAX_MASK           (BIT7)
+#define LCD_SYMB_BATTERY_MASK       (BIT7)
+#define LCD_UNIT_L1_FT_MASK         (BIT5)
+#define LCD_UNIT_L1_K_MASK          (BIT6)
+#define LCD_UNIT_L1_M_MASK          (BIT1)
+#define LCD_UNIT_L1_I_MASK          (BIT0)
+#define LCD_UNIT_L1_PER_S_MASK      (BIT7)
+#define LCD_UNIT_L1_PER_H_MASK      (BIT2)
+#define LCD_UNIT_L1_DEGREE_MASK     (BIT1)
+#define LCD_UNIT_L2_KCAL_MASK       (BIT4)
+#define LCD_UNIT_L2_KM_MASK         (BIT5)
+#define LCD_UNIT_L2_MI_MASK         (BIT6)
+#define LCD_ICON_HEART_MASK         (BIT3)
+#define LCD_ICON_STOPWATCH_MASK     (BIT3)
+#define LCD_ICON_RECORD_MASK        (BIT7)
+#define LCD_ICON_ALARM_MASK         (BIT3)
+#define LCD_ICON_BEEPER1_MASK       (BIT3)
+#define LCD_ICON_BEEPER2_MASK       (BIT3)
+#define LCD_ICON_BEEPER3_MASK       (BIT3)
 
 #define LCD_SEG_MEM     (LCD_MEM_1)
 #define LCD_BLK_MEM   (LCD_MEM_1 + 0x20)
@@ -563,11 +563,11 @@ char *_sprintf(const char *fmt, int16_t n) {
 // *************************************************************************************************
 // @fn          _itopct
 // @brief       Converts integer n to a percent string between low and high. (uses _itoa internally)
-// @param       uint32_t low		0% value
-//				uint32_t high		100% value
-//				uint32_t n			integer to convert
+// @param       uint32_t low        0% value
+//              uint32_t high       100% value
+//              uint32_t n          integer to convert
 //
-// @return      uint8_t				string
+// @return      uint8_t             string
 // *************************************************************************************************
 char *_itopct(uint32_t low,uint32_t high,uint32_t n)
 {
@@ -598,7 +598,7 @@ void display_symbol(uint8_t scr_nr, enum display_segment symbol,
         }
 
         // Get bits for symbol from table
-        uint8_t bits 	= segments_bitmask[symbol];
+        uint8_t bits    = segments_bitmask[symbol];
 
         // Write LCD memory
         // (bitmask for symbols equals bits)

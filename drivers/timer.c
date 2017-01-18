@@ -21,7 +21,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **/
 
-/*	  Copyright (C) 2009 Texas Instruments Incorporated - http://www.ti.com/
+/*    Copyright (C) 2009 Texas Instruments Incorporated - http://www.ti.com/
 
 
       Redistribution and use in source and binary forms, with or without

@@ -36,17 +36,17 @@
 
 #define BIT(x) (1uL << (x))
 
-#define ACCEL_MODE_OFF		(0u)
-#define ACCEL_MODE_ON		(1u)
-#define ACCEL_MODE_BACKGROUND	(2u)
+#define ACCEL_MODE_OFF      (0u)
+#define ACCEL_MODE_ON       (1u)
+#define ACCEL_MODE_BACKGROUND   (2u)
 
-#define DISPLAY_ACCEL_X		(0u)
-#define DISPLAY_ACCEL_Y		(1u)
-#define DISPLAY_ACCEL_Z		(2u)
+#define DISPLAY_ACCEL_X     (0u)
+#define DISPLAY_ACCEL_Y     (1u)
+#define DISPLAY_ACCEL_Z     (2u)
 
 // Stop acceleration measurement after 60 minutes to save battery
 // This parameter is ignored if in background mode!
-#define ACCEL_MEASUREMENT_TIMEOUT		(60u)
+#define ACCEL_MEASUREMENT_TIMEOUT       (60u)
 
 // Conversion values from data to mgrav taken from CMA3000-D0x datasheet (rev 0.4, table 4)
 const uint16_t mgrav_per_bit[7] = { 18, 36, 71, 143, 286, 571, 1142 };
@@ -61,23 +61,23 @@ static note smb[] = {0x2588, 0x000F};
 struct accel
 {
     // ACC_MODE_OFF, ACC_MODE_ON, ACCEL_MODE_BACKGROUND
-    uint8_t			mode;
+    uint8_t         mode;
 
     // Sensor raw data
-    uint8_t			xyz[3];
+    uint8_t         xyz[3];
 
 
 
     // Acceleration data in 10 * mgrav
-    uint16_t		data;
+    uint16_t        data;
 
     // Sensor old data for FIR filter
-    uint16_t		data_prev;
+    uint16_t        data_prev;
 
     // Timeout: should be decreased with the 1 minute RTC event
-    uint16_t			timeout;
+    uint16_t            timeout;
     // Display X/Y/Z values
-    uint8_t 			view_style;
+    uint8_t             view_style;
 };
 extern struct accel sAccel;
 
@@ -101,7 +101,7 @@ extern uint8_t as_ok;
 // @fn          is_acceleration_measurement
 // @brief       Returns 1 if acceleration is currently measured.
 // @param       none
-// @return      u8		1 = acceleration measurement ongoing
+// @return      u8      1 = acceleration measurement ongoing
 // *************************************************************************************************
 uint8_t is_acceleration_measurement(void)
 {
@@ -111,8 +111,8 @@ uint8_t is_acceleration_measurement(void)
 // *************************************************************************************************
 // @fn          acceleration_value_is_positive
 // @brief       Returns 1 if 2's complement number is positive
-// @param       u8 value	2's complement number
-// @return      u8			1 = number is positive, 0 = number is negavtive
+// @param       u8 value    2's complement number
+// @return      u8          1 = number is positive, 0 = number is negavtive
 // *************************************************************************************************
 uint8_t acceleration_value_is_positive(uint8_t value)
 {
@@ -123,8 +123,8 @@ uint8_t acceleration_value_is_positive(uint8_t value)
 // *************************************************************************************************
 // @fn          convert_acceleration_value_to_mgrav
 // @brief       Converts measured value to mgrav units
-// @param       u8 value	g data from sensor
-// @return      u16			Acceleration (mgrav)
+// @param       u8 value    g data from sensor
+// @return      u16         Acceleration (mgrav)
 // *************************************************************************************************
 uint16_t convert_acceleration_value_to_mgrav(uint8_t value)
 {
@@ -458,8 +458,8 @@ static void acc_deactivated()
 
 
     /* do not disable anything if in background mode */
-    if	(sAccel.mode == ACCEL_MODE_BACKGROUND) return;
-    else 	/* clear symbols only if not in backround mode*/
+    if  (sAccel.mode == ACCEL_MODE_BACKGROUND) return;
+    else    /* clear symbols only if not in backround mode*/
     //display_symbol(0, LCD_ICON_ALARM , SEG_SET | BLINK_OFF);
 
     /* otherwise shutdown all the stuff

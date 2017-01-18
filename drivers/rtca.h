@@ -29,13 +29,13 @@
 
 enum rtca_tevent {
     RTCA_EV_NONE    = 0,
-    RTCA_EV_ALARM	= BIT0,
+    RTCA_EV_ALARM   = BIT0,
     RTCA_EV_SECOND  = BIT1,
-    RTCA_EV_MINUTE	= BIT2,
-    RTCA_EV_HOUR	= BIT3,
-    RTCA_EV_DAY		= BIT4,
-    RTCA_EV_MONTH	= BIT5,
-    RTCA_EV_YEAR	= BIT6
+    RTCA_EV_MINUTE  = BIT2,
+    RTCA_EV_HOUR    = BIT3,
+    RTCA_EV_DAY     = BIT4,
+    RTCA_EV_MONTH   = BIT5,
+    RTCA_EV_YEAR    = BIT6
 };
 
 /* Day of week strings */
@@ -57,8 +57,8 @@ struct {
 // Holds 12h/24h choice
 uint8_t display_am_pm;
 
-#define rtca_stop()		(RTCCTL01 |=  RTCHOLD)
-#define rtca_start()		(RTCCTL01 &= ~RTCHOLD)
+#define rtca_stop()     (RTCCTL01 |=  RTCHOLD)
+#define rtca_start()        (RTCCTL01 &= ~RTCHOLD)
 
 /* the ev variable holds the time event, see enum rtca_tevent for more info.
 please add -fshort-enums to CFLAGS to store rtca_tevent as only a byte */

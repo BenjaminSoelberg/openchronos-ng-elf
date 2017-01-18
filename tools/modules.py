@@ -1,7 +1,7 @@
 # vim: ts=4 noexpandtab
 # encoding: utf-8
 #
-#		   Copyright (C) 2012 Angelo Arrifano <miknix@gmail.com>
+#          Copyright (C) 2012 Angelo Arrifano <miknix@gmail.com>
 #
 # This file is part of OpenChronos. This file is free software: you can
 # redistribute it and/or modify it under the terms of the GNU General Public
