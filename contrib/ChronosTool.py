@@ -1,4 +1,5 @@
 #!/usr/bin/env python2
+# -*- coding: utf-8 -*-
 ###################################################################################################
 # ChronosTool.py
 # Tool for programming TI eZ430-Chronos watches

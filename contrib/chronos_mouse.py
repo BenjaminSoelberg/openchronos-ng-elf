@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 # Control mouse in X11 using Chronos watch.
 # Requires xdotool for clicking.

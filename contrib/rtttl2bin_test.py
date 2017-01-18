@@ -1,5 +1,6 @@
 #!/usr/bin/env python3.2
-#
+## -*- coding: utf-8 -*-
+
 # Copyright (C) 2012 Aljaž Srebrnič <a2piratesoft@gmail.com>
 #
 # openchronos-ng is free software: you can redistribute it and/or modify
