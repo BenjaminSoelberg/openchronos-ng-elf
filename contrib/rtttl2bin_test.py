@@ -28,7 +28,7 @@ class RTTTLTests(unittest.TestCase):
     def test_generate_binary_ringtone(self):
         self.assertEqual(rtttl2bin.generate_binary_ringtone(
             {'title': 'welcome', 'melody': [(16, 'a', 4), (16, 'c', 4), (16, 'e', 4)], 'whole': 1600}),
-            "note welcome[4] = {0x1901, 0x1904, 0x1908, 0x000F};")
+            "static note welcome[4] = {0x1901, 0x1904, 0x1908, 0x000F};")
 
     def test_parse_note(self):
         """Testing if parse_note parses notes correctly"""
@@ -65,7 +65,7 @@ class RTTTLTests(unittest.TestCase):
         """This tests the complete generation sequence"""
         self.assertEqual(rtttl2bin.generate_binary_ringtone(rtttl2bin.parse_ringtone(
             "welcome: d=16,o=4,b=150: a, c, e")),
-            "note welcome[4] = {0x1901, 0x1904, 0x1908, 0x000F};")
+            "static note welcome[4] = {0x1901, 0x1904, 0x1908, 0x000F};")
 
 if __name__ == '__main__':
     unittest.main()
