@@ -61,5 +61,5 @@ void buzzer_init(void);
  * \param notes An array of notes to play.
  */
 void buzzer_play(note *notes);
-
+extern note welcome[4];
 #endif /*BUZZER_H_*/

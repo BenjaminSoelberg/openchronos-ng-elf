@@ -23,6 +23,7 @@
 
 
 #include <string.h>
+#include <stdbool.h>
 #include "otp.h"
 #include "messagebus.h"
 #include "menu.h"
@@ -30,6 +31,7 @@
 /* drivers */
 #include "drivers/rtca.h"
 #include "drivers/display.h"
+#include "drivers/buzzer.h"
 
 #if defined(CONFIG_RTC_DST)
 #include "drivers/rtc_dst.h"
@@ -49,6 +51,11 @@
 #define SEG_G     (BIT1)
 
 static int days[12] ={0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334};
+
+#if defined(CONFIG_MOD_OTP_SOUND_CUE)
+int8_t otp_sound_cue = 0;
+int8_t otp_first_code = 1;
+#endif
 
 uint32_t simple_mktime(int year, int month, int day, int hour, int minute, int second)
 {
@@ -167,16 +174,31 @@ static void clock_event(enum sys_message msg)
         // Draw second half on the bottom line
         v = (otp_value % 1000);
         _printf(0, LCD_SEG_L2_2_0,"%03u", v);
+#if defined(CONFIG_MOD_OTP_SOUND_CUE)
+        extern note welcome[4];
+        if (!otp_first_code && otp_sound_cue)
+            buzzer_play(welcome);
+        otp_first_code = 0;
+#endif
     }
+}
+
+static void otp_request_update(bool activated)
+{
+    enum sys_message ev_type = activated ? SYS_MSG_RTC_SECOND : SYS_MSG_NONE;
+#if defined(CONFIG_MOD_OTP_SOUND_CUE)
+    otp_first_code = 1;
+#endif
+    // Force generate & display a new OTP
+    last_time = 0;
+    clock_event(ev_type);
 }
 
 static void otp_activated()
 {
     sys_messagebus_register(&clock_event, SYS_MSG_RTC_SECOND);
     display_char(0 ,LCD_SEG_L1_3, '8', BLINK_ON); 
-    // Force generate & display a new OTP
-    last_time = 0;
-    clock_event(RTCA_EV_SECOND);
+    otp_request_update(true);
 }
 
 static void otp_deactivated()
@@ -194,8 +216,7 @@ static void otp_gen_next()
         current_key_index = 0;
     else
         current_key_index++;
-    last_time = 0;
-    clock_event(SYS_MSG_NONE);
+    otp_request_update(false);
 }
 
 static void otp_gen_prev()
@@ -204,16 +225,27 @@ static void otp_gen_prev()
         current_key_index = max_key_index - 1;
     else
         current_key_index--;
-    last_time = 0;
-    clock_event(SYS_MSG_NONE);
+    otp_request_update(false);
 }
+
+#if defined(CONFIG_MOD_OTP_SOUND_CUE)
+static void otp_toggle_beep()
+{
+    otp_sound_cue ^= 1;
+    display_bits(0, LCD_SEG_L2_3, SEG_G, otp_sound_cue ? SEG_ON : SEG_OFF);
+}
+#endif
 
 void mod_otp_init()
 {
     menu_add_entry("OTP",
         otp_gen_next,       /* up         */
         otp_gen_prev,       /* down       */
+#if defined(CONFIG_MOD_OTP_SOUND_CUE)
+        otp_toggle_beep,    /* num        */
+#else
         NULL,               /* num        */
+#endif
         NULL,               /* long star  */
         NULL,               /* long num   */
         NULL,               /* up-down    */
