@@ -29,30 +29,46 @@
 #include "drivers/rtca.h"
 #include "drivers/display.h"
 
+#ifdef CONFIG_MOD_CLOCK_MONTH_FIRST
+    #define MONTH_SEGMENT   (LCD_SEG_L2_4_3)
+    #define DAY_SEGMENT     (LCD_SEG_L2_1_0)
+#else
+    #define MONTH_SEGMENT   (LCD_SEG_L2_1_0)
+    #define DAY_SEGMENT     (LCD_SEG_L2_4_3)
+#endif
+
+#define SECONDS_SEGMENT (LCD_SEG_L2_1_0)
+
+#ifdef CONFIG_MOD_CLOCK_BLINKCOL
+static uint8_t show_seconds;
+#endif
+
 static void clock_event(enum sys_message msg)
 {
 #ifdef CONFIG_MOD_CLOCK_BLINKCOL
     if (msg & SYS_MSG_RTC_SECOND)
+    {
         display_symbol(0, LCD_SEG_L1_COL,
             ((rtca_time.sec & 0x01) ? SEG_ON : SEG_OFF));
+    }
+    if (show_seconds && (msg & SYS_MSG_RTC_SECOND))
+    {
+        display_clear(0, 2);
+        _printf(0, SECONDS_SEGMENT, "%02u", rtca_time.sec);
+    }
+    else
 #endif
-
+    {
+        if (msg & SYS_MSG_RTC_MONTH)
+            _printf(0, MONTH_SEGMENT, "%02u", rtca_time.mon);
+        if (msg & SYS_MSG_RTC_DAY) {
+            _printf(0, DAY_SEGMENT, "%02u", rtca_time.day);
+            _printf(1, LCD_SEG_L2_2_0, rtca_dow_str[rtca_time.dow], SEG_SET);
+        }
+    }
     if (msg & SYS_MSG_RTC_YEAR)
         _printf(1, LCD_SEG_L1_3_0, "%04u", rtca_time.year);
-#ifdef CONFIG_MOD_CLOCK_MONTH_FIRST
-    if (msg & SYS_MSG_RTC_MONTH)
-        _printf(0, LCD_SEG_L2_4_3, "%02u", rtca_time.mon);
-    if (msg & SYS_MSG_RTC_DAY) {
-        _printf(0, LCD_SEG_L2_1_0, "%02u", rtca_time.day);
-#else
-    if (msg & SYS_MSG_RTC_MONTH)
-        _printf(0, LCD_SEG_L2_1_0, "%02u", rtca_time.mon);
-    if (msg & SYS_MSG_RTC_DAY) {
-        _printf(0, LCD_SEG_L2_4_3, "%02u", rtca_time.day);
 
-#endif
-        _printf(1, LCD_SEG_L2_2_0, rtca_dow_str[rtca_time.dow], SEG_SET);
-    }
     if (msg & SYS_MSG_RTC_HOUR) {
         if (display_am_pm) {
             uint8_t tmp_hh = rtca_time.hour;
@@ -125,20 +141,12 @@ static void edit_yy_set(int8_t step)
 static void edit_mo_sel(void)
 {
     lcd_screen_activate(0);
-#ifdef CONFIG_MOD_CLOCK_MONTH_FIRST
-    display_chars(0, LCD_SEG_L2_4_3, NULL, BLINK_ON);
-#else
-    display_chars(0, LCD_SEG_L2_1_0, NULL, BLINK_ON);
-#endif
+    display_chars(0, MONTH_SEGMENT, NULL, BLINK_ON);
 }
 
 static void edit_mo_dsel(void)
 {
-#ifdef CONFIG_MOD_CLOCK_MONTH_FIRST
-    display_chars(0, LCD_SEG_L2_4_3, NULL, BLINK_OFF);
-#else
-    display_chars(0, LCD_SEG_L2_1_0, NULL, BLINK_OFF);
-#endif
+    display_chars(0, MONTH_SEGMENT, NULL, BLINK_OFF);
 }
 
 static void edit_mo_set(int8_t step)
@@ -154,20 +162,12 @@ static void edit_mo_set(int8_t step)
 static void edit_dd_sel(void)
 {
     lcd_screen_activate(0);
-#ifdef CONFIG_MOD_CLOCK_MONTH_FIRST
-    display_chars(0, LCD_SEG_L2_1_0, NULL, BLINK_ON);
-#else
-    display_chars(0, LCD_SEG_L2_4_3, NULL, BLINK_ON);
-#endif
+    display_chars(0, DAY_SEGMENT, NULL, BLINK_ON);
 }
 
 static void edit_dd_dsel(void)
 {
-#ifdef CONFIG_MOD_CLOCK_MONTH_FIRST
-    display_chars(0, LCD_SEG_L2_1_0, NULL, BLINK_OFF);
-#else
-    display_chars(0, LCD_SEG_L2_4_3, NULL, BLINK_OFF);
-#endif
+    display_chars(0, DAY_SEGMENT, NULL, BLINK_OFF);
 }
 
 static void edit_dd_set(int8_t step)
@@ -344,11 +344,23 @@ static void star_long_pressed()
     menu_editmode_start(&edit_save, edit_items);
 }
 
+#if defined(CONFIG_MOD_CLOCK_BLINKCOL)
+static void toggle_seconds_display()
+{
+    show_seconds ^= 1;
+    update_screen();
+}
+#endif
+
 void mod_clock_init()
 {
     menu_add_entry ("CLOCK",
                     NULL,
+#if defined(CONFIG_MOD_CLOCK_BLINKCOL)
+                    toggle_seconds_display,
+#else
                     NULL,
+#endif
                     &num_pressed,
                     &star_long_pressed,
                     NULL,
