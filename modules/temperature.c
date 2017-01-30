@@ -107,7 +107,7 @@ static void edit_c_or_f_dsel(void)
 
 static void edit_c_or_f_set(int8_t step)
 {
-    use_temperature_metric = !use_temperature_metric;
+    use_temperature_metric ^= 1;
     update_c_or_f_display();
     display_temperature();
 }
