@@ -39,33 +39,31 @@
 
 #define SECONDS_SEGMENT (LCD_SEG_L2_1_0)
 
-#ifdef CONFIG_MOD_CLOCK_BLINKCOL
-static uint8_t show_seconds;
-#endif
+static uint8_t display_seconds = 0;
 
 static void clock_event(enum sys_message msg)
 {
 #ifdef CONFIG_MOD_CLOCK_BLINKCOL
-    if (msg & SYS_MSG_RTC_SECOND)
-    {
-        display_symbol(0, LCD_SEG_L1_COL,
-            ((rtca_time.sec & 0x01) ? SEG_ON : SEG_OFF));
+    if (msg & SYS_MSG_RTC_SECOND) {
+        display_symbol(0, LCD_SEG_L1_COL, ((rtca_time.sec & 0x01) ? SEG_ON : SEG_OFF));
     }
-    if (show_seconds && (msg & SYS_MSG_RTC_SECOND))
-    {
-        display_clear(0, 2);
-        _printf(0, SECONDS_SEGMENT, "%02u", rtca_time.sec);
-    }
-    else
 #endif
-    {
-        if (msg & SYS_MSG_RTC_MONTH)
+    if (display_seconds) {
+        if (msg & SYS_MSG_RTC_SECOND) {
+            _printf(0, SECONDS_SEGMENT, "%02u", rtca_time.sec);
+        }
+    } else {
+        if ((msg & SYS_MSG_RTC_DAY) || (msg & SYS_MSG_RTC_MONTH)) // Collapsed to simplify code path
+        {
             _printf(0, MONTH_SEGMENT, "%02u", rtca_time.mon);
-        if (msg & SYS_MSG_RTC_DAY) {
             _printf(0, DAY_SEGMENT, "%02u", rtca_time.day);
-            _printf(1, LCD_SEG_L2_2_0, rtca_dow_str[rtca_time.dow], SEG_SET);
+            display_char (0, LCD_SEG_L2_2, '-', SEG_SET);
         }
     }
+
+    if (msg & SYS_MSG_RTC_DAY)
+        _printf(1, LCD_SEG_L2_2_0, rtca_dow_str[rtca_time.dow], SEG_SET);
+
     if (msg & SYS_MSG_RTC_YEAR)
         _printf(1, LCD_SEG_L1_3_0, "%04u", rtca_time.year);
 
@@ -97,8 +95,8 @@ static void clock_event(enum sys_message msg)
 /* update screens with fake event */
 static inline void update_screen()
 {
-    clock_event(SYS_MSG_RTC_YEAR | SYS_MSG_RTC_MONTH | SYS_MSG_RTC_DAY
-                | SYS_MSG_RTC_HOUR  | SYS_MSG_RTC_MINUTE);
+    clock_event(SYS_MSG_RTC_YEAR | SYS_MSG_RTC_MONTH | SYS_MSG_RTC_DAY |
+                SYS_MSG_RTC_HOUR | SYS_MSG_RTC_MINUTE | SYS_MSG_RTC_SECOND);
 }
 
 /* In effect when adjusting from one month to another month with less days and the day needs to be adjusted,
@@ -191,7 +189,6 @@ static void edit_hh_dsel(void)
 static void edit_hh_set(int8_t step)
 {
     helpers_loop(&rtca_time.hour, 0, 23, step);
-
     update_screen();
 }
 
@@ -211,7 +208,6 @@ static void edit_mm_dsel(void)
 static void edit_mm_set(int8_t step)
 {
     helpers_loop(&rtca_time.min, 0, 59, step);
-
     update_screen();
 }
 
@@ -235,7 +231,7 @@ static void edit_12_24_dsel(void)
 
 static void edit_12_24_set(int8_t step)
 {
-    display_am_pm = !display_am_pm;
+    display_am_pm ^= 1;
     edit_12_24_display();
     update_screen();
 }
@@ -261,12 +257,7 @@ static void edit_save()
     rtca_start();
 
     /* update screens with fake event */
-    clock_event(SYS_MSG_RTC_YEAR | SYS_MSG_RTC_MONTH | SYS_MSG_RTC_DAY |
-                SYS_MSG_RTC_HOUR | SYS_MSG_RTC_MINUTE
-#ifdef CONFIG_MOD_CLOCK_BLINKCOL
-                | SYS_MSG_RTC_SECOND
-#endif
-    );
+    update_screen();
 }
 
 /* edit mode item table */
@@ -285,18 +276,13 @@ static void clock_activated()
 {
     sys_messagebus_register(&clock_event,
                             SYS_MSG_RTC_YEAR | SYS_MSG_RTC_MONTH | SYS_MSG_RTC_DAY |
-                            SYS_MSG_RTC_HOUR | SYS_MSG_RTC_MINUTE
-#ifdef CONFIG_MOD_CLOCK_BLINKCOL
-                            | SYS_MSG_RTC_SECOND
-#endif
+                            SYS_MSG_RTC_HOUR | SYS_MSG_RTC_MINUTE | SYS_MSG_RTC_SECOND
     );
 
     /* create three screens, the first is always the active one */
     lcd_screens_create(3); // 0:time + date, 1: year + day of week, 2:temp for settings (ex 12/24h setup)
 
-    /* display stuff that won't change with time */
     display_symbol(0, LCD_SEG_L1_COL, SEG_ON);
-    display_char(0, LCD_SEG_L2_2, '-', SEG_SET);
 
     /* update screens with fake event */
     update_screen();
@@ -309,11 +295,14 @@ static void clock_deactivated()
     /* destroy virtual screens */
     lcd_screens_destroy();
 
+    // TODO: While looking through all modules, only a few of them actually create virtual screens.
+    // TODO: Below code is potentially a "use after free" all though the display_* functions seems protect against this.
+    // TODO: This seems like either a bug or a misunderstanding, but not really sure.
+
     /* clean up screen */
     display_symbol(0, LCD_SEG_L1_COL, SEG_OFF);
-    if (display_am_pm) {
-        display_symbol(0, LCD_SYMB_PM, SEG_OFF);
-    }
+    display_symbol(0, LCD_SYMB_PM, SEG_OFF);
+
     display_clear(0, 1);
     display_clear(0, 2);
 }
@@ -336,31 +325,27 @@ static void star_long_pressed()
     rtca_stop();
 
 #ifdef CONFIG_MOD_CLOCK_BLINKCOL
-    /* the blinking dots feature might hide the two dots, we display them
-      here just in case */
+    /* the blinking dots feature might hide the two dots, we display them here just in case */
     display_symbol(0, LCD_SEG_L1_COL, SEG_ON);
 #endif
-
+    display_seconds = 0;
+    update_screen();
     menu_editmode_start(&edit_save, edit_items);
 }
 
-#if defined(CONFIG_MOD_CLOCK_BLINKCOL)
-static void toggle_seconds_display()
+static void up_down_pressed()
 {
-    show_seconds ^= 1;
+    display_seconds ^= 1;
+    display_clear(0, 2);
+
     update_screen();
 }
-#endif
 
 void mod_clock_init()
 {
     menu_add_entry ("CLOCK",
-                    NULL,
-#if defined(CONFIG_MOD_CLOCK_BLINKCOL)
-                    toggle_seconds_display,
-#else
-                    NULL,
-#endif
+                    &up_down_pressed,
+                    &up_down_pressed,
                     &num_pressed,
                     &star_long_pressed,
                     NULL,
