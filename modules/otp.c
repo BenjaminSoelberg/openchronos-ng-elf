@@ -198,6 +198,7 @@ static void otp_activated()
 {
     sys_messagebus_register(&clock_event, SYS_MSG_RTC_SECOND);
     display_char(0 ,LCD_SEG_L1_3, '8', BLINK_ON);
+    display_bits(0, LCD_SEG_L2_3, SEG_G, otp_sound_cue ? SEG_ON : SEG_OFF);
     otp_request_update(true);
 }
 
@@ -239,10 +240,10 @@ static void otp_toggle_beep()
 void mod_otp_init()
 {
     menu_add_entry("OTP",
-        otp_gen_next,       /* up         */
-        otp_gen_prev,       /* down       */
+        &otp_gen_next,       /* up         */
+        &otp_gen_prev,       /* down       */
 #if defined(CONFIG_MOD_OTP_SOUND_CUE)
-        otp_toggle_beep,    /* num        */
+        &otp_toggle_beep,    /* num        */
 #else
         NULL,               /* num        */
 #endif

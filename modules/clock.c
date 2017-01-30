@@ -343,7 +343,7 @@ static void up_down_pressed()
 
 void mod_clock_init()
 {
-    menu_add_entry ("CLOCK",
+    menu_add_entry("CLOCK",
                     &up_down_pressed,
                     &up_down_pressed,
                     &num_pressed,
