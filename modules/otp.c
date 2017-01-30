@@ -197,14 +197,14 @@ static void otp_request_update(bool activated)
 static void otp_activated()
 {
     sys_messagebus_register(&clock_event, SYS_MSG_RTC_SECOND);
-    display_char(0 ,LCD_SEG_L1_3, '0', BLINK_ON);
+    display_char(0 ,LCD_SEG_L1_3, '8', BLINK_ON);
     otp_request_update(true);
 }
 
 static void otp_deactivated()
 {
     sys_messagebus_unregister_all(&clock_event);
-    display_char(0 ,LCD_SEG_L1_3, '0', BLINK_OFF);
+    display_char(0 ,LCD_SEG_L1_3, '8', BLINK_OFF);
     /* clean up screen */
     display_clear(0, 1);
     display_clear(0, 2);
