@@ -615,7 +615,7 @@ void display_bits(uint8_t scr_nr, enum display_segment segment,
         uint8_t *segmem = (uint8_t *)segments_lcdmem[segment];
         uint8_t *blkmem = segmem + 0x20;
 
-        if (display_screens) {
+        if (display_screens) { // safeguard
             /* get offset */
             uint8_t offset = segmem - LCD_MEM_1;
 
