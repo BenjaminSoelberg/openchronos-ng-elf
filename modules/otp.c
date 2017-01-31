@@ -198,7 +198,9 @@ static void otp_activated()
 {
     sys_messagebus_register(&clock_event, SYS_MSG_RTC_SECOND);
     display_char(0 ,LCD_SEG_L1_3, '8', BLINK_ON);
+#if defined(CONFIG_MOD_OTP_SOUND_CUE)
     display_bits(0, LCD_SEG_L2_3, SEG_G, otp_sound_cue ? SEG_ON : SEG_OFF);
+#endif
     otp_request_update(true);
 }
 
