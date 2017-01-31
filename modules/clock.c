@@ -295,10 +295,6 @@ static void clock_deactivated()
     /* destroy virtual screens */
     lcd_screens_destroy();
 
-    // TODO: While looking through all modules, only a few of them actually create virtual screens.
-    // TODO: Below code is potentially a "use after free" all though the display_* functions seems protect against this.
-    // TODO: This seems like either a bug or a misunderstanding, but not really sure.
-
     /* clean up screen */
     display_symbol(0, LCD_SEG_L1_COL, SEG_OFF);
     display_symbol(0, LCD_SYMB_PM, SEG_OFF);

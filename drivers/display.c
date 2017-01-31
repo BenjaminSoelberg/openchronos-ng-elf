@@ -167,9 +167,9 @@
 #define LCD_ICON_BEEPER2_MASK       (BIT3)
 #define LCD_ICON_BEEPER3_MASK       (BIT3)
 
-#define LCD_SEG_MEM     (LCD_MEM_1)
-#define LCD_BLK_MEM   (LCD_MEM_1 + 0x20)
-#define LCD_MEM_LEN   12
+#define LCD_SEG_MEM                 (LCD_MEM_1)
+#define LCD_BLK_MEM                 (LCD_MEM_1 + 0x20)
+#define LCD_MEM_LEN                 12
 
 /***************************************************************************
  ***************************** LOCAL STORAGE *******************************
@@ -407,6 +407,7 @@ void lcd_screens_create(uint8_t nr)
 
 /*
     lcd_screens_destroy()
+    NOTE: Will actually only delete all virtual screens as screen 0 always points to real screen mem.
 */
 void lcd_screens_destroy(void)
 {
@@ -581,8 +582,7 @@ char *_itopct(uint32_t low,uint32_t high,uint32_t n)
     return _sprintf("%3u", (((n*100)-(low*100))/(high-low)));
 }
 
-void display_symbol(uint8_t scr_nr, enum display_segment symbol,
-                                               enum display_segstate state)
+void display_symbol(uint8_t scr_nr, enum display_segment symbol, enum display_segstate state)
 {
     if (symbol <= LCD_SEG_L2_DP) {
         // Get LCD memory address for symbol from table
@@ -598,7 +598,7 @@ void display_symbol(uint8_t scr_nr, enum display_segment symbol,
         }
 
         // Get bits for symbol from table
-        uint8_t bits    = segments_bitmask[symbol];
+        uint8_t bits = segments_bitmask[symbol];
 
         // Write LCD memory
         // (bitmask for symbols equals bits)
