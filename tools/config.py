@@ -97,7 +97,7 @@ DATA["TEXT_PORTS"] = {
 DATA["CONFIG_BUTTONS_LONG_PRESS_TIME"] = {
     "name": "Button long press time",
     "type": "text",
-    "default": "6",
+    "default": "20",
     "ifndef": True,
     "help": "Long button press time (in multiples of 1/20 second)",
 }
