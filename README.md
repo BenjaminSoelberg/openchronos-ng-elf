@@ -67,6 +67,7 @@ Run the following command to add exports to your current shell (including the do
 ```
 . ~/.profile
 ```
+or add it to your .bashrc.
 
 Support package
 ----------------
@@ -166,3 +167,6 @@ eZ430 Chronos wiki:
 
 [http://processors.wiki.ti.com/index.php/EZ430-Chronos](http://processors.wiki.ti.com/index.php/EZ430-Chronos)
 
+Join us at Slack Team Channel:
+
+[https://openchronos.slack.com](https://openchronos.slack.com)
