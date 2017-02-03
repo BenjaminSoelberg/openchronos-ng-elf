@@ -128,7 +128,7 @@ Flashing the watch with original Chronos RFBSL firmware using mspdebug (MSP430F5
 
 3) Program it using mspdebug<br>
 ```
-/<install path>/eZ430-Chronos/Control Center/Recovery/Chronos Watch/Wireless Updater/
+cd /<install path>/eZ430-Chronos/Control Center/Recovery/Chronos Watch/Wireless Updater/
 mspdebug rf2500
 <snip>
 (mspdebug)  opt enable_bsl_access true
@@ -149,7 +149,7 @@ Flashing the RF Access Point with original firmware using mspdebug (MSP430F5509/
 
 3) Program it using mspdebug<br>
 ```
-/<install path>/eZ430-Chronos/Control Center/Recovery/RF Access Point/MSP430 v1.1 - white PCB/
+cd /<install path>/eZ430-Chronos/Control Center/Recovery/RF Access Point/MSP430 v1.1 - white PCB/
 mspdebug rf2500
 <snip>
 (mspdebug) prog Recovery_eZ430-Chronos_AP_<YOUR-WATCH-FREQUENCY-DONT-COPY-THIS-LINE-WITHOUT-PLUGGING-IN-YOUR-WATCH-FREQ>_2_2-white_PCB.txt
