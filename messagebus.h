@@ -40,8 +40,8 @@
     \brief List of possible message types for the message bus.
     \sa sys_messagebus_register()
 */
-/* WARNING: the enum values are optimized to work with some drivers.
-    If you need to add a new entry, append it to the end! */
+/* WARNING: The enum values are optimized to work with some drivers.
+            If you need to add a new entry, append it to the end! */
 enum sys_message {
     /* drivers/rtca */
     SYS_MSG_NONE       = 0,    /*!< Empty event. */

@@ -126,6 +126,7 @@ static void check_buttons(void)
     }
 #endif
 
+//TODO:Either implement or remove!
 #ifdef CONFIG_MOD_ALARM
 #endif
 
