@@ -116,9 +116,8 @@ void timer0_delay(uint16_t duration, uint16_t LPM_bits)
         __no_operation();
 
 #ifdef USE_WATCHDOG
-        /* Service watchdog */
-        WDTCTL = WDTPW + WDTIS__512K + WDTSSEL__ACLK + WDTCNTCL;
-        //TODO bør det ikke være : WDTCTL &= WDTCNTCL;
+        // Service watchdog (reset counter)
+        WDTCTL = (WDTCTL & 0xff) | WDTPW | WDTCNTCL;
 #endif
 
         /* The interrupt routine sets delay_finished to signal us
