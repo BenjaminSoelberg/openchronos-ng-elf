@@ -142,9 +142,9 @@ Flashing the RF Access Point with original firmware using mspdebug (MSP430F5509/
 ---------------------------------------------------------------------------------------------------
 1) Connect the MSP430F5509/CC1101 USB Access point to the USB FET module (see pictures)
 
-[Picture 1](https://s28.postimg.org/uc5khxmh9/Untitled.png)
+[Picture 1](https://cloud.githubusercontent.com/assets/25465510/22618924/330af6f0-eae9-11e6-9ba6-9b2dcbb8327b.jpg)
 
-[Picture 2](https://e2e.ti.com/cfs-file/__key/communityserver-discussions-components-files/166/IMG_5F00_20150615_5F00_133822743.jpg)
+[Picture 2](https://cloud.githubusercontent.com/assets/25465510/22618925/3639b6fe-eae9-11e6-8a06-204e3322d8bd.png)
 
 2) Connect the USB FET module with the MSP430F5509/CC1101 RF USB Access point module attached
 
