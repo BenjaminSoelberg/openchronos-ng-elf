@@ -201,6 +201,7 @@ static void crt_0042(void)
     /* loop if no button is pressed, enter RFBSL if backlight is pressed */
     do {
         _BIS_SR(LPM3_bits | GIE);
+        __no_operation();
 
         if ((P2IN & ALL_BUTTONS) == BTN_BL_PIN)
             jump_to_rfbsl();

@@ -83,6 +83,13 @@ static void battery_deactivate(void)
 
 void mod_battery_init(void)
 {
-    menu_add_entry("BATT", NULL, NULL, NULL, NULL, NULL, NULL,
-        &battery_activate, &battery_deactivate);
+    menu_add_entry("BATT",
+                   NULL,
+                   NULL,
+                   NULL,
+                   NULL,
+                   NULL,
+                   NULL,
+                   &battery_activate,
+                   &battery_deactivate);
 }

@@ -242,17 +242,16 @@ static void otp_toggle_beep()
 void mod_otp_init()
 {
     menu_add_entry("OTP",
-        &otp_gen_next,       /* up         */
-        &otp_gen_prev,       /* down       */
+                   &otp_gen_next,      /* up         */
+                   &otp_gen_prev,      /* down       */
 #if defined(CONFIG_MOD_OTP_SOUND_CUE)
-        &otp_toggle_beep,    /* num        */
+                   &otp_toggle_beep,   /* num        */
 #else
-        NULL,               /* num        */
+                   NULL,               /* num        */
 #endif
-        NULL,               /* long star  */
-        NULL,               /* long num   */
-        NULL,               /* up-down    */
-        &otp_activated,     /* activate   */
-        &otp_deactivated    /* deactivate */
-    );
+                   NULL,               /* long star  */
+                   NULL,               /* long num   */
+                   NULL,               /* up-down    */
+                   &otp_activated,     /* activate   */
+                   &otp_deactivated);  /* deactivate */
 }

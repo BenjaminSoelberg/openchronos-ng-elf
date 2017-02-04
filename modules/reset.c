@@ -37,7 +37,7 @@ static void num_press()
 static void reset_activate()
 {
     /* update screen */
-    display_chars(0, LCD_SEG_L2_5_0, " RESET", SEG_ON);
+    display_chars(0, LCD_SEG_L2_5_0, "RESET", SEG_ON);
 }
 
 static void reset_deactivate()
@@ -46,9 +46,14 @@ static void reset_deactivate()
     display_clear(0, 2);
 }
 
-void mod_reset_init(void)
-{
-    menu_add_entry("RESET", NULL, NULL, &num_press, NULL, NULL, NULL,
-                        &reset_activate,
-                        &reset_deactivate);
+void mod_reset_init(void) {
+    menu_add_entry("RESET",
+                   NULL,
+                   NULL,
+                   &num_press,
+                   NULL,
+                   NULL,
+                   NULL,
+                   &reset_activate,
+                   &reset_deactivate);
 }

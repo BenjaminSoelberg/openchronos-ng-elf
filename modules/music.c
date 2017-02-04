@@ -50,7 +50,13 @@ static void music_deactivate()
 
 void mod_music_init(void)
 {
-    menu_add_entry("MUSIC", NULL, NULL, &num_press, NULL, NULL, NULL,
-                        &music_activate,
-                        &music_deactivate);
+    menu_add_entry("MUSIC",
+                   NULL,
+                   NULL,
+                   &num_press,
+                   NULL,
+                   NULL,
+                   NULL,
+                   &music_activate,
+                   &music_deactivate);
 }

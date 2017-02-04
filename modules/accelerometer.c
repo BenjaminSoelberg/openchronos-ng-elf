@@ -486,11 +486,14 @@ void mod_accelerometer_init()
     /* Clear mode */
     sAccel.mode = ACCEL_MODE_OFF;
 
-    menu_add_entry("ACC",&up_btn, &down_btn,
-            &num_pressed,
-            &star_long_pressed,
-            NULL,NULL,
-            &acc_activated,
-            &acc_deactivated);
+    menu_add_entry("ACC",
+                   &up_btn,
+                   &down_btn,
+                   &num_pressed,
+                   &star_long_pressed,
+                   NULL,
+                   NULL,
+                   &acc_activated,
+                   &acc_deactivated);
 
 }
