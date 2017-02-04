@@ -1,12 +1,16 @@
-INTRODUCTION
-============
+GENERAL INFORMATION 
+===================
 
 Origin: [https://github.com/BenjaminSoelberg/openchronos-ng-elf](https://github.com/BenjaminSoelberg/openchronos-ng-elf)
 
-Latest build status on Circle CI : [![Circle CI](https://circleci.com/gh/BenjaminSoelberg/openchronos-ng-elf.svg?style=svg)](https://circleci.com/gh/BenjaminSoelberg/openchronos-ng-elf)
+Latest build status can be found on Circle CI : [https://circleci.com/gh/BenjaminSoelberg/openchronos-ng-elf](https://circleci.com/gh/BenjaminSoelberg/openchronos-ng-elf) ![Circle CI](https://circleci.com/gh/BenjaminSoelberg/openchronos-ng-elf.svg?style=svg)
 
 Releases and snapshot, including firmware can be found here : [https://github.com/BenjaminSoelberg/openchronos-ng-elf/releases](https://github.com/BenjaminSoelberg/openchronos-ng-elf/releases)
 
+We use Slack to communicate, you are welcome to join us at: [https://openchronos.slack.com](https://openchronos.slack.com)
+
+INTRODUCTION
+============
 Modular opensource firmware for the TI eZ430 Chronos.
 
 openchronos-ng is a major rework of openchronos. Compared to openchronos it has the following features:
