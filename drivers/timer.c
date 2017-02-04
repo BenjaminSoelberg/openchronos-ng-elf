@@ -112,7 +112,7 @@ void timer0_delay(uint16_t duration, uint16_t LPM_bits)
     /* Wait for interrupt */
     while (1) {
         /* enter low power mode */
-        _BIS_SR(LPM_bits + GIE);
+        _BIS_SR(LPM_bits | GIE);
         __no_operation();
 
 #ifdef USE_WATCHDOG
