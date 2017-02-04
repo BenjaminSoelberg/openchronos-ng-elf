@@ -54,6 +54,7 @@
 */
 
 #include "timer.h"
+#include "wdt.h"
 
 /* HARDWARE TIMER ASSIGNMENT:
      TA0CCR0: 20Hz timer used by the button driver
@@ -115,10 +116,8 @@ void timer0_delay(uint16_t duration, uint16_t LPM_bits)
         _BIS_SR(LPM_bits | GIE);
         __no_operation();
 
-#ifdef USE_WATCHDOG
         // Service watchdog (reset counter)
-        WDTCTL = (WDTCTL & 0xff) | WDTPW | WDTCNTCL;
-#endif
+        wdt_poll();
 
         /* The interrupt routine sets delay_finished to signal us
            that a interrupt happened */

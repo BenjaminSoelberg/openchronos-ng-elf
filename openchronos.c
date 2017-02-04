@@ -81,6 +81,8 @@
 #include "drivers/rtca.h"
 #include "drivers/temperature.h"
 #include "drivers/battery.h"
+#include "drivers/utils.h"
+#include "drivers/wdt.h"
 
 void check_events(void)
 {
@@ -121,8 +123,8 @@ static void check_buttons(void)
     /* if up and down is pressed then resets the watch */
     if (ports_button_pressed(PORTS_BTN_UP | PORTS_BTN_DOWN, 0))
     {
-        /* Forces a reset since a write to WDTCTL isn't allowed without password. */
-        WDTCTL = 0;
+        /* Forces a reset */
+        REBOOT();
     }
 #endif
 
@@ -143,11 +145,7 @@ void init_application(void)
     // Enable watchdog
 
     // Watchdog triggers after 16 seconds when not cleared
-#ifdef USE_WATCHDOG
-    WDTCTL = WDTPW + WDTIS__512K + WDTSSEL__ACLK;
-#else
-    WDTCTL = WDTPW + WDTHOLD;
-#endif
+    wdt_setup();
 
     // ---------------------------------------------------------------------
     // Configure port mapping
@@ -250,10 +248,8 @@ int main(void)
         ports_buttons_poll();
 
         /* service watchdog on wakeup */
-        #ifdef USE_WATCHDOG
-            // Service watchdog (reset counter)
-            WDTCTL = (WDTCTL & 0xff) | WDTPW | WDTCNTCL;
-        #endif
+        //TODO: Change functions to defines to avoid real calls when USE_WATCHDOG is not defined
+        wdt_poll();
 
         /* check if any driver has events pending */
         check_events();
@@ -262,7 +258,6 @@ int main(void)
         check_buttons();
     }
 }
-
 
 /***************************************************************************
  **************************** HERE BE HELPERS ******************************

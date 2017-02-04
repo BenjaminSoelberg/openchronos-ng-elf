@@ -37,6 +37,7 @@
 
 #include "openchronos.h"
 #include "drivers/pmm.h"
+#include "drivers/wdt.h"
 
 /* Entry point of of the Flash Updater in BSL memory */
 #define CALL_RFSBL()   ((void (*)())0x1000)()
@@ -155,8 +156,7 @@ inline void jump_to_rfbsl()
 __attribute__((naked, section(".crt_0042"), used))
 static void crt_0042(void)
 {
-    /* Stop watchdog timer */
-    WDTCTL = WDTPW + WDTHOLD;
+    wdt_stop();
 
     /* Configure PMM */
     SetVCore(3);

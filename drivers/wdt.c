@@ -1,7 +1,7 @@
 /**
-    modules/reset.c: Reset module for openchronos-ng
+    drivers/wdt.c: Watchdog timer functions
 
-    Copyright (C) 2012-2013 Angelo Arrifano <miknix@gmail.com>
+    Copyright (C) 2017 Benjamin Sølberg <benjamin.soelberg@gmail.com>
 
     http://github.com/BenjaminSoelberg/openchronos-ng-elf
 
@@ -20,35 +20,25 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **/
+#include "wdt.h"
 
-#include "messagebus.h"
-#include "menu.h"
-
-/* drivers */
-#include "drivers/display.h"
-#include "drivers/utils.h"
-
-static void num_press()
-{
-    /* reset microcontroller */
-    REBOOT();
+void wdt_setup() {
+#ifdef USE_WATCHDOG
+    WDTCTL = WDTPW + WDTIS__512K + WDTSSEL__ACLK;
+#else
+    wdt_stop();
+#endif
 }
 
-static void reset_activate()
-{
-    /* update screen */
-    display_chars(0, LCD_SEG_L2_5_0, " RESET", SEG_ON);
+/* Stop watchdog timer */
+void wdt_stop() {
+    WDTCTL = WDTPW + WDTHOLD;
 }
 
-static void reset_deactivate()
-{
-    /* cleanup screen */
-    display_clear(0, 2);
-}
-
-void mod_reset_init(void)
-{
-    menu_add_entry("RESET", NULL, NULL, &num_press, NULL, NULL, NULL,
-                        &reset_activate,
-                        &reset_deactivate);
+/* service watchdog on wakeup */
+void wdt_poll() {
+#ifdef USE_WATCHDOG
+    // Service watchdog (reset counter)
+    WDTCTL = (WDTCTL & 0xff) | WDTPW | WDTCNTCL;
+#endif
 }

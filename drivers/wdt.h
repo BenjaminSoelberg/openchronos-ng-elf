@@ -1,7 +1,7 @@
 /**
-    modules/reset.c: Reset module for openchronos-ng
+    drivers/wdt.c: Watchdog timer functions
 
-    Copyright (C) 2012-2013 Angelo Arrifano <miknix@gmail.com>
+    Copyright (C) 2017 Benjamin Sølberg <benjamin.soelberg@gmail.com>
 
     http://github.com/BenjaminSoelberg/openchronos-ng-elf
 
@@ -21,34 +21,13 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **/
 
-#include "messagebus.h"
-#include "menu.h"
+#include "openchronos.h"
 
-/* drivers */
-#include "drivers/display.h"
-#include "drivers/utils.h"
+#ifndef __WDT_H__
+#define __WDT_H__
 
-static void num_press()
-{
-    /* reset microcontroller */
-    REBOOT();
-}
+void wdt_setup();
+void wdt_stop();
+void wdt_poll();
 
-static void reset_activate()
-{
-    /* update screen */
-    display_chars(0, LCD_SEG_L2_5_0, " RESET", SEG_ON);
-}
-
-static void reset_deactivate()
-{
-    /* cleanup screen */
-    display_clear(0, 2);
-}
-
-void mod_reset_init(void)
-{
-    menu_add_entry("RESET", NULL, NULL, &num_press, NULL, NULL, NULL,
-                        &reset_activate,
-                        &reset_deactivate);
-}
+#endif /* __WDT_H__ */

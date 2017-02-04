@@ -55,6 +55,7 @@ set(source_files
     drivers/timer.c
     drivers/pmm.c
     drivers/rf1a.c
+    drivers/wdt.c
 
     modules/battery.c
     modules/alarm.c
