@@ -3,9 +3,9 @@ GENERAL INFORMATION
 
 Origin: [github.com/BenjaminSoelberg/openchronos-ng-elf](https://github.com/BenjaminSoelberg/openchronos-ng-elf)
 
-Latest build status can be found on Circle CI : [circleci.com/gh/BenjaminSoelberg/openchronos-ng-elf](https://circleci.com/gh/BenjaminSoelberg/openchronos-ng-elf) ![Circle CI](https://circleci.com/gh/BenjaminSoelberg/openchronos-ng-elf.svg?style=svg)
+Latest build status on Circle CI: [circleci.com/gh/BenjaminSoelberg/openchronos-ng-elf](https://circleci.com/gh/BenjaminSoelberg/openchronos-ng-elf) ![Circle CI](https://circleci.com/gh/BenjaminSoelberg/openchronos-ng-elf.svg?style=svg)
 
-Releases and snapshot, including firmware can be found here : [github.com/BenjaminSoelberg/openchronos-ng-elf/releases](https://github.com/BenjaminSoelberg/openchronos-ng-elf/releases)
+Releases and snapshot & firmware: [github.com/BenjaminSoelberg/openchronos-ng-elf/releases](https://github.com/BenjaminSoelberg/openchronos-ng-elf/releases)
 
 We use Slack to communicate, you are welcome to join us at: [openchronos.slack.com](https://openchronos.slack.com)
 
