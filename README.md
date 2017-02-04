@@ -67,6 +67,7 @@ Run the following command to add exports to your current shell (including the do
 ```
 . ~/.profile
 ```
+or add it to your .bashrc.
 
 Support package
 ----------------
@@ -83,6 +84,80 @@ chmod +x Chronos-Setup
 
 Windows:[http://www.ti.com/lit/zip/slac341](http://www.ti.com/lit/zip/slac341)
 
+Installing the software (SLAC341/SLAC388) will also copy the following files to your computer:
+
+* Control Centers
+  * Chronos Control Center binary
+  * Chronos Data logger binary
+  * GUI source code
+* Documentation:
+  * eZ430-Chronos User Guide (SLAU292)
+  * Schematics, Layout (Gerbers) & BOM for Access Point, Debug Interface, and Watch
+* Drivers for:
+  * RF Access Point
+  * eZ430 debug interface
+* Application Binaries (Recovery) for Sports watch firmware, Data logger firmware (all frequency), Wireless updater (rf BSL), RF Access Point.
+* Application Source Code for Sports watch firmware, Data logger firmware (all frequency), Wireless updater (rf BSL), RF Access Point. Both IAR and CCS projects are included.
+
+Flashing the watch with original Chronos firmware using mspdebug (MSP430F5509/CC1101 - white PCB)
+---------------------------------------------
+1) Connect the internal watch module to the USB FET module
+
+2) Reset the watch using the menu or reinserting the battery
+
+3) Program it using mspdebug<br>
+```
+cd /<install path>/eZ430-Chronos/Control Center/Recovery/Chronos Watch/Applications/
+mspdebug rf2500
+<snip>
+(mspdebug)  prog Recovery_ez430_chronos_<YOUR-WATCH-FREQUENCY-DONT-COPY-THIS-LINE-WITHOUT-PLUGGING-IN-YOUR-WATCH-FREQ>_2_1.txt
+<snip>
+Done, xxxxx bytes total
+```
+4) Disconnect the watch module and the watch should display BOOT<br>
+
+5) Press any button except the backlight and you should be up and running the new firmware
+
+*Please note that this method is slow but very useful if flashing over wireless fails.*
+
+Flashing the watch with original Chronos RFBSL firmware using mspdebug (MSP430F5509/CC1101 - white PCB)
+-----------------------------------------------------------------------------------------------
+1) Connect the MSP430F5509/CC1101 USB Access Point module
+
+2) Reset the watch using the menu or reinserting the battery
+
+3) Program it using mspdebug<br>
+```
+cd /<install path>/eZ430-Chronos/Control Center/Recovery/Chronos Watch/Wireless Updater/
+mspdebug rf2500
+<snip>
+(mspdebug)  opt enable_bsl_access true
+(mspdebug)  prog Recovery_eZ430_Chronos_rfbsl_<YOUR-WATCH-FREQUENCY-DONT-COPY-THIS-LINE-WITHOUT-PLUGGING-IN-YOUR-WATCH-FREQ>_1_0.txt 
+<snip>
+Done, xxxxx bytes total
+```
+4) Press any button except the backlight and you should be up and running the new firmware.
+
+Flashing the RF Access Point with original firmware using mspdebug (MSP430F5509/CC1101 - white PCB)
+---------------------------------------------------------------------------------------------------
+1) Connect the MSP430F5509/CC1101 USB Access point to the USB FET module (see pictures)
+
+[Picture 1](https://cloud.githubusercontent.com/assets/25465510/22618924/330af6f0-eae9-11e6-9ba6-9b2dcbb8327b.jpg)
+
+[Picture 2](https://cloud.githubusercontent.com/assets/25465510/22618925/3639b6fe-eae9-11e6-8a06-204e3322d8bd.png)
+
+2) Connect the USB FET module with the MSP430F5509/CC1101 RF USB Access point module attached
+
+3) Program it using mspdebug<br>
+```
+cd /<install path>/eZ430-Chronos/Control Center/Recovery/RF Access Point/MSP430 v1.1 - white PCB/
+mspdebug rf2500
+<snip>
+(mspdebug) prog Recovery_eZ430-Chronos_AP_<YOUR-WATCH-FREQUENCY-DONT-COPY-THIS-LINE-WITHOUT-PLUGGING-IN-YOUR-WATCH-FREQ>_2_2-white_PCB.txt
+<snip>
+Done, xxxxx bytes total
+```
+4) Disconnect USB FET Programmer and the MSP430F5509/CC1101 USB Access point
 
 Compiling the firmware
 ----------------------
@@ -166,3 +241,6 @@ eZ430 Chronos wiki:
 
 [http://processors.wiki.ti.com/index.php/EZ430-Chronos](http://processors.wiki.ti.com/index.php/EZ430-Chronos)
 
+Join us at Slack Team Channel:
+
+[https://openchronos.slack.com](https://openchronos.slack.com)

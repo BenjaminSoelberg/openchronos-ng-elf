@@ -57,8 +57,8 @@ struct {
 // Holds 12h/24h choice
 uint8_t display_am_pm;
 
-#define rtca_stop()     (RTCCTL01 |=  RTCHOLD)
-#define rtca_start()        (RTCCTL01 &= ~RTCHOLD)
+#define rtca_stop()  (RTCCTL01 |=  RTCHOLD)
+#define rtca_start() (RTCCTL01 &= ~RTCHOLD)
 
 /* the ev variable holds the time event, see enum rtca_tevent for more info.
 please add -fshort-enums to CFLAGS to store rtca_tevent as only a byte */

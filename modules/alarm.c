@@ -41,8 +41,8 @@ static union {
 } alarm_state;
 
 static uint8_t tmp_hh, tmp_mm;
-static note chime_notes[2] = {0x1901, 0x000F};
-static note alarm_notes[5] = {0x1901, 0x1904, 0x1901, 0x1904, 0x000F};
+static note chime_notes[2] = {0x1931, 0x000F};
+static note alarm_notes[4] = {0x1931, 0x1934, 0x1938, 0x000F};
 
 static void print_mm (void)
 {
