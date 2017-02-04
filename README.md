@@ -154,7 +154,7 @@ Prefer linux procedure, use this windows flash procedure only if you *must*, all
 
 To reflash AP RF dongle and/or Watch Firmware (Original or Recovery firmware) in windows (XP/7/8/10) you may use :
 
-*FET-Pro-430 Software Pkg. - LITE available at [https://www.elprotronic.com/productdata] (https://www.elprotronic.com/productdata)
+* FET-Pro-430 Software Pkg. - LITE available at [https://www.elprotronic.com/productdata] (https://www.elprotronic.com/productdata)
 Note: you need to specify the CC430F6137 if you are flashing the watch 
 Note: If you are flashing RF AP dongle specify MSP430F5509
 
