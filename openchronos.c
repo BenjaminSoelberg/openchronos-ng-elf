@@ -244,12 +244,11 @@ int main(void)
         _BIS_SR(LPM3_bits | GIE);
         __no_operation();
 
+        /* service watchdog on wakeup */
+        wdt_poll();
+
         /* poll the button driver */
         ports_buttons_poll();
-
-        /* service watchdog on wakeup */
-        //TODO: Change functions to defines to avoid real calls when USE_WATCHDOG is not defined
-        wdt_poll();
 
         /* check if any driver has events pending */
         check_events();
