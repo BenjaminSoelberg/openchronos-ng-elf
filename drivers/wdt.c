@@ -22,7 +22,7 @@
 **/
 #include "wdt.h"
 
-void wdt_setup() {
+inline void wdt_setup() {
 #ifdef USE_WATCHDOG
     WDTCTL = WDTPW + WDTIS__512K + WDTSSEL__ACLK;
 #else
@@ -31,14 +31,13 @@ void wdt_setup() {
 }
 
 /* Stop watchdog timer */
-void wdt_stop() {
+inline void wdt_stop() {
     WDTCTL = WDTPW + WDTHOLD;
 }
 
 /* service watchdog on wakeup */
-void wdt_poll() {
+inline void wdt_poll() {
 #ifdef USE_WATCHDOG
-    // Service watchdog (reset counter)
     WDTCTL = (WDTCTL & 0xff) | WDTPW | WDTCNTCL;
 #endif
 }
