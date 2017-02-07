@@ -100,22 +100,40 @@ void init_buttons(void)
     P2IE |= ALL_BUTTONS;
 }
 
-/*
-  official function to ask for buttons
-*/
-uint8_t ports_button_pressed(uint8_t btn, uint8_t with_longpress)
+uint8_t is_ports_button_pressed() {
+    return ports_pressed_btns | ports_down_btns;
+}
+
+static uint8_t _ports_button_pressed(uint8_t btn, uint8_t with_longpress, uint8_t peek)
 {
     if (with_longpress) {
         return BIT_IS_SET(ports_pressed_btns, btn);
     } else {
         if (BIT_IS_SET(ports_down_btns, btn)) {
             /* suppress */
-            silent_until_release &= ~btn;
+            if (!peek)
+                silent_until_release &= ~btn;
             return 1;
         } else {
             return 0;
         }
     }
+}
+
+/*
+  official function to ask for buttons
+*/
+uint8_t ports_button_pressed(uint8_t btn, uint8_t with_longpress)
+{
+    return _ports_button_pressed(btn, with_longpress, 0);
+}
+
+/*
+  official function to peek buttons
+*/
+uint8_t ports_button_pressed_peek(uint8_t btn, uint8_t with_longpress)
+{
+    return _ports_button_pressed(btn, with_longpress, 1);
 }
 
 /*

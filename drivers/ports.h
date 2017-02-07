@@ -86,11 +86,14 @@ enum ports_buttons {
     PORTS_BTN_LUP       = BIT9,
 };
 
-/* exclusive for openchronos.c, modules should NOT use this directly */
+/* Global keypress peek, should normally NOT use be used, unless a global hook is needed */
+uint8_t ports_button_pressed_peek(uint8_t btn, uint8_t with_longpress);
+uint8_t is_ports_button_pressed();
+
+/* Below functions are exclusive for openchronos.c & menu.c, do NOT use them directly */
 uint8_t ports_button_pressed(uint8_t btn, uint8_t with_longpress);
 void ports_buttons_clear(void);
 void ports_buttons_poll(void);
-
 void init_buttons(void);
 
 #endif /* __PORTS_H__ */

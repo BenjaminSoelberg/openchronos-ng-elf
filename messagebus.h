@@ -60,6 +60,7 @@ enum sys_message {
     SYS_MSG_AS_INT     = BITA,
     SYS_MSG_PS_INT     = BITB,
     SYS_MSG_BATT       = BITC,
+    SYS_MSG_BUTTON     = BITD,
 };
 
 /*!

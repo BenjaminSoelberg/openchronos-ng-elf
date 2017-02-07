@@ -27,6 +27,7 @@
 /* drivers */
 #include "drivers/display.h"
 #include "drivers/utils.h"
+#include "drivers/ports.h"
 
 static void num_press()
 {
@@ -34,10 +35,21 @@ static void num_press()
     REBOOT();
 }
 
+#ifdef CONFIG_EASY_DEBUG_RESET
+static void button_event(enum sys_message event)
+{
+    /* if up and down is pressed then resets the watch */
+    if (ports_button_pressed_peek(PORTS_BTN_UP | PORTS_BTN_DOWN, 0))
+    {
+        num_press();
+    }
+}
+#endif
+
 static void reset_activate()
 {
     /* update screen */
-    display_chars(0, LCD_SEG_L2_5_0, "RESET", SEG_ON);
+    display_chars(0, LCD_SEG_L2_5_0, " RESET", SEG_ON);
 }
 
 static void reset_deactivate()
@@ -47,6 +59,10 @@ static void reset_deactivate()
 }
 
 void mod_reset_init(void) {
+#ifdef CONFIG_EASY_DEBUG_RESET
+    sys_messagebus_register(&button_event, SYS_MSG_BUTTON);
+#endif
+
     menu_add_entry("RESET",
                    NULL,
                    NULL,

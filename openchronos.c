@@ -114,20 +114,15 @@ void check_events(void)
     }
 #endif
 
+    if (is_ports_button_pressed()) {
+        msg |= SYS_MSG_BUTTON;
+    }
+
     send_events(msg);
 }
 
 static void check_buttons(void)
 {
-#ifdef CONFIG_EASY_DEBUG_RESET
-    /* if up and down is pressed then resets the watch */
-    if (ports_button_pressed(PORTS_BTN_UP | PORTS_BTN_DOWN, 0))
-    {
-        /* Forces a reset */
-        REBOOT();
-    }
-#endif
-
 //TODO:Either implement or remove!
 #ifdef CONFIG_MOD_ALARM
 #endif
