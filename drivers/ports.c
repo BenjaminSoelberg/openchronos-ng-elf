@@ -29,14 +29,13 @@
 #include "ports.h"
 #include "timer.h"
 #include "messagebus.h"
+#include "utils.h"
 
 #ifdef CONFIG_MOD_ACCELEROMETER
 #include "vti_as.h"
 #endif
 
 #define ALL_BUTTONS 0x1F
-
-#define BIT_IS_SET(F, B) ((F) | (B)) == (F)
 
 /* contains buttons currently held down */
 volatile enum ports_buttons ports_down_btns;

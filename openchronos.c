@@ -84,7 +84,7 @@
 #include "drivers/utils.h"
 #include "drivers/wdt.h"
 
-void check_events(void)
+void handle_events(void)
 {
     enum sys_message msg = SYS_MSG_NONE;
 
@@ -108,7 +108,7 @@ void check_events(void)
 
 #ifdef CONFIG_BATTERY_MONITOR
     /* drivers/battery */
-    if ((msg & SYS_MSG_RTC_MINUTE) == SYS_MSG_RTC_MINUTE) {
+    if (msg & SYS_MSG_RTC_MINUTE) {
         msg |= SYS_MSG_BATT;
         battery_measurement();
     }
@@ -118,16 +118,8 @@ void check_events(void)
         msg |= SYS_MSG_BUTTON;
     }
 
+
     send_events(msg);
-}
-
-static void check_buttons(void)
-{
-//TODO:Either implement or remove!
-#ifdef CONFIG_MOD_ALARM
-#endif
-
-    menu_check_buttons();
 }
 
 /***************************************************************************
@@ -246,10 +238,10 @@ int main(void)
         ports_buttons_poll();
 
         /* check if any driver has events pending */
-        check_events();
+        handle_events();
 
-        /* check for button presses, drive the menu */
-        check_buttons();
+        /* check for button presses and drive the menu */
+        menu_check_buttons();
     }
 }
 

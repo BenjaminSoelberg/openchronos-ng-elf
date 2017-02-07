@@ -35,7 +35,7 @@ DATA["USE_LCD_CHARGE_PUMP"] = {
 }
 
 DATA["USE_WATCHDOG"] = {
-    "name": "Use Watchdog (20 bytes)",
+    "name": "Use Watchdog",
     "default": True,
     "help": "Protects the clock against deadlocks by rebooting it.",
 }
