@@ -89,8 +89,9 @@ void send_events(enum sys_message msg)
 
     while (p) {
         /* notify listener if he registered for any of these messages */
-        if (msg & p->listens) {
-            p->fn(msg);
+        enum sys_message filtered_msg = msg & p->listens;
+        if (filtered_msg) {
+            p->fn(filtered_msg);
         }
 
         /* move to next */
