@@ -104,7 +104,7 @@ Installing the software (SLAC341/SLAC388) will also copy the following files to 
 * Application Source Code for Sports watch firmware, Data logger firmware (all frequency), Wireless updater (rf BSL), RF Access Point. Both IAR and CCS projects are included.
 
 Flashing the watch with original Chronos firmware using mspdebug (MSP430F5509/CC1101 - white PCB)
----------------------------------------------
+-------------------------------------------------------------------------------------------------
 1) Connect the internal watch module to the USB FET module
 
 2) Reset the watch using the menu or reinserting the battery
@@ -125,7 +125,7 @@ Done, xxxxx bytes total
 *Please note that this method is slow but very useful if flashing over wireless fails.*
 
 Flashing the watch with original Chronos RFBSL firmware using mspdebug (MSP430F5509/CC1101 - white PCB)
------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------
 1) Connect the MSP430F5509/CC1101 USB Access Point module
 
 2) Reset the watch using the menu or reinserting the battery
@@ -244,6 +244,14 @@ Data sheet for the CC430F6137 used in the watch:
 eZ430 Chronos wiki:
 
 [http://processors.wiki.ti.com/index.php/EZ430-Chronos](http://processors.wiki.ti.com/index.php/EZ430-Chronos)
+
+MSP430™ Programming With the Bootloader (BSL):
+
+[http://www.ti.com/lit/ug/slau319l/slau319l.pdf](http://www.ti.com/lit/ug/slau319l/slau319l.pdf)
+
+MSP430™ Programming With the JTAG Interface:
+
+[http://www.ti.com/lit/ug/slau320x/slau320x.pdf](http://www.ti.com/lit/ug/slau320x/slau320x.pdf)
 
 Join us at Slack Team Channel:
 
