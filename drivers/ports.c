@@ -76,6 +76,7 @@ static void callback_20Hz(enum sys_message msg)
 
     if (!buttons) {
         /* turn 20 Hz callback off */
+        stop_timer0_20hz();
         sys_messagebus_unregister_all(&callback_20Hz);
         timer_20Hz_requested = 0;
     }
@@ -100,8 +101,9 @@ void init_buttons(void)
     P2IE |= ALL_BUTTONS;
 }
 
+// Not really working yet
 uint8_t is_ports_button_pressed() {
-    return ports_pressed_btns | ports_down_btns;
+    return ports_down_btns != 0;
 }
 
 static uint8_t _ports_button_pressed(uint8_t btn, uint8_t with_longpress, uint8_t peek)
@@ -153,7 +155,7 @@ void ports_buttons_clear(void)
 */
 void ports_buttons_poll(void)
 {
-   if (timer_20Hz_requested == 1) {
+    if (timer_20Hz_requested == 1) {
         sys_messagebus_register(&callback_20Hz, SYS_MSG_TIMER_20HZ);
         timer_20Hz_requested = 2;
     }
@@ -174,6 +176,7 @@ void PORT2_ISR(void)
         if (timer_20Hz_requested == 0) {
             last_press = timer0_20hz_counter;
             timer_20Hz_requested = 1;
+            start_timer0_20hz();
         }
     }
 

@@ -34,6 +34,9 @@
 #ifndef __TIMER_H__
 #define __TIMER_H__
 
+void start_timer0_20hz();
+void stop_timer0_20hz();
+
 /*!
     \brief Initializes the timer
     \details This functions is called once upon system initialization.

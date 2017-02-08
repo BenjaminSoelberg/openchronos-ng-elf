@@ -55,6 +55,7 @@
 
 #include "timer.h"
 #include "wdt.h"
+#include "utils.h"
 
 /* HARDWARE TIMER ASSIGNMENT:
      TA0CCR0: 20Hz timer used by the button driver
@@ -74,16 +75,14 @@
 
 static volatile uint8_t delay_finished;
 
-/* 20hz timer */
-static uint16_t timer0_20hz_ticks;
-
 /* programable timer */
 static uint16_t timer0_prog_ticks;
 
 static void (*delay_callback)(void) = NULL;
 
-void timer0_init(void)
-{
+void init_timer0_20hz();
+
+void timer0_init(void) {
 #ifdef CONFIG_TIMER_4S_IRQ
     /* Enable overflow interrupts */
     TA0CTL |= TAIE;
@@ -91,17 +90,51 @@ void timer0_init(void)
 
     /* select external 32kHz source, /2 divider, continuous mode */
     TA0CTL |= TASSEL__ACLK | ID__2 | MC__CONTINUOUS;
-
-    /* setup and enable 20Hz timer */
-    timer0_20hz_ticks = TIMER0_TICKS_FROM_MS(50);
-    TA0CCR0 = TA0R + timer0_20hz_ticks;
-    TA0CCTL0 |= CCIE;
+    init_timer0_20hz();
 }
+
+/* ----------------------------------------------------------------------------------------------------- */
+/* Below functions are used by modules to request a 20 hz event stream, they are (should) be thread safe */
+/* ----------------------------------------------------------------------------------------------------- */
+
+/* Reference count for the timer0 20hz */
+static volatile uint8_t ref_count_20hz = 0;
+
+/* 20hz timer */
+static uint16_t timer0_20hz_ticks;
+
+/* Initialize the 20Hz timer ticks */
+void init_timer0_20hz() {
+    timer0_20hz_ticks = TIMER0_TICKS_FROM_MS(50);
+}
+
+void start_timer0_20hz() {
+    uint16_t int_state;
+    ENTER_CRITICAL_SECTION(int_state);
+    if (ref_count_20hz == 0) {
+        TA0CCTL0 |= CCIE; // Enable timer0 20hz interrupt
+    }
+    ref_count_20hz++;
+    EXIT_CRITICAL_SECTION(int_state);
+}
+
+void stop_timer0_20hz() {
+    uint16_t int_state;
+    ENTER_CRITICAL_SECTION(int_state);
+    ref_count_20hz--;
+    if (ref_count_20hz == 0) {
+        TA0CCTL0 &= ~CCIE; // Disable timer0 20hz interrupt
+    }
+    EXIT_CRITICAL_SECTION(int_state);
+}
+
+/* ----------------------------- */
+/* Various timer/delay functions */
+/* ----------------------------- */
 
 /* This function was based on original Texas Instruments implementation,
    see LICENSE-TI for more information. */
-void timer0_delay(uint16_t duration, uint16_t LPM_bits)
-{
+void timer0_delay(uint16_t duration, uint16_t LPM_bits) {
     delay_finished = 0;
 
     /* Set next CCR match */
@@ -129,8 +162,7 @@ void timer0_delay(uint16_t duration, uint16_t LPM_bits)
     TA0CCTL4 &= ~CCIE;
 }
 
-void timer0_delay_callback_destroy(void)
-{
+void timer0_delay_callback_destroy(void) {
     /* abort a delay without calling callback */
     /* disable interrupt */
     TA0CCTL4 &= ~CCIE;
@@ -139,10 +171,13 @@ void timer0_delay_callback_destroy(void)
 
     /* clear callback */
     delay_callback = NULL;
- }
+}
 
-void timer0_delay_callback(uint16_t duration, void(*cbfn)(void))
-{
+/*
+ * Please note: The callback will be called from interrupt
+ * context and that LPM state isn't changed after execution
+ */
+void timer0_delay_callback(uint16_t duration, void(*cbfn)(void)) {
     timer0_delay_callback_destroy();
 
     /* setup where to go on completion */
@@ -162,8 +197,7 @@ void timer0_delay_callback(uint16_t duration, void(*cbfn)(void))
 
 /* programable timer:
     duration is in miliseconds, min=1, max=1000 */
-void timer0_create_prog_timer(uint16_t duration)
-{
+void timer0_create_prog_timer(uint16_t duration) {
     timer0_prog_ticks = TIMER0_TICKS_FROM_MS(duration);
 
     /* set timer to start as soon as possible */
@@ -173,18 +207,18 @@ void timer0_create_prog_timer(uint16_t duration)
     TA0CCTL3 |= CCIE;
 }
 
-void timer0_destroy_prog_timer()
-{
+void timer0_destroy_prog_timer() {
     /* disable timer */
     TA0CCTL3 &= ~CCIE;
 }
 
-
+/* ------------------------ */
+/* Timer interrupt handlers */
+/* ------------------------ */
 
 /* interrupt vector for CCR0 */
 __attribute__((interrupt(TIMER0_A0_VECTOR)))
-void timer0_A0_ISR(void)
-{
+void timer0_A0_ISR(void) {
     /* setup timer for next time */
     TA0CCR0 = TA0R + timer0_20hz_ticks;
 
@@ -200,10 +234,9 @@ void timer0_A0_ISR(void)
 
 /* interrupt vector for CCR1-4 and overflow */
 __attribute__((interrupt(TIMER0_A1_VECTOR)))
-void timer0_A1_ISR(void)
-{
+void timer0_A1_ISR(void) {
     /* reading TA0IV automatically resets the interrupt flag */
-    uint8_t flag = (uint8_t)TA0IV; // ISR reason. Only look at the lower 8 bits
+    uint8_t flag = (uint8_t) TA0IV; // ISR reason. Only look at the lower 8 bits
 
     /* programable timer */
     if (flag == TA0IV_TA0CCR3) {
@@ -236,7 +269,7 @@ void timer0_A1_ISR(void)
             tmpfn();
         }
 
-        /* return to LPM3 (don't mess with SR bits) */
+        /* return to LPMx (don't mess with SR bits) */
         return;
     }
 
