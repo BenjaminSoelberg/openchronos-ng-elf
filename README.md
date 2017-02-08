@@ -120,7 +120,7 @@ Done, xxxxx bytes total
 ```
 4) Disconnect the watch module and the watch should display BOOT<br>
 
-5) Press any button except the backlight and you should be up and running the new firmware
+5) Press any button except DOWN and you should be up and running the new firmware
 
 *Please note that this method is slow but very useful if flashing over wireless fails.*
 
@@ -140,7 +140,7 @@ mspdebug rf2500
 <snip>
 Done, xxxxx bytes total
 ```
-4) Press any button except the backlight and you should be up and running the new firmware.
+4) Press any button except DOWN and you should be up and running the new firmware.
 
 Flashing the RF Access Point with original firmware using mspdebug (MSP430F5509/CC1101 - white PCB)
 ---------------------------------------------------------------------------------------------------
@@ -192,7 +192,7 @@ To enter the BOOT menu you can either:
 * Reinsert the battery
 
 If the display shows BOOT you have successfully reset the watch and are now in the boot menu.
-Press the backlight button to enter the wireless flash updater (RFBSL). Any other button will run the watch firmware.
+Press the DOWN button to enter the wireless flash updater (RFBSL). Any other button will run the watch firmware.
 
 Flashing the firmware using mspdebug
 ---------------------------------------
@@ -202,7 +202,7 @@ Flashing the firmware using mspdebug
 ```make usb-install```
 
 3) Disconnect the watch module and the watch should display BOOT<br>
-Press any button except the backlight and you should be up and running the new firmware
+Press any button except DOWN and you should be up and running the new firmware
 
 *Please note that this method is slow but very useful if flashing over wireless fails.*
 
@@ -217,9 +217,9 @@ Flashing the firmware using wireless (RFBSL)
 
 4) Press Enter
 
-5) Enter RFBSL by pressing the backlight button on the watch
+5) Enter RFBSL by pressing the DOWN button on the watch
 
-6) Press any button except the backlight and you should be up and running the new firmware.
+6) Press any button except DOWN and you should be up and running the new firmware.
 
 Please note:<br>
 * RFBSL seems to fail a lot on some MacBooks (mine is a MacBook Pro Retina 2012)

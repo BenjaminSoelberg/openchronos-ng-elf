@@ -42,8 +42,9 @@
 /* Entry point of of the Flash Updater in BSL memory */
 #define CALL_RFSBL()   ((void (*)())0x1000)()
 
-#define ALL_BUTTONS 0x1F
-#define BTN_BL_PIN BIT3
+#define ALL_BUTTONS         0x1F
+#define PORTS_BTN_DOWN_PIN (BIT0)
+
 
 inline void initialize_aclk()
 {
@@ -203,7 +204,7 @@ static void crt_0042(void)
         _BIS_SR(LPM3_bits | GIE);
         __no_operation();
 
-        if ((P2IN & ALL_BUTTONS) == BTN_BL_PIN)
+        if ((P2IN & ALL_BUTTONS) == PORTS_BTN_DOWN_PIN)
             jump_to_rfbsl();
 
     } while ((P2IN & ALL_BUTTONS) == 0);
