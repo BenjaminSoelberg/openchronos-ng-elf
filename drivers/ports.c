@@ -100,7 +100,7 @@ void init_buttons(void)
     P2IE |= ALL_BUTTONS;
 }
 
-// Not really working yet
+// TODO:Not really working yet
 uint8_t is_ports_button_pressed() {
     return ports_down_btns != 0;
 }
