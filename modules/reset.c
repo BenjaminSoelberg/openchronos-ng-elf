@@ -49,7 +49,7 @@ static void button_event(enum sys_message event)
 static void reset_activate()
 {
     /* update screen */
-    display_chars(0, LCD_SEG_L2_5_0, " RESET", SEG_ON);
+    display_chars(0, LCD_SEG_L2_5_0, "RESET", SEG_ON);
 }
 
 static void reset_deactivate()
