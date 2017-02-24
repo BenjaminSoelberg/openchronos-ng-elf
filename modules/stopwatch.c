@@ -49,6 +49,7 @@
 
 /* drivers */
 #include "drivers/display.h"
+#include <drivers/timer.h>
 
 /* Defines */
 
@@ -235,9 +236,11 @@ static void num_press() {
         icon_stopwatch_on_cents = sSwatch_time[SW_COUNTING].cents;
         icon_stopwatch_off_cents = (icon_stopwatch_on_cents + 50) % 100;
         sys_messagebus_register(&stopwatch_event, SYS_MSG_TIMER_20HZ);
+        start_timer0_20hz();
     } else {
         sSwatch_conf.state = SWATCH_MODE_OFF;
         menu_entry->lnum_btn_fn = &num_long_pressed;
+        stop_timer0_20hz();
         sys_messagebus_unregister_all(&stopwatch_event);
     }
     drawStopWatchScreen();
