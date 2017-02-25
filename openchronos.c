@@ -208,6 +208,13 @@ void init_application(void)
 #endif
 }
 
+void debug_runloop_counter() {
+    static uint8_t ct;
+    ct++;
+    if (ct>=100) ct = 0;
+    _printf(0, LCD_SEG_L1_3_2, "%02u", ct);
+}
+
 /***************************************************************************
  ************************ ENTRYPOINT AND MAIN LOOP *************************
  **************************************************************************/
@@ -230,6 +237,8 @@ int main(void)
         /* Go to LPM3, wait for interrupts */
         _BIS_SR(LPM3_bits | GIE);
         __no_operation();
+
+        //debug_runloop_counter();
 
         /* service watchdog on wakeup */
         wdt_poll();
