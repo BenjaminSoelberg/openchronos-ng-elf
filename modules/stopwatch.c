@@ -146,7 +146,7 @@ static void drawStopWatchScreen(void) {
 }
 
 /* Function called every 5ms to increment the counters */
-static void stopwatch_event() {
+static void stopwatch_event(enum sys_message msg) {
     if (sSwatch_conf.state != SWATCH_MODE_OFF) {
         sSwatch_time[SW_COUNTING].cents += 5;
         if (sSwatch_time[SW_COUNTING].cents >= 100) {
