@@ -28,7 +28,6 @@
 /* drivers */
 #include "ports.h"
 #include "timer.h"
-#include "messagebus.h"
 #include "utils.h"
 
 #ifdef CONFIG_MOD_ACCELEROMETER
@@ -43,7 +42,7 @@ volatile enum ports_buttons ports_down_btns;
 /* contains confirmed button presses (long and short) */
 volatile enum ports_buttons ports_pressed_btns;
 
-volatile static uint8_t timer_20Hz_requested;
+volatile static uint8_t timer_20Hz_started = 0;
 static uint16_t last_press;
 
 /* 0 bit = ignore until release */
@@ -52,7 +51,7 @@ static uint8_t silent_until_release = 0xff;
 /*
   20 Hz callback for figuring out the buttons
 */
-static void callback_20Hz(enum sys_message msg)
+static void callback_20Hz()
 {
     static uint8_t last_state;
     uint8_t buttons = P2IN & ALL_BUTTONS;
@@ -74,10 +73,9 @@ static void callback_20Hz(enum sys_message msg)
     }
 
     if (!buttons) {
-        /* turn 20 Hz callback off */
+        /* turn 20 Hz timer off */
         stop_timer0_20hz();
-        sys_messagebus_unregister_all(&callback_20Hz);
-        timer_20Hz_requested = 0;
+        timer_20Hz_started = 0;
     }
 }
 
@@ -100,7 +98,6 @@ void init_buttons(void)
     P2IE |= ALL_BUTTONS;
 }
 
-// TODO:Not really working yet
 uint8_t is_ports_button_pressed() {
     return ports_down_btns != 0;
 }
@@ -148,16 +145,12 @@ void ports_buttons_clear(void)
 
 /*
   Polls the button driver.
-
-  This functions exists to delay registering callbacks
-  while within PORT2_ISA and risk breaking the messagebus.
+  Does NOT use messagebus as this is a little to late at that time.
 */
 void ports_buttons_poll(void)
 {
-    if (timer_20Hz_requested == 1) {
-        sys_messagebus_register(&callback_20Hz, SYS_MSG_TIMER_20HZ);
-        timer_20Hz_requested = 2;
-    }
+    if (timer0_last_event | TIMER0_EVENT_20HZ && timer_20Hz_started)
+        callback_20Hz();
 }
 
 /*
@@ -172,9 +165,9 @@ void PORT2_ISR(void)
     /* If the interrupt is a button press */
     if (P2IFG & ALL_BUTTONS) {
         /* turn on 20 Hz callback*/
-        if (timer_20Hz_requested == 0) {
+        if (!timer_20Hz_started) {
             last_press = timer0_20hz_counter;
-            timer_20Hz_requested = 1;
+            timer_20Hz_started = 1;
             start_timer0_20hz();
         }
     }

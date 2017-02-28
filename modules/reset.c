@@ -38,7 +38,8 @@ static void num_press()
 #ifdef CONFIG_EASY_DEBUG_RESET
 static void button_event(enum sys_message event)
 {
-    /* if up and down is pressed then resets the watch */
+    // If up and down is pressed (at the EXACT same time) then resets the watch!
+    // You might want to press them together a few times for this to work.
     if (ports_button_pressed_peek(PORTS_BTN_UP | PORTS_BTN_DOWN, 0))
     {
         num_press();

@@ -41,9 +41,9 @@ DATA["USE_WATCHDOG"] = {
 }
 
 DATA["CONFIG_EASY_DEBUG_RESET"] = {
-    "name": "Use Easy Reset by pressing the up and down buttons at the same time",
+    "name": "Easy Reset (Debug)",
     "default": False,
-    "help": "Makes it fast to reboot the watch to update firmware.",
+    "help": "Makes it faster to reboot the watch by pressing up/down buttons at the same time.",
 }
 
 # RTC DRIVER #################################################################
