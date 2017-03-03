@@ -39,6 +39,7 @@ set(source_files
     boot.c
     menu.c
 
+    drivers/lpm.c
     drivers/battery.c
     drivers/vti_as.c
     drivers/infomem.c

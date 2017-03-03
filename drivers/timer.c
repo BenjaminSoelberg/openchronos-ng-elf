@@ -2,6 +2,7 @@
     drivers/timer.c: Openchronos TA0 timer driver
 
     Copyright (C) 2012 Angelo Arrifano <miknix@gmail.com>
+    Copyright (C) 2016-2017 Benjamin Sølberg <benjamin.soelberg@gmail.com>
 
     http://github.com/BenjaminSoelberg/openchronos-ng-elf
 
@@ -56,6 +57,7 @@
 #include "timer.h"
 #include "wdt.h"
 #include "utils.h"
+#include "lpm.h"
 
 /* HARDWARE TIMER ASSIGNMENT:
      TA0CCR0: 20Hz timer used by the button driver
@@ -146,8 +148,7 @@ void timer0_delay(uint16_t duration, uint16_t LPM_bits) {
     /* Wait for interrupt */
     while (1) {
         /* enter low power mode */
-        _BIS_SR(LPM_bits | GIE);
-        __no_operation();
+        enter_lpm_gie(LPM_bits);
 
         // Service watchdog (reset counter)
         wdt_poll();
@@ -165,8 +166,9 @@ void timer0_delay(uint16_t duration, uint16_t LPM_bits) {
 void timer0_delay_callback_destroy(void) {
     /* abort a delay without calling callback */
     /* disable interrupt */
-    TA0CCTL4 &= ~CCIE;
-    //TA0CCTL2 &= ~CCIE;
+    TA0CCTL2 &= ~CCIE;
+
+    /* clear any pending interrupt? */
     TA0CCTL2 = 0;
 
     /* clear callback */
@@ -190,8 +192,7 @@ void timer0_delay_callback(uint16_t duration, void(*cbfn)(void)) {
     TA0CCTL2 = 0;
 
     /* enable interrupt */
-    //TA0CCTL2 |= CCIE;
-    TA0CCTL2 = CCIE;
+    TA0CCTL2 |= CCIE;
 }
 
 

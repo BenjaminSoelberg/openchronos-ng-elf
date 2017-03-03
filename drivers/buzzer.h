@@ -34,6 +34,10 @@
 #ifndef BUZZER_H_
 #define BUZZER_H_
 
+#include "openchronos.h"
+
+bool is_buzzer_playing();
+
 /*!
  * \brief Note type.
  * \details This is a type representing a note. It is composed by:

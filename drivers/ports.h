@@ -3,7 +3,7 @@
 
     Copyright (C) 2012 Angelo Arrifano <miknix@gmail.com>
     Copyright (C) 2013 Martin AusChemnitz <MartinAusChemnitz@gmx.net>
-    Copyright (C) 2016-17 Benjamin Sølberg <benjamin.soelberg@gmail.com>
+    Copyright (C) 2016-2017 Benjamin Sølberg <benjamin.soelberg@gmail.com>
 
     http://github.com/BenjaminSoelberg/openchronos-ng-elf
 
@@ -59,6 +59,7 @@
 #ifndef __PORTS_H__
 #define __PORTS_H__
 
+#include <stdbool.h>
 #include "config.h"
 
 /* Button ports */
@@ -88,7 +89,7 @@ enum ports_buttons {
 
 /* Global keypress peek, should normally NOT use be used, unless a global hook is needed */
 uint8_t ports_button_pressed_peek(uint8_t btn, uint8_t with_longpress);
-uint8_t is_ports_button_pressed();
+bool is_ports_button_pressed();
 
 /* Below functions are exclusive for openchronos.c & menu.c, do NOT use them directly */
 uint8_t ports_button_pressed(uint8_t btn, uint8_t with_longpress);

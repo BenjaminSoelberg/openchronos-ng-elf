@@ -2,7 +2,7 @@
     openchronos.c: openchronos-ng main loop & user interface
 
     Copyright (C) 2012 Angelo Arrifano <miknix@gmail.com>
-    Copyright (C) 2016 Benjamin Sølberg <benjamin.soelberg@gmail.com>
+    Copyright (C) 2016-2017 Benjamin Sølberg <benjamin.soelberg@gmail.com>
 
     http://github.com/BenjaminSoelberg/openchronos-ng-elf
 
@@ -83,6 +83,7 @@
 #include "drivers/battery.h"
 #include "drivers/utils.h"
 #include "drivers/wdt.h"
+#include "drivers/lpm.h"
 
 void handle_events(void)
 {
@@ -220,7 +221,7 @@ void debug_runloop_counter() {
  **************************************************************************/
 int main(void)
 {
-    /* Show all segments on screen */
+    /* Show all segments on screen, Game & Watch style */
     fill_display(0, 0xff);
 
     /* Init MCU */
@@ -235,8 +236,7 @@ int main(void)
     /* main loop */
     while (1) {
         /* Go to LPM3, wait for interrupts */
-        _BIS_SR(LPM3_bits | GIE);
-        __no_operation();
+        enter_lpm_gie(LPM3_bits);
 
         //debug_runloop_counter();
 
@@ -292,6 +292,3 @@ void helpers_loop(uint8_t *value, uint8_t lower, uint8_t upper, int8_t step)
             *value = upper;
     }
 }
-
-
-
