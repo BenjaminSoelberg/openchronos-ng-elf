@@ -2,7 +2,7 @@
     openchronos.c: openchronos-ng main loop & user interface
 
     Copyright (C) 2012 Angelo Arrifano <miknix@gmail.com>
-    Copyright (C) 2016 Benjamin Sølberg <benjamin.soelberg@gmail.com>
+    Copyright (C) 2016-2017 Benjamin Sølberg <benjamin.soelberg@gmail.com>
 
     http://github.com/BenjaminSoelberg/openchronos-ng-elf
 
@@ -220,7 +220,7 @@ void debug_runloop_counter() {
  **************************************************************************/
 int main(void)
 {
-    /* Show all segments on screen */
+    /* Show all segments on screen, Game & Watch style */
     fill_display(0, 0xff);
 
     /* Init MCU */

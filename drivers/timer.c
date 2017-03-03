@@ -165,8 +165,9 @@ void timer0_delay(uint16_t duration, uint16_t LPM_bits) {
 void timer0_delay_callback_destroy(void) {
     /* abort a delay without calling callback */
     /* disable interrupt */
-    TA0CCTL4 &= ~CCIE;
-    //TA0CCTL2 &= ~CCIE;
+    TA0CCTL2 &= ~CCIE;
+
+    /* clear any pending interrupt? */
     TA0CCTL2 = 0;
 
     /* clear callback */
@@ -190,8 +191,7 @@ void timer0_delay_callback(uint16_t duration, void(*cbfn)(void)) {
     TA0CCTL2 = 0;
 
     /* enable interrupt */
-    //TA0CCTL2 |= CCIE;
-    TA0CCTL2 = CCIE;
+    TA0CCTL2 |= CCIE;
 }
 
 
