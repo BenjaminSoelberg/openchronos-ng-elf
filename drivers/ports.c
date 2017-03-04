@@ -98,7 +98,7 @@ void init_buttons(void)
     P2IE |= ALL_BUTTONS;
 }
 
-uint8_t is_ports_button_pressed() {
+bool is_ports_button_pressed() {
     return ports_down_btns != 0;
 }
 

@@ -22,11 +22,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **/
 
-#include "openchronos.h"
-
 #include "buzzer.h"
 #include "timer.h"
-#include "utils.h"
 
 #define DURATION(note) (note >> 6)
 #define OCTAVE(note) ((note >> 4) & 0x0003)
@@ -51,6 +48,12 @@ uint16_t base_notes[13] = {
         14447  /* C: G# */
 };
 
+volatile static note *notes = NULL;
+
+inline bool is_buzzer_playing() {
+    return notes != NULL;
+}
+
 inline void buzzer_init(void) {
     /* Reset TA1R, TA1 runs from 32768Hz ACLK */
     TA1CTL = TACLR | TASSEL__SMCLK | MC__STOP;
@@ -62,7 +65,7 @@ inline void buzzer_init(void) {
     buzzer_play(welcome);
 }
 
-inline void buzzer_stop(void) {
+inline static void buzzer_stop(void) {
     /* Stop PWM timer */
     TA1CTL &= ~MC_3; // Clear any MC bits, effectively a MC_STOP
 
@@ -74,57 +77,42 @@ inline void buzzer_stop(void) {
     TA1CCTL0 &= ~CCIE;
 }
 
-volatile static note *notes;
-volatile static int state = 0;
 static void buzzer_play_callback() {
-    switch (state) {
-        case 0 :
-            /* Allow buzzer PWM output on P2.7 */
-            P2SEL |= BIT7;
-            state++;
-            // fall through
+    /* 0x000F is the "stop bit" */
+    if (PITCH(*notes) != 0x000F) {
+        if (PITCH(*notes) == 0) {
+            /* Stop the timer! We are playing a rest */
+            TA1CTL &= ~MC_3;
+        } else {
+            /* Set PWM frequency */
+            TA1CCR0 = base_notes[PITCH(*notes)] >> OCTAVE(*notes);
 
-        case 1 :
-            /* 0x000F is the "stop bit" */
-            if (PITCH(*notes) == 0x000F) {
-                /* Stop buzzer */
-                buzzer_stop();
-                state++; // Will reset the watch later in case of more callbacks
-                notes = NULL;
-                break;
-            }
+            /* Start the timer */
+            TA1CTL |= MC__UP;
+        }
 
-            if (PITCH(*notes) == 0) {
-                /* Stop the timer! We are playing a rest */
-                TA1CTL &= ~MC_3;
-            } else {
-                /* Set PWM frequency */
-                TA1CCR0 = base_notes[PITCH(*notes)] >> OCTAVE(*notes);
+        /* Calculate duration delay in ms */
+        uint16_t delay = DURATION(*notes);
 
-                /* Start the timer */
-                TA1CTL |= MC__UP;
-            }
+        /* Advance to the next note */
+        notes++;
 
-            /* Calculate duration delay in ms */
-            uint16_t delay = DURATION(*notes);
-
-            /* Advance to the next note */
-            notes++;
-
-            /* Delay for DURATION(*notes) milliseconds */
-            //TODO use LPM0 because we need SMCLK for tone generation as well as FLL for stability */
-            timer0_delay_callback(delay, &buzzer_play_callback);
-            break;
-
-        default: // Safeguard, will reset the watch
-            REBOOT();
+        /* Delay for DURATION(*notes) milliseconds */
+        timer0_delay_callback(delay, &buzzer_play_callback);
+    } else {
+        /* Stop buzzer */
+        buzzer_stop();
+        notes = NULL;
     }
 }
 
 void buzzer_play(note *async_notes) {
-    if (notes) return; // Ignore as we are currently playing
-    state = 0;
+    if (notes) return; // Ignore if we are currently playing.
 
     notes = async_notes;
-    timer0_delay_callback(1, &buzzer_play_callback);
+
+    /* Allow buzzer PWM output on P2.7 */
+    P2SEL |= BIT7;
+
+    buzzer_play_callback();
 }
