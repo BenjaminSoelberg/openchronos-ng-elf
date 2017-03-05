@@ -114,5 +114,5 @@ void buzzer_play(note *async_notes) {
     /* Allow buzzer PWM output on P2.7 */
     P2SEL |= BIT7;
 
-    buzzer_play_callback();
+    buzzer_play_callback(); // Start playing first note (in calling thread)
 }
