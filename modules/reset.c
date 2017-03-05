@@ -2,6 +2,7 @@
     modules/reset.c: Reset module for openchronos-ng
 
     Copyright (C) 2012-2013 Angelo Arrifano <miknix@gmail.com>
+    Copyright (C) 2016-2017 Benjamin Sølberg <benjamin.soelberg@gmail.com>
 
     http://github.com/BenjaminSoelberg/openchronos-ng-elf
 

@@ -3,7 +3,7 @@
 
     Copyright (C) 2012 Angelo Arrifano <miknix@gmail.com>
     Copyright (C) 2013 Martin AusChemnitz <MartinAusChemnitz@gmx.net>
-    Copyright (C) 2016 Benjamin Sølberg <benjamin.soelberg@gmail.com>
+    Copyright (C) 2016-2017 Benjamin Sølberg <benjamin.soelberg@gmail.com>
 
     http://github.com/BenjaminSoelberg/openchronos-ng-elf
 
@@ -98,7 +98,7 @@ void init_buttons(void)
     P2IE |= ALL_BUTTONS;
 }
 
-uint8_t is_ports_button_pressed() {
+bool is_ports_button_pressed() {
     return ports_down_btns != 0;
 }
 
