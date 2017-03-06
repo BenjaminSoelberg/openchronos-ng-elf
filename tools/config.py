@@ -41,7 +41,7 @@ DATA["USE_WATCHDOG"] = {
 }
 
 DATA["CONFIG_EASY_DEBUG_RESET"] = {
-    "name": "Easy Reset (Debug)",
+    "name": "Easy Reset [FOR TESTING]",
     "default": False,
     "help": "Makes it faster to reboot the watch by pressing up/down buttons at the same time.",
 }
