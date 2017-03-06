@@ -69,6 +69,7 @@ set(source_files
     modules/otp.c
     modules/stopwatch.c
     modules/accelerometer.c
+    modules/buzztest.c
 )
 add_executable(${openchronos_binary_filename} ${source_files})
 target_include_directories(${openchronos_binary_filename} PRIVATE .)
