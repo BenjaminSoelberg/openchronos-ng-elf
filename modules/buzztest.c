@@ -27,7 +27,7 @@
 /* drivers */
 #include "drivers/display.h"
 
-static note n[3] = {0x3200, 0x3200, 0x000F};
+static note n[2] = {0x3200, 0x000F};
 int8_t oct = 0;
 int8_t key = 1;
 
