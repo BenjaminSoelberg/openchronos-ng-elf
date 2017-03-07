@@ -33,7 +33,7 @@ int8_t key = 1;
 
 static void activate() {
     /* update screen */
-    display_chars(0, LCD_SEG_L2_3_0, "BUZZ", SEG_ON);
+    display_chars(0, LCD_SEG_L2_4_1, "BUZZ", SEG_ON);
 }
 
 static void deactivate() {
