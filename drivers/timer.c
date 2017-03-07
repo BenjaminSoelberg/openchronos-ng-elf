@@ -92,6 +92,8 @@ void timer0_init(void) {
 
     /* select external 32kHz source, /2 divider, continuous mode */
     TA0CTL |= TASSEL__ACLK | ID__2 | MC__CONTINUOUS;
+    /* SLAU259 page 399: clear internal divider counts after setting mode, clock and divisor*/ 
+    TA0CTL |= TACLR;
     init_timer0_20hz();
 }
 
