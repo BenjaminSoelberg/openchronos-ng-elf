@@ -116,6 +116,8 @@ void start_timer0_20hz() {
     uint16_t int_state;
     ENTER_CRITICAL_SECTION(int_state);
     if (ref_count_20hz == 0) {
+        /*50ms from <now> generate compare interrupt*/
+        TA0CCR0 = TA0R + timer0_20hz_ticks;
         TA0CCTL0 |= CCIE; // Enable timer0 20hz interrupt
     }
     ref_count_20hz++;
