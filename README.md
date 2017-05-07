@@ -225,17 +225,28 @@ Please note:<br>
 * RFBSL seems to fail a lot on some MacBooks (mine is a MacBook Pro Retina 2012)
 * RFBSL seems to fail a lot for some if the watch battery is below 93%
 
+
+AP Flash/Watch Flash Procedure (Windows only)
+--------------------------------
+
+Prefer linux procedure, use this windows flash procedure only if you *must*, all the below is possible in linux using mspdebug
+
+To reflash AP RF dongle and/or Watch Firmware (Original or Recovery firmware) in windows (XP/7/8/10) you may use :
+
+* FET-Pro-430 Software Pkg. - LITE available at [https://www.elprotronic.com/productdata] (https://www.elprotronic.com/productdata)
+Note: you need to specify the CC430F6137 if you are flashing the watch, If you are flashing RF AP dongle specify MSP430F5509
+
+Alternatively if above flash procedure does not work for you 
+
+Use BM-Innovations flash tool (only works for windows XP):
+* Download FET Drivers for windows xp/7/8/10
+(MSP430Drivers-1_00_00_01-windows-installer.exe confirmed working on Win10) from:
+[http://software-dl.ti.com/msp430/msp430_public_sw/mcu/msp430/MSP430_FET_Drivers/latest/index_FDS.html](http://software-dl.ti.com/msp430/msp430_public_sw/mcu/msp430/MSP430_FET_Drivers/latest/index_FDS.html)
+* Download [http://www.bm-innovations.com/index.php/ez430-chronos](http://www.bm-innovations.com/index.php/ez430-chronos)
+
+
 Useful links
 -------------
-
-If you need to reinstall the original firmware you can download a flash tool here (using windows XP):
-
-[http://www.bm-innovations.com/index.php/ez430-chronos](http://www.bm-innovations.com/index.php/ez430-chronos)
-
-If you are on windows 7/8/10 and wish to update the watch via bm-innovations Flash tool then download the FET drivers 
-(MSP430Drivers-1_00_00_01-windows-installer.exe confirmed working on Win10) from:
-
-[http://software-dl.ti.com/msp430/msp430_public_sw/mcu/msp430/MSP430_FET_Drivers/latest/index_FDS.html](http://software-dl.ti.com/msp430/msp430_public_sw/mcu/msp430/MSP430_FET_Drivers/latest/index_FDS.html)
 
 Data sheet for the CC430F6137 used in the watch:
 
