@@ -92,6 +92,8 @@ void timer0_init(void) {
 
     /* select external 32kHz source, /2 divider, continuous mode */
     TA0CTL |= TASSEL__ACLK | ID__2 | MC__CONTINUOUS;
+    /* SLAU259 page 399: clear internal divider counts after setting mode, clock and divisor*/ 
+    TA0CTL |= TACLR;
     init_timer0_20hz();
 }
 
@@ -114,6 +116,8 @@ void start_timer0_20hz() {
     uint16_t int_state;
     ENTER_CRITICAL_SECTION(int_state);
     if (ref_count_20hz == 0) {
+        /*50ms from <now> generate compare interrupt*/
+        TA0CCR0 = TA0R + timer0_20hz_ticks;
         TA0CCTL0 |= CCIE; // Enable timer0 20hz interrupt
     }
     ref_count_20hz++;

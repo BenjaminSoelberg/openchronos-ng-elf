@@ -29,6 +29,7 @@
 #include "drivers/display.h"
 #include "drivers/rtca.h"
 #include "drivers/buzzer.h"
+#include "drivers/ports.h"
 
 static union {
     struct {
@@ -42,7 +43,7 @@ static union {
 
 static uint8_t tmp_hh, tmp_mm;
 static note chime_notes[2] = {0x1931, 0x000F};
-static note alarm_notes[4] = {0x1931, 0x1934, 0x1938, 0x000F};
+static note alarm_notes[4] = {0x3234, 0x1900, 0x3234, 0x000F};
 
 static void print_mm (void)
 {
@@ -88,11 +89,22 @@ static void refresh_screen()
     print_mm();
 }
 
+static uint8_t alarm_sec_elapsed = 0;
 static void alarm_event(enum sys_message msg)
 {
-    if (msg & SYS_MSG_RTC_ALARM) {
-        buzzer_play(alarm_notes);
+    if (msg & SYS_MSG_BUTTON || alarm_sec_elapsed >= 30) {
+        alarm_sec_elapsed = 0;
+        ports_buttons_clear();
+        sys_messagebus_unregister(&alarm_event, SYS_MSG_BUTTON | SYS_MSG_RTC_SECOND);
+        return;
     }
+
+    if (msg & SYS_MSG_RTC_ALARM) {
+        sys_messagebus_register(&alarm_event, SYS_MSG_BUTTON | SYS_MSG_RTC_SECOND);
+    }
+
+    alarm_sec_elapsed++;
+    buzzer_play(alarm_notes);
 }
 
 static void hour_event(enum sys_message msg)
