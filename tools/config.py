@@ -46,6 +46,12 @@ DATA["CONFIG_EASY_DEBUG_RESET"] = {
     "help": "Makes it faster to reboot the watch by pressing up/down buttons at the same time.",
 }
 
+DATA["CONFIG_RUNLOOP_INDICATOR"] = {
+    "name": "Show runloop indicator",
+    "default": False,
+    "help": "Enable or disable the runloop indicator (heart symbol blinks at each runloop)",
+}
+
 # RTC DRIVER #################################################################
 
 DATA["TEXT_RTC"] = {

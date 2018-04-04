@@ -36,6 +36,10 @@ uint8_t use_temperature_metric = 1;
 uint8_t use_temperature_metric = 0;
 #endif
 
+#define TEMP_UPDATE_INTERVAL_IN_SEC 4
+
+static uint8_t sec;
+
 static void display_temperature(void)
 {
     int16_t temp;
@@ -48,10 +52,13 @@ static void display_temperature(void)
     display_char(0, LCD_SEG_L1_0, (temp%10)+48, SEG_SET);
 }
 
-static void measure_temp(enum sys_message msg)
+static void event_1_sec_callback(enum sys_message msg)
 {
-    temperature_measurement();
-    display_temperature();
+    if (++sec >= TEMP_UPDATE_INTERVAL_IN_SEC) {
+        temperature_measurement();
+        display_temperature();
+        sec = 0;
+    }
 }
 
 /********************* edit mode callbacks ********************************/
@@ -122,6 +129,7 @@ static struct menu_editmode_item edit_items[] = {
 
 static void temperature_activate(void)
 {
+    sec = TEMP_UPDATE_INTERVAL_IN_SEC; // Force update of temp delayed max 1 sec.
     /* display static elements */
     display_symbol(0, LCD_UNIT_L1_DEGREE, SEG_ON);
     display_symbol(0, LCD_SEG_L1_DP0, SEG_ON);
@@ -129,12 +137,12 @@ static void temperature_activate(void)
     /* display -- symbol while a measure is not performed */
     display_chars(0, LCD_SEG_L1_2_0, "---", SEG_ON);
     display_temp_text_on_line_2();
-    sys_messagebus_register(&measure_temp, SYS_MSG_TIMER_4S);
+    sys_messagebus_register(&event_1_sec_callback, SYS_MSG_RTC_SECOND);
 }
 
 static void temperature_deactivate(void)
 {
-    sys_messagebus_unregister_all(&measure_temp);
+    sys_messagebus_unregister_all(&event_1_sec_callback);
 
     /* cleanup screen */
     display_symbol(0, LCD_UNIT_L1_DEGREE, SEG_OFF);

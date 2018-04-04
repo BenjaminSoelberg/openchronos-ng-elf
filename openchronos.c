@@ -209,12 +209,13 @@ void init_application(void)
 #endif
 }
 
-void debug_runloop_counter() {
-    static uint8_t ct;
-    ct++;
-    if (ct>=100) ct = 0;
-    _printf(0, LCD_SEG_L1_3_2, "%02u", ct);
+#ifdef CONFIG_RUNLOOP_INDICATOR
+void debug_runloop_indicator() {
+    static uint8_t is_on; // Dirty, but keeps it local.
+    is_on = !is_on;
+    display_symbol(0, LCD_ICON_HEART, is_on ? SEG_ON : SEG_OFF);
 }
+#endif
 
 /***************************************************************************
  ************************ ENTRYPOINT AND MAIN LOOP *************************
@@ -238,7 +239,9 @@ int main(void)
         /* Go to LPM3, wait for interrupts */
         enter_lpm_gie(LPM3_bits);
 
-        //debug_runloop_counter();
+#ifdef CONFIG_RUNLOOP_INDICATOR
+        debug_runloop_indicator();
+#endif
 
         /* service watchdog on wakeup */
         wdt_poll();
