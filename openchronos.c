@@ -212,7 +212,7 @@ void init_application(void)
 #ifdef CONFIG_RUNLOOP_INDICATOR
 void debug_runloop_indicator() {
     static uint8_t is_on; // Dirty, but keeps it local.
-    is_on = !is_on;
+    is_on ^= 1;
     display_symbol(0, LCD_ICON_HEART, is_on ? SEG_ON : SEG_OFF);
 }
 #endif
