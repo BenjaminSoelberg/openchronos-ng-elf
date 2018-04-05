@@ -479,6 +479,7 @@ void fill_display(uint8_t scr_nr, uint8_t value)
             *(lcdptr++) = value;
         }
 }
+
 void display_clear(uint8_t scr_nr, uint8_t line)
 {
     if (line == 1) {
