@@ -34,13 +34,17 @@
 #include "drivers/ports.h"
 #include "drivers/display.h"
 
+#define MENUMODE_IDLE_MAX_COUNT 10
+
 /* The head of the linked list holding menu items */
 static struct menu *menu_head;
 
 /* Menu mode stuff */
 static struct {
-    uint8_t enabled:1;      /* is menu mode enabled? */
-    struct menu *item;      /* the currently active menu item */
+    uint8_t enabled:1;       /* is menu mode enabled? */
+    struct menu *item;       /* the currently active menu item */
+    struct menu *start_item; /* the original menu item */
+    uint8_t idle_count;      /* number of idle polls counts */
 } menumode;
 
 /* Menu edit mode stuff */
@@ -83,41 +87,41 @@ static void editmode_handler(void)
     }
 }
 
-static void menumode_handler(void)
+static void menumode_select(void)
 {
-    if (ports_button_pressed(PORTS_BTN_STAR, 0)) {
-        /* exit mode mode */
-        menumode.enabled = 0;
+    /* exit menu mode */
+    menumode.enabled = 0;
+    menumode.start_item = NULL;
+    menumode.idle_count = 0;
 
-        /* clear both lines but keep symbols! */
-        display_clear(0, 1);
-        display_clear(0, 2);
+    /* clear both lines but keep symbols! */
+    display_clear(0, 1);
+    display_clear(0, 2);
 
-        /* turn off up/down symbols */
-        display_symbol(0, LCD_SYMB_ARROW_UP, SEG_OFF);
-        display_symbol(0, LCD_SYMB_ARROW_DOWN, SEG_OFF);
+    /* turn off up/down symbols */
+    display_symbol(0, LCD_SYMB_ARROW_UP, SEG_OFF);
+    display_symbol(0, LCD_SYMB_ARROW_DOWN, SEG_OFF);
 
-        /* stop blinking name of current selected module */
-        display_chars(0, LCD_SEG_L2_4_0, NULL, BLINK_OFF);
+    /* stop blinking name of current selected module */
+    display_chars(0, LCD_SEG_L2_4_0, NULL, BLINK_OFF);
 
-        /* activate item */
-        if (menumode.item->activate_fn)
-            menumode.item->activate_fn();
-
-    } else if (ports_button_pressed(PORTS_BTN_UP, 0)) {
-        menumode.item = menumode.item->next;
-        display_clear(0, 2);
-        display_chars(0, LCD_SEG_L2_4_0, menumode.item->name, SEG_SET);
-
-    } else if (ports_button_pressed(PORTS_BTN_DOWN, 0)) {
-        menumode.item = menumode.item->prev;
-        display_clear(0, 2);
-        display_chars(0, LCD_SEG_L2_4_0, menumode.item->name, SEG_SET);
-    }
+    /* activate item */
+    if (menumode.item->activate_fn)
+        menumode.item->activate_fn();
 }
 
-static void menumode_enable(void)
+void menumode_cancel(void)
 {
+    // Restore to original menu item
+    menumode.item = menumode.start_item;
+    menumode_select();
+}
+
+static void menumode_start(void)
+{
+    menumode.start_item = menumode.item;
+    menumode.idle_count = 0;
+
     /* deactivate current menu item */
     if (menumode.item->deactivate_fn)
         menumode.item->deactivate_fn();
@@ -137,42 +141,77 @@ static void menumode_enable(void)
     display_chars(0, LCD_SEG_L2_4_0, menumode.item->name, SEG_SET);
 }
 
+static void menumode_next(void) {
+    menumode.idle_count = 0;
+    menumode.item = menumode.item->next;
+    display_clear(0, 2);
+    display_chars(0, LCD_SEG_L2_4_0, menumode.item->name, SEG_SET);
+}
+
+static void menumode_prev(void) {
+    menumode.idle_count = 0;
+    menumode.item = menumode.item->prev;
+    display_clear(0, 2);
+    display_chars(0, LCD_SEG_L2_4_0, menumode.item->name, SEG_SET);
+}
+
+static void menumode_handler(void)
+{
+    if (ports_button_pressed(PORTS_BTN_STAR, 0)) {
+        menumode_select();
+    } else if (ports_button_pressed(PORTS_BTN_UP, 0)) {
+        menumode_next();
+    } else if (ports_button_pressed(PORTS_BTN_DOWN, 0)) {
+        menumode_prev();
+    } else if (menumode.idle_count >= MENUMODE_IDLE_MAX_COUNT) {
+        menumode_cancel();
+    }
+}
+
+static void menuitem_handler(void) {
+    if (ports_button_pressed(PORTS_BTN_LSTAR, 1)) {
+        if (menumode.item->lstar_btn_fn)
+            menumode.item->lstar_btn_fn();
+
+    } else if (ports_button_pressed(PORTS_BTN_STAR, !!(menumode.item->lstar_btn_fn))) {
+        menumode_start();
+
+    } else if (ports_button_pressed(PORTS_BTN_LNUM, 1)) {
+        if (menumode.item->lnum_btn_fn)
+            menumode.item->lnum_btn_fn();
+
+    } else if (ports_button_pressed(PORTS_BTN_NUM, !!(menumode.item->lnum_btn_fn))) {
+        if (menumode.item->num_btn_fn)
+            menumode.item->num_btn_fn();
+
+    } else if (ports_button_pressed(PORTS_BTN_UP | PORTS_BTN_DOWN, 0)) {
+        if (menumode.item->updown_btn_fn)
+            menumode.item->updown_btn_fn();
+
+    } else if (ports_button_pressed(PORTS_BTN_UP, 0)) {
+        if (menumode.item->up_btn_fn)
+            menumode.item->up_btn_fn();
+
+    } else if (ports_button_pressed(PORTS_BTN_DOWN, 0)) {
+        if (menumode.item->down_btn_fn)
+            menumode.item->down_btn_fn();
+    }
+}
+
+void menu_timeout_poll(void) {
+    if (menumode.enabled) {
+        menumode.idle_count++;
+    }
+}
+
 void menu_check_buttons(void)
 {
     if (menu_editmode.enabled) {
         editmode_handler();
-
     } else if (menumode.enabled) {
         menumode_handler();
-
     } else {
-        if (ports_button_pressed(PORTS_BTN_LSTAR, 1)) {
-            if (menumode.item->lstar_btn_fn)
-                menumode.item->lstar_btn_fn();
-
-        } else if (ports_button_pressed(PORTS_BTN_STAR, !!(menumode.item->lstar_btn_fn))) {
-            menumode_enable();
-
-        } else if (ports_button_pressed(PORTS_BTN_LNUM, 1)) {
-            if (menumode.item->lnum_btn_fn)
-                menumode.item->lnum_btn_fn();
-
-        } else if (ports_button_pressed(PORTS_BTN_NUM, !!(menumode.item->lnum_btn_fn))) {
-            if (menumode.item->num_btn_fn)
-                menumode.item->num_btn_fn();
-
-        } else if (ports_button_pressed(PORTS_BTN_UP | PORTS_BTN_DOWN, 0)) {
-            if (menumode.item->updown_btn_fn)
-                menumode.item->updown_btn_fn();
-
-        } else if (ports_button_pressed(PORTS_BTN_UP, 0)) {
-            if (menumode.item->up_btn_fn)
-                menumode.item->up_btn_fn();
-
-        } else if (ports_button_pressed(PORTS_BTN_DOWN, 0)) {
-            if (menumode.item->down_btn_fn)
-                menumode.item->down_btn_fn();
-        }
+        menuitem_handler();
     }
 
     ports_buttons_clear();

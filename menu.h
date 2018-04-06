@@ -101,6 +101,7 @@ struct menu {
 };
 
 void menu_check_buttons(void);
+void menu_timeout_poll(void);
 
 struct menu * menu_add_entry(char const * name,
                              void (*up_btn_fn)(void),

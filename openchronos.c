@@ -64,11 +64,12 @@
 
 #include "openchronos.h"
 
+/* Misc */
+#include "messagebus.h"
+#include "menu.h"
 #include "modinit.h"
 
 /* Driver */
-#include "messagebus.h"
-#include "menu.h"
 #include "drivers/display.h"
 #include "drivers/vti_as.h"
 #include "drivers/vti_ps.h"
@@ -107,6 +108,11 @@ void handle_events(void)
         as_last_interrupt = 0;
     }
 
+    /* menu system */
+    if (msg & SYS_MSG_RTC_SECOND) {
+        menu_timeout_poll();
+    }
+
 #ifdef CONFIG_BATTERY_MONITOR
     /* drivers/battery */
     if (msg & SYS_MSG_RTC_MINUTE) {
@@ -118,7 +124,6 @@ void handle_events(void)
     if (is_ports_button_pressed()) {
         msg |= SYS_MSG_BUTTON;
     }
-
 
     send_events(msg);
 }
