@@ -204,7 +204,7 @@ static void num_pressed()
     if (alarm_state.chime) {
         display_symbol(0, LCD_ICON_BEEPER2, SEG_ON);
         display_symbol(0, LCD_ICON_BEEPER3, SEG_ON);
-        sys_messagebus_register(hour_event, SYS_MSG_RTC_HOUR);
+        sys_messagebus_register(&hour_event, SYS_MSG_RTC_HOUR);
     } else {
         display_symbol(0, LCD_ICON_BEEPER2, SEG_OFF);
         display_symbol(0, LCD_ICON_BEEPER3, SEG_OFF);
