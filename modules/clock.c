@@ -126,9 +126,11 @@ static void edit_yy_dsel(void)
 
 static void edit_yy_set(int8_t step)
 {
-    /* this allows setting years between 2012 and 2022 */
+    /* this allows setting years between 2012 and 2047 */
+    // 0x07DC = 2012 and 0x07FF = 2047
+    // The helpers_loop will only handle the low byte
     *((uint8_t *)&rtca_time.year + 1) = 0x07;
-    helpers_loop((uint8_t *)&rtca_time.year, 220, 230, step);
+    helpers_loop((uint8_t *)&rtca_time.year, 0xDC, 0xFF, step);
 
     auto_adjust_dd();
     rtca_update_dow();
