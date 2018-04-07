@@ -40,12 +40,6 @@ DATA["USE_WATCHDOG"] = {
     "help": "Protects the clock against deadlocks by rebooting it.",
 }
 
-DATA["CONFIG_EASY_DEBUG_RESET"] = {
-    "name": "Easy Reset [FOR TESTING]",
-    "default": False,
-    "help": "Makes it faster to reboot the watch by pressing up/down buttons at the same time.",
-}
-
 DATA["CONFIG_RUNLOOP_INDICATOR"] = {
     "name": "Show runloop indicator",
     "default": False,

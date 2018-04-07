@@ -36,7 +36,7 @@ static void num_press()
     REBOOT();
 }
 
-#ifdef CONFIG_EASY_DEBUG_RESET
+#ifdef CONFIG_MOD_RESET_EASY_RESET
 static void button_event(enum sys_message event)
 {
     // If up and down is pressed (at the EXACT same time) then resets the watch!
@@ -61,7 +61,7 @@ static void reset_deactivate()
 }
 
 void mod_reset_init(void) {
-#ifdef CONFIG_EASY_DEBUG_RESET
+#ifdef CONFIG_MOD_RESET_EASY_RESET
     sys_messagebus_register(&button_event, SYS_MSG_BUTTON);
 #endif
 
