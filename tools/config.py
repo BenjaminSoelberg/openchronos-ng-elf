@@ -61,7 +61,7 @@ DATA["CONFIG_RTC_IRQ"] = {
 
 DATA["CONFIG_RTC_DST"] = {
     "name": "DST",
-    "default": True,
+    "default": False,
     'depends': [ 'CONFIG_RTC_IRQ' ],
     "help": "Automatically adjusts real-time clock for daylight savings time",
 }
@@ -83,7 +83,7 @@ DATA["TEXT_TIMER"] = {
 
 DATA["CONFIG_TIMER_4S_IRQ"] = {
     "name": "Enable 0.244Hz timer interrupts",
-    "default": True,
+    "default": False,
     "help": "Enables 0.244Hz interrupts on the hardware timer",
 }
 
@@ -155,7 +155,7 @@ DATA["CONFIG_TEMPERATURE_OFFSET"] = {
 
 DATA["CONFIG_TEMPERATURE_METRIC"] = {
     "name": "Show in degrees C",
-    "default": True,
+    "default": False,
     "help": "Show in degrees C if enabled, F otherwise.",
 }
 
