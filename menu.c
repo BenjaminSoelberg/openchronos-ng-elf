@@ -35,6 +35,7 @@
 #include "drivers/display.h"
 
 #define MENUMODE_IDLE_MAX_COUNT 10
+#define MENU_EDITMODE_IDLE_MAX_COUNT 10
 
 /* The head of the linked list holding menu items */
 static struct menu *menu_head;
@@ -52,12 +53,18 @@ static struct {
     uint8_t enabled:1;          /* is edit mode enabled? */
     uint8_t pos:7;              /* the position for selected item */
     void (* complete_fn)(void); /* call this fn when editmode exits */
+    void (* cancel_fn)(void);   /* call this fn when editmode is canceled */
     struct menu_editmode_item *items;  /* vector of editmode items */
+    uint8_t idle_count;         /* number of idle polls counts */
 } menu_editmode;
 
 /***************************************************************************
  ************************ USER INPUT / MAIN MENU ***************************
  **************************************************************************/
+
+/***************************************************/
+/******************** Edit mode ********************/
+/***************************************************/
 
 static void editmode_handler(void)
 {
@@ -68,6 +75,7 @@ static void editmode_handler(void)
 
         menu_editmode.complete_fn();
         menu_editmode.enabled = 0;
+        menu_editmode.idle_count = 0;
 
     } else if (ports_button_pressed(PORTS_BTN_NUM, 0)) {
         /* deselect current item */
@@ -78,14 +86,29 @@ static void editmode_handler(void)
         if (! menu_editmode.items[menu_editmode.pos].set)
             menu_editmode.pos = 0;
         menu_editmode.items[menu_editmode.pos].select();
+        menu_editmode.idle_count = 0;
 
     } else if (ports_button_pressed(PORTS_BTN_UP, 0)) {
         menu_editmode.items[menu_editmode.pos].set(1);
+        menu_editmode.idle_count = 0;
 
     } else if (ports_button_pressed(PORTS_BTN_DOWN, 0)) {
         menu_editmode.items[menu_editmode.pos].set(-1);
+        menu_editmode.idle_count = 0;
+
+    } else if (menu_editmode.cancel_fn && menu_editmode.idle_count >= MENU_EDITMODE_IDLE_MAX_COUNT) {
+        /* deselect item */
+        menu_editmode.items[menu_editmode.pos].deselect();
+
+        menu_editmode.cancel_fn();
+        menu_editmode.enabled = 0;
+        menu_editmode.idle_count = 0;
     }
 }
+
+/***************************************************/
+/******************** Menu mode ********************/
+/***************************************************/
 
 static void menumode_select(void)
 {
@@ -198,9 +221,15 @@ static void menuitem_handler(void) {
     }
 }
 
+/**********************************************************/
+/******************** Public functions ********************/
+/**********************************************************/
+
 void menu_timeout_poll(void) {
     if (menumode.enabled) {
         menumode.idle_count++;
+    } else if (menu_editmode.enabled) {
+        menu_editmode.idle_count++;
     }
 }
 
@@ -263,13 +292,16 @@ struct menu* menu_add_entry(char const *name,
 }
 
 void menu_editmode_start(void (* complete_fn)(void),
+                         void (* cancel_fn)(void),
                          struct menu_editmode_item *items)
 {
     menu_editmode.pos = 0;
     menu_editmode.items = items;
     menu_editmode.complete_fn = complete_fn;
+    menu_editmode.cancel_fn = cancel_fn;
 
     menu_editmode.enabled = 1;
+    menu_editmode.idle_count = 0;
 
     /* select the first item */
     menu_editmode.items[0].select();

@@ -71,6 +71,8 @@ struct menu_editmode_item {
 void menu_editmode_start(
     /*! callback for when the user exits from the edit mode.*/
     void (* complete_fn)(void),
+    /*! callback for when the idle count canceles the edit mode.*/
+    void (* cancel_fn)(void),
     /*! A vector of #menu_editmode_item, it must be NULL terminated! */
     struct menu_editmode_item *items
 );
@@ -102,18 +104,5 @@ struct menu {
 
 void menu_check_buttons(void);
 void menu_timeout_poll(void);
-
-struct menu * menu_add_entry(char const * name,
-                             void (*up_btn_fn)(void),
-                             void (*down_btn_fn)(void),
-                             void (*num_btn_fn)(void),
-                             void (*lstar_btn_fn)(void),
-                             void (*lnum_btn_fn)(void),
-                             void (*updown_btn_fn)(void),
-                             void (*activate_fn)(void),
-                             void (*deactivate_fn)(void));
-
-void menu_editmode_start(void (* complete_fn)(void),
-                         struct menu_editmode_item *items);
 
 #endif /* __MENU_H__ */

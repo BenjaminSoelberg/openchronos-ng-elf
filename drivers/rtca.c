@@ -165,20 +165,20 @@ void rtca_disable_alarm()
     RTCAMIN  &= ~RTCAE;
 }
 
-void rtca_update_dow()
+void rtca_update_dow(struct DATETIME *datetime)
 {
     uint8_t dow;
 
-    dow = LEAPS_SINCE_YEAR(rtca_time.year);
+    dow = LEAPS_SINCE_YEAR(datetime->year);
 
-    if ((29 == rtca_get_max_days(2, rtca_time.year)) && (rtca_time.mon < 3))
+    if ((29 == rtca_get_max_days(2, datetime->year)) && (datetime->mon < 3))
         dow--; /* if this is a leap year but before February 29 */
 
     /* add day of current month */
-    dow += rtca_time.day;
+    dow += datetime->day;
 
     /* add this month's dow value */
-    switch (rtca_time.mon) {
+    switch (datetime->mon) {
     case 5:
         dow += 1;
         break;
@@ -209,7 +209,7 @@ void rtca_update_dow()
     }
 
     dow = dow % 7;
-    rtca_time.dow = dow;
+    datetime->dow = dow;
 }
 
 void rtca_set_date()
@@ -217,7 +217,7 @@ void rtca_set_date()
     /* Stop RTC timekeeping for a while */
     rtca_stop();
 
-    rtca_update_dow();
+    rtca_update_dow(&rtca_time);
 
     /* update RTC registers and local cache */
     RTCDAY = rtca_time.day;

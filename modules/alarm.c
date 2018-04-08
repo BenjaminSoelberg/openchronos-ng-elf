@@ -218,7 +218,7 @@ static void star_long_pressed()
     /* Save the current time in edit_buffer */
     rtca_get_alarm(&tmp_hh, &tmp_mm);
 
-    menu_editmode_start(&edit_save, edit_items);
+    menu_editmode_start(&edit_save, NULL, edit_items);
 }
 
 

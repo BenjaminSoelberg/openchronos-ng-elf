@@ -43,7 +43,7 @@ static char const * const rtca_dow_str[] = {
     "SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"
 };
 
-struct {
+struct DATETIME {
     uint32_t sys;   /* system time: number of seconds since power on */
     uint16_t year;  /* cache of RTC year register */
     uint8_t mon;    /* cache of RTC month register */
@@ -52,7 +52,9 @@ struct {
     uint8_t hour;   /* cache of RTC hour register */
     uint8_t min;    /* cache of RTC minutes register */
     uint8_t sec;    /* cache of RTC seconds register */
-} rtca_time;
+};
+
+struct DATETIME rtca_time;
 
 // Holds 12h/24h choice
 uint8_t display_am_pm;
@@ -66,7 +68,7 @@ void rtca_init(void);
 
 uint8_t rtca_get_max_days(uint8_t month, uint16_t year);
 
-void rtca_update_dow();
+void rtca_update_dow(struct DATETIME *datetime);
 void rtca_set_time();
 void rtca_set_date();
 

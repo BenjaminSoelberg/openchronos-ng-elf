@@ -22,6 +22,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **/
 
+#include <string.h>
+
 #include "messagebus.h"
 #include "menu.h"
 
@@ -39,37 +41,39 @@
 
 #define SECONDS_SEGMENT (LCD_SEG_L2_1_0)
 
+static struct DATETIME *datetime = &rtca_time;
+
 static uint8_t display_seconds = 0;
 
 static void clock_event(enum sys_message msg)
 {
 #ifdef CONFIG_MOD_CLOCK_BLINKCOL
     if (msg & SYS_MSG_RTC_SECOND) {
-        display_symbol(0, LCD_SEG_L1_COL, ((rtca_time.sec & 0x01) ? SEG_ON : SEG_OFF));
+        display_symbol(0, LCD_SEG_L1_COL, ((datetime->sec & 0x01) ? SEG_ON : SEG_OFF));
     }
 #endif
     if (display_seconds) {
         if (msg & SYS_MSG_RTC_SECOND) {
-            _printf(0, SECONDS_SEGMENT, "%02u", rtca_time.sec);
+            _printf(0, SECONDS_SEGMENT, "%02u", datetime->sec);
         }
     } else {
         if ((msg & SYS_MSG_RTC_DAY) || (msg & SYS_MSG_RTC_MONTH)) // Collapsed to simplify code path
         {
-            _printf(0, MONTH_SEGMENT, "%02u", rtca_time.mon);
-            _printf(0, DAY_SEGMENT, "%02u", rtca_time.day);
+            _printf(0, MONTH_SEGMENT, "%02u", datetime->mon);
+            _printf(0, DAY_SEGMENT, "%02u", datetime->day);
             display_char (0, LCD_SEG_L2_2, '-', SEG_SET);
         }
     }
 
     if (msg & SYS_MSG_RTC_DAY)
-        _printf(1, LCD_SEG_L2_2_0, rtca_dow_str[rtca_time.dow], SEG_SET);
+        _printf(1, LCD_SEG_L2_2_0, rtca_dow_str[datetime->dow], SEG_SET);
 
     if (msg & SYS_MSG_RTC_YEAR)
-        _printf(1, LCD_SEG_L1_3_0, "%04u", rtca_time.year);
+        _printf(1, LCD_SEG_L1_3_0, "%04u", datetime->year);
 
     if (msg & SYS_MSG_RTC_HOUR) {
         if (display_am_pm) {
-            uint8_t tmp_hh = rtca_time.hour;
+            uint8_t tmp_hh = datetime->hour;
             if (tmp_hh > 12) { //PM
                 tmp_hh -= 12;
                 display_symbol(0, LCD_SYMB_PM, SEG_SET);
@@ -84,12 +88,12 @@ static void clock_event(enum sys_message msg)
             }
             _printf(0, LCD_SEG_L1_3_2, "%2u", tmp_hh);
         } else {
-            _printf(0, LCD_SEG_L1_3_2, "%02u", rtca_time.hour);
+            _printf(0, LCD_SEG_L1_3_2, "%02u", datetime->hour);
             display_symbol(0, LCD_SYMB_PM, SEG_OFF);
         }
     }
     if (msg & SYS_MSG_RTC_MINUTE)
-        _printf(0, LCD_SEG_L1_1_0, "%02u", rtca_time.min);
+        _printf(0, LCD_SEG_L1_1_0, "%02u", datetime->min);
 }
 
 /* update screens with fake event */
@@ -103,11 +107,23 @@ static inline void update_screen()
    This effect can also be seen when changing from leap year to non leap year and the date is 02-29 */
 static void auto_adjust_dd()
 {
-    uint8_t min_day = rtca_get_max_days(rtca_time.mon, rtca_time.year);
-    if (min_day < rtca_time.day) {
-        rtca_time.day = min_day;
+    uint8_t min_day = rtca_get_max_days(datetime->mon, datetime->year);
+    if (min_day < datetime->day) {
+        datetime->day = min_day;
         update_screen();
     }
+}
+
+static void register_events() {
+    sys_messagebus_register(&clock_event,
+                            SYS_MSG_RTC_YEAR | SYS_MSG_RTC_MONTH | SYS_MSG_RTC_DAY |
+                            SYS_MSG_RTC_HOUR | SYS_MSG_RTC_MINUTE | SYS_MSG_RTC_SECOND
+    );
+}
+
+static void unregister_events()
+{
+    sys_messagebus_unregister_all(&clock_event);
 }
 
 /********************* edit mode callbacks ********************************/
@@ -129,11 +145,11 @@ static void edit_yy_set(int8_t step)
     /* this allows setting years between 2012 and 2047 */
     // 0x07DC = 2012 and 0x07FF = 2047
     // The helpers_loop will only handle the low byte
-    *((uint8_t *)&rtca_time.year + 1) = 0x07;
-    helpers_loop((uint8_t *)&rtca_time.year, 0xDC, 0xFF, step);
+    *((uint8_t *)&datetime->year + 1) = 0x07;
+    helpers_loop((uint8_t *)&datetime->year, 0xDC, 0xFF, step);
 
     auto_adjust_dd();
-    rtca_update_dow();
+    rtca_update_dow(datetime);
     update_screen();
 }
 
@@ -151,10 +167,10 @@ static void edit_mo_dsel(void)
 
 static void edit_mo_set(int8_t step)
 {
-    helpers_loop(&rtca_time.mon, 1, 12, step);
+    helpers_loop(&datetime->mon, 1, 12, step);
 
     auto_adjust_dd();
-    rtca_update_dow();
+    rtca_update_dow(datetime);
     update_screen();
 }
 
@@ -172,9 +188,9 @@ static void edit_dd_dsel(void)
 
 static void edit_dd_set(int8_t step)
 {
-    helpers_loop(&rtca_time.day, 1, rtca_get_max_days(rtca_time.mon,
-                        rtca_time.year), step);
-    rtca_update_dow();
+    helpers_loop(&datetime->day, 1, rtca_get_max_days(datetime->mon,
+                        datetime->year), step);
+    rtca_update_dow(datetime);
     update_screen();
 }
 
@@ -190,7 +206,7 @@ static void edit_hh_dsel(void)
 }
 static void edit_hh_set(int8_t step)
 {
-    helpers_loop(&rtca_time.hour, 0, 23, step);
+    helpers_loop(&datetime->hour, 0, 23, step);
     update_screen();
 }
 
@@ -209,7 +225,7 @@ static void edit_mm_dsel(void)
 
 static void edit_mm_set(int8_t step)
 {
-    helpers_loop(&rtca_time.min, 0, 59, step);
+    helpers_loop(&datetime->min, 0, 59, step);
     update_screen();
 }
 
@@ -238,15 +254,7 @@ static void edit_12_24_set(int8_t step)
     update_screen();
 }
 
-/* Save YMDHMS */
-static void edit_save()
-{
-    /* Here we return from the edit mode, fill in the new values! */
-    rtca_time.sec = 0;
-    rtca_set_time();
-    rtca_set_date();
-
-    /* turn off only SOME blinking segments */
+static void edit_end() {/* turn off only SOME blinking segments */
     display_chars(0, LCD_SEG_L1_3_0, NULL, BLINK_OFF);
     display_chars(0, LCD_SEG_L2_4_0, NULL, BLINK_OFF);
     display_chars(1, LCD_SEG_L1_3_0, NULL, BLINK_OFF);
@@ -255,11 +263,39 @@ static void edit_save()
     /* return to main screen */
     lcd_screen_activate(0);
 
-    /* start the RTC */
-    rtca_start();
-
     /* update screens with fake event */
     update_screen();
+
+    register_events();
+
+    rtca_start();
+}
+
+static void edit_cancel()
+{
+    rtca_stop(); // Countered in edit_end
+
+    free(datetime);
+    datetime = &rtca_time; // Restore current time
+    edit_end();
+}
+
+/* Save YMDHMS */
+static void edit_save()
+{
+    rtca_stop(); // Countered in rtca_set_time and rtca_set_date and edit_end
+
+    /* Here we return from the edit mode, fill in the new values! */
+    uint32_t sys_clocks = rtca_time.sys;
+    memcpy(&rtca_time, datetime, sizeof(struct DATETIME));
+    rtca_time.sys = sys_clocks;
+    free(datetime);
+    datetime = &rtca_time;
+
+    datetime->sec = 0;
+    rtca_set_time();
+    rtca_set_date();
+    edit_end();
 }
 
 /* edit mode item table */
@@ -273,13 +309,31 @@ static struct menu_editmode_item edit_items[] = {
     { NULL },
 };
 
+static void edit_activate()
+{
+    rtca_stop();
+
+    unregister_events();
+
+    struct DATETIME *edit_rtca = (struct DATETIME *) malloc(sizeof(struct DATETIME));
+    memcpy(edit_rtca, datetime, sizeof(struct DATETIME));
+    datetime = edit_rtca;
+
+    rtca_start();
+
+#ifdef CONFIG_MOD_CLOCK_BLINKCOL
+    /* the blinking dots feature might hide the two dots, we display them here just in case */
+#endif
+    display_seconds = 0;
+    update_screen();
+    display_symbol(0, LCD_SEG_L1_COL, SEG_ON);
+    menu_editmode_start(&edit_save, &edit_cancel, edit_items);
+}
+
 /************************ menu callbacks **********************************/
 static void clock_activated()
 {
-    sys_messagebus_register(&clock_event,
-                            SYS_MSG_RTC_YEAR | SYS_MSG_RTC_MONTH | SYS_MSG_RTC_DAY |
-                            SYS_MSG_RTC_HOUR | SYS_MSG_RTC_MINUTE | SYS_MSG_RTC_SECOND
-    );
+    register_events();
 
     /* create three screens, the first is always the active one */
     lcd_screens_create(3); // 0:time + date, 1: year + day of week, 2:temp for settings (ex 12/24h setup)
@@ -292,7 +346,7 @@ static void clock_activated()
 
 static void clock_deactivated()
 {
-    sys_messagebus_unregister_all(&clock_event);
+    unregister_events();
 
     /* destroy virtual screens */
     lcd_screens_destroy();
@@ -319,16 +373,7 @@ static void num_pressed()
 /* Star button long press callback. */
 static void star_long_pressed()
 {
-    /* stop the hardware RTC */
-    rtca_stop();
-
-#ifdef CONFIG_MOD_CLOCK_BLINKCOL
-    /* the blinking dots feature might hide the two dots, we display them here just in case */
-    display_symbol(0, LCD_SEG_L1_COL, SEG_ON);
-#endif
-    display_seconds = 0;
-    update_screen();
-    menu_editmode_start(&edit_save, edit_items);
+    edit_activate();
 }
 
 static void up_down_pressed()

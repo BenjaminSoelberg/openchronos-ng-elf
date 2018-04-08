@@ -152,7 +152,7 @@ static void temperature_deactivate(void)
 static void temperature_edit(void)
 {
     /* We go into edit mode  */
-    menu_editmode_start(&display_temp_text_on_line_2, edit_items);
+    menu_editmode_start(&display_temp_text_on_line_2, NULL, edit_items);
 }
 
 void mod_temperature_init(void)

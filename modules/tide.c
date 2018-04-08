@@ -289,7 +289,7 @@ void longStarButton(void)
     _printf(0, LCD_SEG_L1_3_2, "%02u", enteredTimeOfNextLow.hoursLeft);
     _printf(0, LCD_SEG_L1_1_0, "%02u", enteredTimeOfNextLow.minutesLeft);
     blinkCol(0, 1);
-    menu_editmode_start(&endEditing, editModeItems);
+    menu_editmode_start(&endEditing, NULL, editModeItems);
 }
 
 void buttonUp(void)
