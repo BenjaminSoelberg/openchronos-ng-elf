@@ -7,7 +7,7 @@ Latest build status on Circle CI: [circleci.com/gh/BenjaminSoelberg/openchronos-
 
 Releases and snapshot & firmware: [github.com/BenjaminSoelberg/openchronos-ng-elf/releases](https://github.com/BenjaminSoelberg/openchronos-ng-elf/releases)
 
-We use Slack to communicate, you are welcome to join us at: [openchronos.slack.com](https://openchronos.slack.com)
+We use Slack to communicate, you are welcome to join us at: [openchronos.slack.com](https://openchronos.slack.com) juse shoot me an [email](mailto://benjamin.soelberg@gmail.com)
 
 INTRODUCTION
 ============
