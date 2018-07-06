@@ -206,13 +206,11 @@ struct ts_s {
 
 static struct flyback_state {
 	struct ts_s ts[FLYBACK_MAX_TIMESTAMPS];
-	struct ts_s chrono;
-	struct ts_s now;
-	struct ts_s diff;
-	uint8_t count;   /* number of records in use  */
-	uint8_t display; /* record being displayed in list and interval view */
-	uint8_t mode;    /* active screen   */
-	time_t seconds;  /* diff in seconds */
+	struct ts_s chrono;   /* timstamp used for stopwatch start time       */
+	time_t seconds;       /* stopwatch time in seconds                    */
+	uint8_t count;        /* number of records in use                     */
+	uint8_t display;      /* displayed record on list and interval screen */
+	uint8_t mode;         /* active screen                                */
 } flyback_state;
 
 struct flyback_screen {
@@ -227,7 +225,7 @@ static void flyback_stopwatch();
 static void flyback_statechange();
 static void flyback_make_tm(struct tm* tm, struct ts_s *ts);
 static void flyback_copy_rtc(struct ts_s *ts, int mark);
-static int flyback_diff_ts(struct ts_s *ts1, struct ts_s *ts2, struct ts_s *diff, time_t *s);
+static int flyback_diff_ts(struct ts_s *ts1, struct ts_s *ts2, time_t *s);
 static void flyback_update_mark(int display, int mark);
 static void flyback_state_record(int mark);
 static void flyback_state_up();
@@ -280,9 +278,10 @@ static void flyback_counter_event(enum sys_message msg)
 
 static void flyback_counter_stopwatch()
 {
-	struct ts_s *diff = &flyback_state.diff;
-	time_t seconds = flyback_state.seconds;
-	
+	uint8_t hour;
+	uint8_t min;
+	uint8_t sec;
+
 	if (flyback_state.count == 0) {
 		_printf(FLYBACK_COUNTER, LCD_SEG_L2_5_4, "%02u", 0);
 		_printf(FLYBACK_COUNTER, LCD_SEG_L2_3_0, " 000", SEG_SET);
@@ -290,31 +289,36 @@ static void flyback_counter_stopwatch()
 		flyback_update_mark(FLYBACK_COUNTER, FLYBACK_MARK_NONE);
 		return;
 	}
-	if (seconds < 0) {
+	if (flyback_state.seconds < 0) {
 		_printf(FLYBACK_COUNTER, LCD_SEG_L2_3_0, " -E-", SEG_SET);
 		display_symbol(FLYBACK_COUNTER, LCD_SEG_L2_COL0, SEG_OFF);
 		display_symbol(FLYBACK_COUNTER, LCD_UNIT_L2_MI, SEG_OFF);
 		return;
 	}
-	if (seconds >= HUNDREDHOURS) {
+
+	sec   = (flyback_state.seconds % 60);
+	min   = (flyback_state.seconds / 60) % 60;
+	hour  = (flyback_state.seconds / 60) / 60;
+
+	if (flyback_state.seconds >= HUNDREDHOURS) {
 		_printf(FLYBACK_COUNTER, LCD_SEG_L2_3_0, " ---", SEG_SET);
 		display_symbol(FLYBACK_COUNTER, LCD_SEG_L2_COL0, SEG_OFF);
 		display_symbol(FLYBACK_COUNTER, LCD_UNIT_L2_MI, SEG_OFF);
-	} else if (seconds >= TENHOURS) {
+	} else if (flyback_state.seconds >= TENHOURS) {
 		/* show hours as: _15h */
-		_printf(FLYBACK_COUNTER, LCD_SEG_L2_3_1, " %02u", diff->hour);
+		_printf(FLYBACK_COUNTER, LCD_SEG_L2_3_1, " %02u", hour);
 		display_bits(FLYBACK_COUNTER, LCD_SEG_L2_0, 0x47, SEG_SET); // 'h'
 		display_symbol(FLYBACK_COUNTER, LCD_SEG_L2_COL0, SEG_OFF);
 		display_symbol(FLYBACK_COUNTER, LCD_UNIT_L2_MI, SEG_OFF);
-	} else if (seconds >= TENMINUTES) {
+	} else if (flyback_state.seconds >= TENMINUTES) {
 		/* show hours/minutes as: _9:59 */
-		_printf(FLYBACK_COUNTER, LCD_SEG_L2_3_2, " %1u", diff->hour);
-		_printf(FLYBACK_COUNTER, LCD_SEG_L2_1_0, "%02u", diff->min);
+		_printf(FLYBACK_COUNTER, LCD_SEG_L2_3_2, " %1u", hour);
+		_printf(FLYBACK_COUNTER, LCD_SEG_L2_1_0, "%02u", min);
 		display_symbol(FLYBACK_COUNTER, LCD_SEG_L2_COL0, SEG_ON);
 		display_symbol(FLYBACK_COUNTER, LCD_UNIT_L2_MI, SEG_ON);
 	} else {
-		_printf(FLYBACK_COUNTER, LCD_SEG_L2_3_2, " %1u", diff->min);
-		_printf(FLYBACK_COUNTER, LCD_SEG_L2_1_0, "%02u", diff->sec);
+		_printf(FLYBACK_COUNTER, LCD_SEG_L2_3_2, " %1u", min);
+		_printf(FLYBACK_COUNTER, LCD_SEG_L2_1_0, "%02u", sec);
 		display_symbol(FLYBACK_COUNTER, LCD_SEG_L2_COL0, SEG_ON);
 		display_symbol(FLYBACK_COUNTER, LCD_UNIT_L2_MI, SEG_OFF);
 	}
@@ -371,8 +375,9 @@ static void flyback_chrono_event(enum sys_message msg)
 
 static void flyback_chrono_stopwatch()
 {
-	struct ts_s *diff = &flyback_state.diff;
-	time_t seconds = flyback_state.seconds;
+	uint8_t hour;
+	uint8_t min;
+	uint8_t sec;
 	
 	if (flyback_state.count == 0) {
 		_printf(FLYBACK_CHRONO, LCD_SEG_L2_5_4, "%02u", 0);
@@ -381,26 +386,31 @@ static void flyback_chrono_stopwatch()
 		flyback_update_mark(FLYBACK_CHRONO, FLYBACK_MARK_NONE);
 		return;
 	}
-	if (seconds < 0) {
+	if (flyback_state.seconds < 0) {
 		display_chars(FLYBACK_CHRONO, LCD_SEG_L2_5_0, " --E--", SEG_SET);
 		display_symbol(FLYBACK_CHRONO, LCD_SEG_L2_COL1, SEG_OFF);
 		display_symbol(FLYBACK_CHRONO, LCD_SEG_L2_COL0, SEG_OFF);
 		return;
 	}
-	if (seconds >= HUNDREDHOURS) {
+
+	sec   = (flyback_state.seconds % 60);
+	min   = (flyback_state.seconds / 60) % 60;
+	hour  = (flyback_state.seconds / 60) / 60;
+
+	if (flyback_state.seconds >= HUNDREDHOURS) {
 		display_chars(FLYBACK_CHRONO, LCD_SEG_L2_5_0, " -----", SEG_SET);
 		display_symbol(FLYBACK_CHRONO, LCD_SEG_L2_COL1, SEG_OFF);
 		display_symbol(FLYBACK_CHRONO, LCD_SEG_L2_COL0, SEG_OFF);
-	} else if (seconds >= TWENTYHOURS) {
+	} else if (flyback_state.seconds >= TWENTYHOURS) {
 		display_chars(FLYBACK_CHRONO, LCD_SEG_L2_5_4, "  ", SEG_SET);
-		_printf(FLYBACK_CHRONO, LCD_SEG_L2_3_2, "%02u", diff->hour);
-		_printf(FLYBACK_CHRONO, LCD_SEG_L2_1_0, "%02u", diff->min);
+		_printf(FLYBACK_CHRONO, LCD_SEG_L2_3_2, "%02u", hour);
+		_printf(FLYBACK_CHRONO, LCD_SEG_L2_1_0, "%02u", min);
 		display_symbol(FLYBACK_CHRONO, LCD_SEG_L2_COL1, SEG_OFF);
 		display_symbol(FLYBACK_CHRONO, LCD_SEG_L2_COL0, SEG_ON);
 	} else {
-		_printf(FLYBACK_CHRONO, LCD_SEG_L2_5_4, "%02u", diff->hour);
-		_printf(FLYBACK_CHRONO, LCD_SEG_L2_3_2, "%02u", diff->min);
-		_printf(FLYBACK_CHRONO, LCD_SEG_L2_1_0, "%02u", diff->sec);
+		_printf(FLYBACK_CHRONO, LCD_SEG_L2_5_4, "%02u", hour);
+		_printf(FLYBACK_CHRONO, LCD_SEG_L2_3_2, "%02u", min);
+		_printf(FLYBACK_CHRONO, LCD_SEG_L2_1_0, "%02u", sec);
 		display_symbol(FLYBACK_CHRONO, LCD_SEG_L2_COL1, SEG_ON);
 		display_symbol(FLYBACK_CHRONO, LCD_SEG_L2_COL0, SEG_ON);
 	}
@@ -467,7 +477,9 @@ static void flyback_interval_init()
 
 static void flyback_interval_statechange()
 {
-	static struct ts_s diff;
+	uint8_t hour;
+	uint8_t min;
+	uint8_t sec;
 	time_t seconds;
 	int res;
 
@@ -492,7 +504,7 @@ static void flyback_interval_statechange()
 
 	res = flyback_diff_ts(&flyback_state.ts[flyback_state.display - 1],
 	                     &flyback_state.ts[flyback_state.display],
-	                     &diff, &seconds);
+	                     &seconds);
 
 	if (res != 0 || seconds >= HUNDREDHOURS) {
 		display_chars(FLYBACK_INTERVAL, LCD_SEG_L1_3_0, "----", SEG_SET);
@@ -500,9 +512,13 @@ static void flyback_interval_statechange()
 		return;
 	}
 
-	_printf(FLYBACK_INTERVAL, LCD_SEG_L1_3_2, "%02u", diff.hour);
-	_printf(FLYBACK_INTERVAL, LCD_SEG_L1_1_0, "%02u", diff.min);
-	_printf(FLYBACK_INTERVAL, LCD_SEG_L2_1_0, "%02u", diff.sec);
+	sec   = (seconds % 60);
+	min   = (seconds / 60) % 60;
+	hour  = (seconds / 60) / 60;
+
+	_printf(FLYBACK_INTERVAL, LCD_SEG_L1_3_2, "%02u", hour);
+	_printf(FLYBACK_INTERVAL, LCD_SEG_L1_1_0, "%02u", min);
+	_printf(FLYBACK_INTERVAL, LCD_SEG_L2_1_0, "%02u", sec);
 }
 
 static void flyback_interval_updown(int mark)
@@ -545,7 +561,7 @@ static struct flyback_screen flyback_screens[] = {
 		.event     	 = NULL,
 		.stopwatch 	 = NULL,
 		.updown    	 = flyback_interval_updown,
-	}
+	},
 #endif
 };
 
@@ -577,7 +593,7 @@ static void flyback_copy_rtc(struct ts_s *ts, int mark)
 	ts->mark = mark;
 }
 
-static int flyback_diff_ts(struct ts_s *ts1, struct ts_s *ts2, struct ts_s *diff, time_t *s)
+static int flyback_diff_ts(struct ts_s *ts1, struct ts_s *ts2, time_t *s)
 {
 	struct tm tm1, tm2;
 	time_t t1, t2;
@@ -598,11 +614,6 @@ static int flyback_diff_ts(struct ts_s *ts1, struct ts_s *ts2, struct ts_s *diff
 	}
 
 	*s = seconds;
-	diff->day  = 0;
-	diff->mark = 0;
-	diff->sec   = (seconds % 60);
-	diff->min   = (seconds / 60) % 60;
-	diff->hour  = (seconds / 60) / 60;
 	return 0; /* success */
 }
 
@@ -661,10 +672,11 @@ static void flyback_statechange()
 
 static void flyback_stopwatch()
 {
+	struct ts_s now;
 	int res = 0;
 	if (flyback_state.count > 0) {
-		flyback_copy_rtc(&flyback_state.now, 0);
-		res = flyback_diff_ts(&flyback_state.chrono, &flyback_state.now, &flyback_state.diff, &flyback_state.seconds);
+		flyback_copy_rtc(&now, 0);
+		res = flyback_diff_ts(&flyback_state.chrono, &now, &flyback_state.seconds);
 		if (res < 0)
 			flyback_state.seconds = -1;
 	}
