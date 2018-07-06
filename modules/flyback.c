@@ -32,8 +32,8 @@
  * Long press of the '*' button will clear all recorded timestamps and
  * reset the stopwatch to 0 and switch back to the start screen. Long
  * press of the '#' button deletes the last recorded timestamp and
- * adjusts the stopwatch to show time latest remaining time
- * stamp. Short press of '#' will cycle through four different
+ * adjusts the stopwatch to show time since latest remaining time
+ * stamp. Short press of '#' will cycle through up to four different
  * screens. Each screen has it's own symbol in the middle symbol line:
  *
  * - counter screen (heart symbol)
@@ -47,10 +47,10 @@
  * On the counter and chrono screens, both the up and the down button
  * will record a new timestamp and restart the stopwatch from
  * zero. Which button was used to restart the timer is stored along
- * with the timestamp. This can be used to differentiate different
- * events (start, stop, ...).
+ * with the timestamp. This can be used to differentiate events
+ * (start, stop, ...).
  *
- * On the list screen and interval screens, the up and down button
+ * On the list screen and interval screen, the up and down buttons
  * will scroll through the recorded timestamps or the list of time
  * intervals between recorded timestamps. No new timestamp will be
  * recorded when using the up and down buttons on these screens.
@@ -71,8 +71,8 @@
  *
  * === 1. COUNTER SCREEN ===
  *
- * The upper line of the counter screen shows the current time. The
- * lower left two digits show the current number of recorded
+ * The upper line of the counter screen shows the current clock
+ * time. The lower left two digits show the current number of recorded
  * timestamps. The right three digit of the lower line show the
  * stopwatch time in minutes and seconds. When exceeding ten minutes
  * the display will switch to hours and minutes, indicated by the "mi"
@@ -85,7 +85,7 @@
  * function is still available, but no further timestamps will be
  * recorded.
  *
- * === 2. STOPWATCH SCREEN ===
+ * === 2. CHRONO SCREEN ===
  *
  * The chrono screen is similar to the counter screen. It will show the
  * current time in the first line. There is no counter in the second
@@ -95,7 +95,7 @@
  * to four digits showing hours:minutes. When exceeding 100 hours the
  * display will show '-----'.
  *
- * The up and down buttons will reset the stopwatch and record the
+ * The up and down buttons will restart the stopwatch and record the
  * current time in a memory slot (unless memory is full, indicated by
  * the 'MAX' symbol)
  *
@@ -119,14 +119,14 @@
  *
  * The interval screen shows time deltas between recorded timestamps.
  * It starts with the most recent time delta. The first line shows
- * hours and minutes. The right two rightmost digits of the second
- * line show the seconds.
+ * hours and minutes. The two rightmost digits of the second line show
+ * the seconds.
  *
  * The up and down buttons can be used to scroll through the list of
  * time deltas.
  *
  * When no timestamps have been recorded yet, the screen shows all
- * zeros. When only one timestamp has been recorded, the counts will
+ * zeros. When only one timestamp has been recorded, the count will
  * show '1' and the rest of the display shows all zeros.
  *
  * The time delta view is limited to less than 100 hours. When
