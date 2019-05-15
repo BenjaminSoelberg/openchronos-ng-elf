@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # encoding: utf-8
 # vim: ts=4 noexpandtab
 
@@ -22,16 +22,28 @@ DATA["TEXT_GENERAL"] = {
     "type": "info",
 }
 
+DATA["WHITE_PCB"] = {
+    "name": "Use White PCB modules",
+    "default": False,
+    "help": "Enables modules written for White PCB (newer) watches."
+}
+
+DATA["BLACK_PCB"] = {
+    "name": "Use Black PCB modules",
+    "default": True,
+    "help": "Enables modules written for Black PCB (older) watches."
+}
+
 DATA["CONFIG_DEBUG"] = {
     "name": "Build debug code",
     "default": False,
-    "help": "Sets CFLAGS and LDFLAGS for debugging",
+    "help": "Sets CFLAGS and LDFLAGS for debugging.",
 }
 
 DATA["USE_LCD_CHARGE_PUMP"] = {
     "name": "Use LCD Charge Pump (6 bytes)",
     "default": False,
-    "help": "Use the internal charge pump to make the display contrast contstant through the whole battery lifetime. As a downside this increases currency and reduces battery lifetime.",
+    "help": "Use the internal charge pump to make the display contrast constant through the whole battery lifetime. As a downside this increases current usage and reduces battery lifetime.",
 }
 
 DATA["USE_WATCHDOG"] = {
@@ -43,7 +55,7 @@ DATA["USE_WATCHDOG"] = {
 DATA["CONFIG_RUNLOOP_INDICATOR"] = {
     "name": "Show runloop indicator",
     "default": False,
-    "help": "Enable or disable the runloop indicator (heart symbol blinks at each runloop)",
+    "help": "Enable or disable the runloop indicator (heart symbol blinks at each runloop).",
 }
 
 # RTC DRIVER #################################################################
@@ -56,14 +68,14 @@ DATA["TEXT_RTC"] = {
 DATA["CONFIG_RTC_IRQ"] = {
     "name": "Enable RTC interrupts",
     "default": True,
-    "help": "Enables interrupts on the Real Time Clock",
+    "help": "Enables interrupts on the Real Time Clock.",
 }
 
 DATA["CONFIG_RTC_DST"] = {
     "name": "DST",
     "default": False,
     'depends': [ 'CONFIG_RTC_IRQ' ],
-    "help": "Automatically adjusts real-time clock for daylight savings time",
+    "help": "Automatically adjusts real-time clock for daylight savings time.",
 }
 
 DATA["CONFIG_RTC_DST_ZONE"] = {
@@ -71,7 +83,7 @@ DATA["CONFIG_RTC_DST_ZONE"] = {
     "type": "text",
     "default": 1,
     'depends': [ 'CONFIG_RTC_DST' ],
-    "help": "DST Zone: 1=DST_US, 2=DST_MEX, 3=DST_BRZ, 4=DST_EU, 5=DST_AUS, 6=DST_NZ"
+    "help": "DST Zone: 1=DST_US, 2=DST_MEX, 3=DST_BRZ, 4=DST_EU, 5=DST_AUS, 6=DST_NZ."
 }
 
 # TIMER0 DRIVER ##############################################################
@@ -84,7 +96,7 @@ DATA["TEXT_TIMER"] = {
 DATA["CONFIG_TIMER_4S_IRQ"] = {
     "name": "Enable 0.244Hz timer interrupts",
     "default": False,
-    "help": "Enables 0.244Hz interrupts on the hardware timer",
+    "help": "Enables 0.244Hz interrupts on the hardware timer.",
 }
 
 # PORTS DRIVER ###############################################################
@@ -99,7 +111,7 @@ DATA["CONFIG_BUTTONS_LONG_PRESS_TIME"] = {
     "type": "text",
     "default": "20",
     "ifndef": True,
-    "help": "Long button press time (in multiples of 1/20 second)",
+    "help": "Long button press time (in multiples of 1/20 second).",
 }
 
 DATA["CONFIG_BUTTONS_SHORT_PRESS_TIME"] = {
@@ -107,7 +119,7 @@ DATA["CONFIG_BUTTONS_SHORT_PRESS_TIME"] = {
     "type": "text",
     "default": "1",
     "ifndef": True,
-    "help": "Short button press time (in multiples of 1/20 second)",
+    "help": "Short button press time (in multiples of 1/20 second).",
 }
 
 DATA["CONFIG_BUTTONS_SWAP_UP_AND_DOWN"] = {
@@ -115,7 +127,7 @@ DATA["CONFIG_BUTTONS_SWAP_UP_AND_DOWN"] = {
     "type": "bool",
     "default": False,
     "ifndef": False,
-    "help": "When set up means previous/-1 and down means next/+1",
+    "help": "When set up means previous/-1 and down means next/+1.",
 }
 
 # BATTERY DRIVER #############################################################
@@ -150,13 +162,26 @@ DATA["CONFIG_TEMPERATURE_OFFSET"] = {
     "type": "text",
     "default": "-260",
     "ifndef": True,
-    "help": "Compensate the sensor raw output value with this offset",
+    "help": "Compensate the sensor raw output value with this offset.",
 }
 
 DATA["CONFIG_TEMPERATURE_METRIC"] = {
     "name": "Show in degrees C",
     "default": False,
     "help": "Show in degrees C if enabled, F otherwise.",
+}
+
+# RADIO DRIVER ##################################################
+DATA["TEXT_RADIO"] = {
+    "name": "Radio driver",
+    "type": "info",
+}
+
+DATA["CONFIG_ISM"] = {
+    "name": "ISM band for radio operation",
+    "type": "text",
+    "default": 1,
+    "help": "Band: 1=US (902MHz), 2=EU (868MHz), 3=LF (433MHz legacy)."
 }
 
 # AUTOMATICALLY GENERATED MODULE LIST ########################################
@@ -255,7 +280,7 @@ class OpenChronosApp(object):
     def main(self):
         global DATA
 
-        text_header = (u"OpenChronos config  \u2503  "
+        text_header = (u"OpenChronos config  -  "
                        u"UP / DOWN / PAGE UP / PAGE DOWN scroll.  F8 aborts.")
 
         self.list_content = list_content = []
@@ -282,7 +307,7 @@ class OpenChronosApp(object):
         def abort_pressed(*args, **kwargs):
             sys.exit(0)
 
-        list_content.append(urwid.Divider(div_char=u"\u2550", top=1, bottom=1))
+        list_content.append(urwid.Divider(div_char=u"-", top=1, bottom=1))
         list_content.append(
         urwid.Padding(urwid.GridFlow(
             [urwid.AttrWrap(urwid.Button("Save", ok_pressed), 'opt','optsel'),

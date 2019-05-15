@@ -42,25 +42,24 @@
     \note This function is NULL safe. You can set all of its parameters to NULL (except name) if you don't need their functionality.
     \note The <i>name</i> string cannot be longer than 5 characters due to the LCD screen size.
 */
-struct menu * menu_add_entry(
-    char const * name,          /*!< item name to be displayed in the menu */
-    void (*up_btn_fn)(void),    /*!< callback for up button presses. */
-    void (*down_btn_fn)(void),  /*!< callback for down button presses. */
-    void (*num_btn_fn)(void),   /*!< callback for num button presses. */
-    void (*lstar_btn_fn)(void), /*!< callback for long star button presses. */
-    void (*lnum_btn_fn)(void),  /*!< callback for long num button presses. */
-    void (*updown_btn_fn)(void),/*!< callback for up&down button presses. */
-    void (*activate_fn)(void),  /*!< callback for when the user switches into this entry in the menu. */
-    void (*deactivate_fn)(void) /*!< callback for when the user switches out from this entry in the menu. */
-);
+struct menu *menu_add_entry(char const *name,	/*!< item name to be displayed in the menu */
+			    void (*up_btn_fn) (void),	/*!< callback for up button presses. */
+			    void (*down_btn_fn) (void),	/*!< callback for down button presses. */
+			    void (*num_btn_fn) (void),	/*!< callback for num button presses. */
+			    void (*lstar_btn_fn) (void),	/*!< callback for long star button presses. */
+			    void (*lnum_btn_fn) (void),	/*!< callback for long num button presses. */
+			    void (*updown_btn_fn) (void),	/*!< callback for up&down button presses. */
+			    void (*activate_fn) (void),	/*!< callback for when the user switches into this entry in the menu. */
+			    void (*deactivate_fn) (void)	/*!< callback for when the user switches out from this entry in the menu. */
+    );
 
 /*!
     \brief A item structure for menu_editmode_start.
 */
 struct menu_editmode_item {
-    void (* select)(void);     /*!< item selected callback */
-    void (* deselect)(void);   /*!< item deselected callback */
-    void (* set)(int8_t step); /*!< set value of item callback */
+    void (*select) (void);	/*!< item selected callback */
+    void (*deselect) (void);	/*!< item deselected callback */
+    void (*set) (int8_t step);	/*!< set value of item callback */
 };
 
 /*!
@@ -69,34 +68,33 @@ struct menu_editmode_item {
     See modules/alarm.c for an example how to use this.
 */
 void menu_editmode_start(
-    /*! callback for when the user exits from the edit mode.*/
-    void (* complete_fn)(void),
-    /*! callback for when the idle count canceles the edit mode.*/
-    void (* cancel_fn)(void),
-    /*! A vector of #menu_editmode_item, it must be NULL terminated! */
-    struct menu_editmode_item *items
-);
+			    /*! callback for when the user exits from the edit mode. */
+			    void (*complete_fn) (void),
+			    /*! callback for when the idle count canceles the edit mode. */
+			    void (*cancel_fn) (void),
+			    /*! A vector of #menu_editmode_item, it must be NULL terminated! */
+			    struct menu_editmode_item *items);
 
 /* Menu definitions and declarations */
 struct menu {
     /* menu item name */
-    char const * name;
+    char const *name;
     /* Pointer to up button handler */
-    void (*up_btn_fn)(void);
+    void (*up_btn_fn) (void);
     /* Pointer to down button handler */
-    void (*down_btn_fn)(void);
+    void (*down_btn_fn) (void);
     /* Pointer to function button (NUM) */
-    void (*num_btn_fn)(void);
+    void (*num_btn_fn) (void);
     /* Pointer to settings button (long STAR) */
-    void (*lstar_btn_fn)(void);
+    void (*lstar_btn_fn) (void);
     /* Pointer to function button (long NUM) */
-    void (*lnum_btn_fn)(void);
+    void (*lnum_btn_fn) (void);
     /* Pointer to simultaneous up&down press */
-    void (*updown_btn_fn)(void);
+    void (*updown_btn_fn) (void);
     /* Pointer to activate function */
-    void (*activate_fn)(void);
+    void (*activate_fn) (void);
     /* Pointer to deactivate function */
-    void (*deactivate_fn)(void);
+    void (*deactivate_fn) (void);
     /* pointer to next menu item */
     struct menu *next;
     struct menu *prev;
@@ -105,4 +103,4 @@ struct menu {
 void menu_check_buttons(void);
 void menu_timeout_poll(void);
 
-#endif /* __MENU_H__ */
+#endif				/* __MENU_H__ */

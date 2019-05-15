@@ -1,3 +1,25 @@
+OpenChronos-ng-elf fork
+=======================
+
+Added features
+--------------
+
+* Added support for BMA250 accelerometer and BMP85 pressure and temperature sensor (packed in the white PCB eZ430-Chronos)
+* Added Black/White PCB dependencies in config.py
+* Added new modules
+* Music module now plays a shorter tune (Nokia tune instead of Super Mario Bros. theme).
+
+New modules
+-----------
+
+* Altimeter module for white PCB
+* Accelerometer module for white PCB
+* Boiling point calculator for white PCB
+* Cricket's chirp calculator (any PCB)
+* Scrolling hello world (any PCB)
+* Speed of sound calculator for white PCB
+* Step counter calculator for white PCB.
+
 GENERAL INFORMATION 
 ===================
 

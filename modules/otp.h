@@ -18,10 +18,9 @@
 #ifndef  __OTP_H__
 #define  __OTP_H__
 #include <stdint.h>
-typedef struct keystore
-{
-    const  char *otp_identifier;
-    const  char *otp_key;
+typedef struct keystore {
+    const char *otp_identifier;
+    const char *otp_key;
     const uint8_t otp_key_len;
-}keystore_t;
+} keystore_t;
 #endif

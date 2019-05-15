@@ -59,7 +59,7 @@
 /*!
     \brief Handy prototype typedef for helpers_loop() function.
 */
-typedef void(* helpers_loop_fn_t)(uint8_t *, uint8_t, uint8_t, int8_t);
+typedef void (*helpers_loop_fn_t) (uint8_t *, uint8_t, uint8_t, int8_t);
 
 /*!
     \brief Increment/decrements value by one without exiting the [lower, upper] interval.
@@ -67,11 +67,10 @@ typedef void(* helpers_loop_fn_t)(uint8_t *, uint8_t, uint8_t, int8_t);
     Note: For now, only steps of -1 and 1 are considered.
     \sa menu_editmode_start
 */
-void helpers_loop(
-    uint8_t *value, /*!< value a pointer to the variable to be incremented. */
-    uint8_t lower,  /*!< lower the lower bound for the loop interval. */
-    uint8_t upper,  /*!< upper the upper bound for the loop interval. */
-    int8_t step     /*!< 1 for incrementing value, -1 for a decrement */
-);
+void helpers_loop(uint8_t * value,	/*!< value a pointer to the variable to be incremented. */
+		  uint8_t lower,	/*!< lower the lower bound for the loop interval. */
+		  uint8_t upper,	/*!< upper the upper bound for the loop interval. */
+		  int8_t step	/*!< 1 for incrementing value, -1 for a decrement */
+    );
 
-#endif /* __EZCHRONOS_H__ */
+#endif				/* __EZCHRONOS_H__ */

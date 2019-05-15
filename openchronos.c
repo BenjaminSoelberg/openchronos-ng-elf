@@ -71,8 +71,9 @@
 
 /* Driver */
 #include "drivers/display.h"
-#include "drivers/vti_as.h"
-#include "drivers/vti_ps.h"
+#include "drivers/as.h"
+#include "drivers/bmp_ps.h"
+#include "drivers/ps.h"
 #include "drivers/radio.h"
 #include "drivers/buzzer.h"
 #include "drivers/ports.h"
@@ -86,43 +87,57 @@
 #include "drivers/wdt.h"
 #include "drivers/lpm.h"
 
+#if defined (WHITE_PCB) && defined (BLACK_PCB)
+#error "You can't use both Black and White modules!"
+#endif
+#ifdef WHITE_PCB
+#include "drivers/bmp_as.h"
+#endif
+#ifdef BLACK_PCB
+#include "drivers/vti_as.h"
+#endif
 void handle_events(void)
 {
     enum sys_message msg = SYS_MSG_NONE;
 
     /* drivers/rtca */
     if (rtca_last_event) {
-        msg |= rtca_last_event;
-        rtca_last_event = RTCA_EV_NONE;
+	msg |= rtca_last_event;
+	rtca_last_event = RTCA_EV_NONE;
     }
 
     /* drivers/timer */
     if (timer0_last_event) {
-        msg |= timer0_last_event << 7;
-        timer0_last_event = TIMER0_EVENT_NONE;
+	msg |= timer0_last_event << 7;
+	timer0_last_event = TIMER0_EVENT_NONE;
     }
 
     /* drivers/accelerometer */
-    if(as_last_interrupt){
-        msg |= SYS_MSG_AS_INT;
-        as_last_interrupt = 0;
+    if (as_last_interrupt) {
+	msg |= SYS_MSG_AS_INT;
+	as_last_interrupt = 0;
+    }
+
+    /* drivers/pressure */
+    if (ps_last_interrupt) {
+	msg |= SYS_MSG_PS_INT;
+	ps_last_interrupt = 0;
     }
 
     /* menu system */
     if (msg & SYS_MSG_RTC_SECOND) {
-        menu_timeout_poll();
+	menu_timeout_poll();
     }
-
 #ifdef CONFIG_BATTERY_MONITOR
     /* drivers/battery */
     if (msg & SYS_MSG_RTC_MINUTE) {
-        msg |= SYS_MSG_BATT;
-        battery_measurement();
+	msg |= SYS_MSG_BATT;
+	battery_measurement();
     }
 #endif
 
     if (is_ports_button_pressed()) {
-        msg |= SYS_MSG_BUTTON;
+	msg |= SYS_MSG_BUTTON;
     }
 
     send_events(msg);
@@ -178,12 +193,12 @@ void init_application(void)
     radio_reset();
     radio_powerdown();
 
-#ifdef CONFIG_MOD_ACCELEROMETER
+#if defined(CONFIG_MOD_ACCELEROMETER_B) || defined(CONFIG_MOD_ACCELEROMETER_W)
     // ---------------------------------------------------------------------
     // Init acceleration sensor
     as_init();
 #else
-    as_disconnect();
+    //as_disconnect();
 #endif
 
     // ---------------------------------------------------------------------
@@ -209,14 +224,15 @@ void init_application(void)
 
 #ifdef CONFIG_INFOMEM
     if (infomem_ready() == -2) {
-        infomem_init(INFOMEM_C, INFOMEM_C + 2 * INFOMEM_SEGMENT_SIZE);
+	infomem_init(INFOMEM_C, INFOMEM_C + 2 * INFOMEM_SEGMENT_SIZE);
     }
 #endif
 }
 
 #ifdef CONFIG_RUNLOOP_INDICATOR
-void debug_runloop_indicator() {
-    static uint8_t is_on; // Dirty, but keeps it local.
+void debug_runloop_indicator()
+{
+    static uint8_t is_on;	// Dirty, but keeps it local.
     is_on ^= 1;
     display_symbol(0, LCD_ICON_HEART, is_on ? SEG_ON : SEG_OFF);
 }
@@ -241,62 +257,63 @@ int main(void)
 
     /* main loop */
     while (1) {
-        /* Go to LPM3, wait for interrupts */
-        enter_lpm_gie(LPM3_bits);
+	/* Go to LPM3, wait for interrupts */
+	enter_lpm_gie(LPM3_bits);
 
 #ifdef CONFIG_RUNLOOP_INDICATOR
-        debug_runloop_indicator();
+	debug_runloop_indicator();
 #endif
 
-        /* service watchdog on wakeup */
-        wdt_poll();
+	/* service watchdog on wakeup */
+	wdt_poll();
 
-        /* poll the button driver */
-        ports_buttons_poll();
+	/* poll the button driver */
+	ports_buttons_poll();
 
-        /* check if any driver has events pending */
-        handle_events();
+	/* check if any driver has events pending */
+	handle_events();
 
-        /* check for button presses and drive the menu */
-        menu_check_buttons();
+	/* check for button presses and drive the menu */
+	menu_check_buttons();
     }
 }
 
 /***************************************************************************
  **************************** HERE BE HELPERS ******************************
  **************************************************************************/
-void helpers_loop(uint8_t *value, uint8_t lower, uint8_t upper, int8_t step)
+void helpers_loop(uint8_t * value, uint8_t lower, uint8_t upper,
+		  int8_t step)
 {
     /* Ensure that initial value is between lower and upper interval */
     if (*value > upper) {
-        *value = upper;
+	*value = upper;
     }
     if (*value < lower) {
-        *value = lower;
+	*value = lower;
     }
 
 
     /* for now only increase/decrease on steps of 1 value */
     if (step > 0) {
-        /* prevent overflow */
-        if (*value == 255) {
-            *value = lower;
-            return;
-        }
+	/* prevent overflow */
+	if (*value == 255) {
+	    *value = lower;
+	    return;
+	}
 
-        (*value)++;
+	(*value)++;
 
-        if(*value - 1 == upper)
-            *value = lower;
+	if (*value - 1 == upper)
+	    *value = lower;
     } else {
-        /* prevent overflow */
-        if (*value == 0) {
-            *value = upper;
-            return;
-        }
+	/* prevent overflow */
+	if (*value == 0) {
+	    *value = upper;
+	    return;
+	}
 
-        (*value)--;
-        if(*value + 1 == lower)
-            *value = upper;
+	(*value)--;
+	if (*value + 1 == lower)
+	    *value = upper;
     }
 }

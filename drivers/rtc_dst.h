@@ -1,25 +1,25 @@
 /**
-    Daylight Saving Time for OpenChronos on the TI ez430 chronos watch.
+   Daylight Saving Time for OpenChronos on the TI ez430 chronos watch.
 
-    Copyright 2011 Rick Miller <rdmiller3@gmail.com>
-    Copyright 2012 Dan Ellis <dpwe@ee.columbia.edu>
+   Copyright 2011 Rick Miller <rdmiller3@gmail.com>
+   Copyright 2012 Dan Ellis <dpwe@ee.columbia.edu>
 
-    http://github.com/BenjaminSoelberg/openchronos-ng-elf
+   http://github.com/BenjaminSoelberg/openchronos-ng-elf
 
-    This file is part of openchronos-ng.
+   This file is part of openchronos-ng.
 
-    openchronos-ng is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+   openchronos-ng is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
 
-    openchronos-ng is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+   openchronos-ng is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+   You should have received a copy of the GNU General Public License
+   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **/
 
 #ifndef RTC_DST_H_
@@ -36,8 +36,8 @@
 #define DST_NZ 6
 
 struct rtc_dst_date_struct {
-    uint8_t month;
-    uint8_t day;
+     uint8_t month;
+     uint8_t day;
 };
 
 extern struct rtc_dst_date_struct dst_dates[];

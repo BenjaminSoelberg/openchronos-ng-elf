@@ -1,25 +1,25 @@
 /**
-    battery.c: battery voltage measurement driver
+   battery.c: battery voltage measurement driver
 
-    Copyright (C) 2012 Matthew Excell <matt@excellclan.com>
-    Copyright (C) 2012 Angelo Arrifano <miknix@gmail.com>
+   Copyright (C) 2012 Matthew Excell <matt@excellclan.com>
+   Copyright (C) 2012 Angelo Arrifano <miknix@gmail.com>
 
-    http://github.com/BenjaminSoelberg/openchronos-ng-elf
+   http://github.com/BenjaminSoelberg/openchronos-ng-elf
 
-    This file is part of openchronos-ng.
+   This file is part of openchronos-ng.
 
-    openchronos-ng is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+   openchronos-ng is free software: you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
 
-    openchronos-ng is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+   openchronos-ng is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+   You should have received a copy of the GNU General Public License
+   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **/
 
 /***************************************************************************
@@ -66,44 +66,44 @@
 
 void battery_init(void)
 {
-    /* Start with battery voltage estimate of full and avoid low
-      battery warnings until the voltage estimate converges. */
-    battery_info.voltage = BATTERY_FULL_THRESHOLD;
+     /* Start with battery voltage estimate of full and avoid low
+	battery warnings until the voltage estimate converges. */
+     battery_info.voltage = BATTERY_FULL_THRESHOLD;
 }
 
 
 void battery_measurement(void)
 {
-    /* Convert external battery voltage (ADC12INCH_11=AVCC-AVSS/2)
-    voltage = adc12_single_conversion(REFVSEL_2, ADC12SHT0_10,
-          ADC12SSEL_0, ADC12SREF_1, ADC12INCH_11,
-            ADC12_BATT_CONVERSION_TIME_USEC); */
-    uint16_t voltage = adc12_single_conversion(REFVSEL_1,
-            ADC12SHT0_10, ADC12INCH_11);
+     /* Convert external battery voltage (ADC12INCH_11=AVCC-AVSS/2)
+	voltage = adc12_single_conversion(REFVSEL_2, ADC12SHT0_10,
+	ADC12SSEL_0, ADC12SREF_1, ADC12INCH_11,
+	ADC12_BATT_CONVERSION_TIME_USEC); */
+     uint16_t voltage = adc12_single_conversion(REFVSEL_1,
+						ADC12SHT0_10, ADC12INCH_11);
 
-    /* Convert ADC value to "x.xx V"
-     Ideally we have A11=0->AVCC=0V ... A11=4095(2^12-1)->AVCC=4V
-     --> (A11/4095)*4V=AVCC --> AVCC=(A11*4)/4095 */
-    voltage = (voltage << 2) / 41;
+     /* Convert ADC value to "x.xx V"
+	Ideally we have A11=0->AVCC=0V ... A11=4095(2^12-1)->AVCC=4V
+	--> (A11/4095)*4V=AVCC --> AVCC=(A11*4)/4095 */
+     voltage = (voltage << 2) / 41;
 
-    /* Correct measured voltage with calibration value */
-    voltage += battery_info.offset;
+     /* Correct measured voltage with calibration value */
+     voltage += battery_info.offset;
 
-    /* Discard values that are clearly outside the measurement range */
-    if (voltage > BATTERY_HIGH_THRESHOLD)
-        voltage = battery_info.voltage;
+     /* Discard values that are clearly outside the measurement range */
+     if (voltage > BATTERY_HIGH_THRESHOLD)
+	  voltage = battery_info.voltage;
 
 #ifndef CONFIG_BATTERY_DISABLE_FILTER
-    /* Filter battery voltage */
-    battery_info.voltage = ((voltage << 1)
-            + (battery_info.voltage << 3)) / 10;
+     /* Filter battery voltage */
+     battery_info.voltage = ((voltage << 1)
+			     + (battery_info.voltage << 3)) / 10;
 #else
-    /* Get it raw instead for testing */
-    battery_info.voltage = voltage;
+     /* Get it raw instead for testing */
+     battery_info.voltage = voltage;
 #endif
 
-    /* Display blinking battery symbol if low */
-    if (battery_info.voltage < BATTERY_LOW_THRESHOLD)
-        display_symbol(0, LCD_SYMB_BATTERY, SEG_ON | BLINK_ON);
+     /* Display blinking battery symbol if low */
+     if (battery_info.voltage < BATTERY_LOW_THRESHOLD)
+	  display_symbol(0, LCD_SYMB_BATTERY, SEG_ON | BLINK_ON);
 }
 
