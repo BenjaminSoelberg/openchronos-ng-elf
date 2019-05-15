@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 ###################################################################################################
 # ChronosTool.py
@@ -245,7 +245,7 @@ class CBM:
         self.device.close
 
     def send( self, cmd ):
-        self.device.write( cmd.tostr() )
+        self.device.write( cmd.tobytes() )
         time.sleep( 0.015 )
         if opt.verbose:
             print >> sys.stderr, 'SENT:', cmd.tohex()
@@ -406,7 +406,7 @@ class CBM:
         time.sleep(2)
         if not dt:
             dt = datetime.datetime.now()
-        print "Syncing Time %s, Temp %s C, and altitude %s m)" % (str(dt), str(celsius), str(meters))
+        print("Syncing Time %s, Temp %s C, and altitude %s m)") % (str(dt), str(celsius), str(meters))
 
         payload = bytearray( 0x13 )
         payload[0x00] = 0x03
@@ -427,7 +427,7 @@ class CBM:
         self.sendcmd( 0x31, payload ) #BM_SYNC_SendCommand
         time.sleep( 2 )
         self.spl_stop()
-        print "Synced!"
+        print("Synced!")
 
     def transmitburst( self, data ):
         self.wbsl_start()
@@ -649,17 +649,17 @@ B6 27 3D 40 6C 1E 5C 43 80 00 78 25 B2 B0 20 00
 30 1D 
 q""")
         data = CBMdata()
-        print "Reading firmware file"
+        print("Reading firmware file")
         data.importtxt( txtdata )
 
         raw_input("Hit enter to start update process. (or Ctrl+C to exit)")
 
-        print "Ready to update. Set your watch in  rfbsl \"open\" mode."
+        print("Ready to update. Set your watch in  rfbsl \"open\" mode.")
         self.transmitburst( updater )
-        print "Sending new firmware.."
+        print("Sending new firmware..")
         self.transmitburst( data )
         time.sleep( 1 )
-        print "Done!"
+        print("Done!")
 
 ###################################################################################################
 # main
@@ -747,7 +747,7 @@ elif command == "accel":
         while True:
                 data = bm.spl_getaccel()
                 if data[0]:
-                        print str( data[1] ) + " " + str( data[2] ) + " " + str( data[3] )
+                        print(str( data[1] ) + " " + str( data[2] ) + " " + str( data[3] ))
 else:
     print >> sys.stderr, "ERROR: invalid command:", command
     sys.exit( 4 )

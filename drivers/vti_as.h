@@ -1,22 +1,22 @@
 /*
-    vti_as.h: accelerometer interface
+  vti_as.h: accelerometer interface
 
-     Copyright (C) 2012 Paolo Di Prodi <paolo@robomotic.com>,
-                Aljaž 'g5pw' Srebrnič <a2piratesoft@gmail.com>
+  Copyright (C) 2012 Paolo Di Prodi <paolo@robomotic.com>,
+  Aljaž 'g5pw' Srebrnič <a2piratesoft@gmail.com>
 
-    openchronos-ng is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+  openchronos-ng is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
 
-    openchronos-ng is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+  openchronos-ng is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+  You should have received a copy of the GNU General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
 
 
 /*******************************************************************************
@@ -84,53 +84,6 @@ extern void write_FFTHR(uint8_t mgrav);
 /******************************************************************************/
 /* Defines section */
 
-/* Disconnect power supply for acceleration sensor when not used */
-#define AS_DISCONNECT
-
-/* Port and pin resource for SPI interface to acceleration sensor */
-/* SDO=MOSI=P1.6, SDI=MISO=P1.5, SCK=P1.7 */
-#define AS_SPI_IN           (P1IN)
-#define AS_SPI_OUT          (P1OUT)
-#define AS_SPI_DIR          (P1DIR)
-#define AS_SPI_SEL          (P1SEL)
-#define AS_SPI_REN          (P1REN)
-#define AS_SDO_PIN          (BIT6)
-#define AS_SDI_PIN          (BIT5)
-#define AS_SCK_PIN          (BIT7)
-
-/* CSN=PJ.1 */
-#define AS_CSN_OUT      (PJOUT)
-#define AS_CSN_DIR      (PJDIR)
-#define AS_CSN_PIN          (BIT1)
-
-#define AS_TX_BUFFER        (UCA0TXBUF)
-#define AS_RX_BUFFER        (UCA0RXBUF)
-#define AS_TX_IFG           (UCTXIFG)
-#define AS_RX_IFG           (UCRXIFG)
-#define AS_IRQ_REG          (UCA0IFG)
-#define AS_SPI_CTL0         (UCA0CTL0)
-#define AS_SPI_CTL1         (UCA0CTL1)
-#define AS_SPI_BR0          (UCA0BR0)
-#define AS_SPI_BR1          (UCA0BR1)
-
-/* Port and pin resource for power-up of acceleration sensor, VDD=PJ.0 */
-#define AS_PWR_OUT          (PJOUT)
-#define AS_PWR_DIR          (PJDIR)
-#define AS_PWR_PIN          (BIT0)
-
-/* Port, pin and interrupt resource for interrupt from acceleration sensor, CMA_INT=P2.5 */
-#define AS_INT_IN           (P2IN)
-#define AS_INT_OUT          (P2OUT)
-#define AS_INT_DIR          (P2DIR)
-#define AS_INT_IE           (P2IE)
-#define AS_INT_IES          (P2IES)
-#define AS_INT_IFG          (P2IFG)
-#define AS_INT_PIN          (BIT5)
-
-/* SPI timeout to detect sensor failure */
-#define SPI_TIMEOUT     (1000u)
-
-
 /* register address: */
 #define ADDR_CTRL       (0x02)
 #define ADDR_INT_STATUS     (0x05)
@@ -150,43 +103,41 @@ extern void write_FFTHR(uint8_t mgrav);
 
 /* Set system flags */
 typedef union {
-    struct {
-        uint8_t motiondet   : 2;    /* MDET see AS_MOTION_STATUS */
-        uint8_t falldet     : 1;    /* FFDET see AS_FALL_STATUS */
-        uint8_t reserved        : 5;    /* reserved, initial value = 0h */
-    } int_status;
-    /* Shortcut to all display flags (for reset) */
-    uint8_t all_flags;
+     struct {
+	  uint8_t motiondet   : 2;    /* MDET see AS_MOTION_STATUS */
+	  uint8_t falldet     : 1;    /* FFDET see AS_FALL_STATUS */
+	  uint8_t reserved        : 5;    /* reserved, initial value = 0h */
+     } int_status;
+     /* Shortcut to all display flags (for reset) */
+     uint8_t all_flags;
 } as_status_register_flags;
 extern volatile as_status_register_flags as_status;
-
-volatile uint8_t as_last_interrupt;
 
 /******************************************************************************/
 /* Global Variable section */
 struct As_Param {
-    /* configuration bits for motion and free fall */
-    uint8_t MDTHR;
-    uint8_t MDFFTMR;
-    uint8_t FFTHR;
-    uint8_t sampling;
-    uint8_t range;
-    uint8_t mode;
+     /* configuration bits for motion and free fall */
+     uint8_t MDTHR;
+     uint8_t MDFFTMR;
+     uint8_t FFTHR;
+     uint8_t sampling;
+     uint8_t range;
+     uint8_t mode;
 };
 extern struct As_Param as_config;
 
 
 enum AS_MOTION_STATUS {
-    AS_NO_MOTION = 00,  /* motion not detected */
-    AS_TRIGGER_X = 01,  /* motion trigger on x */
-    AS_TRIGGER_Y = 10,  /* motion trigger on y */
-    AS_TRIGGER_Z = 11   /* motion trigger on z */
+     AS_NO_MOTION = 00,  /* motion not detected */
+     AS_TRIGGER_X = 01,  /* motion trigger on x */
+     AS_TRIGGER_Y = 10,  /* motion trigger on y */
+     AS_TRIGGER_Z = 11   /* motion trigger on z */
 };
 extern enum AS_MOTION_STATUS as_motion_bits;
 
 enum AS_FALL_STATUS {
-    AS_NOFALL = 0,    /* free fall not detected */
-    AS_FALL           /* free fall detected */
+     AS_NOFALL = 0,    /* free fall not detected */
+     AS_FALL           /* free fall detected */
 };
 extern enum AS_FALL_STATUS as_fall_bit;
 

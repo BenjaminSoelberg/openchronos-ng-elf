@@ -39,11 +39,11 @@
  * This code is in the public domain
  *
  *****************************************************************************
-*/
+ */
 
 #define _BSD_SOURCE
 #define _DEFAULT_SOURCE
-#include <sys/types.h> // Defines BYTE_ORDER, iff _BSD_SOURCE is defined
+#include <sys/types.h>		// Defines BYTE_ORDER, iff _BSD_SOURCE is defined
 #include <string.h>
 
 #include "hashutils.h"
@@ -71,219 +71,230 @@
 #define R32(x,n)    T32(((x << n) | (x >> (32 - n))))
 
 /* the generic case, for when the overall rotation is not unraveled */
-#define FG(n)    \
-    T = T32(R32(A,5) + f##n(B,C,D) + E + *WP++ + CONST##n);    \
-    E = D; D = C; C = R32(B,30); B = A; A = T
+#define FG(n)							\
+     T = T32(R32(A,5) + f##n(B,C,D) + E + *WP++ + CONST##n);    \
+     E = D; D = C; C = R32(B,30); B = A; A = T
 
-static void sha1_transform(SHA1_INFO *sha1_info)
+static void sha1_transform(SHA1_INFO * sha1_info)
 {
-    int i;
-    uint8_t *dp;
-    uint32_t T, A, B, C, D, E, W[80], *WP;
+     int i;
+     uint8_t *dp;
+     uint32_t T, A, B, C, D, E, W[80], *WP;
 
-    dp = sha1_info->data;
+     dp = sha1_info->data;
 
-    for (i = 0; i < 16; ++i) {
-            T = *((uint32_t *) dp);
-            dp += 4;
-            W[i] =
-                ((T << 24) & 0xff000000) |
-                ((T <<  8) & 0x00ff0000) |
-                ((T >>  8) & 0x0000ff00) | ((T >> 24) & 0x000000ff);
-        }
+     for (i = 0; i < 16; ++i) {
+	  T = *((uint32_t *) dp);
+	  dp += 4;
+	  W[i] =
+	       ((T << 24) & 0xff000000) |
+	       ((T << 8) & 0x00ff0000) |
+	       ((T >> 8) & 0x0000ff00) | ((T >> 24) & 0x000000ff);
+     }
 
-    for (i = 16; i < 80; ++i) {
-            W[i] = W[i-3] ^ W[i-8] ^ W[i-14] ^ W[i-16];
-            W[i] = R32(W[i], 1);
-        }
-    A = sha1_info->digest[0];
-    B = sha1_info->digest[1];
-    C = sha1_info->digest[2];
-    D = sha1_info->digest[3];
-    E = sha1_info->digest[4];
-    WP = W;
+     for (i = 16; i < 80; ++i) {
+	  W[i] = W[i - 3] ^ W[i - 8] ^ W[i - 14] ^ W[i - 16];
+	  W[i] = R32(W[i], 1);
+     }
+     A = sha1_info->digest[0];
+     B = sha1_info->digest[1];
+     C = sha1_info->digest[2];
+     D = sha1_info->digest[3];
+     E = sha1_info->digest[4];
+     WP = W;
 
-    for (i =  0; i < 20; ++i) { FG(1); }
-    for (i = 20; i < 40; ++i) { FG(2); }
-    for (i = 40; i < 60; ++i) { FG(3); }
-    for (i = 60; i < 80; ++i) { FG(4); }
-    sha1_info->digest[0] = T32(sha1_info->digest[0] + A);
-    sha1_info->digest[1] = T32(sha1_info->digest[1] + B);
-    sha1_info->digest[2] = T32(sha1_info->digest[2] + C);
-    sha1_info->digest[3] = T32(sha1_info->digest[3] + D);
-    sha1_info->digest[4] = T32(sha1_info->digest[4] + E);
+     for (i = 0; i < 20; ++i) {
+	  FG(1);
+     }
+     for (i = 20; i < 40; ++i) {
+	  FG(2);
+     }
+     for (i = 40; i < 60; ++i) {
+	  FG(3);
+     }
+     for (i = 60; i < 80; ++i) {
+	  FG(4);
+     }
+     sha1_info->digest[0] = T32(sha1_info->digest[0] + A);
+     sha1_info->digest[1] = T32(sha1_info->digest[1] + B);
+     sha1_info->digest[2] = T32(sha1_info->digest[2] + C);
+     sha1_info->digest[3] = T32(sha1_info->digest[3] + D);
+     sha1_info->digest[4] = T32(sha1_info->digest[4] + E);
 }
 
 /* initialize the SHA digest */
 
-void sha1_init(SHA1_INFO *sha1_info)
+void sha1_init(SHA1_INFO * sha1_info)
 {
-    sha1_info->digest[0] = 0x67452301L;
-    sha1_info->digest[1] = 0xefcdab89L;
-    sha1_info->digest[2] = 0x98badcfeL;
-    sha1_info->digest[3] = 0x10325476L;
-    sha1_info->digest[4] = 0xc3d2e1f0L;
-    sha1_info->count_lo = 0L;
-    sha1_info->count_hi = 0L;
-    sha1_info->local = 0;
+     sha1_info->digest[0] = 0x67452301L;
+     sha1_info->digest[1] = 0xefcdab89L;
+     sha1_info->digest[2] = 0x98badcfeL;
+     sha1_info->digest[3] = 0x10325476L;
+     sha1_info->digest[4] = 0xc3d2e1f0L;
+     sha1_info->count_lo = 0L;
+     sha1_info->count_hi = 0L;
+     sha1_info->local = 0;
 }
 
 /* update the SHA digest */
 
-void sha1_update(SHA1_INFO *sha1_info, const uint8_t *buffer, int count)
+void sha1_update(SHA1_INFO * sha1_info, const uint8_t * buffer, int count)
 {
-    int i;
-    uint32_t clo;
+     int i;
+     uint32_t clo;
 
-    clo = T32(sha1_info->count_lo + ((uint32_t) count << 3));
-    if (clo < sha1_info->count_lo) {
-            ++sha1_info->count_hi;
-        }
-    sha1_info->count_lo = clo;
-    sha1_info->count_hi += (uint32_t) count >> 29;
-    if (sha1_info->local) {
-            i = SHA1_BLOCKSIZE - sha1_info->local;
-            if (i > count) {
-                    i = count;
-                }
-            memcpy(((uint8_t *) sha1_info->data) + sha1_info->local, buffer, i);
-            count -= i;
-            buffer += i;
-            sha1_info->local += i;
-            if (sha1_info->local == SHA1_BLOCKSIZE) {
-                    sha1_transform(sha1_info);
-                } else {
-                    return;
-                }
-        }
-    while (count >= SHA1_BLOCKSIZE) {
-            memcpy(sha1_info->data, buffer, SHA1_BLOCKSIZE);
-            buffer += SHA1_BLOCKSIZE;
-            count -= SHA1_BLOCKSIZE;
-            sha1_transform(sha1_info);
-        }
-    memcpy(sha1_info->data, buffer, count);
-    sha1_info->local = count;
+     clo = T32(sha1_info->count_lo + ((uint32_t) count << 3));
+     if (clo < sha1_info->count_lo) {
+	  ++sha1_info->count_hi;
+     }
+     sha1_info->count_lo = clo;
+     sha1_info->count_hi += (uint32_t) count >> 29;
+     if (sha1_info->local) {
+	  i = SHA1_BLOCKSIZE - sha1_info->local;
+	  if (i > count) {
+	       i = count;
+	  }
+	  memcpy(((uint8_t *) sha1_info->data) + sha1_info->local, buffer,
+		 i);
+	  count -= i;
+	  buffer += i;
+	  sha1_info->local += i;
+	  if (sha1_info->local == SHA1_BLOCKSIZE) {
+	       sha1_transform(sha1_info);
+	  } else {
+	       return;
+	  }
+     }
+     while (count >= SHA1_BLOCKSIZE) {
+	  memcpy(sha1_info->data, buffer, SHA1_BLOCKSIZE);
+	  buffer += SHA1_BLOCKSIZE;
+	  count -= SHA1_BLOCKSIZE;
+	  sha1_transform(sha1_info);
+     }
+     memcpy(sha1_info->data, buffer, count);
+     sha1_info->local = count;
 }
 
 
-static void sha1_transform_and_copy(unsigned char digest[20], SHA1_INFO *sha1_info)
+static void sha1_transform_and_copy(unsigned char digest[20],
+				    SHA1_INFO * sha1_info)
 {
-    sha1_transform(sha1_info);
-    digest[ 0] = (unsigned char) ((sha1_info->digest[0] >> 24) & 0xff);
-    digest[ 1] = (unsigned char) ((sha1_info->digest[0] >> 16) & 0xff);
-    digest[ 2] = (unsigned char) ((sha1_info->digest[0] >>  8) & 0xff);
-    digest[ 3] = (unsigned char) ((sha1_info->digest[0]      ) & 0xff);
-    digest[ 4] = (unsigned char) ((sha1_info->digest[1] >> 24) & 0xff);
-    digest[ 5] = (unsigned char) ((sha1_info->digest[1] >> 16) & 0xff);
-    digest[ 6] = (unsigned char) ((sha1_info->digest[1] >>  8) & 0xff);
-    digest[ 7] = (unsigned char) ((sha1_info->digest[1]      ) & 0xff);
-    digest[ 8] = (unsigned char) ((sha1_info->digest[2] >> 24) & 0xff);
-    digest[ 9] = (unsigned char) ((sha1_info->digest[2] >> 16) & 0xff);
-    digest[10] = (unsigned char) ((sha1_info->digest[2] >>  8) & 0xff);
-    digest[11] = (unsigned char) ((sha1_info->digest[2]      ) & 0xff);
-    digest[12] = (unsigned char) ((sha1_info->digest[3] >> 24) & 0xff);
-    digest[13] = (unsigned char) ((sha1_info->digest[3] >> 16) & 0xff);
-    digest[14] = (unsigned char) ((sha1_info->digest[3] >>  8) & 0xff);
-    digest[15] = (unsigned char) ((sha1_info->digest[3]      ) & 0xff);
-    digest[16] = (unsigned char) ((sha1_info->digest[4] >> 24) & 0xff);
-    digest[17] = (unsigned char) ((sha1_info->digest[4] >> 16) & 0xff);
-    digest[18] = (unsigned char) ((sha1_info->digest[4] >>  8) & 0xff);
-    digest[19] = (unsigned char) ((sha1_info->digest[4]      ) & 0xff);
+     sha1_transform(sha1_info);
+     digest[0] = (unsigned char) ((sha1_info->digest[0] >> 24) & 0xff);
+     digest[1] = (unsigned char) ((sha1_info->digest[0] >> 16) & 0xff);
+     digest[2] = (unsigned char) ((sha1_info->digest[0] >> 8) & 0xff);
+     digest[3] = (unsigned char) ((sha1_info->digest[0]) & 0xff);
+     digest[4] = (unsigned char) ((sha1_info->digest[1] >> 24) & 0xff);
+     digest[5] = (unsigned char) ((sha1_info->digest[1] >> 16) & 0xff);
+     digest[6] = (unsigned char) ((sha1_info->digest[1] >> 8) & 0xff);
+     digest[7] = (unsigned char) ((sha1_info->digest[1]) & 0xff);
+     digest[8] = (unsigned char) ((sha1_info->digest[2] >> 24) & 0xff);
+     digest[9] = (unsigned char) ((sha1_info->digest[2] >> 16) & 0xff);
+     digest[10] = (unsigned char) ((sha1_info->digest[2] >> 8) & 0xff);
+     digest[11] = (unsigned char) ((sha1_info->digest[2]) & 0xff);
+     digest[12] = (unsigned char) ((sha1_info->digest[3] >> 24) & 0xff);
+     digest[13] = (unsigned char) ((sha1_info->digest[3] >> 16) & 0xff);
+     digest[14] = (unsigned char) ((sha1_info->digest[3] >> 8) & 0xff);
+     digest[15] = (unsigned char) ((sha1_info->digest[3]) & 0xff);
+     digest[16] = (unsigned char) ((sha1_info->digest[4] >> 24) & 0xff);
+     digest[17] = (unsigned char) ((sha1_info->digest[4] >> 16) & 0xff);
+     digest[18] = (unsigned char) ((sha1_info->digest[4] >> 8) & 0xff);
+     digest[19] = (unsigned char) ((sha1_info->digest[4]) & 0xff);
 }
 
 /* finish computing the SHA digest */
-void sha1_final(SHA1_INFO *sha1_info, uint8_t digest[20])
+void sha1_final(SHA1_INFO * sha1_info, uint8_t digest[20])
 {
-    int count;
-    uint32_t lo_bit_count, hi_bit_count;
+     int count;
+     uint32_t lo_bit_count, hi_bit_count;
 
-    lo_bit_count = sha1_info->count_lo;
-    hi_bit_count = sha1_info->count_hi;
-    count = (int) ((lo_bit_count >> 3) & 0x3f);
-    ((uint8_t *) sha1_info->data)[count++] = 0x80;
-    if (count > SHA1_BLOCKSIZE - 8) {
-            memset(((uint8_t *) sha1_info->data) + count, 0, SHA1_BLOCKSIZE - count);
-            sha1_transform(sha1_info);
-            memset((uint8_t *) sha1_info->data, 0, SHA1_BLOCKSIZE - 8);
-        } else {
-            memset(((uint8_t *) sha1_info->data) + count, 0,
-                   SHA1_BLOCKSIZE - 8 - count);
-        }
-    sha1_info->data[56] = (uint8_t)((hi_bit_count >> 24) & 0xff);
-    sha1_info->data[57] = (uint8_t)((hi_bit_count >> 16) & 0xff);
-    sha1_info->data[58] = (uint8_t)((hi_bit_count >>  8) & 0xff);
-    sha1_info->data[59] = (uint8_t)((hi_bit_count >>  0) & 0xff);
-    sha1_info->data[60] = (uint8_t)((lo_bit_count >> 24) & 0xff);
-    sha1_info->data[61] = (uint8_t)((lo_bit_count >> 16) & 0xff);
-    sha1_info->data[62] = (uint8_t)((lo_bit_count >>  8) & 0xff);
-    sha1_info->data[63] = (uint8_t)((lo_bit_count >>  0) & 0xff);
-    sha1_transform_and_copy(digest, sha1_info);
+     lo_bit_count = sha1_info->count_lo;
+     hi_bit_count = sha1_info->count_hi;
+     count = (int) ((lo_bit_count >> 3) & 0x3f);
+     ((uint8_t *) sha1_info->data)[count++] = 0x80;
+     if (count > SHA1_BLOCKSIZE - 8) {
+	  memset(((uint8_t *) sha1_info->data) + count, 0,
+		 SHA1_BLOCKSIZE - count);
+	  sha1_transform(sha1_info);
+	  memset((uint8_t *) sha1_info->data, 0, SHA1_BLOCKSIZE - 8);
+     } else {
+	  memset(((uint8_t *) sha1_info->data) + count, 0,
+		 SHA1_BLOCKSIZE - 8 - count);
+     }
+     sha1_info->data[56] = (uint8_t) ((hi_bit_count >> 24) & 0xff);
+     sha1_info->data[57] = (uint8_t) ((hi_bit_count >> 16) & 0xff);
+     sha1_info->data[58] = (uint8_t) ((hi_bit_count >> 8) & 0xff);
+     sha1_info->data[59] = (uint8_t) ((hi_bit_count >> 0) & 0xff);
+     sha1_info->data[60] = (uint8_t) ((lo_bit_count >> 24) & 0xff);
+     sha1_info->data[61] = (uint8_t) ((lo_bit_count >> 16) & 0xff);
+     sha1_info->data[62] = (uint8_t) ((lo_bit_count >> 8) & 0xff);
+     sha1_info->data[63] = (uint8_t) ((lo_bit_count >> 0) & 0xff);
+     sha1_transform_and_copy(digest, sha1_info);
 }
 
-/*---------------------HMAC_SHA1-------------------------*/ 
+/*---------------------HMAC_SHA1-------------------------*/
 
 uint8_t tmp_key[64];
 uint8_t sha[SHA1_DIGEST_LENGTH];
 uint8_t hashed_key[SHA1_DIGEST_LENGTH];
 
-void hmac_sha1(const uint8_t *key, int keyLength,
-               const uint8_t *data, int dataLength,
-               uint8_t *result, int resultLength) {
-  SHA1_INFO ctx;
-  int i;
-  // Zero out all internal data structures
-  memset(hashed_key, 0, sizeof(hashed_key));
-  memset(sha, 0, sizeof(sha));
-  memset(tmp_key, 0, sizeof(tmp_key));
+void hmac_sha1(const uint8_t * key, int keyLength,
+	       const uint8_t * data, int dataLength,
+	       uint8_t * result, int resultLength)
+{
+     SHA1_INFO ctx;
+     int i;
+     // Zero out all internal data structures
+     memset(hashed_key, 0, sizeof(hashed_key));
+     memset(sha, 0, sizeof(sha));
+     memset(tmp_key, 0, sizeof(tmp_key));
 
-  memset(&ctx, 0, sizeof(ctx));
+     memset(&ctx, 0, sizeof(ctx));
 
 #if defined(__COMPILED_OUT__)
-  if (keyLength > 64) {
-    // The key can be no bigger than 64 bytes. If it is, we'll hash it down to
-    // 20 bytes.
-    sha1_init(&ctx);
-    sha1_update(&ctx, key, keyLength);
-    sha1_final(&ctx, hashed_key);
-    key = hashed_key;
-    keyLength = SHA1_DIGEST_LENGTH;
-  }
+     if (keyLength > 64) {
+	  // The key can be no bigger than 64 bytes. If it is, we'll hash it down to
+	  // 20 bytes.
+	  sha1_init(&ctx);
+	  sha1_update(&ctx, key, keyLength);
+	  sha1_final(&ctx, hashed_key);
+	  key = hashed_key;
+	  keyLength = SHA1_DIGEST_LENGTH;
+     }
 #endif
 
-  // The key for the inner digest is derived from our key, by padding the key
-  // the full length of 64 bytes, and then XOR'ing each byte with 0x36.
-  for (i = 0; i < keyLength; ++i) {
-    tmp_key[i] = key[i] ^ 0x36;
-  }
-  if (keyLength < 64) {
-    memset(tmp_key + keyLength, 0x36, 64 - keyLength);
-  }
+     // The key for the inner digest is derived from our key, by padding the key
+     // the full length of 64 bytes, and then XOR'ing each byte with 0x36.
+     for (i = 0; i < keyLength; ++i) {
+	  tmp_key[i] = key[i] ^ 0x36;
+     }
+     if (keyLength < 64) {
+	  memset(tmp_key + keyLength, 0x36, 64 - keyLength);
+     }
+     // Compute inner digest
+     sha1_init(&ctx);
+     sha1_update(&ctx, tmp_key, 64);
+     sha1_update(&ctx, data, dataLength);
+     sha1_final(&ctx, sha);
 
-  // Compute inner digest
-  sha1_init(&ctx);
-  sha1_update(&ctx, tmp_key, 64);
-  sha1_update(&ctx, data, dataLength);
-  sha1_final(&ctx, sha);
+     // The key for the outer digest is derived from our key, by padding the key
+     // the full length of 64 bytes, and then XOR'ing each byte with 0x5C.
+     for (i = 0; i < keyLength; ++i) {
+	  tmp_key[i] = key[i] ^ 0x5C;
+     }
+     memset(tmp_key + keyLength, 0x5C, 64 - keyLength);
 
-  // The key for the outer digest is derived from our key, by padding the key
-  // the full length of 64 bytes, and then XOR'ing each byte with 0x5C.
-  for (i = 0; i < keyLength; ++i) {
-    tmp_key[i] = key[i] ^ 0x5C;
-  }
-  memset(tmp_key + keyLength, 0x5C, 64 - keyLength);
+     // Compute outer digest
+     sha1_init(&ctx);
+     sha1_update(&ctx, tmp_key, 64);
+     sha1_update(&ctx, sha, SHA1_DIGEST_LENGTH);
+     sha1_final(&ctx, sha);
 
-  // Compute outer digest
-  sha1_init(&ctx);
-  sha1_update(&ctx, tmp_key, 64);
-  sha1_update(&ctx, sha, SHA1_DIGEST_LENGTH);
-  sha1_final(&ctx, sha);
-
-  // Copy result to output buffer and truncate or pad as necessary
-  memset(result, 0, resultLength);
-  if (resultLength > SHA1_DIGEST_LENGTH) {
-    resultLength = SHA1_DIGEST_LENGTH;
-  }
-  memcpy(result, sha, resultLength);
+     // Copy result to output buffer and truncate or pad as necessary
+     memset(result, 0, resultLength);
+     if (resultLength > SHA1_DIGEST_LENGTH) {
+	  resultLength = SHA1_DIGEST_LENGTH;
+     }
+     memcpy(result, sha, resultLength);
 
 }

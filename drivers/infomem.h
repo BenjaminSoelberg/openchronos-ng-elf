@@ -58,11 +58,11 @@ extern int16_t infomem_app_modify(uint8_t identifier, uint16_t *data, uint8_t co
 
 
 struct infomem {
-    uint16_t        *startaddr; //starting address (position of header)
-    uint8_t         size;  //size of payload in words
-    uint8_t         maxsize;  //maximum size of payload in words
-    volatile uint8_t    not_lock;  //memory is not locked for write
-    uint8_t         sane;  //sanity check passed
+     uint16_t        *startaddr; //starting address (position of header)
+     uint8_t         size;  //size of payload in words
+     uint8_t         maxsize;  //maximum size of payload in words
+     volatile uint8_t    not_lock;  //memory is not locked for write
+     uint8_t         sane;  //sanity check passed
 };
 // extern struct infomem sInfomem;
 

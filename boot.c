@@ -46,7 +46,7 @@
 #define PORTS_BTN_DOWN_PIN (BIT0)
 
 
-inline void initialize_aclk()
+void initialize_aclk()
 {
     /* Select XIN, XOUT on P5.0 and P5.1 */
     P5SEL |= 0x03;
@@ -64,7 +64,7 @@ inline void initialize_aclk()
     UCSCTL4 = SELA__XT1CLK | SELS__DCOCLKDIV | SELM__DCOCLKDIV;
 }
 
-inline void initialize_cpu_12mhz()
+void initialize_cpu_12mhz()
 {
     /* Disable the FLL control loop */
     _BIS_SR(SCG0);
@@ -76,26 +76,26 @@ inline void initialize_cpu_12mhz()
     UCSCTL1 = DCORSEL_5;
 
     /* Set DCO Multiplier */
-    UCSCTL2 = FLLD_1 + 0x16E; // (32768 * 0x16e) almost 12 mhz
+    UCSCTL2 = FLLD_1 + 0x16E;	// (32768 * 0x16e) almost 12 mhz
     _BIC_SR(SCG0);
 
     /* Worst-case settling time for the DCO when the DCO range bits have been
-    changed is n x 32 x 32 x f_MCLK / f_FLL_reference. See UCS chapter in 5xx
-    UG for optimization.
-    32 x 32 x 12 MHz / 32,768 Hz = 250000 = MCLK cycles for DCO to settle */
+       changed is n x 32 x 32 x f_MCLK / f_FLL_reference. See UCS chapter in 5xx
+       UG for optimization.
+       32 x 32 x 12 MHz / 32,768 Hz = 250000 = MCLK cycles for DCO to settle */
     __delay_cycles(375000);
 
     /* Loop until XT1 & DCO stabilizes, use do-while to insure that
-    body is executed at least once */
+       body is executed at least once */
     do {
-        UCSCTL7 &= ~(XT2OFFG + XT1LFOFFG + XT1HFOFFG + DCOFFG);
+	UCSCTL7 &= ~(XT2OFFG + XT1LFOFFG + XT1HFOFFG + DCOFFG);
 
-        /* Clear fault flags */
-        SFRIFG1 &= ~OFIFG;
+	/* Clear fault flags */
+	SFRIFG1 &= ~OFIFG;
     } while ((SFRIFG1 & OFIFG));
 }
 
-inline void initialize_buttons()
+void initialize_buttons()
 {
     /* Set button ports to input */
     P2DIR &= ~ALL_BUTTONS;
@@ -105,7 +105,7 @@ inline void initialize_buttons()
     P2REN |= ALL_BUTTONS;
 }
 
-inline void initialize_lcd()
+void initialize_lcd()
 {
     /* clear entire display memory */
     LCDBMEMCTL |= LCDCLRBM + LCDCLRM;
@@ -120,11 +120,11 @@ inline void initialize_lcd()
     /* LCD_FREQ = ACLK/8/8 = 512Hz */
     /* Frame frequency = 512Hz/2/4 = 64Hz, LCD mux 4, LCD on */
     LCDBCTL0 = (LCDDIV0 + LCDDIV1 + LCDDIV2)
-             | (LCDPRE0 + LCDPRE1) | LCD4MUX | LCDON;
+	| (LCDPRE0 + LCDPRE1) | LCD4MUX | LCDON;
 
     /* LCB_BLK_FREQ = ACLK/8/2048 = 2Hz */
     LCDBBLKCTL = LCDBLKPRE1 | LCDBLKDIV0 | LCDBLKDIV1
-               | LCDBLKDIV2 | LCDBLKMOD0;
+	| LCDBLKDIV2 | LCDBLKMOD0;
 
     /* I/O to COM outputs */
     P5SEL |= (BIT5 | BIT6 | BIT7);
@@ -143,7 +143,7 @@ inline void initialize_lcd()
 #endif
 }
 
-inline void jump_to_rfbsl()
+void jump_to_rfbsl()
 {
     /* clear display memory (useful to know if rfbsl failed) */
     LCDBMEMCTL |= LCDCLRBM + LCDCLRM;
@@ -154,7 +154,7 @@ inline void jump_to_rfbsl()
 
 
 /* put bootmenu in the crt_0042 section which is executed before main */
-__attribute__((naked, section(".crt_0042"), used))
+__attribute__ ((naked, section(".crt_0042"), used))
 static void crt_0042(void)
 {
     wdt_stop();
@@ -164,9 +164,9 @@ static void crt_0042(void)
 
     /* Set global high power request enable */
     {
-        PMMCTL0_H  = 0xA5;
-        PMMCTL0_L |= PMMHPMRE;
-        PMMCTL0_H  = 0x00;
+	PMMCTL0_H = 0xA5;
+	PMMCTL0_L |= PMMHPMRE;
+	PMMCTL0_H = 0x00;
     }
 
     /* Enable 32kHz ACLK */
@@ -182,18 +182,18 @@ static void crt_0042(void)
     initialize_lcd();
 
     /* Write 'boot' to the screen without using display functions */
-    LCDM2 = 199; /* 'b' */
-    LCDM3 = 198; /* 'o' */
-    LCDM4 = 198; /* 'o' */
-    LCDM6 = 135; /* 't' */
+    LCDM2 = 199;		/* 'b' */
+    LCDM3 = 198;		/* 'o' */
+    LCDM4 = 198;		/* 'o' */
+    LCDM6 = 135;		/* 't' */
 
     /* configure watchdog interrupt timer, used for polling buttons */
     {
-        /* ACLK timer source, 250ms timer mode, resume watchdog */
-        WDTCTL = WDT_ADLY_250;
+	/* ACLK timer source, 250ms timer mode, resume watchdog */
+	WDTCTL = WDT_ADLY_250;
 
-        /* Enable watchdog timer interrupts */
-        SFRIE1 |= WDTIE;
+	/* Enable watchdog timer interrupts */
+	SFRIE1 |= WDTIE;
     }
 
     /* Enable global interrupts */
@@ -201,11 +201,11 @@ static void crt_0042(void)
 
     /* loop if no button is pressed, enter RFBSL if backlight is pressed */
     do {
-        _BIS_SR(LPM3_bits | GIE);
-        __no_operation();
+	_BIS_SR(LPM3_bits | GIE);
+	__no_operation();
 
-        if ((P2IN & ALL_BUTTONS) == PORTS_BTN_DOWN_PIN)
-            jump_to_rfbsl();
+	if ((P2IN & ALL_BUTTONS) == PORTS_BTN_DOWN_PIN)
+	    jump_to_rfbsl();
 
     } while ((P2IN & ALL_BUTTONS) == 0);
 
@@ -213,10 +213,9 @@ static void crt_0042(void)
     __disable_interrupt();
 }
 
-__attribute__((interrupt(WDT_VECTOR)))
+__attribute__ ((interrupt(WDT_VECTOR)))
 void WDT_ISR(void)
 {
     /* exit from LPM3 after interrupt */
     _BIC_SR_IRQ(LPM3_bits);
 }
-

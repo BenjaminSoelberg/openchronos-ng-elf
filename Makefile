@@ -1,3 +1,6 @@
+# Edit this with your compiler's path:
+MSP430_TI = /root/ti/msp430-gcc
+
 SUBDIRS = drivers modules
 
 include Common.mk
@@ -56,9 +59,10 @@ $(OBJS): openchronos.cflags
 #
 # Top rules
 
+# Strangely enough libm must be linked last...
 openchronos.elf: $(OBJS)
 	@echo "\n>> Building $@ as target $(TARGET)"
-	@$(CC) $(CFLAGS) $(LDFLAGS) $(INCLUDES) -o $@ $+
+	@$(CC) $(CFLAGS) $(LDFLAGS) $(INCLUDES) -o $@ $+ -lm
 
 openchronos.txt: openchronos.elf
 	$(PYTHON) tools/memory.py -i $< -o $@

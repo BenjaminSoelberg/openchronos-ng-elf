@@ -1,3 +1,11 @@
+### emacs backup files
+*~
+contrib/*~
+drivers/*~
+modules/*~
+toolchains/*~
+tools/*~
+
 ### Temp files ###
 nohup.out
 *.[oa]
